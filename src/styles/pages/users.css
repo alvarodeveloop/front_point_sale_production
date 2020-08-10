@@ -1,0 +1,6 @@
+.fixedBottom{
+  position: absolute;
+  bottom: 0;
+  width: 80%;
+  margin-bottom: 25px;
+}

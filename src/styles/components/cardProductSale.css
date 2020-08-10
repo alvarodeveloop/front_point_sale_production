@@ -1,0 +1,11 @@
+.buttonProduct{
+  background-color: rgb(10, 33, 154);
+  border: 1px solid white;
+  border-radius: 15%;
+  box-shadow: 7px 7px rgb(219, 222, 215);
+  height: 70px;
+}
+
+.separationCard{
+  margin-top: 15px
+}

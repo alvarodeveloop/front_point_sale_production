@@ -1,0 +1,36 @@
+.button-add{
+  width: 95%;
+  align-items: right;
+}
+
+.button-add > button{
+  float: right;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  box-shadow: 3px 3px rgb(219, 222, 215);
+}
+
+.round-buttons{
+  border-radius: 25%;
+}
+
+.dropdown_block > button {
+  width: 100%;
+}
+
+.asterisk_red{
+  color: red;
+}
+
+.margin_col{
+  margin-top: 30px;
+}
+
+.title_principal{
+  color: rgb(39, 57, 153);
+}
+
+.font-badge{
+  font-size: 14px;
+}

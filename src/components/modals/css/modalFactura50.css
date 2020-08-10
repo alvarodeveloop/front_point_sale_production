@@ -1,0 +1,17 @@
+.div_client{
+  border: 1px solid black;
+  border-radius: 25px;
+  padding: 20px;
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.bgThead{
+  background-color: black;
+  color: white;
+}
+
+.rowTable{
+  background-color: rgb(114, 161, 210);
+  color: black;
+}
