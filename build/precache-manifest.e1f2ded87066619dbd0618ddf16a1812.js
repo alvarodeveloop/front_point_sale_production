@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "57791f5bf99d6fc0555a557d5650c1f4",
+    "revision": "8ac107bbd1139fa57f82f9bb7817b9a7",
     "url": "https://anclick.veanx.tech/index.html"
   },
   {
@@ -76,7 +76,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://anclick.veanx.tech/static/css/9.aecb291f.chunk.css"
   },
   {
-    "revision": "de05167ac87d37bdf611",
+    "revision": "829d3f2a0ffc11b3a660",
     "url": "https://anclick.veanx.tech/static/css/main.a81ac46a.chunk.css"
   },
   {
@@ -216,8 +216,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://anclick.veanx.tech/static/js/9.fe2e5e76.chunk.js"
   },
   {
-    "revision": "de05167ac87d37bdf611",
-    "url": "https://anclick.veanx.tech/static/js/main.ab4620bf.chunk.js"
+    "revision": "829d3f2a0ffc11b3a660",
+    "url": "https://anclick.veanx.tech/static/js/main.4ec8dcb9.chunk.js"
   },
   {
     "revision": "67304111f09ffe920099",
