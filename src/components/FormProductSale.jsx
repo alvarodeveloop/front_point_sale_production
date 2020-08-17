@@ -87,6 +87,9 @@ const FormProductSale = (props) => {
         setIsShowPackField(true)
       }
       await setDataStore({...dataProduct, [e.target.name] : e.target.value})
+    }else if(e.target.name === "is_neto" || e.target.name === "is_auto_sale"){
+      let val = e.target.value === "true" ? true : false
+      await setDataStore({...dataProduct, [e.target.name] : val})
     }else{
       await setDataStore({...dataProduct, [e.target.name] : e.target.value})
     }
@@ -446,13 +449,13 @@ const FormProductSale = (props) => {
                   <Col sm={6} md={6} lg={6} xs={12}>
                     <label className="checkbox-inline">
                       Si &nbsp;&nbsp;&nbsp;
-                      <input type="checkbox" name="is_neto" checked={dataProduct.is_neto ? true : false} value={true} />
+                      <input type="checkbox" name="is_neto" checked={dataProduct.is_neto ? true : false} value={true} onChange={onChange} />
                     </label>
                   </Col>
                   <Col sm={6} md={6} lg={6} xs={12}>
                     <label className="checkbox-inline">
                       No &nbsp;&nbsp;&nbsp;
-                      <input type="checkbox" name="is_neto" checked={dataProduct.is_neto ? false : true} value={false} />
+                      <input type="checkbox" name="is_neto" checked={dataProduct.is_neto ? false : true} value={false} onChange={onChange}/>
                     </label>
                   </Col>
                 </Row>
@@ -464,13 +467,13 @@ const FormProductSale = (props) => {
                     <Col sm={6} md={6} lg={6} xs={12}>
                       <label className="checkbox-inline">
                         Si &nbsp;&nbsp;&nbsp;
-                        <input type="checkbox" name="is_auto_sale" checked={dataProduct.is_auto_sale ? true : false} value={true} />
+                        <input type="checkbox" name="is_auto_sale" checked={dataProduct.is_auto_sale ? true : false} value={true} onChange={onChange} />
                       </label>
                     </Col>
                     <Col sm={6} md={6} lg={6} xs={12}>
                       <label className="checkbox-inline">
                         No &nbsp;&nbsp;&nbsp;
-                        <input type="checkbox" name="is_auto_sale" checked={dataProduct.is_auto_sale ? false : true} value={false} />
+                        <input type="checkbox" name="is_auto_sale" checked={dataProduct.is_auto_sale ? false : true} value={false} onChange={onChange} />
                       </label>
                     </Col>
                   </Row>
