@@ -12,8 +12,8 @@
     "static/js/4.bcd7de0b.chunk.js": "https://anclick.veanx.tech/static/js/4.bcd7de0b.chunk.js",
     "static/js/4.bcd7de0b.chunk.js.map": "https://anclick.veanx.tech/static/js/4.bcd7de0b.chunk.js.map",
     "main.css": "https://anclick.veanx.tech/static/css/main.a81ac46a.chunk.css",
-    "main.js": "https://anclick.veanx.tech/static/js/main.ab4620bf.chunk.js",
-    "main.js.map": "https://anclick.veanx.tech/static/js/main.ab4620bf.chunk.js.map",
+    "main.js": "https://anclick.veanx.tech/static/js/main.4ec8dcb9.chunk.js",
+    "main.js.map": "https://anclick.veanx.tech/static/js/main.4ec8dcb9.chunk.js.map",
     "runtime-main.js": "https://anclick.veanx.tech/static/js/runtime-main.457908bf.js",
     "runtime-main.js.map": "https://anclick.veanx.tech/static/js/runtime-main.457908bf.js.map",
     "static/css/7.07b7d53c.chunk.css": "https://anclick.veanx.tech/static/css/7.07b7d53c.chunk.css",
@@ -88,7 +88,7 @@
     "static/js/33.39fe4ae5.chunk.js": "https://anclick.veanx.tech/static/js/33.39fe4ae5.chunk.js",
     "static/js/33.39fe4ae5.chunk.js.map": "https://anclick.veanx.tech/static/js/33.39fe4ae5.chunk.js.map",
     "index.html": "https://anclick.veanx.tech/index.html",
-    "precache-manifest.fcb735bce86136b3ae59baadcac953d0.js": "https://anclick.veanx.tech/precache-manifest.fcb735bce86136b3ae59baadcac953d0.js",
+    "precache-manifest.e1f2ded87066619dbd0618ddf16a1812.js": "https://anclick.veanx.tech/precache-manifest.e1f2ded87066619dbd0618ddf16a1812.js",
     "service-worker.js": "https://anclick.veanx.tech/service-worker.js",
     "static/css/11.fdee07a5.chunk.css.map": "https://anclick.veanx.tech/static/css/11.fdee07a5.chunk.css.map",
     "static/css/13.1e40a1d5.chunk.css.map": "https://anclick.veanx.tech/static/css/13.1e40a1d5.chunk.css.map",
@@ -130,6 +130,6 @@
     "static/css/7.07b7d53c.chunk.css",
     "static/js/7.c13f2043.chunk.js",
     "static/css/main.a81ac46a.chunk.css",
-    "static/js/main.ab4620bf.chunk.js"
+    "static/js/main.4ec8dcb9.chunk.js"
   ]
 }
