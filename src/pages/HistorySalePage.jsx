@@ -56,7 +56,21 @@ const HistorySalePage = (props) => {
   const [stadistics,setStadistics] = useState([])
 
   useEffect(() =>{
-    fetchData()
+    if(!props.config || !props.configStore){
+      if(!props.config){
+        toast.error('Error, debe hacer su configuración general')
+        setTimeout(function () {
+          props.history.replace('/config/config_general')
+        }, 2000);
+      }else if(!props.configStore){
+        toast.error('Error, debe hacer su configuración de la tienda primero')
+        setTimeout(function () {
+          props.history.replace('/config/config_store')
+        }, 2000);
+      }
+    }else{
+      fetchData()
+    }
     return () =>{
       saleColumns = []
       resetChartData()
@@ -232,13 +246,16 @@ const HistorySalePage = (props) => {
         configStore={props.configStore}
         dataToPay={saleDataOption}
       />
-      <ModalDetailSale
-        isShow={isOpenDetailSale}
-        onHide={() => setIsOpenDetailSale(false) }
-        config={props.config}
-        configStore={props.configStore}
-        dataSale={saleDataOption}
-      />
+      {props.config && props.configStore ? (
+        <ModalDetailSale
+          isShow={isOpenDetailSale}
+          onHide={() => setIsOpenDetailSale(false) }
+          config={props.config}
+          configStore={props.configStore}
+          dataSale={saleDataOption}
+        />
+      ) : ''}
+
     </Container>
   )
 }

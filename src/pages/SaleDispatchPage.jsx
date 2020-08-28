@@ -67,7 +67,22 @@ const SaleDispatchPage = (props) => {
   const [stadistics,setStadistics] = useState([])
 
   useEffect(() =>{
-    fetchData()
+    if(!props.config || !props.configStore){
+      if(!props.config){
+        toast.error('Error, debe hacer su configuración general')
+        setTimeout(function () {
+          props.history.replace('/config/config_general')
+        }, 2000);
+      }else if(!props.configStore){
+        toast.error('Error, debe hacer su configuración de la tienda primero')
+        setTimeout(function () {
+          props.history.replace('/config/config_store')
+        }, 2000);
+      }
+    }else{
+      fetchData()
+    }
+
     return () =>{
       saleColumns = []
       resetChartData()
@@ -278,33 +293,15 @@ const SaleDispatchPage = (props) => {
 
   }
 
-  const fetchData = (config = false) => {
+  const fetchData = () => {
     let promise = [
       axios.get(API_URL+'sale_by_dispatch'),
       axios.get(API_URL+'sale_dispatch_stadistics'),
     ]
 
-    if(config){
-      promise.push(axios.get(API_URL+'config_store'))
-      promise.push(axios.get(API_URL+'config_general'))
-    }
-
     Promise.all(promise).then(result => {
-      if(config){
-        if(result[2].data && result[3].data){
-          setSales(result[0].data)
-          setStadistics(result[1].data.delivery)
-        }else{
-          if(!result[2].data){
-            toast.error('Error, debe hacer su configuración general')
-            props.history.replace('/config/config_general')
-          }else if(!result[3].data){
-            toast.error('Error, debe hacer su configuración de la tienda primero')
-            props.history.replace('/config/config_store')
-          }
-        }
-      }
-
+      setSales(result[0].data)
+      setStadistics(result[1].data.delivery)
     }).catch(err => {
       if(err.response){
         toast.error(err.response.data.message)
@@ -402,13 +399,15 @@ const SaleDispatchPage = (props) => {
         dataToPay={saleDataOption}
         isDispatch={true}
       />
+    {props.config && props.configStore ? (
       <ModalDetailSale
         isShow={isOpenDetailSale}
         onHide={() => setIsOpenDetailSale(false) }
         config={props.config}
         configStore={props.configStore}
         dataSale={saleDataOption}
-      />
+        />
+    ) : ''}
       <Modal
         show={isOpenStatusDispatch}
         onHide={handleOnHideFormStatus}

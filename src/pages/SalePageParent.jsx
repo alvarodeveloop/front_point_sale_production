@@ -64,10 +64,14 @@ const SalePageParent = (props) => {
       }else{
         if(!result[1].data){
           toast.error('Error, debe hacer su configuración general')
-          props.history.replace('/config/config_general')
+          setTimeout(function () {
+            props.history.replace('/config/config_general')
+          }, 2000);
         }else if(!result[0].data){
           toast.error('Error, debe hacer su configuración de la tienda primero')
-          props.history.replace('/config/config_store')
+          setTimeout(function () {
+            props.history.replace('/config/config_store')
+          }, 2000);
         }
       }
     })
