@@ -278,14 +278,33 @@ const SaleDispatchPage = (props) => {
 
   }
 
-  const fetchData = () => {
+  const fetchData = (config = false) => {
     let promise = [
       axios.get(API_URL+'sale_by_dispatch'),
       axios.get(API_URL+'sale_dispatch_stadistics'),
     ]
+
+    if(config){
+      promise.push(axios.get(API_URL+'config_store'))
+      promise.push(axios.get(API_URL+'config_general'))
+    }
+
     Promise.all(promise).then(result => {
-      setSales(result[0].data)
-      setStadistics(result[1].data.delivery)
+      if(config){
+        if(result[2].data && result[3].data){
+          setSales(result[0].data)
+          setStadistics(result[1].data.delivery)
+        }else{
+          if(!result[2].data){
+            toast.error('Error, debe hacer su configuración general')
+            props.history.replace('/config/config_general')
+          }else if(!result[3].data){
+            toast.error('Error, debe hacer su configuración de la tienda primero')
+            props.history.replace('/config/config_store')
+          }
+        }
+      }
+
     }).catch(err => {
       if(err.response){
         toast.error(err.response.data.message)
