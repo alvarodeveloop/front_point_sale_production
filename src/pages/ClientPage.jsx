@@ -6,7 +6,8 @@ import {
   Col,
   Button,
   Dropdown,
-  DropdownButton
+  DropdownButton,
+  Badge
 } from 'react-bootstrap'
 import axios from 'axios'
 import { API_URL } from 'utils/constants'
@@ -33,48 +34,42 @@ const ClientPage = (props) => {
 
   useMemo(() => {
     columns_client = [
-      {
-        Header: 'Clientes Registrados',
-        columns: [
-          {
-            Header:'Nombre',
-            accessor: 'name_client'
-          },
-          {
-            Header:'Email',
-            accessor: 'email'
-          },
-          {
-            Header:'Teléfono',
-            accessor: 'phone'
-          },
-          {
-            Header:'Dirección',
-            accessor: 'address'
-          },
-          {
-            Header:'Id',
-            accessor: props1 => [props1.type_document+' '+props1.data_document],
-          },
-          {
-            Header:'Observación',
-            accessor: 'observation'
-          },
-          {
-            Header: 'Acciones',
-            Cell: props1 => {
-              const id = props1.cell.row.original.id
-              return(
-                <DropdownButton size="sm" id={'drop'+id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
-                </DropdownButton>
-              )
-            }
+        {
+          Header:'Nombre',
+          accessor: 'name_client'
+        },
+        {
+          Header:'Email',
+          accessor: 'email'
+        },
+        {
+          Header:'Teléfono',
+          accessor: 'phone'
+        },
+        {
+          Header:'Dirección',
+          accessor: 'address'
+        },
+        {
+          Header:'Id',
+          accessor: props1 => [props1.type_document+' '+props1.data_document],
+        },
+        {
+          Header:'Observación',
+          accessor: 'observation'
+        },
+        {
+          Header: 'Acciones',
+          Cell: props1 => {
+            const id = props1.cell.row.original.id
+            return(
+              <DropdownButton size="sm" id={'drop'+id} title="Seleccione"  block="true">
+                <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
+                <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
+              </DropdownButton>
+            )
           }
-
-        ]
-      }
+        }
     ]
   },[])
 
@@ -143,10 +138,16 @@ const ClientPage = (props) => {
   return (
     <Container fluid={true}>
       <Row className="">
-        <Col sm={12} md={12} lg={12}>
-          <h4 className="title_principal">Clientes</h4>
-          <hr/>
+        <Col sm={6} md={6} lg={6}>
+          <h4 className="title_principal">Tabla de Clientes</h4>
         </Col>
+        <Col sm={6} md={6} lg={6} className="text-center">
+          <h4 className="title_principal">Total Clientes</h4>
+          <Badge variant="danger">{clients.length}</Badge>
+        </Col>
+      </Row>
+      <hr/>
+      <Row className="">
         <Col sm={12} md={12} lg={12}>
           <Table data={clients} columns={columns_client} />
         </Col>

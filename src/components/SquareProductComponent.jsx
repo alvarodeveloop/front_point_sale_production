@@ -27,8 +27,8 @@ const SquareProductComponent = (props) => {
   return (
     <div style={{width: '100%', border: '0px solid white', borderRadius:'15px',boxShadow:'10px 5px 5px lightgray'}}>
       {props.product.img_product ? (
-        <div className="d-flex align-items-center justify-content-center divTitleShowImg">
-          <Image src={API_URL+'images/product/principal/'+props.product.img_product} thumbnail style={{width: '100%', height: '100%', maxHeight:'70px',maxWidth:'120px',borderTopRightRadius:'15px',borderTopLeftRadius:'15px'}}/>
+        <div className="d-flex align-items-center justify-content-center divTitleShowImg" style={{ overflow: 'hidden'}}>
+          <Image src={API_URL+'images/product/principal/'+props.product.img_product} thumbnail />
         </div>
       ) : (
         <div className="d-flex align-items-center justify-content-center divTitleShow" style={{borderTopRightRadius:'15px',borderTopLeftRadius:'15px', height:'70px'}}>

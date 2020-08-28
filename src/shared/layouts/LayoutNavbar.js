@@ -21,7 +21,7 @@ class LayoutNavbar extends Component {
       <Navbar bg={this.props.navbarBg} expand="lg" className="layout-navbar align-items-lg-center container-p-x">
 
         {/* Brand */}
-        <Navbar.Brand as={NavLink} to="/">React Starter</Navbar.Brand>
+        <Navbar.Brand as={NavLink} to="/">Anclick</Navbar.Brand>
 
         {/* Sidenav toggle */}
         {this.props.sidenavToggle && (

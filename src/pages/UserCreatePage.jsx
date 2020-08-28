@@ -179,8 +179,8 @@ const UserCreatePage  = props => {
     <Container>
       <Form onSubmit={onSubmit} noValidate validated={validated}>
         <Row>
-          <Col
-            sm={6} md={6} lg={6} xs={12} className="containerDivSeparated">
+          <Col sm={5} md={5} lg={5} xs={12} style={{borderRight: '1px solid rgb(237, 237, 237)'}}>
+
             <h3 className="text-center font-title">Formulario</h3>
             <br/>
             <Row>
@@ -238,7 +238,7 @@ const UserCreatePage  = props => {
               </Row>
             )}
           </Col>
-          <Col sm={6} md={6} lg={6} xs={12} className="containerDivSeparated">
+          <Col sm={7} md={7} lg={7} xs={12} className="containerDivSeparated">
             <h3 className="text-center font-title">Módulos</h3>
             <Row>
               {modules.map((v,i) => (

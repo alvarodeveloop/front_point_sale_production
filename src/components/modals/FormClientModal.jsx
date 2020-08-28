@@ -171,7 +171,7 @@ const FormClientModal = (props) => {
         </Row>
       </Modal.Body>
       <Modal.Footer>
-        <Button size="sm" variant="success" type="submit">Enviar</Button>
+        <Button size="sm" variant="success" type="submit">Guardar</Button>
         <Button size="sm" onClick={handleOnHide}>Cerrar</Button>
       </Modal.Footer>
       </Form>

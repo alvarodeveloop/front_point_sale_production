@@ -202,7 +202,7 @@ const AuthPageTemplate = props => {
                       onFailure={responseGoogleFail}
                       cookiePolicy={'single_host_origin'}
                     />
-                    O
+                  { /*O
                     <FacebookLogin
                       appId="2491656114258109"
                       autoLoad={false}
@@ -212,7 +212,7 @@ const AuthPageTemplate = props => {
                       )}
                       onFailure={responseFacebookFail}
                       callback={responseFacebook}
-                    />
+                    /> */ }
                   </Col>
                 </Row>
               </Form>

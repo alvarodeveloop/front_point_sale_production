@@ -8,7 +8,8 @@ import {
   Container,
   DropdownButton,
   Dropdown,
-  Badge
+  Badge,
+  Form
 } from 'react-bootstrap'
 import { showPriceWithDecimals } from 'utils/functions'
 import ModalPaymentMultiple from 'components/modals/ModalPaymentMultiple'
@@ -34,6 +35,8 @@ const SaleThirdPartPage = (props) => {
       otros: 0,
       status: false
     },
+    voucher: false,
+    type_delivery: true
   })
 
   const [lastSale,setLastSale] = useState({})
@@ -124,7 +127,14 @@ const SaleThirdPartPage = (props) => {
 
 
   const onChange = e => {
-    setPayment({...payment, [e.target.name] : e.target.value})
+    if(e.target.id === "voucherCheckbox"){
+      setPayment({...payment, 'voucher' : e.target.checked})
+    }else if(e.target.name === "type_delivery"){
+      let val = e.target.value === "true" ? true : false
+      setPayment({...payment, [e.target.name] : val})
+    }else{
+      setPayment({...payment, [e.target.name] : e.target.value})
+    }
   }
 
   const onKeyUp = e => {
@@ -233,7 +243,47 @@ const SaleThirdPartPage = (props) => {
           </Row>
           <br></br>
           <hr/>
+          <Row>
+            <Col sm={6} md={6} lg={6}>
+              <Form.Group>
+                <Form.Check type="checkbox"
+                  custom
+                  id={'voucherCheckbox'}
+                  label={'Venta sin Boleta'}
+                  value={payment.voucher}
+                  checked={payment.voucher}
+                  onChange={onChange} />
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={6} md={6} lg={6}>
+              <Form.Group>
+                <Form.Check type="radio"
+                  custom
+                  id={'typeDelivery1'}
+                  name="type_delivery"
+                  label={'Entrega Inmediata'}
+                  value={true}
+                  checked={payment.type_delivery}
+                  onChange={onChange} />
+              </Form.Group>
+            </Col>
+            <Col sm={6} md={6} lg={6}>
+              <Form.Group>
+                <Form.Check type="radio"
+                  custom
+                  id={'typeDelivery2'}
+                  name="type_delivery"
+                  label={'Guardar en Despacho'}
+                  value={false}
+                  checked={!payment.type_delivery}
+                  onChange={onChange} />
+              </Form.Group>
+            </Col>
+          </Row>
           <Button size="sm" variant="danger" className="text-white" block="true" onClick={() => handleFinishPayment(1) } style={{color:'black'}}>Finalizar</Button>
+          <br/>
         </Col>
         { /* separacion de los botones y el monto */}
         <Col sm={7} md={7} lg={7} xs={7}  style={{borderRadius:'15px',boxShadow:'10px 5px 5px lightgray'}}>

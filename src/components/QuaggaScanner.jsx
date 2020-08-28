@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 //import { barcode } from 'utils/scan'
-import { Container } from 'react-bootstrap'
+import { Container, Row, Col } from 'react-bootstrap'
 import 'styles/components/scan.css'
 import Quagga from 'quagga';
 import { toast } from 'react-toastify'
@@ -23,8 +23,8 @@ const  QuaggaScanner= (props) => {
         target: document.querySelector('#camera'),
         numOfWorkers: navigator.hardwareConcurrency,
         constraints: {
-          width: 640,
-          height: 480,
+          width: 300,
+          height: 300,
         },
       },
       decoder : {

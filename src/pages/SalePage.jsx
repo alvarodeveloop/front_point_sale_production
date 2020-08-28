@@ -26,10 +26,8 @@ import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { MdPersonAdd } from 'react-icons/md';
-import { AiOutlineQrcode } from "react-icons/ai";
-import { AiOutlineBarcode } from "react-icons/ai";
-import { AiFillTag } from "react-icons/ai";
-
+import { AiOutlineQrcode, AiFillTag, AiOutlineBarcode } from "react-icons/ai";
+import QuaggaScanner from 'components/QuaggaScanner'
 
 const SalePage = (props) => {
 
@@ -46,7 +44,7 @@ const SalePage = (props) => {
   const [productsAll,setProductsAll] = useState([]) // Todos los Productos para ser filtrados por el autocomplete
   const [resetValueClient,setResetValueClient] = useState(false)
   const [showList,setShowList] = useState(false)
-
+  const [isEanScaner, setIsEanScaner] = useState(false)
 
   useEffect(() => {
     fetchProductsMostSolds()
@@ -291,7 +289,6 @@ const SalePage = (props) => {
   }
 
   const searchByCategory = category => {
-
     if(category){
       axios.get(API_URL+'productByCategory/'+category).then(result => {
         setProducts(result.data)
@@ -304,39 +301,39 @@ const SalePage = (props) => {
         }
       })
     }
-
   }
-
 
   return (
   <Container fluid='true'>
     <Row>
       <Col sm={4} md={4} lg={4} xs={4}  style={{borderRadius:'15px',boxShadow:'10px 5px 5px lightgray', padding: '20px'}}>
-        <Row>
-          <Col sm={8} md={8} lg={8} xs={8} >
-            <Container>
-              <AutoCompleteClientComponent
-              items={clients}
-              returnValue={handleSelectClient}
-              handleResetValueClient={handleResetValueClient}
-              resetValue={resetValueClient}
+        <Row className="justify-content-center">
+          <Col sm={8} md={8} lg={8}>
+            <AutoCompleteClientComponent
+            items={clients}
+            returnValue={handleSelectClient}
+            handleResetValueClient={handleResetValueClient}
+            resetValue={resetValueClient}
             />
-            </Container>
           </Col>
-          <Col sm={4} md={4} lg={4} xs={4} className="text-center">
+          <Col sm={2} md={2} lg={2} xs={2}>
             <a href="javascript:void(0)" onClick={() => handleOpenModals('client')}>
-              <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled">Agregar Cliente</Tooltip>}>
+              <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Agregar Cliente</Tooltip>}>
                 <MdPersonAdd size="2.5em" />
               </OverlayTrigger>
             </a>
           </Col>
         </Row>
+        <br/>
         <Row>
           <Col sm={12} md={12} lg={12}>
-            <ul className="text-center">
+            <br/>
+            <ul className="">
               { Object.keys(props.sale.rooms[props.sale.idCartSelected].client).length > 0 ? (
                 <React.Fragment>
-                  <p><b>Nombre:&nbsp;</b>{props.sale.rooms[props.sale.idCartSelected].client.name_client}&nbsp;&nbsp;&nbsp;
+                  <p>
+                    <b>Nombre:&nbsp;</b>{props.sale.rooms[props.sale.idCartSelected].client.name_client}
+                    <br/>
                     <b>N°:</b>&nbsp;{props.sale.rooms[props.sale.idCartSelected].client.data_document}
                       &nbsp;&nbsp;&nbsp;
                       <a style={{color: 'red'}} href="javascript:void(0)" onClick={handleClientRemove}>
@@ -345,10 +342,7 @@ const SalePage = (props) => {
                     </p>
                   </React.Fragment>
                 ) : (
-                  <React.Fragment>
-                    <br/>
-                    <b>Sin cliente de Compra</b>
-                  </React.Fragment>
+                  <h6 className="text-center">Sin cliente de compra</h6>
                 )
               }
             </ul>
@@ -356,33 +350,33 @@ const SalePage = (props) => {
         </Row>
         <hr/>
         <Row className="justify-content-center">
-          <Col sm={6} md={6} lg={6}>
-            <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled">Buscar Producto por Texto</Tooltip>}>
+          <Col sm={10} md={10} lg={10}>
+            <div style={{width: '100%',position: 'relative', zIndex: '1000'}}>
               <AutoCompleteComponent
                 items={productsAll}
                 keyName='name_product'
                 returnValue={handleSelectProduct}
                 showAllCategories={handleShowAllCategories}
+                titleTooltip="Buscar Producto"
                 />
-            </OverlayTrigger>
+            </div>
           </Col>
         </Row>
         <br/>
         <Row>
           <Col sm={3} md={3} lg={3} xs={3} >
-              <OverlayTrigger placement={'button'} overlay={<Tooltip id="tooltip-disabled">Buscar Producto por Qr</Tooltip>}>
-                <Button size="sm" size="sm" variant="secondary" block="true" onClick={() => handleOpenModals('qr')} >
-                  <AiOutlineQrcode size='1.3em'/>
-                </Button>
-              </OverlayTrigger>
+            <OverlayTrigger placement={'botton'} overlay={<Tooltip id="tooltip-disabled">Buscar Producto por Qr</Tooltip>}>
+              <Button size="sm" size="sm" variant="secondary" block="true" onClick={() => handleOpenModals('qr')} >
+                <AiOutlineQrcode size='1.3em'/>
+              </Button>
+            </OverlayTrigger>
           </Col>
           <Col sm={3} md={3} lg={3} xs={3}>
             <OverlayTrigger placement={'button'} overlay={<Tooltip id="tooltip-disabled">Buscar Producto por EAN</Tooltip>}>
-            <Button size="sm" size="sm" variant="secondary" block="true" onClick={() => handleOpenModals('ean')}>
-              <AiOutlineBarcode size='1.3em'/>
-            </Button>
+              <Button size="sm" size="sm" variant="secondary" block="true" onClick={() => {setIsEanScaner(true) /*handleOpenModals('ean')*/ } }>
+                <AiOutlineBarcode size='1.3em'/>
+              </Button>
             </OverlayTrigger>
-
           </Col>
           <Col sm={3} md={3} lg={3} xs={3}>
             <OverlayTrigger placement={'button'} overlay={<Tooltip id="tooltip-disabled">Vender Producto no Registrado</Tooltip>}>
@@ -394,23 +388,19 @@ const SalePage = (props) => {
           <Col sm={3} md={3} lg={3} xs={3}>
             {showList ? (
               <React.Fragment>
-
                 <OverlayTrigger placement={'button'} overlay={<Tooltip id="tooltip-disabled">Mostar por Tableros</Tooltip>}>
                 <Button size="sm" size="sm" variant="secondary" block="true" onClick={handleShowProducts}>
                   <FaRegImages size='1.3em'/>
                 </Button>
                 </OverlayTrigger>
-
               </React.Fragment>
             ) : (
               <React.Fragment>
-
                 <OverlayTrigger placement={'button'} overlay={<Tooltip id="tooltip-disabled">Mostar como Lista</Tooltip>}>
                 <Button size="sm" size="sm" variant="secondary" block="true" onClick={handleShowProducts}>
                   <FaList size='1.3em'/>
                 </Button>
                 </OverlayTrigger>
-
               </React.Fragment>
             )}
           </Col>
@@ -440,48 +430,68 @@ const SalePage = (props) => {
           </Col>
         </Row>
       </Col>
-      <Col sm={8} md={8} lg={8} xs={8} style={{ border: '1px solid white', borderRadius:'15px',boxShadow:'10px 5px 5px lightgray'}}>
-        <Row className="justify-content-center">
-          <Col sm={7} md={7} lg={7} xs={7}>
-            <select className="form-control" onChange={handleChangeCategoryProduct} defaultValue="mas_vendidos" id="select_category">
-              <option value='todos'>Todos</option>
-              <option value='mas_vendidos'>Más Vendidos</option>
-              {categorys.map((v,i) => (
-                <option key={i} value={v.id}>{v.name_category}</option>
-              ))}
-            </select>
+      {
+        !isEanScaner ? (
+          <Col sm={8} md={8} lg={8} xs={8} style={{ border: '1px solid white', borderRadius:'15px',boxShadow:'10px 5px 5px lightgray'}}>
+            <Row className="justify-content-center">
+              <Col sm={7} md={7} lg={7} xs={7}>
+                <select className="form-control" onChange={handleChangeCategoryProduct} defaultValue="mas_vendidos" id="select_category">
+                  <option value='todos'>Todos</option>
+                  <option value='mas_vendidos'>Más Vendidos</option>
+                  {categorys.map((v,i) => (
+                    <option key={i} value={v.id}>{v.name_category}</option>
+                  ))}
+                </select>
+              </Col>
+              <Col sm={4} md={4} lg={4} xs={4}>
+                <label className="form-control-label">Seleccione por Categoria</label>
+              </Col>
+              <Col sm={12} md={12} lg={12} xs={12} onClick={() => handleOpenModals('product')}>
+                <br/>
+                <OverlayTrigger placement={'button'} overlay={<Tooltip id="tooltip-disabled">Nuevo Producto</Tooltip>}>
+                  <Button size="sm" block={true} size="sm" variant="success">Agregar Producto &nbsp;&nbsp;<FaPlusCircle /></Button>
+                </OverlayTrigger>
+              </Col>
+            </Row>
+            <hr/>
+            <Row>
+              <Col sm={12} md={12} lg={12} style={{overflow:'auto' , height:'100%', maxHeight:'520px'}}>
+                {showList ? (
+                  <TableProductComponent data={products} addToCart={handleAddToCart} configStore={props.configStore} config={props.config} />
+                ) : (
+                  <Row style={{ overflowY: 'auto'}}>
+                    {products.map((v,i) => (
+                      <Col sm={3} md={3} lg={3} xs={3} key={i} onClick={() => handleAddToCart(v)} className="separatedBlockProducts">
+                        <SquareProductComponent
+                          product={v}
+                          config={props.config}
+                          configStore={props.configStore}
+                          />
+                      </Col>
+                    ))}
+                  </Row>
+                )}
+              </Col>
+            </Row>
           </Col>
-          <Col sm={4} md={4} lg={4} xs={4}>
-            <label className="form-control-label">Seleccione por Categoria</label>
-          </Col>
-          <Col sm={12} md={12} lg={12} xs={12} onClick={() => handleOpenModals('product')}>
+        ) : (
+          <Col sm={8} md={8} lg={8} style={{ border: '1px solid white', borderRadius:'15px',boxShadow:'10px 5px 5px lightgray'}}>
+            <Row className="justify-content-center">
+              <Col sm={6} md={6} lg={6}>
+                <Button variant="danger" block={true} type="button" size="sm" onClick={() => { setIsEanScaner(false) } }>Mostrar Productos</Button>
+              </Col>
+            </Row>
             <br/>
-            <OverlayTrigger placement={'button'} overlay={<Tooltip id="tooltip-disabled">Nuevo Producto</Tooltip>}>
-              <Button size="sm" block={true} size="sm" variant="success">Agregar Producto &nbsp;&nbsp;<FaPlusCircle /></Button>
-            </OverlayTrigger>
+            <br/>
+            <Row className="justify-content-center">
+              <Col sm={7} md={7} lg={7}>
+                <QuaggaScanner catchCode={catchBarCodeEan}/>
+              </Col>
+            </Row>
           </Col>
-        </Row>
-        <hr/>
-        <Row>
-          <Col sm={12} md={12} lg={12} style={{overflow:'auto' , height:'100%', maxHeight:'520px'}}>
-            {showList ? (
-              <TableProductComponent data={products} addToCart={handleAddToCart} configStore={props.configStore} config={props.config} />
-            ) : (
-              <Row style={{ overflowY: 'auto'}}>
-                {products.map((v,i) => (
-                  <Col sm={3} md={3} lg={3} xs={3} key={i} onClick={() => handleAddToCart(v)} className="separatedBlockProducts">
-                    <SquareProductComponent
-                      product={v}
-                      config={props.config}
-                      configStore={props.configStore}
-                      />
-                  </Col>
-                ))}
-              </Row>
-            )}
-          </Col>
-        </Row>
-      </Col>
+        )
+      }
+
     </Row>
       <FormClientModal
         isShow={isShowModalClient}

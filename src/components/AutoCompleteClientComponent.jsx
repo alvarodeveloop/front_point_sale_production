@@ -16,32 +16,42 @@ const AutoCompleteClientComponent = (props) => {
       props.handleResetValueClient()
     }
   },[props.resetValue])
+
   return (
-    <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled">Buscar Cliente</Tooltip>}>
-      <div className="input-search">
-        <FaSearch />
-        <Autocomplete
-          getItemValue={(item) => item.name_client+'-'+item.data_document}
-          items={props.items}
-          shouldItemRender={(item, value) =>{
-            return !item.name_client.toLowerCase().indexOf(value.toString().toLowerCase()) || !item.data_document.toLowerCase().indexOf(value.toString().toLowerCase())
-          }}
+    <React.Fragment>
+      <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled3">Buscar Cliente</Tooltip>}>
+        <div className="input-search">
+          <FaSearch />
+          <Autocomplete
+            getItemValue={(item) => item.name_client+'-'+item.data_document}
+            items={props.items}
+            shouldItemRender={(item, value) =>{
+              return !item.name_client.toLowerCase().indexOf(value.toString().toLowerCase()) || !item.data_document.toLowerCase().indexOf(value.toString().toLowerCase())
+            }}
 
-          renderItem={ (item, isHighlighted) =>
-            <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} key={item.id} >
-              { item.name_client}
-            </div>
-          }
-          value={value}
-          onChange={(e) =>setValue(e.target.value) }
-          onSelect={(val) =>{
-            setValue(val)
-            props.returnValue(val)
-          }}
-        />
-      </div>
-    </OverlayTrigger>
+            renderItem={ (item, isHighlighted) =>
+              <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} key={item.name_client+"-"+item.data_document} >
+                { item.name_client }
+              </div>
+            }
+            value={value}
 
+            onChange={(e) =>setValue(e.target.value) }
+
+            onClick={(val) =>{
+              console.log('aqui perro');
+              setValue(val)
+              props.returnValue(val)
+            }}
+
+            onSelect={(val) =>{
+              setValue(val)
+              props.returnValue(val)
+            }}
+            />
+        </div>
+      </OverlayTrigger>
+    </React.Fragment>
   )
 }
 

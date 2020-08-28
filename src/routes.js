@@ -136,4 +136,8 @@ export const routes = [
     component: lazy(() => import('./pages/SignUpPage')),
     layout: BlankContainer
   },
+  {
+    path: '/sale/dispatchs',
+    component: lazy(() => import('./pages/SaleDispatchPage'))
+  }
 ]

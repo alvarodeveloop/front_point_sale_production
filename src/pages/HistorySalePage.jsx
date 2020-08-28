@@ -21,7 +21,30 @@ import ModalSolvedSale from 'components/modals/ModalSolvedSale'
 import ModalDetailSale from 'components/modals/ModalDetailSale'
 import * as moment from 'moment-timezone'
 import { showPriceWithDecimals } from 'utils/functions'
+import {Doughnut} from 'react-chartjs-2';
+import { ARRAY_COLORS } from 'utils/constants'
 let saleColumns = []
+
+let optionsBar = {
+  responsive: true,
+  maintainAspectRatio: false,
+  animation: {
+    duration: 0
+  },
+  hover: {
+    animationDuration: 0
+  },
+  responsiveAnimationDuration: 0,
+}
+
+let data_donut_ss_status = {
+	labels: [],
+	datasets: [{
+		data: [],
+		backgroundColor: [],
+		hoverBackgroundColor: []
+	}]
+};
 
 const HistorySalePage = (props) => {
 
@@ -29,13 +52,23 @@ const HistorySalePage = (props) => {
   const [isOpenSolvedSale,setIsOpenSolvedSale] = useState(false)
   const [saleDataOption, setSaleDataOption] = useState({})
   const [isOpenDetailSale,setIsOpenDetailSale] = useState(false)
+  const [redraw,setRedraw] = useState(false)
+  const [stadistics,setStadistics] = useState([])
 
   useEffect(() =>{
     fetchData()
     return () =>{
       saleColumns = []
+      resetChartData()
     }
   },[])
+
+  useEffect(() => {
+    handleDataDonutSsStatus()
+    setTimeout(function () {
+      setRedraw(false)
+    }, 2000);
+  },[stadistics])
 
   useMemo(() =>{
     saleColumns = [
@@ -102,6 +135,21 @@ const HistorySalePage = (props) => {
       ]
   })
 
+  const handleDataDonutSsStatus = () => {
+
+    stadistics.forEach((v, i) => {
+      data_donut_ss_status.labels.push(v.name)
+      data_donut_ss_status.datasets[0].data.push(parseFloat(v.total))
+      data_donut_ss_status.datasets[0].backgroundColor.push(ARRAY_COLORS[i])
+      data_donut_ss_status.datasets[0].hoverBackgroundColor.push(ARRAY_COLORS[i])
+    });
+
+    setTimeout(function () {
+      setRedraw(true)
+    }, 500);
+
+  }
+
   const printInvoice = datos => {
     window.open('/invoicePrintPage/'+datos.id,'_blank')
   }
@@ -121,8 +169,13 @@ const HistorySalePage = (props) => {
   }
 
   const fetchData = () => {
-    axios.get(API_URL+'sale').then(result =>{
-      setSales(result.data)
+    let promise = [
+      axios.get(API_URL+'sale'),
+      axios.get(API_URL+'sale_stadistics')
+    ]
+    Promise.all(promise).then(result => {
+      setSales(result[0].data)
+      setStadistics(result[1].data.sale)
     }).catch(err => {
       if(err.response){
         toast.error(err.response.data.message)
@@ -135,16 +188,39 @@ const HistorySalePage = (props) => {
 
   const handleOnhideSaleFiao = () => {
     setIsOpenSolvedSale(false)
+    resetChartData()
     fetchData()
+  }
+
+  const resetChartData = () => {
+    data_donut_ss_status = {
+      labels: [],
+    	datasets: [{
+    		data: [],
+    		backgroundColor: [],
+    		hoverBackgroundColor: []
+    	}]
+    }
   }
 
   return (
     <Container>
       <Row>
-        <Col sm={12} md={12} lg={12}>
-          <h4 className="title_principal">Tabla de Ventas</h4>
-          <hr/>
+        <Col sm={6} md={6} lg={6}></Col>
+        <Col sm={6} md={6} lg={6} className="text-center">
+          <h5>Totales de Ventas</h5>
         </Col>
+      </Row>
+      <Row>
+        <Col sm={6} md={6} lg={6}>
+          <h4 className="title_principal">Tabla de Ventas</h4>
+        </Col>
+        <Col sm={6} md={6} lg={6}>
+          <Doughnut data={data_donut_ss_status} redraw={redraw} options={optionsBar}/>
+        </Col>
+      </Row>
+      <hr/>
+      <Row>
         <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
           <Table columns={saleColumns} data={sales} />
         </Col>

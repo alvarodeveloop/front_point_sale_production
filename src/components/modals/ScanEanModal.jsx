@@ -2,7 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import{
   Modal,
-  Button
+  Button,
+  Row,
+  Col
 } from 'react-bootstrap'
 import 'styles/components/modalComponents.css'
 import QuaggaScanner from 'components/QuaggaScanner'
@@ -13,7 +15,7 @@ const ScanEanModal = (props) => {
     <Modal
       show={props.show}
       onHide={props.onHide}
-      size="lg"
+      size="md"
       aria-labelledby="contained-modal-title-vcenter"
       centered>
         <Modal.Header closeButton className="header_dark">
@@ -21,7 +23,7 @@ const ScanEanModal = (props) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div style={{width: '100%', marginLeft: '20%'}}>
+          <div style={{width: '100%', paddingLeft: '25%'}}>
             <QuaggaScanner catchCode={props.catchCode}/>
           </div>
         </Modal.Body>

@@ -21,7 +21,7 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
   const [payment, setPayment] = useState({
     payment: '',
     turned: '',
-    type: null,
+    type: 1,
     multiple_payment: {
       efectivo: 0,
       tarjeta: 0,
@@ -30,6 +30,7 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
       otros: 0,
       status: false
     },
+    voucher: false,
   })
 
   const [isOpenMultiple,setIsOpenMultiple] = useState(false)
@@ -80,6 +81,11 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
       return
     }
 
+    if(!payment.payment){
+      toast.error('Debe ingresar un monto a pagar')
+      return
+    }
+
     let total_to_pay = parseFloat(dataToPay.total)
     let paymentTotal = parseFloat(payment.payment)
     if(paymentTotal < total_to_pay){
@@ -88,8 +94,9 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
       let cartSale = Object.assign({},dataToPay,{
         payment
       })
+      let route = props.isDispatch ? 'sale_dispatch_payment' : 'sale_fiao'
 
-      axios.post(API_URL+'sale_fiao',cartSale).then(result => {
+      axios.post(API_URL+route,cartSale).then(result => {
 
         toast.success('Proceso Completado')
         props.onHide()
@@ -125,7 +132,14 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
 
 
   const onChange = e => {
-    setPayment({...payment, [e.target.name] : e.target.value})
+    if(e.target.id === "voucherCheckbox"){
+      setPayment({...payment, 'voucher' : e.target.checked})
+    }else if(e.target.name === "type_delivery"){
+      let val = e.target.value === "true" ? true : false
+      setPayment({...payment, [e.target.name] : val})
+    }else{
+      setPayment({...payment, [e.target.name] : e.target.value})
+    }
   }
 
   const onKeyUp = e => {
@@ -187,6 +201,19 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
                   />
               </Row>
             </div>
+            <Row>
+              <Col sm={4} md={4} lg={4}>
+                <Form.Group>
+                  <Form.Check type="checkbox"
+                    custom
+                    id={'voucherCheckbox'}
+                    label={'Venta sin Boleta'}
+                    value={payment.voucher}
+                    checked={payment.voucher}
+                    onChange={onChange} />
+                </Form.Group>
+              </Col>
+            </Row>
             <Row className="containerDiv justify-content-center" style={{ marginLeft: '-8px'}}>
               <Col sm={4} md={4} lg={4} xs={12}>
                 <Button size="sm" onClick={() => setTypePayment(1)} variant="dark" block="true">Efectivo</Button>
@@ -250,7 +277,12 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
                 />
               </Row>
               <Row className="justify-content-center">
-                <Button size="sm" variant="secondary" block={true} onClick={handlePaymentMultiple}>Procesar</Button>
+                <Col sm={4} md={4} lg={4}>
+                  <Button size="sm" variant="secondary" block={true} onClick={handlePaymentMultiple}>Procesar</Button>
+                </Col>
+                <Col sm={4} md={4} lg={4}>
+                  <Button size="sm" variant="danger" block={true} onClick={()=> setIsOpenMultiple(false)}>Mostrar Sección de Pagos</Button>
+                </Col>
               </Row>
             </Col>
           </div>
@@ -269,7 +301,8 @@ ModalSolvedSale.propTypes = {
   isShow: PropTypes.bool.isRequired,
   onHide: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
-  configStore: PropTypes.object.isRequired
+  configStore: PropTypes.object.isRequired,
+  isDispatch: PropTypes.bool,
 }
 
 ModalSolvedSale.defaultProps = {

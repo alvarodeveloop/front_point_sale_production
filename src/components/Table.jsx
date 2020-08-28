@@ -178,16 +178,16 @@ function DataTable({ columns, data }) {
         </tbody>
       </table>
       <div className="pagination">
-        <Button size="sm" className="button-pagination" variant="secondary" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+        <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
           {'<<'}
         </Button>{' '}
-        <Button size="sm" className="button-pagination" variant="secondary" onClick={() => previousPage()} disabled={!canPreviousPage}>
+        <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => previousPage()} disabled={!canPreviousPage}>
           {'<'}
         </Button>{' '}
-        <Button size="sm" className="button-pagination" variant="secondary" onClick={() => nextPage()} disabled={!canNextPage}>
+        <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => nextPage()} disabled={!canNextPage}>
           {'>'}
         </Button>{' '}
-        <Button size="sm" className="button-pagination" variant="secondary" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+        <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
           {'>>'}
         </Button>{' '}
         <span>

@@ -34,7 +34,6 @@ import {
   Col
 } from 'react-bootstrap'
 
-
 const SalePageParent = (props) => {
 
   const [view,setView] = useState(1)

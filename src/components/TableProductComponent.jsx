@@ -68,7 +68,7 @@ const TableProductComponent = (props) => {
         Header: 'Cantidad Disponible',
         accessor: propsTable => propsTable.inventary.stock,
         Cell: propsTable => {
-          return (<Badge variant="danger" style={{fontSize: '18px'}}> {propsTable.cell.row.original.inventary[0].stock} </Badge>)
+          return (<Badge variant="danger" className="font_badge"> {propsTable.cell.row.original.inventary[0].stock} </Badge>)
         }
       },
       {

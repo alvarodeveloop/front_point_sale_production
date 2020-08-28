@@ -37,3 +37,8 @@
   box-shadow: 7px 7px rgb(219, 222, 215);
   height: 70px;
 }
+
+.containerWithShadows{
+  border-radius: 15px;
+  box-shadow:'10px 5px 5px lightgray';
+}

@@ -120,6 +120,7 @@ const CotizationPage = (props) => {
     setGastosDetail([])
     setClientDetail({})
     setResetValueClient(true)
+    setCommentCotizacion('')
     setTimeout(() => {
       setResetValueClient(false)
     },300)
@@ -142,6 +143,8 @@ const CotizationPage = (props) => {
       setClientDetail(client => {
         return result.data.client ? result.data.client : {}
       })
+
+      setCommentCotizacion(result.data.comment)
 
     }).catch(err => {
       if(err.response){
@@ -176,9 +179,13 @@ const CotizationPage = (props) => {
         setDisableButton(false)
         clearData()
         if(type === 4){
-          goToFacturation()
+          setTimeout(function () {
+            goToFacturation()
+          }, 1300);
         }else{
-          goToDashboard()
+          setTimeout(function () {
+            goToDashboard()
+          }, 1300);
         }
       }).catch(err => {
         clearData()
@@ -488,20 +495,26 @@ const CotizationPage = (props) => {
       </Row>
       <br/>
       <Row>
-        <Col sm={3} md={3} lg={3}>
+        <Col sm={4} md={4} lg={4}>
           <Button size="sm" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => saveCotizacion(1)}>{disableButtons ? 'Guardando...' : 'Guardar y Enviar por Mail'} <FaMailBulk /></Button>
         </Col>
-        <Col sm={3} md={3} lg={3}>
+        <Col sm={4} md={4} lg={4}>
           <Button size="sm" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => saveCotizacion(4)}>{disableButtons ? 'Guardando...' : 'Guardar y Facturar'} <MdPrint /></Button>
         </Col>
-        <Col sm={3} md={3} lg={3}>
+        <Col sm={4} md={4} lg={4}>
           <Button size="sm" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => saveCotizacion(2)}>{disableButtons ? 'Guardando...' : 'Guardar'} <FaLocationArrow /></Button>
         </Col>
+      </Row>
+      <br/>
+      <Row className="justify-content-center">
         <Col sm={3} md={3} lg={3}>
-          <DropdownButton size="sm" id={'drop'} title={disableButtons ? 'Guardando' : "Compartir"}  className="dropdown_block" disabled={disableButtons}>
+          <DropdownButton size="sm" id={'drop'} title={disableButtons ? 'Guardando' : "Compartir"}  className="dropdown_block" disabled={disableButtons} variant="secondary">
             <Dropdown.Item onClick={() => setOpenModalClientMail(true) }>Enviar por Mail</Dropdown.Item>
             <Dropdown.Item onClick={ copyLinkOfCotizacion } >Copiar Link</Dropdown.Item>
           </DropdownButton>
+        </Col>
+        <Col sm={3} md={3} lg={3}>
+          <Button variant="danger" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
         </Col>
       </Row>
     <FormClientModal

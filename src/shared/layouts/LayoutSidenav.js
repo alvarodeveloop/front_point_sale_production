@@ -46,7 +46,7 @@ const LayoutSidenav = props => {
           {props.menuUser.map((v,i) => {
             if(v.subnivel){
               return (
-                <Sidenav.Menu key={i} icon="ion ion-md-speedometer" linkText={v.name_item} active={isMenuActive(v.route)} open={isMenuOpen(v.route)}>
+                <Sidenav.Menu key={i} icon={v.icon} linkText={v.name_item} active={isMenuActive(v.route)} open={isMenuOpen(v.route)}>
                   {v.sub_menu.map((v2,i2) => {
                     if(v2.subnivel){
                       return (
@@ -66,7 +66,7 @@ const LayoutSidenav = props => {
               )
             }else{
               return (
-                <Sidenav.RouterLink icon="ion ion-md-speedometer" key={i} to={v.route}>{v.name_item}</Sidenav.RouterLink>
+                <Sidenav.RouterLink icon={v.icon} key={i} to={v.route}>{v.name_item}</Sidenav.RouterLink>
               )
             }
           })}
