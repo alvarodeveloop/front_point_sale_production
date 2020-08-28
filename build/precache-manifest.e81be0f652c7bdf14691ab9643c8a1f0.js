@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "ce68779be2ca15b523bb78c24c118584",
+    "revision": "33ae11eb5714fdf198b29864ebedefe6",
     "url": "https://anclick.veanx.tech/index.html"
   },
   {
@@ -40,7 +40,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://anclick.veanx.tech/static/css/21.1e40a1d5.chunk.css"
   },
   {
-    "revision": "1184a970a7fd46787866",
+    "revision": "726da3f11b841d249373",
     "url": "https://anclick.veanx.tech/static/css/22.59c87201.chunk.css"
   },
   {
@@ -144,8 +144,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://anclick.veanx.tech/static/js/21.b94439e7.chunk.js"
   },
   {
-    "revision": "1184a970a7fd46787866",
-    "url": "https://anclick.veanx.tech/static/js/22.2cf5f921.chunk.js"
+    "revision": "726da3f11b841d249373",
+    "url": "https://anclick.veanx.tech/static/js/22.b3a177c4.chunk.js"
   },
   {
     "revision": "e1b166114f736a30b996",
@@ -168,8 +168,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://anclick.veanx.tech/static/js/27.48be7377.chunk.js"
   },
   {
-    "revision": "d3ae4252fffd153260e5",
-    "url": "https://anclick.veanx.tech/static/js/28.10ccb093.chunk.js"
+    "revision": "f727333cf867613d9c95",
+    "url": "https://anclick.veanx.tech/static/js/28.c689e6c4.chunk.js"
   },
   {
     "revision": "50689e2776026acc514e",
@@ -236,8 +236,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://anclick.veanx.tech/static/js/main.427be082.chunk.js"
   },
   {
-    "revision": "c72463b59e0268dd10ea",
-    "url": "https://anclick.veanx.tech/static/js/runtime-main.febb77ea.js"
+    "revision": "b30ecf3a9e824afe5867",
+    "url": "https://anclick.veanx.tech/static/js/runtime-main.cd3a303e.js"
   },
   {
     "revision": "1f7beca5bf4cda1803cd59cd881c372d",
