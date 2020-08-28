@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "8ac107bbd1139fa57f82f9bb7817b9a7",
+    "revision": "3f77b71f5e4f66b9dcaeaea62be11454",
     "url": "https://anclick.veanx.tech/index.html"
   },
   {
-    "revision": "43b033d21024ebb51bc5",
+    "revision": "0f9296481b22bf2ed1a2",
     "url": "https://anclick.veanx.tech/static/css/11.fdee07a5.chunk.css"
   },
   {
@@ -68,7 +68,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://anclick.veanx.tech/static/css/7.07b7d53c.chunk.css"
   },
   {
-    "revision": "f2e2ec14761345e6adfe",
+    "revision": "daa1bbbe6856c6247402",
     "url": "https://anclick.veanx.tech/static/css/8.70dbd593.chunk.css"
   },
   {
@@ -76,7 +76,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://anclick.veanx.tech/static/css/9.aecb291f.chunk.css"
   },
   {
-    "revision": "829d3f2a0ffc11b3a660",
+    "revision": "a6057a83678037849a56",
     "url": "https://anclick.veanx.tech/static/css/main.a81ac46a.chunk.css"
   },
   {
@@ -92,8 +92,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://anclick.veanx.tech/static/js/10.73f0f8cd.chunk.js"
   },
   {
-    "revision": "43b033d21024ebb51bc5",
-    "url": "https://anclick.veanx.tech/static/js/11.67a8bd86.chunk.js"
+    "revision": "0f9296481b22bf2ed1a2",
+    "url": "https://anclick.veanx.tech/static/js/11.b6cded4c.chunk.js"
   },
   {
     "revision": "1516bcb16c5f830b74a2",
@@ -208,20 +208,20 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://anclick.veanx.tech/static/js/7.c13f2043.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "f2e2ec14761345e6adfe",
-    "url": "https://anclick.veanx.tech/static/js/8.721bc5f3.chunk.js"
+    "revision": "daa1bbbe6856c6247402",
+    "url": "https://anclick.veanx.tech/static/js/8.00119847.chunk.js"
   },
   {
     "revision": "a3bba53e2bce245f26de",
     "url": "https://anclick.veanx.tech/static/js/9.fe2e5e76.chunk.js"
   },
   {
-    "revision": "829d3f2a0ffc11b3a660",
-    "url": "https://anclick.veanx.tech/static/js/main.4ec8dcb9.chunk.js"
+    "revision": "a6057a83678037849a56",
+    "url": "https://anclick.veanx.tech/static/js/main.7baf064a.chunk.js"
   },
   {
-    "revision": "67304111f09ffe920099",
-    "url": "https://anclick.veanx.tech/static/js/runtime-main.457908bf.js"
+    "revision": "620297b7039b1137a102",
+    "url": "https://anclick.veanx.tech/static/js/runtime-main.4e1d4103.js"
   },
   {
     "revision": "1f7beca5bf4cda1803cd59cd881c372d",
