@@ -81,7 +81,7 @@ const HistorySalePage = (props) => {
     handleDataDonutSsStatus()
     setTimeout(function () {
       setRedraw(false)
-    }, 2000);
+    }, 3000);
   },[stadistics])
 
   useMemo(() =>{
@@ -160,7 +160,7 @@ const HistorySalePage = (props) => {
 
     setTimeout(function () {
       setRedraw(true)
-    }, 500);
+    }, 1500);
 
   }
 

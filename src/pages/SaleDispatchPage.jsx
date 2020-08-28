@@ -93,7 +93,7 @@ const SaleDispatchPage = (props) => {
     handleDataDonutSsStatus()
     setTimeout(function () {
       setRedraw(false)
-    }, 2000);
+    }, 3000);
   },[stadistics])
 
   useMemo(() =>{
@@ -243,7 +243,7 @@ const SaleDispatchPage = (props) => {
 
     setTimeout(function () {
       setRedraw(true)
-    }, 500);
+    }, 1500);
 
   }
 
