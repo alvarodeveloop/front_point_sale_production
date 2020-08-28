@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "https://anclick.veanx.tech/precache-manifest.99fc595145ab89752724a6a6d11b70b4.js"
+  "https://anclick.veanx.tech/precache-manifest.fe7a4937a2070f0bb776cd1d3e50c014.js"
 );
 
 self.addEventListener('message', (event) => {
