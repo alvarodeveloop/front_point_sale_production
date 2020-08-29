@@ -23,17 +23,15 @@ const ModalDiscountProduct = (props) => {
   useEffect(() => {
     if(props.isShow){
       inputRechargeRef.current.focus()
-    }
-  },[props.isShow])
-
-  useEffect(() => {
-    return () => {
+    }else{
       setDiscount({
         type: 'fijo',
         amount: ''
       })
+      setTotalCalculado(0)
     }
-  },[])
+  },[props.isShow])
+
 
   const handleOnHide = () => {
     props.onHide()
@@ -58,11 +56,12 @@ const ModalDiscountProduct = (props) => {
   }
 
   const onChange = e => {
+    e.persist()
     setDiscount( { ...discount, [e.target.name] : e.target.value } )
     if(props.product && e.target.name === "amount"){
       if(discount.type !== "fijo"){
         let total = parseFloat(props.product.price) * parseFloat(props.product.cantidad)
-        let resTotal = ((total * discount.amount) / 100) * parseFloat(props.product.cantidad)
+        let resTotal = ((total * e.target.value) / 100) * parseFloat(props.product.cantidad)
         total = total - resTotal
         total = total ? total : 0
         setTotalCalculado(total)
