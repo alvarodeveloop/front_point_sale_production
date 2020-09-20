@@ -1,1 +1,0 @@
-{"version":3,"sources":["config_general.css"],"names":[],"mappings":"AAAA,aACE,wBAA2B,CAC3B,kBAAmB,CACnB,YACF","file":"17.ece87755.chunk.css","sourcesContent":[".form_config{\r\n  border: 1px solid lightgray;\r\n  border-radius: 25px;\r\n  padding: 20px;\r\n}\r\n"]}
