@@ -110,7 +110,7 @@ const SaleDispatchPage = (props) => {
         },
         {
           Header: 'Cliente',
-          accessor: props1 => props.client ? [props1.client.name_client+' '+props1.client.data_document] : [],
+          accessor: props1 => props1.client ? [props1.client.name_client+' '+props1.client.data_document] : [],
 
         },
         {
@@ -300,6 +300,7 @@ const SaleDispatchPage = (props) => {
     ]
 
     Promise.all(promise).then(result => {
+      console.log(result[0].data,'aqui flaco malvado');
       setSales(result[0].data)
       setStadistics(result[1].data.delivery)
     }).catch(err => {
@@ -314,6 +315,7 @@ const SaleDispatchPage = (props) => {
 
   const handleOnhideSaleFiao = () => {
     setIsOpenSolvedSale(false)
+    resetChartData()
     fetchData()
   }
 

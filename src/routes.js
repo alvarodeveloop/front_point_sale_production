@@ -139,5 +139,13 @@ export const routes = [
   {
     path: '/sale/dispatchs',
     component: lazy(() => import('./pages/SaleDispatchPage'))
+  },
+  {
+    path: '/cashRegister',
+    component: lazy(() => import('./pages/CashRegisterPage'))
+  },
+  {
+    path: '/branch_office',
+    component: lazy(() => import('./pages/BranchOfficePage'))
   }
 ]

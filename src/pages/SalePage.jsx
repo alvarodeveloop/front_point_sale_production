@@ -365,21 +365,21 @@ const SalePage = (props) => {
         <br/>
         <Row>
           <Col sm={3} md={3} lg={3} xs={3} >
-            <OverlayTrigger placement={'botton'} overlay={<Tooltip id="tooltip-disabled">Buscar Producto por Qr</Tooltip>}>
+            <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled">Buscar Producto por Qr</Tooltip>}>
               <Button size="sm" size="sm" variant="secondary" block="true" onClick={() => handleOpenModals('qr')} >
                 <AiOutlineQrcode size='1.3em'/>
               </Button>
             </OverlayTrigger>
           </Col>
           <Col sm={3} md={3} lg={3} xs={3}>
-            <OverlayTrigger placement={'button'} overlay={<Tooltip id="tooltip-disabled">Buscar Producto por EAN</Tooltip>}>
+            <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled">Buscar Producto por EAN</Tooltip>}>
               <Button size="sm" size="sm" variant="secondary" block="true" onClick={() => {setIsEanScaner(true) /*handleOpenModals('ean')*/ } }>
                 <AiOutlineBarcode size='1.3em'/>
               </Button>
             </OverlayTrigger>
           </Col>
           <Col sm={3} md={3} lg={3} xs={3}>
-            <OverlayTrigger placement={'button'} overlay={<Tooltip id="tooltip-disabled">Vender Producto no Registrado</Tooltip>}>
+            <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled">Vender Producto no Registrado</Tooltip>}>
             <Button size="sm" size="sm" variant="secondary" block="true" onClick={() => handleOpenModals('not_registered')}>
               <AiFillTag size='1.3em' />
             </Button>
@@ -396,7 +396,7 @@ const SalePage = (props) => {
               </React.Fragment>
             ) : (
               <React.Fragment>
-                <OverlayTrigger placement={'button'} overlay={<Tooltip id="tooltip-disabled">Mostar como Lista</Tooltip>}>
+                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled">Mostar como Lista</Tooltip>}>
                 <Button size="sm" size="sm" variant="secondary" block="true" onClick={handleShowProducts}>
                   <FaList size='1.3em'/>
                 </Button>
@@ -448,7 +448,7 @@ const SalePage = (props) => {
               </Col>
               <Col sm={12} md={12} lg={12} xs={12} onClick={() => handleOpenModals('product')}>
                 <br/>
-                <OverlayTrigger placement={'button'} overlay={<Tooltip id="tooltip-disabled">Nuevo Producto</Tooltip>}>
+                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled">Nuevo Producto</Tooltip>}>
                   <Button size="sm" block={true} size="sm" variant="success">Agregar Producto &nbsp;&nbsp;<FaPlusCircle /></Button>
                 </OverlayTrigger>
               </Col>

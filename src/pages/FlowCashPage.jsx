@@ -50,6 +50,10 @@ const FlowCashPage = (props) => {
     <Container>
       <Row className="containerDiv">
         <Col sm={12} md={12} lg={12} xs={12}>
+          <h4 className="title_principal">Flujo de Caja - Caja</h4>
+          <hr/>
+        </Col>
+        <Col sm={12} md={12} lg={12} xs={12}>
           <Tabs defaultActiveKey="center_coste" id="uncontrolled-tab-example">
             <Tab eventKey="center_coste" title="Centro de Costos">
               <FlowCashCenterCostePage  centerCostes={centerCostes} fetchData={fetchData}/>

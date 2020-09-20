@@ -11,6 +11,7 @@ import {
   Dropdown,
   Modal,
   Image,
+  Badge
 } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
@@ -152,10 +153,19 @@ const ProductPage = (props) => {
           <hr/>
         </Col>
         <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
-          <div className="button-add">
-            <Button size="sm" title="Crear Producto" onClick={goToForm} variant="success"><FaPlusCircle /></Button>
-          </div>
-          <Table columns={productColumns} data={product} />
+          <Row>
+            <Col sm={6} md={6} lg={6} xs={12}>
+              <Button variant="success" block={true} size="sm" onClick={goToForm}>Crear Producto <FaPlusCircle /></Button>
+            </Col>
+            <Col sm={6} md={6} lg={6} xs={12} className="text-right">
+              <h5>Total Productos: <Badge variant="danger" className="title_badge">{product.length}</Badge></h5>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={12} md={12} lg={12} xs={12}>
+              <Table columns={productColumns} data={product} />
+            </Col>
+          </Row>
         </Col>
       </Row>
 

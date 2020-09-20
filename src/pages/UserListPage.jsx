@@ -8,7 +8,8 @@ import {
   Col,
   Button,
   DropdownButton,
-  Dropdown
+  Dropdown,
+  Badge
 } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
@@ -109,10 +110,15 @@ const UserListPage = (props) => {
   return (
     <Container>
       <Row>
-        <Col sm={12} md={12} lg={12}>
+        <Col sm={6} md={6} lg={6}>
           <h4 className="title_principal">Usuarios</h4>
-          <hr/>
         </Col>
+        <Col sm={6} md={6} lg={6}>
+          <h4 className="title_principal">Total Usuarios Registrados: <Badge variant="danger">{users.length}</Badge></h4>
+        </Col>
+      </Row>
+      <hr/>
+      <Row>
         <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
           <div className="button-add">
             <Button size="sm" title="Crear Usuario" onClick={goToForm} variant="success"><FaPlusCircle /></Button>

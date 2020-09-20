@@ -1,12 +1,13 @@
 import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
-import { FaCheckCircle, FaTrashAlt, FaPlusCircle,FaUsers } from "react-icons/fa";
+import { FaCheckCircle, FaTrashAlt, FaPlusCircle,FaUsers,FaArrowAltCircleUp } from "react-icons/fa";
 import {
   Row,
   Col,
   Form,
   Button,
   Container,
+  Image,
 } from 'react-bootstrap'
 import { connect } from 'react-redux'
 import { setMenu } from 'actions/menu'
@@ -26,12 +27,22 @@ const UserCreatePage  = props => {
     password: "",
     id_rol: ""
   })
+  const [enterpriseForm,setEnterpriseForm] = useState({
+    name: "",
+    address: "",
+    is_open: true,
+    id: ''
+  })
+
   const [modulesUser,setModulesUser] = useState([])
   const [roles,setRoles] = useState([])
   const [modules,setModules] = useState([])
   const [validated, setValidated] = useState(false);
   const [isFormClean, setIsFormClean] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
+  const [typeDisplayModule, setTypeDisplayModule] = useState(1)
+  const [enterpriseArray, setEntepriseArray] = useState([])
+  const [messageDisplay , setMessageDisplay] = useState('')
 
   const fetchModules = () => {
 
@@ -58,8 +69,15 @@ const UserCreatePage  = props => {
           password: "",
           id_rol: result[2].data.user.id_rol
         })
-        const userModules = result[2].data.modules.map(v => v.id_menu)
-        setModulesUser(userModules)
+        if(result[2].data.user.id_rol == 1 || result[2].data.user.id_rol == 3 || result[2].data.user.id_rol == 4){
+          setModulesUser(result[2].data.modules.map(v => v.id_menu))
+        }else if(result[2].data.user.id_rol == 2){
+          setTypeDisplayModule(2)
+          setEntepriseArray(result[2].data.user.enterprise)
+        }else if(result[2].data.user.id_rol > 4){
+          setTypeDisplayModule(3)
+        }
+        if(result[2].data.message) setMessageDisplay(result[2].data.message)
         setIsUpdate(true)
       }
     }).catch(err => {
@@ -72,7 +90,22 @@ const UserCreatePage  = props => {
   },[])
 
   const onChange = e => {
+    if(e.target.name === "id_rol"){
+      if(e.target.value == 2){
+        setTypeDisplayModule(2)
+      }else if( (e.target.value >= 3 && e.target.value <= 4 ) || e.target.value == 1){
+        setTypeDisplayModule(1)
+        cleanEnterprise()
+      }else{
+        setTypeDisplayModule(3)
+        cleanEnterprise()
+      }
+    }
     setUserData({ ...userData, [e.target.name] : e.target.value })
+  }
+
+  const onChangeEnterprise = e => {
+    setEnterpriseForm({ ...enterpriseForm, [e.target.name] : e.target.name === "is_open" ? e.target.checked : e.target.value })
   }
 
   const handleAccess = async (e,id) => {
@@ -101,7 +134,7 @@ const UserCreatePage  = props => {
       setValidated(true);
       return
     }
-    if(modulesUser.length === 0){
+    if(modulesUser.length === 0 && (userData.id_rol == 1 || userData.id_rol == 3 || userData.id_rol == 4) ){
       e.stopPropagation();
       setValidated(true);
       toast.error('Debe escoger al menos un módulo para el usuario')
@@ -109,7 +142,8 @@ const UserCreatePage  = props => {
     }
 
     let user = Object.assign({},userData,{
-      modules: modulesUser
+      modules: modulesUser,
+      enterprise : enterpriseForm
     })
 
     if(!isUpdate){
@@ -119,8 +153,18 @@ const UserCreatePage  = props => {
       }
     }
 
+    let id_rol_user = parseInt(JSON.parse(localStorage.getItem('user')).id_rol,10)
+    if(user.id_rol >= 4 && user.id_rol <= 7){
+      user.id_sucursal = localStorage.getItem('id_sucursal')
+    }
+
+    let route = ''
+
     if(isUpdate){
-      axios.put(API_URL+'user/'+props.match.params.id,user).then(result => {
+
+      route = id_rol_user >= 3 && id_rol_user <= 7 ? API_URL+'user_by_branch_office/'+props.match.params.id : API_URL+'user/'+props.match.params.id
+
+      axios.put(route,user).then(result => {
         toast.success('Usuario Modificado')
         renderMenuNew(true)
       }).catch(err => {
@@ -132,7 +176,8 @@ const UserCreatePage  = props => {
         }
       })
     }else{
-      axios.post(API_URL+'user',user).then(result => {
+      route = id_rol_user >= 3 && id_rol_user <= 7 ? API_URL+'user_by_brach_office' : API_URL+'user'
+      axios.post(route,user).then(result => {
         toast.success('Usuario Registrado')
         renderMenuNew(false)
       }).catch(err => {
@@ -152,11 +197,19 @@ const UserCreatePage  = props => {
       email: "",
       rut: "",
       password: "",
-      id_rol: ""
+      id_rol: 1
     })
     setModulesUser([])
     setValidated(false)
-    setIsFormClean(true)
+  }
+
+  const cleanEnterprise = () => {
+    setEnterpriseForm({
+      name: "",
+      address: "",
+      is_open: true,
+      id: ''
+    })
   }
 
   const goToListUser = () => {
@@ -172,6 +225,16 @@ const UserCreatePage  = props => {
       },1000)
     }else{
       cleanForm()
+      cleanEnterprise()
+    }
+  }
+
+  const updateEnterprise = (id_enterprise, display = false) => {
+    if(!display){
+      let enter = enterpriseArray.find(v => v.id === id_enterprise)
+      setEnterpriseForm({name: enter.name, address: enter.address, id: id_enterprise, is_open: enter.is_open})
+    }else{
+      cleanEnterprise()
     }
   }
 
@@ -179,7 +242,7 @@ const UserCreatePage  = props => {
     <Container>
       <Form onSubmit={onSubmit} noValidate validated={validated}>
         <Row>
-          <Col sm={5} md={5} lg={5} xs={12} style={{borderRight: '1px solid rgb(237, 237, 237)'}}>
+          <Col sm={ typeDisplayModule > 4 ? 12 : 5 } md={typeDisplayModule > 4 ? 12 : 5} lg={typeDisplayModule > 4 ? 12 : 5} xs={12} style={{borderRight: '1px solid rgb(237, 237, 237)'}}>
 
             <h3 className="text-center font-title">Formulario</h3>
             <br/>
@@ -210,6 +273,7 @@ const UserCreatePage  = props => {
             <Row>
               <InputField
                 { ...props.inputSelect}
+                cols={typeDisplayModule < 5 ? 'col-md-6 col-sm-6 col-lg-6' : 'col-md-12 col-sm-12 col-lg-12'}
                 handleChange={onChange}
                 value={userData.id_rol}
               >
@@ -219,61 +283,122 @@ const UserCreatePage  = props => {
                 ))}
               </InputField>
             </Row>
-            {isFormClean ? (
-              <Row>
-                <Col sm={6} md={6} lg={6} xs={6}>
-                  <Button size="sm" type="button" variant="primary" block onClick={() => setIsFormClean(false)}>Registrar Otro <FaPlusCircle /></Button>
-                </Col>
-                <Col sm={6} md={6} lg={6} xs={6}>
-                  <Button size="sm" type="button" variant="warning" block onClick={goToListUser}>Ir al listado <FaUsers /></Button>
-                </Col>
-              </Row>
-            ) : (
-              <Row>
-                <Col sm={12} md={12} lg={12} xs={12} className="text-center">
-                  <Button size="sm" type="submit" variant="primary" block>Enviar <FaPlusCircle /></Button>
-                    o
-                  <Button size="sm" onClick={goToListUser} type="button" variant="info" block>Ir al Listado</Button>
-                </Col>
-              </Row>
-            )}
-          </Col>
-          <Col sm={7} md={7} lg={7} xs={12} className="containerDivSeparated">
-            <h3 className="text-center font-title">Módulos</h3>
             <Row>
-              {modules.map((v,i) => (
-                <Col sm={4} md={4} lg={4} xs={6} key={i}>
-                  <Form.Group>
-                    <Form.Check type="checkbox"
-                      custom
-                      id={v.name_item+v.id}
-                      label={v.name_item}
-                      value={v.id}
-                      checked={!!modulesUser.find(f => f == v.id)}
-                      onChange={(e) => handleAccess(e,v.id) } />
-                  </Form.Group>
-                </Col>
-              ))}
+              <Col sm={12} md={12} lg={12} xs={12} className="text-center">
+                <Button size="sm" type="submit" variant="primary" block>Enviar <FaPlusCircle /></Button>
+                  o
+                <Button size="sm" onClick={goToListUser} type="button" variant="info" block>Ir al Listado</Button>
+              </Col>
             </Row>
-            <div className="fixedBottom">
-              <Row>
-                <Col sm={6} md={6} lg={6} xs={12}>
-                  <Button size="sm" variant="secondary" block={true} onClick={addAllModules}>Seleccionar Todos <FaCheckCircle /></Button>
-                </Col>
-                <Col sm={6} md={6} lg={6} xs={12}>
-                  <Button size="sm" variant="secondary" block={true} onClick={removeAllModules}>Deseleccionar Todos <FaTrashAlt /></Button>
-                </Col>
-              </Row>
-              <Row className="justify-content-center">
-                <Col sm={12} md={12} lg={12}>
-                  <br/>
-                  <p>Hacer click en el botón enviar para guardar los cambios</p>
-                </Col>
-              </Row>
-            </div>
+            <br/>
+            {messageDisplay ? (
+              <p className="alert alert-info text-center">{messageDisplay}</p>
+            ) : ''}
           </Col>
+          {
+            typeDisplayModule == 1 ? (
+              <Col sm={7} md={7} lg={7} xs={12} className="containerDivSeparated">
+                <h3 className="text-center font-title">Módulos</h3>
+                <Row>
+                  {modules.map((v,i) => (
+                    <Col sm={4} md={4} lg={4} xs={6} key={i}>
+                      <Form.Group>
+                        <Form.Check type="checkbox"
+                          custom
+                          id={v.name_item+v.id}
+                          label={v.name_item}
+                          value={v.id}
+                          checked={!!modulesUser.find(f => f == v.id)}
+                          onChange={(e) => handleAccess(e,v.id) } />
+                      </Form.Group>
+                    </Col>
+                  ))}
+                </Row>
+                <Row className="fixedBottom">
+                  <Col sm={12} md={12} lg={12}>
+                    <p className="text-center">Hacer click en el botón enviar para guardar los cambios</p>
+                  </Col>
+                  <Col sm={6} md={6} lg={6} xs={12}>
+                    <Button size="sm" variant="secondary" block={true} onClick={addAllModules}>Seleccionar Todos <FaCheckCircle /></Button>
+                  </Col>
+                  <Col sm={6} md={6} lg={6} xs={12}>
+                    <Button size="sm" variant="secondary" block={true} onClick={removeAllModules}>Deseleccionar Todos <FaTrashAlt /></Button>
+                  </Col>
+                </Row>
+              </Col>
+            ) : typeDisplayModule == 2 ? (
+              <Col sm={7} md={7} lg={7} xs={12} className="containerDivSeparated">
+                <h3 className="text-center font-title">Datos de la Empresa</h3>
+                { isUpdate && !enterpriseForm.id ? (
+                  <Row>
+                    {enterpriseArray.map((v,i) => (
+                      <Col sm={4} md={4} lg={4} className="text-center" key={i}>
+                        <h5 style={{color: 'black', textTransform: 'uppercase'}}>{v.name}</h5>
+                        <Image src={require('../assets/img/enterprises.jpg')} style={{width: '100%'}}/>
+                        <br/>
+                        <Button size="sm" variant="danger" block={true} onClick={() => updateEnterprise(v.id)}>Modificar</Button>
+                      </Col>
+                    ))}
+                  </Row>
+                ) : (
+                  <Row>
+                    <Col sm={12} md={12} lg={12}>
+                      <Row>
+                        <InputField
+                          type='text'
+                          label='Nombre empresa'
+                          name='name'
+                          required={true}
+                          messageErrors={[
+                            'Requerido*'
+                          ]}
+                          cols='col-md-6 col-lg-6 col-sm-6'
+                          value={enterpriseForm.name}
+                          handleChange={onChangeEnterprise}
+                          />
+                        <InputField
+                          type='text'
+                          label='Dirección'
+                          name='address'
+                          required={false}
+                          messageErrors={[]}
+                          cols='col-md-6 col-lg-6 col-sm-6'
+                          value={enterpriseForm.address}
+                          handleChange={onChangeEnterprise}
+                          />
+                      </Row>
+                      <Row>
+                        <Col sm={4} md={4} lg={4}>
+                          <br/>
+                          <Form.Group>
+                            <Form.Check type="checkbox"
+                              custom
+                              id={'is_open'}
+                              name={'is_open'}
+                              label={'Activa'}
+                              value={enterpriseForm.is_open}
+                              checked={enterpriseForm.is_open}
+                              onChange={onChangeEnterprise} />
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                      {
+                        isUpdate ? (
+                          <Row className="justify-content-center">
+                            <Col sm={4} md={4} lg={4}>
+                              <br/>
+                              <Button variant="secondary" size="sm" type="button" block={true} onClick={() => updateEnterprise(null,true)}>Ver Empresas <FaArrowAltCircleUp /></Button>
+                            </Col>
+                          </Row>
+                        ) : ''
+                      }
+                    </Col>
+                  </Row>
+                )}
+            </Col>
+          ) : '' }
         </Row>
-    </Form>
+      </Form>
     </Container>
   )
 }
@@ -327,7 +452,6 @@ UserCreatePage.defaultProps = {
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
   },
 }
 

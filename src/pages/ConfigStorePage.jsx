@@ -14,6 +14,16 @@ import { API_URL } from 'utils/constants'
 import { toast } from 'react-toastify'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import styled from 'styled-components'
+
+const Styles = styled.div`
+
+  .melon_y_melames{
+    background-color: rgb(244, 240, 194);
+    border: 1px solid rgb(109, 111, 27);
+    color: black
+  }
+`
 
 const ConfigStorePage = (props) => {
 
@@ -73,50 +83,52 @@ const ConfigStorePage = (props) => {
   }
 
   return (
-    <Container>
-      <Row>
-        <Col sm={12} md={12} lg={12}>
-          <h4 className="title_principal">Configuración Tienda</h4>
-          <hr/>
-        </Col>
-      </Row>
-      <Row className="justify-content-md-center">
-        <Col
-          sm={{
-            span: 6,
-          }}
-          md={{
-            span: 6,
-          }}
-          lg={{
-            span: 6,
-          }}
-          xs={12}
-          className="containerDivSeparated"
-        >
-          {dataStore.name_store ? (
-            <Button size="sm" onClick={updateConfig} variant="primary" block={true}>Modificar Configuración <FaEdit /></Button>
-          ) : (
-            <Button size="sm" onClick={createConfig} variant="primary" block={true}>Crear Configuración <FaCogs /></Button>
-          )}
-        </Col>
-      </Row>
-      <br/>
-      <Row className="justify-content-md-center">
-        <Col sm={5} lg={5} md={5} xs={12} className="containerDivSeparated">
-          <h3 className="text-center font-title">Datos de la Tienda</h3>
-          <br/>
-          <ul className="list-group">
-            <li className="list-group-item"><b>Nombre de la Tienda:</b><br/> { dataStore.name_store }</li>
-            <li className="list-group-item"><b>País: </b> <br/> { dataStore.country.nombre }</li>
-            <li className="list-group-item"><b>Teléfono:</b> <br/> { dataStore.phone }</li>
-            <li className="list-group-item"><b>Whatssap:</b> <br/> { dataStore.whatssap }</li>
-            <li className="list-group-item"><b>Dirección:</b> <br/> { dataStore.address }</li>
-            <li className="list-group-item"><b>Email:</b> <br/> { dataStore.email }</li>
-            <li className="list-group-item"><b>Tax:</b> <br/> { dataStore.tax }</li>
-            <li className="list-group-item"><b>Maneja Stock:</b> <br/> { dataStore.handle_stock ? 'Si' : 'No' }</li>
-            <li className="list-group-item"><b>Referencia Ventas:</b> <br/> { dataStore.ref }</li>
-            <li className="list-group-item"><b>Logo:</b>
+    <Styles>
+      <Container>
+        <Row>
+          <Col sm={12} md={12} lg={12}>
+            <h4 className="title_principal">Configuración Tienda</h4>
+            <hr/>
+          </Col>
+        </Row>
+        <br/>
+        <Row className="justify-content-md-center">
+          <Col
+            sm={{
+              span: 6,
+            }}
+            md={{
+              span: 6,
+            }}
+            lg={{
+              span: 6,
+            }}
+            xs={12}
+            className="containerDivSeparated"
+            >
+            {dataStore.name_store ? (
+              <Button size="sm" onClick={updateConfig} variant="primary" block={true}>Modificar Configuración <FaEdit /></Button>
+            ) : (
+              <Button size="sm" onClick={createConfig} variant="primary" block={true}>Crear Configuración <FaCogs /></Button>
+            )}
+          </Col>
+        </Row>
+        <br/><br/>
+        <Row className="justify-content-md-center">
+          <Col sm={5} lg={5} md={5} xs={12} className="containerDivSeparated">
+            <h4 className="text-center font-title">Datos de la Tienda</h4>
+            <br/>
+            <ul className="list-group">
+              <li className="list-group-item melon_y_melames melon_y_melames"><b>Nombre de la Tienda:</b><br/> { dataStore.name_store }</li>
+              <li className="list-group-item melon_y_melames"><b>País: </b> <br/> { dataStore.country.nombre }</li>
+              <li className="list-group-item melon_y_melames"><b>Teléfono:</b> <br/> { dataStore.phone }</li>
+              <li className="list-group-item melon_y_melames"><b>Whatssap:</b> <br/> { dataStore.whatssap }</li>
+              <li className="list-group-item melon_y_melames"><b>Dirección:</b> <br/> { dataStore.address }</li>
+              <li className="list-group-item melon_y_melames"><b>Email:</b> <br/> { dataStore.email }</li>
+              <li className="list-group-item melon_y_melames"><b>Tax:</b> <br/> { dataStore.tax }</li>
+              <li className="list-group-item melon_y_melames"><b>Maneja Stock:</b> <br/> { dataStore.handle_stock ? 'Si' : 'No' }</li>
+              <li className="list-group-item melon_y_melames"><b>Referencia Ventas:</b> <br/> { dataStore.ref }</li>
+              <li className="list-group-item melon_y_melames"><b>Logo:</b>
               <div style={{width: '100%'}} className="text-center">
                 {dataStore.logo ? (
                   <a href={API_URL+'images/store/logo/'+dataStore.logo} target="blank">
@@ -128,24 +140,25 @@ const ConfigStorePage = (props) => {
           </ul>
         </Col>
         <Col sm={5} lg={5} md={5} xs={12} className="containerDivSeparated">
-          <h3 className="text-center font-title">Datos de la Factura</h3>
-            <br/>
-            <ul className="list-group">
-              <li className="list-group-item"><b>Texto de Cabera:</b> <br/> {dataStore.header_text}</li>
-              <li className="list-group-item"><b>Texto de Pie de Página:</b> <br/> {dataStore.foot_page_text}</li>
-              <li className="list-group-item"><b>Mostrar Datos Cliente en el Pie de Página:</b><br/>
-                {dataStore.client_data_foot_page !== null || dataStore.client_data_foot_page !== "" ?
-                  dataStore.client_data_foot_page === true ? (
-                    'Activado'
-                  ) : (
-                    'Desactivado'
-                  )
-                  : ''}
-              </li>
-            </ul>
+          <h4 className="text-center font-title">Datos de la Factura</h4>
+          <br/>
+          <ul className="list-group">
+            <li className="list-group-item melon_y_melames"><b>Texto de Cabera:</b> <br/> {dataStore.header_text}</li>
+            <li className="list-group-item melon_y_melames"><b>Texto de Pie de Página:</b> <br/> {dataStore.foot_page_text}</li>
+            <li className="list-group-item melon_y_melames"><b>Mostrar Datos Cliente en el Pie de Página:</b><br/>
+            {dataStore.client_data_foot_page !== null || dataStore.client_data_foot_page !== "" ?
+              dataStore.client_data_foot_page === true ? (
+                'Activado'
+              ) : (
+                'Desactivado'
+              )
+              : ''}
+            </li>
+          </ul>
         </Col>
       </Row>
     </Container>
+    </Styles>
   )
 }
 

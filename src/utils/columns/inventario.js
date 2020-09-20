@@ -18,11 +18,19 @@ export let productColumns = [
       },
       {
         Header: 'P.Venta',
-        accessor: 'price'
+        accessor: 'price',
+        Cell: props1 => {
+          const price = props1.cell.row.original.price
+          return ( <Badge variant="danger">{formatNumber(price,2,',','.')}</Badge>)
+        }
       },
       {
         Header: 'P.Compra',
-        accessor: 'cost'
+        accessor: 'cost',
+        Cell: props1 => {
+          const cost = props1.cell.row.original.cost
+          return ( <Badge variant="danger">{formatNumber(cost,2,',','.')}</Badge>)
+        }
       },
       {
         Header: 'Categoria',
@@ -68,11 +76,19 @@ export let inventaryColumns = [
       },
       {
         Header: 'Stock Mínimo',
-        accessor: 'minimun_stock'
+        accessor: 'minimun_stock',
+        Cell: props1 => {
+          const stock = props1.cell.row.original.minimun_stock
+          return (<Badge variant="danger" className="font_badge">{stock}</Badge>)
+        }
       },
       {
         Header: 'Stock Actual',
-        accessor: 'stock'
+        accessor: 'stock',
+        Cell: props1 => {
+          const stock = props1.cell.row.original.stock
+          return (<Badge variant="danger" className="font_badge">{stock}</Badge>)
+        }
       },
       {
         Header: 'Estado',

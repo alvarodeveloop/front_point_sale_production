@@ -8,7 +8,8 @@ import {
   Form,
   Modal,
   Tab,
-  Tabs
+  Tabs,
+  Badge
 } from 'react-bootstrap'
 import {
   FaRegFileExcel
@@ -31,7 +32,7 @@ const ReportDetailCenterCoste = props => {
   const [dataDetailCenterCoste,setDataDetailCenterCoste] = useState(null)
   const [dataModalEarningExpensive,setDataModalEarningExpensive] = useState(null)
   const [years, setYears] = useState([])
-  const [yearCombo, setYearCombo] = useState(null)
+  const [yearCombo, setYearCombo] = useState('')
   const [isOpenModal,setIsOpenModal] = useState(false)
 
 
@@ -45,11 +46,11 @@ const ReportDetailCenterCoste = props => {
   useMemo(() => {
     columns_account = [
       {
-        Header: 'Centro de Costo',
+        Header: 'CENTROS',
         accessor: 'center_coste_name'
       },
       {
-        Header: 'Mes 1',
+        Header: 'MES 1',
         accessor: 'mes1',
         Cell: props1 => {
           const { original } = props1.cell.row
@@ -57,16 +58,16 @@ const ReportDetailCenterCoste = props => {
             let word = original.type ? 'ingreso' : 'egresos'
             return(
               <TooltipComponent title={"Hacer click para ver los "+word+" del mes"}>
-                <Button size="sm" onClick={() => handleDisplayData(original,1)} variant="link" style={{color: 'red'}}>{ original.mes1 }</Button>
+                <Button size="sm" onClick={() => handleDisplayData(original,1)} variant="link"><Badge variant="danger">{ formatNumber(original.mes1,2,',','.') }</Badge></Button>
               </TooltipComponent>
             )
           }else{
-            return original.mes1
+            return formatNumber(original.mes1,2,',','.')
           }
         }
       },
       {
-        Header: 'Mes 2',
+        Header: 'MES 2',
         accessor: 'mes2',
         Cell: props1 => {
           const { original } = props1.cell.row
@@ -74,16 +75,16 @@ const ReportDetailCenterCoste = props => {
             let word = original.type ? 'ingreso' : 'egresos'
             return(
               <TooltipComponent title={"Hacer click para ver los "+word+" del mes"}>
-                <Button size="sm" onClick={() => handleDisplayData(original,2)} variant="link" style={{color: 'red'}}>{ original.mes2 }</Button>
+                <Button size="sm" onClick={() => handleDisplayData(original,2)} variant="link"><Badge variant="danger">{ formatNumber(original.mes2,2,',','.') }</Badge></Button>
               </TooltipComponent>
             )
           }else{
-            return original.mes2
+            return formatNumber(original.mes2,2,',','.')
           }
         }
       },
       {
-        Header: 'Mes 3',
+        Header: 'MES 3',
         accessor: 'mes3',
         Cell: props1 => {
           const { original } = props1.cell.row
@@ -91,16 +92,16 @@ const ReportDetailCenterCoste = props => {
             let word = original.type ? 'ingreso' : 'egresos'
             return(
               <TooltipComponent title={"Hacer click para ver los "+word+" del mes"}>
-                <Button size="sm" onClick={() => handleDisplayData(original,3)} variant="link" style={{color: 'red'}}>{ original.mes3 }</Button>
+                <Button size="sm" onClick={() => handleDisplayData(original,3)} variant="link"><Badge variant="danger">{ formatNumber(original.mes3,2,',','.') }</Badge></Button>
               </TooltipComponent>
             )
           }else{
-            return original.mes3
+            return formatNumber(original.mes3,2,',','.')
           }
         }
       },
       {
-        Header: 'Mes 4',
+        Header: 'MES 4',
         accessor: 'mes4',
         Cell: props1 => {
           const { original } = props1.cell.row
@@ -108,16 +109,16 @@ const ReportDetailCenterCoste = props => {
             let word = original.type ? 'ingreso' : 'egresos'
             return(
               <TooltipComponent title={"Hacer click para ver los "+word+" del mes"}>
-                <Button size="sm" onClick={() => handleDisplayData(original,4)} variant="link" style={{color: 'red'}}>{ original.mes4 }</Button>
+                <Button size="sm" onClick={() => handleDisplayData(original,4)} variant="link"><Badge variant="danger">{ formatNumber(original.mes4,2,',','.') }</Badge></Button>
               </TooltipComponent>
             )
           }else{
-            return original.mes4
+            return formatNumber(original.mes4,2,',','.')
           }
         }
       },
       {
-        Header: 'Mes 5',
+        Header: 'MES 5',
         accessor: 'mes5',
         Cell: props1 => {
           const { original } = props1.cell.row
@@ -125,16 +126,16 @@ const ReportDetailCenterCoste = props => {
             let word = original.type ? 'ingreso' : 'egresos'
             return(
               <TooltipComponent title={"Hacer click para ver los "+word+" del mes"}>
-                <Button size="sm" onClick={() => handleDisplayData(original,5)} variant="link" style={{color: 'red'}}>{ original.mes5 }</Button>
+                <Button size="sm" onClick={() => handleDisplayData(original,5)} variant="link"><Badge variant="danger">{ formatNumber(original.mes5,2,',','.') }</Badge></Button>
               </TooltipComponent>
             )
           }else{
-            return original.mes5
+            return formatNumber(original.mes5,2,',','.')
           }
         }
       },
       {
-        Header: 'Mes 6',
+        Header: 'MES 6',
         accessor: 'mes6',
         Cell: props1 => {
           const { original } = props1.cell.row
@@ -142,16 +143,16 @@ const ReportDetailCenterCoste = props => {
             let word = original.type ? 'ingreso' : 'egresos'
             return(
               <TooltipComponent title={"Hacer click para ver los "+word+" del mes"}>
-                <Button size="sm" onClick={() => handleDisplayData(original,6)} variant="link" style={{color: 'red'}}>{ original.mes6 }</Button>
+                <Button size="sm" onClick={() => handleDisplayData(original,6)} variant="link"><Badge variant="danger">{ formatNumber(original.mes6,2,',','.') }</Badge></Button>
               </TooltipComponent>
             )
           }else{
-            return original.mes6
+            return formatNumber(original.mes6,2,',','.')
           }
         }
       },
       {
-        Header: 'Mes 7',
+        Header: 'MES 7',
         accessor: 'mes7',
         Cell: props1 => {
           const { original } = props1.cell.row
@@ -159,16 +160,16 @@ const ReportDetailCenterCoste = props => {
             let word = original.type ? 'ingreso' : 'egresos'
             return(
               <TooltipComponent title={"Hacer click para ver los "+word+" del mes"}>
-                <Button size="sm" onClick={() => handleDisplayData(original,7)} variant="link" style={{color: 'red'}}>{ original.mes7 }</Button>
+                <Button size="sm" onClick={() => handleDisplayData(original,7)} variant="link"><Badge variant="danger">{ formatNumber(original.mes7,2,',','.') }</Badge></Button>
               </TooltipComponent>
             )
           }else{
-            return original.mes7
+            return formatNumber(original.mes7,2,',','.')
           }
         }
       },
       {
-        Header: 'Mes 8',
+        Header: 'MES 8',
         accessor: 'mes8',
         Cell: props1 => {
           const { original } = props1.cell.row
@@ -176,16 +177,16 @@ const ReportDetailCenterCoste = props => {
             let word = original.type ? 'ingreso' : 'egresos'
             return(
               <TooltipComponent title={"Hacer click para ver los "+word+" del mes"}>
-                <Button size="sm" onClick={() => handleDisplayData(original,8)} variant="link" style={{color: 'red'}}>{ original.mes8 }</Button>
+                <Button size="sm" onClick={() => handleDisplayData(original,8)} variant="link"><Badge variant="danger">{ formatNumber(original.mes8,2,',','.') }</Badge></Button>
               </TooltipComponent>
             )
           }else{
-            return original.mes8
+            return formatNumber(original.mes8,2,',','.')
           }
         }
       },
       {
-        Header: 'Mes 9',
+        Header: 'MES 9',
         accessor: 'mes9',
         Cell: props1 => {
           const { original } = props1.cell.row
@@ -193,16 +194,16 @@ const ReportDetailCenterCoste = props => {
             let word = original.type ? 'ingreso' : 'egresos'
             return(
               <TooltipComponent title={"Hacer click para ver los "+word+" del mes"}>
-                <Button size="sm" onClick={() => handleDisplayData(original,9)} variant="link" style={{color: 'red'}}>{ original.mes9 }</Button>
+                <Button size="sm" onClick={() => handleDisplayData(original,9)} variant="link"><Badge variant="danger">{ formatNumber(original.mes9,2,',','.') }</Badge></Button>
               </TooltipComponent>
             )
           }else{
-            return original.mes9
+            return formatNumber(original.mes9,2,',','.')
           }
         }
       },
       {
-        Header: 'Mes 10',
+        Header: 'MES 10',
         accessor: 'mes10',
         Cell: props1 => {
           const { original } = props1.cell.row
@@ -210,16 +211,16 @@ const ReportDetailCenterCoste = props => {
             let word = original.type ? 'ingreso' : 'egresos'
             return(
               <TooltipComponent title={"Hacer click para ver los "+word+" del mes"}>
-                <Button size="sm" onClick={() => handleDisplayData(original,10)} variant="link" style={{color: 'red'}}>{ original.mes10 }</Button>
+                <Button size="sm" onClick={() => handleDisplayData(original,10)} variant="link"><Badge variant="danger">{ formatNumber(original.mes10,2,',','.') }</Badge></Button>
               </TooltipComponent>
             )
           }else{
-            return original.mes10
+            return formatNumber(original.mes10,2,',','.')
           }
         }
       },
       {
-        Header: 'Mes 11',
+        Header: 'MES 11',
         accessor: 'mes11',
         Cell: props1 => {
           const { original } = props1.cell.row
@@ -227,16 +228,16 @@ const ReportDetailCenterCoste = props => {
             let word = original.type ? 'ingreso' : 'egresos'
             return(
               <TooltipComponent title={"Hacer click para ver los "+word+" del mes"}>
-                <Button size="sm" onClick={() => handleDisplayData(original,11)} variant="link" style={{color: 'red'}}>{ original.mes11 }</Button>
+                <Button size="sm" onClick={() => handleDisplayData(original,11)} variant="link"><Badge variant="danger">{ formatNumber(original.mes11,2,',','.') }</Badge></Button>
               </TooltipComponent>
             )
           }else{
-            return original.mes11
+            return formatNumber(original.mes11,2,',','.')
           }
         }
       },
       {
-        Header: 'Mes 12',
+        Header: 'MES 12',
         accessor: 'mes12',
         Cell: props1 => {
           const { original } = props1.cell.row
@@ -244,20 +245,20 @@ const ReportDetailCenterCoste = props => {
             let word = original.type ? 'ingreso' : 'egresos'
             return(
               <TooltipComponent title={"Hacer click para ver los "+word+" del mes"}>
-                <Button size="sm" onClick={() => handleDisplayData(original,12)} variant="link" style={{color: 'red'}}>{ original.mes12 }</Button>
+                <Button size="sm" onClick={() => handleDisplayData(original,12)} variant="link"><Badge variant="danger">{ formatNumber(original.mes12,2,',','.') }</Badge></Button>
               </TooltipComponent>
             )
           }else{
-            return original.mes12
+            return formatNumber(original.mes12,2,',','.')
           }
         }
       },
       {
-        Header: 'Totales',
+        Header: 'TOTALES',
         accessor: 'total',
         Cell: props1 => {
           return (
-            <span style={{ color : 'blue'}}>{ props1.cell.row.original.total }</span>
+            <Badge style={{backgroundColor: 'rgb(36, 49, 94)', color: 'white'}}>{ formatNumber(props1.cell.row.original.total,2,',','.') }</Badge>
           )
         }
       },
@@ -406,13 +407,14 @@ const ReportDetailCenterCoste = props => {
 
   return (
     <Container className="containerDiv">
+      <br/>
       <Row className="justify-content-center">
         <InputField
           {...props.inputSelect}
           handleChange={handleChange}
           value={yearCombo}
         >
-          <option value={2021}>2021</option>
+          <option value="">--Seleccione--</option>
           {years.map((v,i) => (
             <option key={i} value={v.year}>{v.year}</option>
           ))}
@@ -422,20 +424,21 @@ const ReportDetailCenterCoste = props => {
           <Button size="sm" variant="success" block={true} onClick={handleExportDataExcel}>Exportar a Excel <FaRegFileExcel /></Button>
         </Col>
       </Row>
+      <hr/>
       {
         dataDetailCenterCoste ? (
           <Row>
             <Col sm={12} md={12} lg={12}>
               <Row>
                 <Col sm={12} md={12} lg={12} className="table-responsive">
-                  <h4>Ingresos</h4>
+                  <h4 className="title_principal">Ingresos</h4>
                   <Table data={dataDetailCenterCoste.ingresos} columns={columns_account} />
                 </Col>
               </Row>
-              <br/>
+              <hr/>
               <Row>
                 <Col sm={12} md={12} lg={12} className="table-responsive">
-                  <h4>Egresos</h4>
+                  <h4 className="title_principal">Egresos</h4>
                   <Table data={dataDetailCenterCoste.egresos} columns={columns_account} />
                 </Col>
               </Row>

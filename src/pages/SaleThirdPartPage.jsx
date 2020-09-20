@@ -9,7 +9,8 @@ import {
   DropdownButton,
   Dropdown,
   Badge,
-  Form
+  Form,
+  Modal
 } from 'react-bootstrap'
 import { showPriceWithDecimals } from 'utils/functions'
 import ModalPaymentMultiple from 'components/modals/ModalPaymentMultiple'
@@ -20,6 +21,7 @@ import axios from 'axios'
 
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+let status = 1
 
 const SaleThirdPartPage = (props) => {
 
@@ -36,82 +38,95 @@ const SaleThirdPartPage = (props) => {
       status: false
     },
     voucher: false,
-    type_delivery: true
+    type_delivery: true,
+    address1_dispatch: '',
+    address2_dispatch: '',
+    phone_dispatch: '',
+    note_dispatch: '',
+    type_address: 3
   })
 
   const [lastSale,setLastSale] = useState({})
-
+  const [displayAddress,setDisplayAddress] = useState(false)
   const [isOpenMultiple, setIsOpenMultiple] = useState(false)
   const [isOpenInvoice, setIsOpenInvoice] = useState(false)
   const [isReadOnlyPayment, setIsReadOnlyPayment] = useState(false)
   const [showButtonInvoice,setShowButtonInvoice] = useState(false)
+  const [readFields, setReadFields] = useState(false)
+  const [validatedDispatch, setValidatedDispatch] = useState(false)
+  const [isOpenModalDispatch, setIsOpenModalDispatch] = useState(false)
 
   const handleHideModal = () => {
     setIsOpenMultiple(false)
   }
 
-  const handleFinishPayment = status => {
+  const handleFinishPayment = statusCart => {
 
-    if(!payment.type){
-      toast.error('Debe escoger un método de pago')
-      return
-    }
+    status = statusCart
 
-    let total_to_pay = parseFloat(props.sale.rooms[props.sale.idCartSelected].totales.total)
-    let paymentTotal = parseFloat(payment.payment)
-    if(paymentTotal < total_to_pay){
-      toast.error('El monto pagado es inferior al total por pagar')
+    if(!payment.type_delivery){
+      handleOnHideModalDispatch()
     }else{
-      let cartSale = Object.assign({},props.sale.rooms[props.sale.idCartSelected],{
-        payment,
-        status
-      })
+      if(!payment.type){
+        toast.error('Debe escoger un método de pago')
+        return
+      }
 
-      axios.post(API_URL+'sale',cartSale).then(result => {
+      let total_to_pay = parseFloat(props.sale.rooms[props.sale.idCartSelected].totales.total)
+      let paymentTotal = parseFloat(payment.payment)
+      if(paymentTotal < total_to_pay){
+        toast.error('El monto pagado es inferior al total por pagar')
+      }else{
 
-        toast.success('Proceso Completado')
-        if(status === 2){
-          clearForm()
-          props.removeCart()
-          setTimeout(() => {
-            props.handleChangeView(1)
-          },1000)
-        }else{
-          clearForm()
-          setLastSale(result.data)
-          setIsOpenInvoice(true)
-        }
+        let cartSale = Object.assign({},props.sale.rooms[props.sale.idCartSelected],{
+          payment,
+          status,
+          id_cash_register: JSON.parse(localStorage.getItem('cash_register')).id_cash_register
+        })
 
-      }).catch(err => {
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          console.log(err)
-          toast.error('Error, contacte con soporte')
-        }
-      })
+        axios.post(API_URL+'sale',cartSale).then(result => {
 
+          toast.success('Proceso Completado')
+          if(status === 2){
+            clearForm()
+            props.removeCart()
+            setTimeout(() => {
+              props.handleChangeView(1)
+            },1000)
+          }else{
+            clearForm()
+            setLastSale(result.data)
+            setIsOpenInvoice(true)
+          }
 
+        }).catch(err => {
+          if(err.response){
+            toast.error(err.response.data.message)
+          }else{
+            console.log(err)
+            toast.error('Error, contacte con soporte')
+          }
+        })
+      }
     }
-
   }
 
   const handlePaymentMultiple = data => {
     setPayment(props1 => {
       props1.multiple_payment = {
-        efectivo: data.efectivo,
-        tarjeta: data.tarjeta,
-        sumup: data.sumup,
-        cheque: data.cheque,
-        otros: data.otros,
+        efectivo: data.efectivo ? data.efectivo : 0,
+        tarjeta: data.tarjeta ? data.tarjeta : 0,
+        sumup: data.sumup ? data.sumup : 0,
+        cheque: data.cheque ? data.cheque : 0,
+        otros: data.otros ? data.otros : 0,
         status: true
       }
 
-      props1.payment = parseFloat( data.efectivo ) +
-                      parseFloat( data.tarjeta ) +
-                      parseFloat( data.sumup ) +
-                      parseFloat( data.cheque ) +
-                      parseFloat( data.otros )
+      props1.payment = parseFloat( props1.multiple_payment.efectivo ) +
+                      parseFloat( props1.multiple_payment.tarjeta ) +
+                      parseFloat( props1.multiple_payment.sumup ) +
+                      parseFloat( props1.multiple_payment.cheque ) +
+                      parseFloat( props1.multiple_payment.otros )
 
       let turnet_temporal =  props1.payment - parseFloat(props.sale.rooms[props.sale.idCartSelected].totales.total)
       if(turnet_temporal < 0 ){
@@ -166,14 +181,19 @@ const SaleThirdPartPage = (props) => {
       }
     }
 
-    setPayment({...payment, turned, payment, type: typePayment, multiple_payment: {
-      efectivo: 0,
-      tarjeta: 0,
-      sumup: 0,
-      cheque: 0,
-      otros: 0,
-      status: false
-    }})
+    setPayment( oldData => {
+      let object = Object.assign({},oldData,{
+        payment, turned, payment, type: typePayment, multiple_payment: {
+          efectivo: 0,
+          tarjeta: 0,
+          sumup: 0,
+          cheque: 0,
+          otros: 0,
+          status: false
+        }
+      })
+      return object
+    })
   }
 
   const handleHideModalFactura = () => {
@@ -197,7 +217,91 @@ const SaleThirdPartPage = (props) => {
         otros: 0,
         status: false
       },
+      address1_dispatch: '',
+      address2_dispatch: '',
+      phone_dispatch: '',
+      note_dispatch: '',
+      type_address: 3
     })
+
+    status = 1
+  }
+
+  const handleAddressDispatch = typeAddress => {
+    let type = parseInt(typeAddress,10)
+    if(type === 1){
+      if(Object.keys(props.sale.rooms[props.sale.idCartSelected].client).length > 0){
+        let address = props.sale.rooms[props.sale.idCartSelected].client.address
+        let phone = props.sale.rooms[props.sale.idCartSelected].client.phone
+        setPayment({...payment, address1_dispatch: address, address2_dispatch: '', phone_dispatch: phone, type_address : type})
+        setDisplayAddress(false)
+      }else{
+        toast.error('No hay cliente seleccionado para este pedido')
+      }
+    }else if(type === 2){
+      if(Object.keys(props.sale.rooms[props.sale.idCartSelected].client).length > 0){
+        let address = props.sale.rooms[props.sale.idCartSelected].client.address
+        let phone = props.sale.rooms[props.sale.idCartSelected].client.phone
+        setPayment({...payment, address1_dispatch: address, phone_dispatch: phone, type_address : type})
+        setDisplayAddress(true)
+        setReadFields(true)
+      }else{
+        toast.error('No hay cliente seleccionado para este pedido')
+      }
+    }else{
+      setPayment({...payment, address1_dispatch: '',address2_dispatch: '', phone_dispatch: '', type_address : type})
+      setDisplayAddress(false)
+      setReadFields(false)
+    }
+  }
+
+  const onSubmitDispatch = e => {
+
+    const form = e.currentTarget;
+    e.preventDefault();
+    if (form.checkValidity() === false) {
+      e.stopPropagation();
+      setValidatedDispatch(true);
+      return
+    }
+
+    if(!payment.type){
+      toast.error('Debe escoger un método de pago')
+      return
+    }
+
+    let total_to_pay = parseFloat(props.sale.rooms[props.sale.idCartSelected].totales.total)
+    let paymentTotal = parseFloat(payment.payment)
+    if((paymentTotal !== '' || paymentTotal !== null) && (paymentTotal < total_to_pay)){
+      toast.error('El monto pagado es inferior al total por pagar')
+      return false
+    }
+
+    let cartSale = Object.assign({},props.sale.rooms[props.sale.idCartSelected],{
+      payment,
+      status
+    })
+
+    axios.post(API_URL+'sale_by_dispatch',cartSale).then(result => {
+
+      toast.success('Proceso Completado')
+      clearForm()
+      props.removeCart()
+      setTimeout(() => {
+        props.handleChangeView(1)
+      },1500)
+    }).catch(err => {
+      if(err.response){
+        toast.error(err.response.data.message)
+      }else{
+        console.log(err)
+        toast.error('Error, contacte con soporte')
+      }
+    })
+  }
+
+  const handleOnHideModalDispatch = () => {
+    setIsOpenModalDispatch(!isOpenModalDispatch)
   }
 
   return (
@@ -348,6 +452,100 @@ const SaleThirdPartPage = (props) => {
         config={props.config}
         sale={props.sale.rooms[props.sale.idCartSelected]}
         />
+      <Modal
+        show={isOpenModalDispatch}
+        onHide={handleOnHideModalDispatch}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header className="header_dark">
+          <Modal.Title id="contained-modal-title-vcenter">
+            Adjuntar Dirección para el Depacho del Carrito N° {props.sale.idCartSelected + 1}
+          </Modal.Title>
+        </Modal.Header>
+        <Form onSubmit={onSubmitDispatch} noValidate validated={validatedDispatch}>
+        <Modal.Body>
+          <Row style={{borderRadius:'15px',boxShadow:'10px 5px 5px lightgray', paddingTop: '20px', paddingBottom: '20px'}}>
+            <Col sm={12} md={12} lg={12}>
+              <Row>
+                <Col sm={4} md={4} lg={4}>
+                  <Button variant="danger" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(1)}>Usar Datos del Cliente</Button>
+                </Col>
+                <Col sm={4} md={4} lg={4}>
+                  <Button variant="danger" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(2)}>Usar datos del cliente pero con otra dirección</Button>
+                </Col>
+                <Col sm={4} md={4} lg={4}>
+                  <Button variant="danger" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(3)}>Ingresar Datos</Button>
+                </Col>
+              </Row>
+              <hr/>
+                <Row>
+                  <InputField
+                    type="text"
+                    name="address1_dispatch"
+                    required={true}
+                    label="Dirección"
+                    value={payment.address1_dispatch}
+                    handleChange={onChange}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols="col-sm-4 col-md-4 col-sm-4"
+                    readonly={readFields}
+                  />
+                  <InputField
+                    type="number"
+                    name="phone_dispatch"
+                    required={true}
+                    label="Teléfono"
+                    value={payment.phone_dispatch}
+                    handleChange={onChange}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols="col-sm-4 col-md-4 col-sm-4"
+                    readonly={readFields}
+                  />
+                  <InputField
+                    type="text"
+                    name="note_dispatch"
+                    required={true}
+                    label="Nota"
+                    value={payment.note_dispatch}
+                    handleChange={onChange}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols="col-sm-4 col-md-4 col-sm-4"
+                  />
+                </Row>
+                {!displayAddress ? '' : (
+                  <Row>
+                    <InputField
+                      type="text"
+                      name="address2_dispatch"
+                      required={true}
+                      label="Dirección2"
+                      value={payment.address2_dispatch}
+                      handleChange={onChange}
+                      messageErrors={[
+                        'Requerido*'
+                      ]}
+                      cols="col-sm-4 col-md-4 col-sm-4"
+                      />
+                  </Row>
+                )}
+                <br/>
+              </Col>
+            </Row>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" size="sm" type="submit">Enviar para Guardar</Button>
+          <Button variant="danger" size="sm" onClick={handleOnHideModalDispatch} type="button">Cerrar</Button>
+        </Modal.Footer>
+        </Form>
+      </Modal>
     </Container>
   )
 }

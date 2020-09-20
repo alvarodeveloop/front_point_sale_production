@@ -34,8 +34,8 @@ const FlowCashReportGeneralPage = (props) => {
 
 
   const handleChange = e => {
-    let val = e.target.value
-    handleGetDataGeneral(val)
+    setYearSelect(e.target.value)
+    handleGetDataGeneral(e.target.value)
   }
 
   const handleFetchData = () => {
@@ -110,6 +110,12 @@ const FlowCashReportGeneralPage = (props) => {
 
   return (
     <Container className="containerDiv">
+      <Row>
+        <Col sm={12} md={12} lg={12}>
+          <h4 className="title_principal">Reporte General de Caja</h4>
+        </Col>
+      </Row>
+      <hr/>
       <Row className="justify-content-center">
         <InputField
           {...props.inputSelect}
@@ -126,6 +132,7 @@ const FlowCashReportGeneralPage = (props) => {
           <Button size="sm" variant="success" block={true} onClick={exportToExcel}>Exportar a Excel <FaRegFileExcel /></Button>
         </Col>
       </Row>
+      <br/>
       {
         dataGeneral ? (
 
@@ -133,7 +140,7 @@ const FlowCashReportGeneralPage = (props) => {
             <Col sm={12} md={12} lg={12} className="table-responsive">
               <table className="table table-bordered">
                 <thead>
-                  <tr style={{ backgroundColor: 'blue', color: 'white'}}>
+                  <tr style={{ backgroundColor: 'rgb(28, 33, 93)', color: 'white'}}>
                     <th className="text-center"></th>
                     <th className="text-center">Mes1</th>
                     <th className="text-center">Mes2</th>
@@ -176,7 +183,7 @@ const FlowCashReportGeneralPage = (props) => {
                         ))
                       }
                   </tr>
-                  <tr style={{ backgroundColor : 'darkred', color: 'white' }}>
+                  <tr style={{ backgroundColor : 'rgb(244, 240, 194)', color: 'rgb(19, 20, 20)' }}>
                     <td><b>Saldo Final de Caja</b></td>
                     {
                       dataGeneral.totales.map((v,i) => (

@@ -40,11 +40,11 @@ const ProviderRepresentPage = (props) => {
 
   useMemo(() => {
 
-    if(providerRepresentColumns[0].columns.length > 4){
-      providerRepresentColumns[0].columns.pop()
+    if(providerRepresentColumns.length > 4){
+      providerRepresentColumns.pop()
     }
 
-    providerRepresentColumns[0].columns.push({
+    providerRepresentColumns.push({
       Header: 'Acciones',
       Cell: props => {
         const id = props.cell.row.original.id
@@ -193,7 +193,7 @@ const ProviderRepresentPage = (props) => {
     <Container>
       <Row className="justify-content-center">
         <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
-          <h1 className="text-center font-title">Formulario De Contacto</h1>
+          <h3 className="text-center title_principal">Formulario De Contacto</h3>
           <br/>
           <Form onSubmit={onSubmit} noValidate validated={validate}>
             <Row>

@@ -49,19 +49,31 @@ const MainContainer = props => {
         })
 
       }else if(!props.isLogin){
+        let userLocal = JSON.parse(localStorage.getItem('user'))
         localStorage.removeItem('user')
         localStorage.removeItem('token')
         localStorage.removeItem('configStore')
         localStorage.removeItem('configGeneral')
+        localStorage.removeItem('id_sucursal')
+        localStorage.removeItem('id_enterprise')
         setAuthorizationToken(null);
         props.removeMenu()
       }
 
     },[props.isLogin])
 
-    const handleLogoutUser = () => {
+    const handleLogoutUser = async () => {
+      let userLocal = JSON.parse(localStorage.getItem('user'))
+      if(userLocal.id_rol >= 2 && userLocal.id_rol <= 7){
+        await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: '', id_enterprise: '', id_parent: userLocal.id_parent, email: userLocal.email})
+      }
+
       localStorage.removeItem('user')
       localStorage.removeItem('token')
+      localStorage.removeItem('id_sucursal')
+      localStorage.removeItem('configStore')
+      localStorage.removeItem('configGeneral')
+      localStorage.removeItem('id_enterprise')
       setAuthorizationToken(null);
       props.removeMenu()
       props.resetCart()

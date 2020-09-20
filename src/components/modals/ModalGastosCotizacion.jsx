@@ -101,6 +101,7 @@ const ModalGastosCotizacion = (props) => {
               handleChange={onChange}
             />
           </Row>
+          <br/>
           <Row className="justify-content-center">
             <Col sm={12} md={12} lg={12}>
               <Button size="sm" type="submit" variant="primary" block={true}>

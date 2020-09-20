@@ -8,7 +8,8 @@ import {
   DropdownButton,
   Dropdown,
   Modal,
-  Form
+  Form,
+  Badge
 } from 'react-bootstrap'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -96,12 +97,16 @@ const InventaryTab = (props) => {
   return (
     <Container>
       <Row>
-        <Col sm={12} md={12} lg={12}>
+        <Col sm={6} md={6} lg={6}>
           <br/>
           <h4 className="title_principal">Tabla Inventario</h4>
-          <hr/>
+        </Col>
+        <Col sm={6} md={6} lg={6} className="text-right">
+          <br/>
+          <h4 className="title_principal">Cantidad Productos: <Badge variant="danger" className="title_badge">{inventary.length}</Badge></h4>
         </Col>
         <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
+          <hr/>
           <Table columns={ inventaryColumns } data={ inventary } />
         </Col>
       </Row>

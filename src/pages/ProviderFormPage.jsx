@@ -20,7 +20,7 @@ const ProviderFormPage = (props) => {
   const [dataProvider,setDataProvider] = useState({
     name_fantasy: '',
     rut_provider: '',
-    id_country: localStorage.getItem('configStore') ? JSON.parse(localStorage.getItem('configStore')).country : '',
+    id_country: JSON.parse(localStorage.getItem('configStore')) ? JSON.parse(localStorage.getItem('configStore')).country : '',
     comuna: '',
     city: '',
     phone: '',

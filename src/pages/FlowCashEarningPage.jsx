@@ -10,7 +10,8 @@ import {
   DropdownButton,
   Accordion,
   Card,
-  Modal
+  Modal,
+  Badge
 } from 'react-bootstrap'
 import InputField from 'components/input/InputComponent'
 import * as moment from 'moment-timezone'
@@ -23,8 +24,10 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import FileSaver from 'file-saver';
 import 'styles/components/modalComponents.css'
 import {
-  FaCloudDownloadAlt
+  FaCloudDownloadAlt,
+  FaPlusCircle
 } from 'react-icons/fa'
+import {formatNumber} from 'utils/functions'
 let columns_earning = []
 
 const FlowCashEarningPage = (props) => {
@@ -72,7 +75,7 @@ const FlowCashEarningPage = (props) => {
             Header: 'Monto',
             accessor: 'amount',
             Cell : props1 => {
-              return props1.cell.row.original.amount
+              return <Badge variant="danger" className="font_badge">{formatNumber(props1.cell.row.original.amount,2,',','.')}</Badge>
             }
           },
           {
@@ -416,9 +419,12 @@ const FlowCashEarningPage = (props) => {
       ) : (
         <Row>
           <Col sm={12} md={12} lg={12}>
-            <Row className="justify-content-center">
+            <Row className="">
               <Col sm={6} md={6} lg={6} xs={12}>
-                <Button size="sm" variant="secondary" block={true} onClick={displayForm}>Agregar Ingresos</Button>
+                <Button size="sm" variant="secondary" block={true} onClick={displayForm}>Agregar Ingresos <FaPlusCircle /></Button>
+              </Col>
+              <Col sm={6} md={6} lg={6} xs={12} className="text-right">
+                <h5>Total Egresos: <Badge variant="danger" className="font_badge">{earnings.length}</Badge></h5>
               </Col>
             </Row>
             <Row>

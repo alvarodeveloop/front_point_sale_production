@@ -19,6 +19,7 @@ import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import 'styles/components/modalComponents.css'
+import { FaUser } from 'react-icons/fa'
 
 
 const ProviderPage = (props) => {
@@ -116,10 +117,10 @@ const ProviderPage = (props) => {
     setDirectionRegister(prev => {
         return (
           <ul className="list-group">
-            <li className="list-group-item text-center"><h4><b>Pais:</b> <Badge variant="secondary">  {data.pais.nombre}</Badge></h4></li>
-            <li className="list-group-item text-center"><h4><b>Ciudad:</b> <Badge variant="secondary">  {data.city}</Badge></h4></li>
-            <li className="list-group-item text-center"><h4><b>Comuna:</b> <Badge variant="secondary">  {data.comuna}</Badge></h4></li>
-            <li className="list-group-item text-center"><h4><b>Detalles:</b> <Badge variant="secondary">  {data.address}</Badge></h4></li>
+            <li className="list-group-item text-center"><h4><b>Pais:</b> {data.pais.nombre}</h4></li>
+            <li className="list-group-item text-center"><h4><b>Ciudad:</b>  {data.city}</h4></li>
+            <li className="list-group-item text-center"><h4><b>Comuna:</b>  {data.comuna}</h4></li>
+            <li className="list-group-item text-center"><h4><b>Detalles:</b>  {data.address}</h4></li>
           </ul>
         )
     })
@@ -156,7 +157,7 @@ const ProviderPage = (props) => {
       >
         <Modal.Header closeButton className="header_dark">
           <Modal.Title id="contained-modal-title-vcenter">
-            Dirección del Registro
+            Dirección del Registro <FaUser />
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

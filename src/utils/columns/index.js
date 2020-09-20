@@ -10,6 +10,6 @@ export let userColumns = [
       },
       {
         Header: 'Rol',
-        accessor: props => props.roles.name_role,
+        accessor: props => props.roles ? [props.roles.name_role] : props.name_role,
       },
 ]

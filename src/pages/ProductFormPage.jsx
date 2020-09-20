@@ -359,16 +359,16 @@ const ProductFormPage = (props) => {
       cost: '',
       code_ean: '',
       description: '',
-      is_neto: '',
-      id_category: '',
-      is_auto_sale: '',
+      is_neto: true,
+      id_category: [''],
+      is_auto_sale: false,
       img_product: '',
-      method_sale: '',
+      method_sale: 1,
       price:'',
       qr_image:'',
       sticker_color: '#9c7901',
       detailCost: [],
-      pack: '',
+      pack: ''
     })
 
     setImgProduct(null)

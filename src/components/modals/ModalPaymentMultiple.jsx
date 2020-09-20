@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import {
   Modal,
@@ -10,20 +10,35 @@ import {
 import { API_URL } from 'utils/constants'
 import 'styles/components/modalComponents.css'
 import InputField from 'components/input/InputComponent'
+import InputFieldRef from 'components/input/InputComponentRef'
 import { toast } from 'react-toastify'
 
 const ModalPaymentMultiple = (props) => {
 
   const [paymentMultiple, setPaymentMultiple] = useState({
-    efectivo: 0,
-    tarjeta: 0,
-    sumup: 0,
-    cheque: 0,
-    otros: 0
+    efectivo: '',
+    tarjeta: '',
+    sumup: '',
+    cheque: '',
+    otros: ''
   })
+  const inputRef = useRef(null)
+  useEffect(() => {
+    if(props.isShow){
+        inputRef.current.focus()
+    }else{
+      setPaymentMultiple({
+        efectivo: '',
+        tarjeta: '',
+        sumup: '',
+        cheque: '',
+        otros: ''
+      })
+    }
+  },[props.isShow])
 
   const onChange = e => {
-    setPaymentMultiple({...paymentMultiple, [e.target.name] : e.target.value ? e.target.value : 0})
+    setPaymentMultiple({...paymentMultiple, [e.target.name] : e.target.value})
   }
 
   const handleSubmit = e => {
@@ -35,7 +50,7 @@ const ModalPaymentMultiple = (props) => {
     let validate = false
 
     Object.keys(paymentMultiple).forEach(v => {
-      if(paymentMultiple[v] > 0){
+      if(paymentMultiple[v]){
         validate = true
       }
     })
@@ -58,15 +73,16 @@ const ModalPaymentMultiple = (props) => {
     >
       <Modal.Header closeButton className="header_dark">
         <Modal.Title id="contained-modal-title-vcenter">
-          Historial del Producto {props.name_product}
+          Modal de pago multiples
         </Modal.Title>
       </Modal.Header>
       <Form onSubmit={handleSubmit}>
         <Modal.Body>
           <Row>
-            <InputField
+            <InputFieldRef
               {...props.inputEfectivo}
               value={paymentMultiple.efectivo}
+              ref={inputRef}
               handleChange={onChange}
             />
             <InputField
@@ -96,8 +112,8 @@ const ModalPaymentMultiple = (props) => {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button size="sm" type="submit" variant="secondary">Finalizar</Button>
-          <Button size="sm" onClick={props.onHide}>Cerrar</Button>
+          <Button size="sm" type="submit" variant="danger">Sumar Montos</Button>
+          <Button size="sm" variant="secondary" onClick={props.onHide}>Cerrar</Button>
         </Modal.Footer>
       </Form>
     </Modal>

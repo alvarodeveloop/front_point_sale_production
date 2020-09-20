@@ -10,7 +10,8 @@ import {
   DropdownButton,
   Tab,
   Tabs,
-  Modal
+  Modal,
+  Badge
 } from 'react-bootstrap'
 import InputField from 'components/input/InputComponent'
 import Table from 'components/Table'
@@ -20,6 +21,7 @@ import { API_URL } from 'utils/constants'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import TableEarningExpensiveComponent from 'components/TableEarningExpensiveComponent'
+import { FaPlusCircle } from 'react-icons/fa'
 let columns_center = []
 
 const FlowCashCenterCostePage = (props) => {
@@ -205,9 +207,12 @@ const FlowCashCenterCostePage = (props) => {
       ) : (
         <Row>
           <Col sm={12} md={12} lg={12}>
-            <Row className="justify-content-center">
+            <Row>
               <Col sm={6} md={6} lg={6} xs={12}>
-                <Button size="sm" variant="secondary" block={true} onClick={displayForm}>Agregar Centro de Costo</Button>
+                <Button size="sm" variant="secondary" block={true} onClick={displayForm}>Agregar Centro de Costo <FaPlusCircle /></Button>
+              </Col>
+              <Col sm={6} md={6} lg={6} xs={12} className="text-right">
+                <h5>Total Centros: <Badge variant="danger" className="font_badge">{props.centerCostes.length}</Badge></h5>
               </Col>
             </Row>
             <Row>
