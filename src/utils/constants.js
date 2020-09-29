@@ -151,6 +151,6 @@ export const ARRAY_COLORS = [
 ]
 
 export const API_URL = 'https://anclick.veanx.tech:5000/'
-export const FRONT_URL = 'https://anclick.veanx.tech/quotitation/create_quotitation'
+export const FRONT_URL = 'https://app.anclick.tech/create_quotitation'
 //export const API_URL = 'http://localhost:4000/'
 //export const FRONT_URL = 'http://localhost:3000/quotitation/create_quotitation'
