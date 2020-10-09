@@ -39,6 +39,7 @@ const ConfigStorePage = (props) => {
     foot_page_text: '',
     ref: '',
     client_data_foot_page: false,
+    rut: '',
   })
 
   useEffect(() => {
@@ -52,6 +53,7 @@ const ConfigStorePage = (props) => {
         setDataStore({
           logo: result.data.logo,
           name_store: result.data.name_store,
+          rut : result.data.rut,
           country: result.data.pais,
           phone: result.data.phone,
           whatssap: result.data.whatssap,
@@ -119,7 +121,8 @@ const ConfigStorePage = (props) => {
             <h4 className="text-center font-title">Datos de la Tienda</h4>
             <br/>
             <ul className="list-group">
-              <li className="list-group-item melon_y_melames melon_y_melames"><b>Nombre de la Tienda:</b><br/> { dataStore.name_store }</li>
+              <li className="list-group-item melon_y_melames"><b>Rut de la Tienda:</b><br/> { dataStore.rut }</li>
+              <li className="list-group-item melon_y_melames"><b>Nombre de la Tienda:</b><br/> { dataStore.name_store }</li>
               <li className="list-group-item melon_y_melames"><b>País: </b> <br/> { dataStore.country.nombre }</li>
               <li className="list-group-item melon_y_melames"><b>Teléfono:</b> <br/> { dataStore.phone }</li>
               <li className="list-group-item melon_y_melames"><b>Whatssap:</b> <br/> { dataStore.whatssap }</li>

@@ -205,11 +205,13 @@ const ProductFormPage = (props) => {
           formData.append(v,imgProduct)
         }
       }else if( v === 'id_category'){
-
+        let name_categories = ""
         dataProduct[v].forEach((item, i) => {
           formData.append('id_category',item.value)
+          name_categories+= item.label+","
         });
-
+        name_categories = name_categories.substring(0,name_categories.length - 1)
+        formData.append('name_categories',name_categories)
       }else{
         formData.append(v,dataProduct[v])
 

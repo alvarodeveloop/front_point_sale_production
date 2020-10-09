@@ -12,35 +12,37 @@ const AutoCompleteComponent = (props) => {
   const [value, setValue] = useState('')
 
   return (
-    <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled">{props.titleTooltip ? props.titleTooltip : ''}</Tooltip>}>
-      <div className="input-search">
-        <FaSearch />
-        <Autocomplete
-          getItemValue={(item) => item[props.keyName]}
-          items={props.items}
-          shouldItemRender={(item, value) =>{
-            return !item[props.keyName].toLowerCase().indexOf(value.toLowerCase())
-          } }
+    <div style={{width: '100%',position: 'relative', zIndex: '1000'}}>
+      <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled">{props.titleTooltip ? props.titleTooltip : ''}</Tooltip>}>
+        <div className="input-search">
+          <FaSearch />
+          <Autocomplete
+            getItemValue={(item) => item[props.keyName]}
+            items={props.items}
+            shouldItemRender={(item, value) =>{
+              return !item[props.keyName].toLowerCase().indexOf(value.toLowerCase())
+            } }
 
-          renderItem={ (item, isHighlighted) =>
-            <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} key={item[props.keyName]} >
-              { item[props.keyName] }
-            </div>
-          }
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value)
-            if(e.target.value === ""){
-              props.showAllCategories()
+            renderItem={ (item, isHighlighted) =>
+              <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} key={item[props.keyName]} >
+                { item[props.keyName] }
+              </div>
             }
-          }}
-          onSelect={(val) =>{
-            setValue(val)
-            props.returnValue(val)
-          }}
-        />
-      </div>
-    </OverlayTrigger>
+            value={value}
+            onChange={(e) => {
+              setValue(e.target.value)
+              if(e.target.value === ""){
+                props.showAllCategories()
+              }
+            }}
+            onSelect={(val) =>{
+              setValue(val)
+              props.returnValue(val)
+            }}
+          />
+        </div>
+      </OverlayTrigger>
+    </div>
   )
 }
 

@@ -9,6 +9,7 @@ import { API_URL } from 'utils/constants'
 import { setConfigStore } from 'actions/configs'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import { formatRut } from 'utils/functions'
 import {
   Row,
   Col,
@@ -34,6 +35,7 @@ const ConfigStoreFormPage = (props) => {
     foot_page_text: '',
     client_data_foot_page: '',
     ref: 1,
+    rut: '',
   })
   const [logo, setLogo] = useState([])
   const [paises, setPaises] = useState([])
@@ -51,6 +53,9 @@ const ConfigStoreFormPage = (props) => {
   const onChange = e => {
     if(e.target.name === "client_data_foot_page"){
       setDataStore({ ...dataStore, [e.target.name] : e.target.value === "true" ? true : false })
+    }else if(e.target.name === "rut"){
+      let val = formatRut(e.target.value)
+      setDataStore({ ...dataStore, [e.target.name] : val })
     }else{
       setDataStore({ ...dataStore, [e.target.name] : e.target.value })
     }
@@ -84,6 +89,7 @@ const ConfigStoreFormPage = (props) => {
           foot_page_text: result[1].data.foot_page_text,
           client_data_foot_page: result[1].data.client_data_foot_page,
           ref: result[1].data.ref,
+          rut: result[1].data.rut,
         })
         setIsUpdate(true)
         if(result[1].data.logo){
@@ -208,6 +214,20 @@ const ConfigStoreFormPage = (props) => {
             <br/>
             <Row>
               <InputField
+               type='text'
+               label='Rut'
+               name='rut'
+               required={true}
+               messageErrors={[
+               'Requerido*'
+               ]}
+               cols='col-md-6 col-lg-6 col-sm-6'
+               value={dataStore.rut}
+               handleChange={onChange}
+              />
+            </Row>
+            <Row>
+              <InputField
                 {...props.inputNameStore}
                 handleChange={onChange}
                 value={dataStore.name_store}
@@ -269,20 +289,6 @@ const ConfigStoreFormPage = (props) => {
                 </InputField>
               </Row>
             </OverlayTrigger>
-            <OverlayTrigger placement={'top'} overlay={
-                <Tooltip id="tooltip-disabled1">
-                  Campo para determinar desde que número empieza la facturación en las ventas
-                </Tooltip>
-              }
-            >
-              <Row>
-                <InputField
-                  {...props.inputRef}
-                  handleChange={onChange}
-                  value={dataStore.ref}
-                />
-              </Row>
-            </OverlayTrigger>
           </Col>
           <Col sm={6} md={6} lg={6} xs={6} className="">
             <h4 className="text-center font-title">Datos de la Factura</h4>
@@ -302,6 +308,21 @@ const ConfigStoreFormPage = (props) => {
                     {...props.inputFooterPageText}
                     handleChange={onChange}
                     value={dataStore.foot_page_text}
+                  />
+                </Row>
+              </OverlayTrigger>
+              <br/>
+              <OverlayTrigger placement={'top'} overlay={
+                  <Tooltip id="tooltip-disabled1">
+                    Campo para determinar desde que número empieza la facturación en las ventas
+                  </Tooltip>
+                }
+              >
+                <Row>
+                  <InputField
+                    {...props.inputRef}
+                    handleChange={onChange}
+                    value={dataStore.ref}
                   />
                 </Row>
               </OverlayTrigger>

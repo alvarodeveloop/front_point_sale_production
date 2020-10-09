@@ -23,7 +23,8 @@ const InputFieldRef = React.forwardRef( (props,ref) => {
           className={props.className ? props.className : ''}
           step={props.step ? props.step : ''}
           onKeyUp={ props.handleKeyUp ? props.handleKeyUp : () => {} }
-          className="form-control-sm"
+          className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
+          style={props.style ? props.style : {}}
           />
         <Form.Control.Feedback type="invalid">
           (
@@ -51,7 +52,8 @@ const InputFieldRef = React.forwardRef( (props,ref) => {
           required={props.required}
           multiple={props.multiple ? props.multiple : false}
           ref={ref ? ref : null}
-          className="form-control-sm"
+          className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
+          style={props.style ? props.style : {}}
         >
           {props.children}
         </Form.Control>
@@ -82,7 +84,8 @@ const InputFieldRef = React.forwardRef( (props,ref) => {
           readOnly={props.readonly ? props.readonly : false}
           onKeyUp={ props.handleKeyUp ? props.handleKeyUp : () => {} }
           ref={ref ? ref : null}
-          className="form-control-sm"
+          className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
+          style={props.style ? props.style : {}}
         />
         <Form.Control.Feedback type="invalid">
           (

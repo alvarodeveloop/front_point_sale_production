@@ -39,7 +39,8 @@ const FormProductSale = (props) => {
     qr_image:'',
     sticker_color: '#9c7901',
     detailCost: [],
-    pack: ''
+    pack: '',
+    categoryNames: ''
   })
 
 
@@ -85,6 +86,8 @@ const FormProductSale = (props) => {
     if(e.target.name === "method_sale"){
       if(e.target.value == 2){
         setIsShowPackField(true)
+      }else{
+        setIsShowPackField(false)
       }
       await setDataStore({...dataProduct, [e.target.name] : e.target.value})
     }else if(e.target.name === "is_neto" || e.target.name === "is_auto_sale"){
@@ -148,11 +151,13 @@ const FormProductSale = (props) => {
           formData.append(v,imgProduct)
         }
       }else if( v === 'id_category'){
-
+        let name_categories = ""
         dataProduct[v].forEach((item, i) => {
           formData.append('id_category',item.value)
+          name_categories+= item.label+","
         });
-
+        name_categories = name_categories.substring(0,name_categories.length - 1)
+        formData.append('name_categories',name_categories)
       }else{
         formData.append(v,dataProduct[v])
 
@@ -192,6 +197,7 @@ const FormProductSale = (props) => {
           toast.success('Producto Creado')
           setTextButton('Guardar')
           setIsSubmit(false)
+          props.handleSubmitProduct(Object.assign({},dataProduct))
           cleanForm()
         }).catch(err => {
 
@@ -210,6 +216,7 @@ const FormProductSale = (props) => {
         toast.success('Producto Creado')
         setTextButton('Guardar')
         setIsSubmit(false)
+        props.handleSubmitProduct(Object.assign({},dataProduct))
         cleanForm()
       }
 
@@ -261,7 +268,6 @@ const FormProductSale = (props) => {
 
     document.getElementById('code_ean').setAttribute('readonly',true)
 
-    props.handleSubmitProduct()
   }
 
   const pickLogo = () => {

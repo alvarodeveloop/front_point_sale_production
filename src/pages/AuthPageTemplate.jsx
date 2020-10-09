@@ -28,6 +28,12 @@ const AuthPageTemplate = props => {
   const [branchOffices, setBranchOffices] = useState([])
   const [typeVisibleDiv, setTypeVisibleDiv] = useState(false)
   const [showGif, setShowGif] = useState(false)
+  const [disabledButton, setDisabledButton] = useState(false)
+  const [storage,setStorage] = useState({
+    token: "",
+    user: "",
+    token_facturacion: "",
+  })
 
   const onValueChange = (field, e) => {
     setCredentials({...credentials,[field] : field === 'rememberMe' ? e.target.checked : e.target.value})
@@ -45,28 +51,38 @@ const AuthPageTemplate = props => {
       toast.error('Todos los campos son requeridos')
       return false
     }
-
+    setDisabledButton(true)
     axios.post(API_URL+'auth',credentials).then( async result => {
-
+      setDisabledButton(false)
       const { data } = result
-      localStorage.setItem('user',JSON.stringify(data.user))
-      localStorage.setItem('token',data.token)
+      setStorage({
+        user: data.user,
+        token: data.token,
+        token_facturacion: data.token_facturacion
+      })
       setAuthorizationToken(data.token)
       if(data.user.branch_offices.length > 0){
         if(data.user.branch_offices.length === 1){
           // si solo hay una empresa y solo una sucursal
           await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: data.user.branch_offices[0].id, id_enterprise: data.user.enterprises[0].id, id_parent : data.user.id_parent, email: data.user.email})
+          localStorage.setItem('user',JSON.stringify(data.user))
+          localStorage.setItem('token',data.token)
+          localStorage.setItem('token_facturacion',data.token_facturacion)
           props.loginDispatch(data.user)
         }else{
           // si solo hay una empresa y más de una sucursal
-          localStorage.setItem('id_enterprise',data.user.enterprises[0].id)
+          setStorage({user: data.user,toke: data.token,token_facturacion: data.token_facturacion,id_enterprise: data.user.enterprises[0].id})
           setBranchOffices(data.user.branch_offices)
           setTypeVisibleDiv(3)
         }
       }else{
         if(data.user.enterprises.length > 0){
           if(data.user.enterprises.length === 1){
+
             localStorage.setItem('id_enterprise',data.user.enterprises[0].id)
+            localStorage.setItem('user',JSON.stringify(data.user))
+            localStorage.setItem('token',data.token)
+            localStorage.setItem('token_facturacion',data.token_facturacion)
             await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: '', id_enterprise: data.user.enterprises[0].id, id_parent : data.user.id_parent, email: data.user.email})
             props.loginDispatch(data.user)
           }else{
@@ -74,10 +90,13 @@ const AuthPageTemplate = props => {
             setTypeVisibleDiv(2)
           }
         }else{
+          localStorage.setItem('user',JSON.stringify(data.user))
+          localStorage.setItem('token',data.token)
           props.loginDispatch(data.user)
         }
       }
     }).catch(err => {
+      setDisabledButton(false)
       const { response } = err
       if(response){
         toast.error(response.data.message,'Error')
@@ -169,9 +188,14 @@ const AuthPageTemplate = props => {
 
   const handleChoiceBranchOffice = async idBranch => {
     setShowGif(true)
-    let userLocal = JSON.parse(localStorage.getItem('user'))
-    let id_enterprise = localStorage.getItem('id_enterprise')
+    let userLocal = Object.assign({},storage).user
+    let id_enterprise = Object.assign({},storage).id_enterprise
+    localStorage.setItem('id_enterprise',id_enterprise)
+    localStorage.setItem('user',JSON.stringify(userLocal))
+    localStorage.setItem('token',storage.token)
+    localStorage.setItem('token_facturacion',storage.token_facturacion)
     await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: idBranch, id_enterprise: id_enterprise,  id_parent: userLocal.id_parent, email: userLocal.email})
+
     setTimeout(() => {
       props.loginDispatch(userLocal)
     },1500)
@@ -179,10 +203,13 @@ const AuthPageTemplate = props => {
 
   const handleChoiceEnterprise = async idEnteprise => {
     setShowGif(true)
-    localStorage.setItem('id_enterprise',idEnteprise)
-    let userLocal = JSON.parse(localStorage.getItem('user'))
+    let userLocal = Object.assign({},storage).user
     if(userLocal.id_rol == 2){
       await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: null, id_enterprise: idEnteprise,  id_parent: userLocal.id_parent, email: userLocal.email})
+      localStorage.setItem('id_enterprise',idEnteprise)
+      localStorage.setItem('user',JSON.stringify(userLocal))
+      localStorage.setItem('token',storage.token)
+      localStorage.setItem('token_facturacion',storage.token_facturacion)
       setTimeout(function () {
         props.loginDispatch(userLocal)
       }, 1500);
@@ -206,10 +233,6 @@ const AuthPageTemplate = props => {
   const resetLogin = async () => {
     let userLocal = JSON.parse(localStorage.getItem('user'))
     await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: null, id_enterprise: null, id_parent: userLocal.id_parent, email: userLocal.email})
-    localStorage.removeItem('user')
-    localStorage.removeItem('token')
-    localStorage.removeItem('id_sucursal')
-    localStorage.removeItem('id_enterprise')
     setAuthorizationToken(null)
     setBranchOffices([])
     setTypeVisibleDiv(false)
@@ -343,7 +366,7 @@ const AuthPageTemplate = props => {
                       </Form.Group>
 
                       <div className="d-flex justify-content-center align-items-center m-0">
-                        <Button size="sm" variant="secondary" type="submit">Acceder</Button>
+                        <Button size="sm" variant="secondary" type="submit" disabled={disabledButton}>{disabledButton ? "Verificado Datos..." : "Acceder"}</Button>
                       </div>
                       <br/>
                       <Row>

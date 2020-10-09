@@ -105,3 +105,13 @@ export const returnTypePayment = payment => {
     return 'Multiple'
   }
 }
+
+export const formatRut = string => {
+  if(string){
+    let val = string.replace(/-/g,'')
+    val = val.substring(0,val.length -1)+'-'+val.substring(val.length -1)
+    return val
+  }else{
+    return ''
+  }
+}

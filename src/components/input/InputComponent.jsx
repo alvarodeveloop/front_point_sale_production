@@ -22,7 +22,8 @@ const InputField = props => {
           className={props.className ? props.className : ''}
           step={props.step ? props.step : ''}
           onKeyUp={ props.handleKeyUp ? props.handleKeyUp : () => {} }
-          className="form-control-sm"
+          className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
+          style={props.style ? props.style : {}}
           />
         <Form.Control.Feedback type="invalid">
           (
@@ -49,7 +50,8 @@ const InputField = props => {
           readOnly={props.readonly ? props.readonly : false}
           required={props.required}
           multiple={props.multiple ? props.multiple : false}
-          className="form-control-sm"
+          className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
+          style={props.style ? props.style : {}}
         >
           {props.children}
         </Form.Control>
@@ -79,7 +81,8 @@ const InputField = props => {
           rows={props.rows ? props.rows : 2}
           readOnly={props.readonly ? props.readonly : false}
           onKeyUp={ props.handleKeyUp ? props.handleKeyUp : () => {} }
-          className="form-control-sm"
+          className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
+          style={props.style ? props.style : {}}
         />
         <Form.Control.Feedback type="invalid">
           (
@@ -97,7 +100,7 @@ const InputField = props => {
 }
 
 InputField.propTypes = {
-  label: PropTypes.string.isRequired,
+  label: PropTypes.any,
   type: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   handleChange: PropTypes.func.isRequired,
@@ -112,6 +115,7 @@ InputField.propTypes = {
   multiple: PropTypes.bool,
   className: PropTypes.string,
   steps: PropTypes.string,
+  style: PropTypes.object,
 }
 
 export default InputField

@@ -80,7 +80,7 @@ function fuzzyTextFilterFn(rows, id, filterValue) {
 // Let the table remove the filter if the string is empty
 fuzzyTextFilterFn.autoRemove = val => !val
 
-function DataTable({ columns, data }) {
+function DataTable({ columns, data, menuTop }) {
   // Use the state and functions returned from useTable to build your UI
 
   const filterTypes = React.useMemo(
@@ -143,6 +143,59 @@ function DataTable({ columns, data }) {
 
   return (
     <div className="table-responsive">
+      {menuTop ? (
+        <div className="pagination">
+          <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+            {'<<'}
+          </Button>{' '}
+          <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => previousPage()} disabled={!canPreviousPage}>
+            {'<'}
+          </Button>{' '}
+          <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => nextPage()} disabled={!canNextPage}>
+            {'>'}
+          </Button>{' '}
+          <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+            {'>>'}
+          </Button>{' '}
+          <span>
+            Página{' '}
+            <strong>
+              {pageIndex + 1} de {pageOptions.length}
+            </strong>{' '}
+          </span>
+          <span className="ml-3">
+            | <span className="ml-2">Ir a la Página:{' '}</span>
+            <input
+              type="number"
+              defaultValue={pageIndex + 1}
+              onChange={e => {
+                const page = e.target.value ? Number(e.target.value) - 1 : 0
+                gotoPage(page)
+              }}
+              className="inputPage"
+              onChange={(e) => {
+                if(e.target.value > pageOptions.length){
+                  e.target.value = 1
+                }
+              }}
+            />
+          </span>{' '}
+          <select
+            value={pageSize}
+            onChange={e => {
+              setPageSize(Number(e.target.value))
+            }}
+            className="inputPage"
+          >
+            {[10, 20, 30, 40, 50].map(pageSize => (
+              <option key={pageSize} value={pageSize}>
+                Mostrar {pageSize}
+              </option>
+            ))}
+          </select>
+        </div>
+
+      ) : ''}
       <table {...getTableProps()} className="table table-bordered">
         <thead>
           {headerGroups.map(headerGroup => (
@@ -232,11 +285,11 @@ function DataTable({ columns, data }) {
   )
 }
 
-const Table = ({data,columns}) => {
+const Table = ({data,columns,menuTop}) => {
 
   return (
     <Styles>
-      <DataTable data={data} columns={columns} />
+      <DataTable data={data} columns={columns} menuTop={menuTop} />
     </Styles>
   )
 }
@@ -244,6 +297,7 @@ const Table = ({data,columns}) => {
 Table.propTypes = {
   data: PropTypes.array.isRequired,
   columns : PropTypes.array.isRequired,
+  menuTop: PropTypes.bool,
 }
 
 export default Table

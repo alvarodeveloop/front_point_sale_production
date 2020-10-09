@@ -351,15 +351,13 @@ const SalePage = (props) => {
         <hr/>
         <Row className="justify-content-center">
           <Col sm={10} md={10} lg={10}>
-            <div style={{width: '100%',position: 'relative', zIndex: '1000'}}>
-              <AutoCompleteComponent
-                items={productsAll}
-                keyName='name_product'
-                returnValue={handleSelectProduct}
-                showAllCategories={handleShowAllCategories}
-                titleTooltip="Buscar Producto"
-                />
-            </div>
+            <AutoCompleteComponent
+              items={productsAll}
+              keyName='name_product'
+              returnValue={handleSelectProduct}
+              showAllCategories={handleShowAllCategories}
+              titleTooltip="Buscar Producto"
+              />
           </Col>
         </Row>
         <br/>

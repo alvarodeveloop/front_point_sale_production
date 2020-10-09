@@ -130,30 +130,28 @@ const FormClientModal = (props) => {
                   handleChange={handleOnChange}
                   value={client.email}
                 />
+              <InputField
+                {...props.inputTypeDocument}
+                handleChange={handleOnChange}
+                value={client.type_document}
+                >
+                <option value=''>--Seleccione--</option>
+                <option value={'Rut'}>Rut</option>
+                <option value={'Id'}>Id</option>
+                <option value={'Nro pasaporte'}>N° pasaporte</option>
+              </InputField>
               </Row>
               <Row>
-                <InputField
-                  {...props.inputTypeDocument}
-                  handleChange={handleOnChange}
-                  value={client.type_document}
-                >
-                  <option value=''>--Seleccione--</option>
-                  <option value={'Rut'}>Rut</option>
-                  <option value={'Id'}>Id</option>
-                  <option value={'Nro pasaporte'}>N° pasaporte</option>
-                </InputField>
                 <InputField
                   {...props.inputDataDocument}
                   handleChange={handleOnChange}
                   value={client.data_document}
                 />
-              </Row>
-              <Row>
                 <InputField
                   {...props.inputPhone}
                   handleChange={handleOnChange}
                   value={client.phone}
-                />
+                  />
                 <InputField
                   {...props.inputAddress}
                   handleChange={handleOnChange}
@@ -165,7 +163,7 @@ const FormClientModal = (props) => {
                   {...props.inputObservation}
                   handleChange={handleOnChange}
                   value={client.observation}
-                />
+                  />
               </Row>
           </Col>
         </Row>
@@ -191,7 +189,7 @@ FormClientModal.defaultProps = {
     required: true,
     name: 'name_client',
     label : 'Nombre Cliente',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6",
     messageErrors: [
       'Requerido*'
     ],
@@ -201,7 +199,7 @@ FormClientModal.defaultProps = {
     required: false,
     name: 'email',
     label : 'Email',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6",
     messageErrors: [
       'Requerido*, ','Formato Tipo Email*'
     ],
@@ -211,7 +209,7 @@ FormClientModal.defaultProps = {
     required: false,
     name: 'phone',
     label : 'Teléfono',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6",
     messageErrors: [],
   },
   inputAddress: {
@@ -219,8 +217,8 @@ FormClientModal.defaultProps = {
     required: false,
     name: 'address',
     label : 'Dirección',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
-    rows: 3,
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6",
+    rows: 2,
     messageErrors: [],
   },
   inputTypeDocument: {
@@ -228,7 +226,7 @@ FormClientModal.defaultProps = {
     required: false,
     name: 'type_document',
     label : 'Tipo de Documento',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6",
     messageErrors: [
       'Requerido*'
     ],
@@ -238,7 +236,7 @@ FormClientModal.defaultProps = {
     required: false,
     name: 'data_document',
     label : 'Información Identidad',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6",
     placeholder: 'Introduzca su rut, id o su n° de pasaporte',
     messageErrors: [
       'Requerido*'
@@ -249,8 +247,8 @@ FormClientModal.defaultProps = {
     required: false,
     name: 'observation',
     label : 'Observación',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
-    rows: 3,
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6",
+    rows: 2,
     messageErrors: [],
   },
 

@@ -5,7 +5,7 @@ import { FaTruck,FaPlusCircle } from "react-icons/fa";
 import InputField from 'components/input/InputComponent'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
-import InputMask from 'react-input-mask'
+import { formatRut } from 'utils/functions'
 import {
   Row,
   Col,
@@ -44,16 +44,8 @@ const ProviderFormPage = (props) => {
     if(e.target.name === "type_id"){
       await setDataProvider({...dataProvider, [e.target.name] : e.target.value, rut_provider: ''})
     }else if(e.target.name === "rut_provider"){
-      let val = e.target.value
-      val = val.split('-').join('')
-      console.log(val,'aqui moton');
-      if(val){
-        let val1 = val.substring(0,val.length -1)+'-'+val.substring(val.length -1)
-        await setDataProvider({...dataProvider, [e.target.name] : val1})
-      }else{
-        await setDataProvider({...dataProvider, [e.target.name] : val})
-      }
-
+      let val = formatRut(e.target.value)
+      setDataProvider({...dataProvider, [e.target.name] : val})
     }else{
       await setDataProvider({...dataProvider, [e.target.name] : e.target.value})
     }

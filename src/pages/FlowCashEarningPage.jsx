@@ -424,7 +424,7 @@ const FlowCashEarningPage = (props) => {
                 <Button size="sm" variant="secondary" block={true} onClick={displayForm}>Agregar Ingresos <FaPlusCircle /></Button>
               </Col>
               <Col sm={6} md={6} lg={6} xs={12} className="text-right">
-                <h5>Total Egresos: <Badge variant="danger" className="font_badge">{earnings.length}</Badge></h5>
+                <h5>Total Ingresos: <Badge variant="danger" className="font_badge">{earnings.length}</Badge></h5>
               </Col>
             </Row>
             <Row>

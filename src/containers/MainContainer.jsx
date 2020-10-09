@@ -56,6 +56,8 @@ const MainContainer = props => {
         localStorage.removeItem('configGeneral')
         localStorage.removeItem('id_sucursal')
         localStorage.removeItem('id_enterprise')
+        localStorage.removeItem('token_facturacion')
+        localStorage.removeItem('cash_register')
         setAuthorizationToken(null);
         props.removeMenu()
       }
@@ -74,6 +76,8 @@ const MainContainer = props => {
       localStorage.removeItem('configStore')
       localStorage.removeItem('configGeneral')
       localStorage.removeItem('id_enterprise')
+      localStorage.removeItem('token_facturacion')
+      localStorage.removeItem('cash_register')
       setAuthorizationToken(null);
       props.removeMenu()
       props.resetCart()

@@ -18,12 +18,12 @@ const AutoCompleteClientComponent = (props) => {
   },[props.resetValue])
 
   return (
-    <React.Fragment>
+    <div style={{width: '100%',position: 'relative', zIndex: '1000'}}>
       <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled3">Buscar Cliente</Tooltip>}>
         <div className="input-search">
           <FaSearch />
           <Autocomplete
-            getItemValue={(item) => item.name_client+'-'+item.data_document}
+            getItemValue={(item) => item.name_client+'/'+item.data_document}
             items={props.items}
             shouldItemRender={(item, value) =>{
               return !item.name_client.toLowerCase().indexOf(value.toString().toLowerCase()) || !item.data_document.toLowerCase().indexOf(value.toString().toLowerCase())
@@ -51,7 +51,7 @@ const AutoCompleteClientComponent = (props) => {
             />
         </div>
       </OverlayTrigger>
-    </React.Fragment>
+    </div>
   )
 }
 
