@@ -11,7 +11,7 @@ const InputField = props => {
       <Form.Group className={classFormGroup}>
         <Form.Label className="fontBold">{props.label}</Form.Label>
         <Form.Control
-          id={props.name}
+          id={props.id ? props.id : props.name}
           type={props.type}
           name={props.name}
           onChange={props.handleChange}
@@ -41,7 +41,7 @@ const InputField = props => {
       <Form.Group className={classFormGroup}>
         <Form.Label className="fontBold">{props.label}</Form.Label>
         <Form.Control
-          id={props.name}
+          id={props.id ? props.id : props.name}
           as={props.type}
           name={props.name}
           onChange={props.handleChange}
@@ -71,7 +71,7 @@ const InputField = props => {
       <Form.Group className={classFormGroup}>
         <Form.Label className="fontBold">{props.label}</Form.Label>
         <Form.Control
-          id={props.name}
+          id={props.id ? props.id : props.name}
           as={props.type}
           name={props.name}
           onChange={props.handleChange}
@@ -103,6 +103,7 @@ InputField.propTypes = {
   label: PropTypes.any,
   type: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
+  id: PropTypes.string,
   handleChange: PropTypes.func.isRequired,
   handleKeyUp: PropTypes.func,
   value: PropTypes.any,

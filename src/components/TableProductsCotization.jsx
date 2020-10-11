@@ -49,17 +49,16 @@ const TableProductsCotization = (props) => {
 
     if(product.is_neto){
       product.price = product.discount ? ( parseFloat(product.price) - (( parseFloat(product.price) *  product.discount) / 100 ) ) : product.price
-      return formatNumber(parseFloat(product.price) * product.quantity,2,',','.')
     }else{
       if(props.isShowIva){
         product.price = product.discount ? ( parseFloat(product.price) - (( parseFloat(product.price) *  product.discount) / 100 ) ) : product.price
-         return formatNumber(parseFloat(product.price) * product.quantity,2,',','.')
       }else{
         product.price = product.discount ? ( parseFloat(product.price) - (( parseFloat(product.price) *  product.discount) / 100 ) ) : product.price
         product.price = parseFloat( (product.price * props.configStore.tax) / 100) + parseFloat(product.price) // linea para sumar el iva
-        return formatNumber(parseFloat(product.price) * product.quantity,2,',','.')
+
       }
     }
+    return formatNumber(parseFloat(product.price) * product.quantity,2,',','.')
   }
 
   return (
@@ -94,10 +93,11 @@ const TableProductsCotization = (props) => {
                         className="letras_grandes"
                         type='text'
                         label=''
+                        id={"category_product"+i}
                         name='category'
-                        required={true}
+                        required={false}
                         messageErrors={[
-                          'Requerido*'
+
                         ]}
                         cols='col-md-12 col-lg-12 col-sm-12'
                         value={props.detailProducts[i].category}
@@ -111,6 +111,7 @@ const TableProductsCotization = (props) => {
                         className="letras_grandes"
                         type='text'
                         label=''
+                        id={"name_product"+i}
                         name='name_product'
                         required={true}
                         messageErrors={[
@@ -128,10 +129,11 @@ const TableProductsCotization = (props) => {
                         className="letras_grandes"
                         type='text'
                         label=''
+                        id={"description_product"+i}
                         name='description'
-                        required={true}
+                        required={false}
                         messageErrors={[
-                          'Requerido*'
+
                         ]}
                         cols='col-md-12 col-lg-12 col-sm-12'
                         value={props.detailProducts[i].description}
@@ -145,6 +147,7 @@ const TableProductsCotization = (props) => {
                         className="letras_grandes"
                         type='number'
                         label=''
+                        id={"quantity_product"+i}
                         name='quantity'
                         required={true}
                         messageErrors={[
@@ -162,6 +165,7 @@ const TableProductsCotization = (props) => {
                         className="letras_grandes"
                         type='text'
                         label=''
+                        id={"price_product"+i}
                         name='price'
                         required={true}
                         messageErrors={[
@@ -179,10 +183,11 @@ const TableProductsCotization = (props) => {
                         className="letras_grandes"
                         type='number'
                         label=''
+                        id={"discount_product"+i}
                         name='discount'
-                        required={true}
+                        required={false}
                         messageErrors={[
-                          'Requerido*'
+                          '*'
                         ]}
                         cols='col-md-12 col-lg-12 col-sm-12'
                         value={props.detailProducts[i].discount}
@@ -196,6 +201,7 @@ const TableProductsCotization = (props) => {
                         className="letras_grandes"
                         type='select'
                         label=''
+                        id={"method_product"+i}
                         name='method_sale'
                         required={true}
                         messageErrors={[
@@ -218,6 +224,7 @@ const TableProductsCotization = (props) => {
                         className="letras_grandes"
                         type='text'
                         label=''
+                        id={"total_product"+i}
                         name='total'
                         required={false}
                         readonly={true}

@@ -175,7 +175,7 @@ const CotizacionSearchPage = props => {
                 <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
                   <Dropdown.Item onClick={() => updateCotizacion(original.id)}>Modificar</Dropdown.Item>
                   <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver Detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => {}}>Facturar</Dropdown.Item>
+                  <Dropdown.Item onClick={() => goToFacturation(original.id)}>Facturar</Dropdown.Item>
                   <Dropdown.Item onClick={() => changeStatus(original.id,1)}>Pendiente</Dropdown.Item>
                   <Dropdown.Item onClick={() => changeStatus(original.id,4)}>Anular</Dropdown.Item>
                 </DropdownButton>
@@ -290,6 +290,10 @@ const CotizacionSearchPage = props => {
   const seeDetailCotization = data => {
     setCotizationDetail(data)
     handleModalDetail()
+  }
+
+  const goToFacturation = id => {
+    props.history.replace('/quotitation/invoicing/'+id)
   }
 
   return (
@@ -513,6 +517,42 @@ const CotizacionSearchPage = props => {
             </Col>
           </Row>
           <br/>
+          {Object.keys(cotizationDetail).length > 0 && cotizationDetail.referencias.length > 0 ? (
+            <Row>
+              <Col sm={12} md={12} lg={12} className="">
+                <h4 className="title_principal text-center">Referencias de la Cotización</h4>
+                <br/>
+                <table className="table table-striped table-bordered">
+                  <thead>
+                    <tr>
+                      <th className="text-center">Tipo de Documento</th>
+                      <th className="text-center">Referencia Cotiz.</th>
+                      <th className="text-center">Ind</th>
+                      <th className="text-center">Fecha Ref.</th>
+                      <th className="text-center">Razón de Referencia</th>
+                      <th className="text-center">Tipo de Código</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-center">
+                    {Object.keys(cotizationDetail).length > 0 ? (
+                      <React.Fragment>
+                        {cotizationDetail.referencias.map((v,i) => (
+                          <tr>
+                            <td>{v.type_document}</td>
+                            <td>{v.ref_cotizacion}</td>
+                            <td>{v.ind}</td>
+                            <td>{v.date_ref ? moment(v.date_ref).tz('America/Santiago').format('DD-MM-YYYY') : ''}</td>
+                            <td>{v.reason_ref}</td>
+                            <td>{v.type_code}</td>
+                          </tr>
+                        ))}
+                      </React.Fragment>
+                    ) : ''}
+                  </tbody>
+                </table>
+              </Col>
+            </Row>
+          ) : ''}
           <Row>
             <Col sm={12} md={12} lg={12} className="">
               <h4 className="title_principal text-center">Totales</h4>

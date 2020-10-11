@@ -13,6 +13,7 @@ import 'styles/components/modalComponents.css'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import InputField from 'components/input/InputComponent'
+import { formatRut } from 'utils/functions'
 
 const FormClientModal = (props) => {
 
@@ -47,7 +48,15 @@ const FormClientModal = (props) => {
   },[props.dataModify])
 
   const handleOnChange = e => {
-    setClient({...client, [e.target.name] : e.target.value})
+    if(e.target.name === "type_document" && e.target.value === "Rut"){
+      let client_rut = formatRut(Object.assign({},client).data_document)
+      setClient({...client, [e.target.name] : e.target.value, data_document: client_rut})
+    }else if(e.target.name === "data_document" && client.type_document === "Rut"){
+      let val = formatRut(e.target.value)
+      setClient({...client, [e.target.name] : val})
+    }else{
+      setClient({...client, [e.target.name] : e.target.value})
+    }
   }
 
   const onSubmit = e => {

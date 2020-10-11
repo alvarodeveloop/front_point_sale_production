@@ -147,5 +147,10 @@ export const routes = [
   {
     path: '/branch_office',
     component: lazy(() => import('./pages/BranchOfficePage'))
+  },
+  {
+    path: '/quotitation/invoicing/:id?',
+    component: lazy(() => import('./pages/CotizationInvoicingPage'))
   }
+
 ]

@@ -67,7 +67,6 @@ const AuthPageTemplate = props => {
           await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: data.user.branch_offices[0].id, id_enterprise: data.user.enterprises[0].id, id_parent : data.user.id_parent, email: data.user.email})
           localStorage.setItem('user',JSON.stringify(data.user))
           localStorage.setItem('token',data.token)
-          localStorage.setItem('token_facturacion',data.token_facturacion)
           props.loginDispatch(data.user)
         }else{
           // si solo hay una empresa y más de una sucursal
@@ -82,7 +81,6 @@ const AuthPageTemplate = props => {
             localStorage.setItem('id_enterprise',data.user.enterprises[0].id)
             localStorage.setItem('user',JSON.stringify(data.user))
             localStorage.setItem('token',data.token)
-            localStorage.setItem('token_facturacion',data.token_facturacion)
             await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: '', id_enterprise: data.user.enterprises[0].id, id_parent : data.user.id_parent, email: data.user.email})
             props.loginDispatch(data.user)
           }else{
@@ -109,7 +107,6 @@ const AuthPageTemplate = props => {
 
   /*const responseFacebook = responseFace => {
     let profile = Object.assign({},responseFace)
-
     axios.post(API_URL+'auth_by_social_media',profile).then(result => {
       const { data } = result
       if(data.user){
@@ -129,7 +126,6 @@ const AuthPageTemplate = props => {
       }
     })
   }
-
   const responseFacebookFail = responseFacebookFail => {
     console.log(responseFacebookFail)
   }*/
@@ -193,7 +189,6 @@ const AuthPageTemplate = props => {
     localStorage.setItem('id_enterprise',id_enterprise)
     localStorage.setItem('user',JSON.stringify(userLocal))
     localStorage.setItem('token',storage.token)
-    localStorage.setItem('token_facturacion',storage.token_facturacion)
     await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: idBranch, id_enterprise: id_enterprise,  id_parent: userLocal.id_parent, email: userLocal.email})
 
     setTimeout(() => {
@@ -209,7 +204,6 @@ const AuthPageTemplate = props => {
       localStorage.setItem('id_enterprise',idEnteprise)
       localStorage.setItem('user',JSON.stringify(userLocal))
       localStorage.setItem('token',storage.token)
-      localStorage.setItem('token_facturacion',storage.token_facturacion)
       setTimeout(function () {
         props.loginDispatch(userLocal)
       }, 1500);

@@ -12,7 +12,7 @@ const InputFieldRef = React.forwardRef( (props,ref) => {
         <Form.Label className="fontBold">{props.label}</Form.Label>
         <Form.Control
           ref={ref}
-          id={props.name}
+          id={props.id ? props.id : props.name}
           type={props.type}
           name={props.name}
           onChange={props.handleChange}
@@ -42,7 +42,7 @@ const InputFieldRef = React.forwardRef( (props,ref) => {
       <Form.Group className={classFormGroup}>
         <Form.Label className="fontBold">{props.label}</Form.Label>
         <Form.Control
-          id={props.name}
+          id={props.id ? props.id : props.name}
           as={props.type}
           name={props.name}
           onChange={props.handleChange}
@@ -73,7 +73,7 @@ const InputFieldRef = React.forwardRef( (props,ref) => {
       <Form.Group className={classFormGroup}>
         <Form.Label className="fontBold">{props.label}</Form.Label>
         <Form.Control
-          id={props.name}
+          id={props.id ? props.id : props.name}
           as={props.type}
           name={props.name}
           onChange={props.handleChange}
@@ -106,6 +106,7 @@ InputFieldRef.propTypes = {
   label: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
+  id: PropTypes.string,
   handleChange: PropTypes.func.isRequired,
   handleKeyUp: PropTypes.func,
   value: PropTypes.any,

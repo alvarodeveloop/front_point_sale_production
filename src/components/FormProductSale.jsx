@@ -200,7 +200,7 @@ const FormProductSale = (props) => {
           props.handleSubmitProduct(Object.assign({},dataProduct))
           cleanForm()
         }).catch(err => {
-
+          console.log(err);
           setTextButton('Guardar')
           setIsSubmit(false)
           const { response } = err
@@ -221,6 +221,7 @@ const FormProductSale = (props) => {
       }
 
     }).catch(err => {
+      console.log(err);
       setTextButton('Guardar')
       setIsSubmit(false)
       const { response } = err

@@ -58,8 +58,8 @@ const ModalGastosCotizacion = (props) => {
       amount: '',
     })
     inputElement.current.focus()
-    toast.success('Gasto Agregado, agregue otro si desea')
     setValidateForm(false)
+    props.onHide()
   }
 
   const onChange = e => {
