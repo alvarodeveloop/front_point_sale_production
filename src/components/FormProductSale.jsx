@@ -197,7 +197,7 @@ const FormProductSale = (props) => {
           toast.success('Producto Creado')
           setTextButton('Guardar')
           setIsSubmit(false)
-          props.handleSubmitProduct(Object.assign({},dataProduct))
+          props.handleSubmitProduct(Object.assign({},result.data))
           cleanForm()
         }).catch(err => {
           console.log(err);
@@ -216,7 +216,7 @@ const FormProductSale = (props) => {
         toast.success('Producto Creado')
         setTextButton('Guardar')
         setIsSubmit(false)
-        props.handleSubmitProduct(Object.assign({},dataProduct))
+        props.handleSubmitProduct(Object.assign({},result.data))
         cleanForm()
       }
 

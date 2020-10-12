@@ -184,7 +184,7 @@ const CotizacionSearchPage = props => {
               return (
                 <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
                   <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => {}}>Imprimir</Dropdown.Item>
+                  <Dropdown.Item onClick={() => printCotizacion(original.id)}>Imprimir</Dropdown.Item>
                 </DropdownButton>
               )
             }else{

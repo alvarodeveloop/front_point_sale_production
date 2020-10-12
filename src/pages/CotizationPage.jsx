@@ -548,6 +548,7 @@ const CotizationPage = (props) => {
         });
       }
     }
+  
     setDetailProducts([...detailProducts, product])
     setIsShowModalProduct(false)
   }
