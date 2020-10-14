@@ -71,7 +71,7 @@ const Styles = styled.div`
   }
 `
 
-const CotizationInvoicingPage = (props) => {
+const SellNoteInvoicePage = (props) => {
 
   const [clients,setClients] = useState([])
   const [clientDetail,setClientDetail] = useState({})
@@ -223,7 +223,7 @@ const CotizationInvoicingPage = (props) => {
   }
 
   const fetchDataUpdate = () => {
-    axios.get(API_URL+'cotizacion/'+props.match.params.id).then(result => {
+    axios.get(API_URL+'sell_note/'+props.match.params.id).then(result => {
       setGastosDetail(result.data.gastos)
       setDetailProducts(result.data.products)
 
@@ -272,7 +272,7 @@ const CotizationInvoicingPage = (props) => {
             type_document: 'Hoja Entrada de Servicio',
             ref_cotizacion: result.data.ref,
             date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-            reason_ref: 'Cotización',
+            reason_ref: 'Nota de Venta',
             type_code: '',
             id_cotizacion: result.data.id
           },
@@ -306,7 +306,7 @@ const CotizationInvoicingPage = (props) => {
   }
 
   const goToDashboard = () => {
-      props.history.replace('/quotitation/search_quotitation')
+      props.history.replace('/quotitation/sell_note')
   }
 
   const displayTotalProduct = () => {
@@ -408,7 +408,7 @@ const CotizationInvoicingPage = (props) => {
     }
     setDisableButton(true)
     if(props.match.params.id){
-      axios.put(API_URL+'cotizacion/'+props.match.params.id,object_post).then(result => {
+      axios.put(API_URL+'sell_note/'+props.match.params.id,object_post).then(result => {
         toast.success('Operación realizada con éxito')
         setOpenModalClientMail(false)
         setDisableButton(false)
@@ -451,7 +451,7 @@ const CotizationInvoicingPage = (props) => {
   }
 
   const get_ref = () => {
-    axios.get(API_URL+'cotizacion_get_ref').then(result => {
+    axios.get(API_URL+'sell_note_get_ref').then(result => {
       setCotizationData({...cotizationData, ref: result.data.ref})
     }).catch(err => {
       if(err.response){
@@ -645,15 +645,14 @@ const CotizationInvoicingPage = (props) => {
 
     setDisableButton(true)
 
-    axios.put(API_URL+'cotizacion_facturar/'+props.match.params.id,object_post).then(result => {
-      toast.success('Cotización facturada con éxito')
+    axios.put(API_URL+'sell_note_facturar/'+props.match.params.id,object_post).then(result => {
+      toast.success('Nota de Venta facturada con éxito')
       setDisableButton(false)
-      handleModalInvoice()
       clearData()
       setDisplayReturnButton(true)
       toast.info('Generando pdf de la Factura, espere por favor...')
 
-      axios.get(API_URL+'cotizacion_print/'+props.match.params.id).then(result => {
+      axios.get(API_URL+'sell_note_print/'+props.match.params.id).then(result => {
         window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
         setTimeout( () => {
           goToDashboard()
@@ -665,7 +664,6 @@ const CotizationInvoicingPage = (props) => {
           toast.error('Error, contacte con soporte')
         }
       })
-
     }).catch(err => {
       setDisableButton(false)
       if(err.response){
@@ -683,12 +681,12 @@ const CotizationInvoicingPage = (props) => {
         <Form onSubmit={handleSubmit} noValidate validated={validated}>
           <Row>
             <Col sm={8} md={8} lg={8}>
-              <h4 className="title_principal">Facturación de Cotizaciones</h4>
+              <h4 className="title_principal">Facturación de Notas de Ventas</h4>
             </Col>
             <Col sm={4} md={4} lg={4}>
               <InputField
                type='text'
-               label={(<h5 style={{color: "rgb(153, 31, 31)"}}>Ref.Cotización</h5>)}
+               label={(<h5 style={{color: "rgb(153, 31, 31)"}}>Ref.Nota de Venta</h5>)}
                name='id_cotizacion'
                required={true}
                messageErrors={[
@@ -1232,7 +1230,7 @@ const CotizationInvoicingPage = (props) => {
               <TableProductsCotization setDetailProducts={setDetailProducts} detailProducts={detailProducts} isShowIva={cotizationData.total_with_iva}/>
               <Row className="justify-content-center">
                 <Col sm={1} md={1} lg={1}>
-                  <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Producto a la Cotización</Tooltip>}>
+                  <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Producto a la Nota</Tooltip>}>
                     <DropdownButton size="sm" variant="danger" id={'dropdown_product'} title={(<FaPlusCircle />)} className="button_product">
                       <Dropdown.Item onClick={() => setIsShowModalProduct(true) }>Agregar Producto desde Inventario</Dropdown.Item>
                       <Dropdown.Item onClick={() => addNewProductIrregular(true)}>Agregar producto irregular con precio neto </Dropdown.Item>
@@ -1257,7 +1255,7 @@ const CotizationInvoicingPage = (props) => {
           </Row>
           <Row className="justify-content-center">
             <Col sm={1} md={1} lg={1}>
-              <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Agregar Gastos a la Cotización</Tooltip>}>
+              <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Agregar Gastos a la Nota</Tooltip>}>
                 <div className="button-add">
                   <Button size="sm" variant="danger" block={true} onClick={() => setIsShowModalGastos(true)}><FaPlusCircle /></Button>
                 </div>
@@ -1404,22 +1402,22 @@ const CotizationInvoicingPage = (props) => {
             </Col>
           </Row>
           <br/>
-          {!displayReturnButton ? (
-            <Row className="justify-content-center">
-              <Col sm={3} md={3} lg={3}>
-                <Button variant="secondary" size="sm" block={true} type="submit">Emitir y Facturar</Button>
-              </Col>
-              <Col sm={3} md={3} lg={3}>
-                <Button variant="danger" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
-              </Col>
-            </Row>
-          ) : (
-            <Row className="justify-content-center">
-              <Col sm={3} md={3} lg={3}>
-                <Button variant="secondary" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
-              </Col>
-            </Row>
-          )}
+            {!displayReturnButton ? (
+              <Row className="justify-content-center">
+                <Col sm={3} md={3} lg={3}>
+                  <Button variant="secondary" size="sm" block={true} type="submit">Emitir y Facturar</Button>
+                </Col>
+                <Col sm={3} md={3} lg={3}>
+                  <Button variant="danger" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
+                </Col>
+              </Row>
+            ) : (
+              <Row className="justify-content-center">
+                <Col sm={3} md={3} lg={3}>
+                  <Button variant="secondary" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
+                </Col>
+              </Row>
+            )}
           {displayModals ? (
             <React.Fragment>
               <FormClientModal
@@ -1470,9 +1468,9 @@ const CotizationInvoicingPage = (props) => {
   )
 }
 
-CotizationInvoicingPage.defaultProps = {
+SellNoteInvoicePage.defaultProps = {
   configStore : JSON.parse(localStorage.getItem('configStore')),
   configGeneral: JSON.parse(localStorage.getItem('configGeneral'))
 }
 
-export default CotizationInvoicingPage
+export default SellNoteInvoicePage

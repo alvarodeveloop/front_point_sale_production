@@ -151,6 +151,17 @@ export const routes = [
   {
     path: '/quotitation/invoicing/:id?',
     component: lazy(() => import('./pages/CotizationInvoicingPage'))
-  }
-
+  },
+  {
+    path: '/quotitation/sell_note/invoicing/:id?',
+    component: lazy(() => import('./pages/SellNoteInvoicePage'))
+  },
+  {
+    path: '/quotitation/sell_note',
+    component: lazy(() => import('./pages/SellNoteSearchPage'))
+  },
+  {
+    path: '/quotitation/create_sell_note/:id?',
+    component: lazy(() => import('./pages/SellNotePage'))
+  },
 ]
