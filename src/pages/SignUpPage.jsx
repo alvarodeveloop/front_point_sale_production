@@ -5,13 +5,18 @@ import {
   Row,
   Col,
   Button,
-  Form
+  Form,
+  Image
 } from 'react-bootstrap'
 import InputField from 'components/input/InputComponent'
 import { ToastContainer, toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import axios from 'axios'
 import 'vendor/styles/pages/authentication.scss'
+import {formatRut} from 'utils/functions'
+import { connect } from 'react-redux'
+import { login } from 'actions/auth'
+import { setAuthorizationToken } from 'utils/functions'
 
 const SignUpPage = (props) => {
 
@@ -22,7 +27,9 @@ const SignUpPage = (props) => {
     email: '',
     password: '',
     password_repeat: '',
-    id_rol: 2
+    id_rol: 2,
+    name_enterprise: '',
+    address_enterprise: ''
   })
 
   useEffect(() => {
@@ -30,7 +37,12 @@ const SignUpPage = (props) => {
   },[])
 
   const onChange = e => {
-    setUser({...user, [e.target.name] : e.target.value})
+    if(e.target.name === "rut"){
+      let val = formatRut(e.target.value)
+      setUser({...user, [e.target.name] : val})
+    }else{
+      setUser({...user, [e.target.name] : e.target.value})
+    }
   }
 
   const onSubmit = e => {
@@ -51,9 +63,13 @@ const SignUpPage = (props) => {
     }
 
     axios.post(API_URL+'user_free',userSave).then(result => {
-      toast.success('Usuario Registrado')
+      toast.success('Felicidades, usuario registrado con éxito')
+      localStorage.setItem('user',JSON.stringify(result.data.user))
+      localStorage.setItem('token',result.data.token)
+      setAuthorizationToken(result.data.token)
+      props.login(result.data.user)
       setTimeout(() => {
-        props.history.replace('/')
+        props.history.replace('/dashboard')
       },1500)
     }).catch(err => {
       if(err.response){
@@ -77,7 +93,7 @@ const SignUpPage = (props) => {
           <div className="w-100 text-white px-5">
             <h1 className="display-2 font-weight-bolder mb-4">Registro de Cuenta</h1>
             <div className="text-large font-weight-light">
-              Crea tu usuario para acceder a aidy
+              Crea tu usuario nivel empresa para empezar el manejo de negocio en aidy
             </div>
           </div>
           {/* /.Text */}
@@ -92,10 +108,8 @@ const SignUpPage = (props) => {
             <div className="w-100">
               {/* Logo */}
               <div className="d-flex justify-content-center align-items-center">
-                <div className="ui-w-60">
-                  <div className="w-100 position-relative" style={{ paddingBottom: '54%' }}>
-                    <svg className="w-100 h-100 position-absolute" viewBox="0 0 148 80" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"><defs><linearGradient id="a" x1="46.49" x2="62.46" y1="53.39" y2="48.2" gradientUnits="userSpaceOnUse"><stop stopOpacity=".25" offset="0"></stop><stop stopOpacity=".1" offset=".3"></stop><stop stopOpacity="0" offset=".9"></stop></linearGradient><linearGradient id="e" x1="76.9" x2="92.64" y1="26.38" y2="31.49" xlinkHref="#a"></linearGradient><linearGradient id="d" x1="107.12" x2="122.74" y1="53.41" y2="48.33" xlinkHref="#a"></linearGradient></defs><path className="fill-primary" transform="translate(-.1)" d="M121.36,0,104.42,45.08,88.71,3.28A5.09,5.09,0,0,0,83.93,0H64.27A5.09,5.09,0,0,0,59.5,3.28L43.79,45.08,26.85,0H.1L29.43,76.74A5.09,5.09,0,0,0,34.19,80H53.39a5.09,5.09,0,0,0,4.77-3.26L74.1,35l16,41.74A5.09,5.09,0,0,0,94.82,80h18.95a5.09,5.09,0,0,0,4.76-3.24L148.1,0Z"></path><path transform="translate(-.1)" d="M52.19,22.73l-8.4,22.35L56.51,78.94a5,5,0,0,0,1.64-2.19l7.34-19.2Z" fill="url(#a)"></path><path transform="translate(-.1)" d="M95.73,22l-7-18.69a5,5,0,0,0-1.64-2.21L74.1,35l8.33,21.79Z" fill="url(#e)"></path><path transform="translate(-.1)" d="M112.73,23l-8.31,22.12,12.66,33.7a5,5,0,0,0,1.45-2l7.3-18.93Z" fill="url(#d)"></path></svg>
-                  </div>
+                <div className="position-relative text-center">
+                  <Image src={require('../assets/img/logo/AIDY_01.jpg')} width="55%" />
                 </div>
               </div>
               {/* / Logo */}
@@ -162,7 +176,8 @@ const SignUpPage = (props) => {
 }
 
 SignUpPage.propTypes = {
-
+    isLogin : PropTypes.bool.isRequired,
+    login: PropTypes.func.isRequired
 }
 
 SignUpPage.defaultProps = {
@@ -218,4 +233,16 @@ SignUpPage.defaultProps = {
   },
 }
 
-export default SignUpPage
+function mapStateToProps(state){
+  return {
+    isLogin : state.auth.isAuthenticated
+  }
+}
+
+function mapDispatchToProps(){
+    return {
+      login
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps())(SignUpPage);

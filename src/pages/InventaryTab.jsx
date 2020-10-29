@@ -14,12 +14,15 @@ import {
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
-import { inventaryColumns } from 'utils/columns/inventario'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import ModalStockInventary from 'components/modals/ModalStockInventary'
 import ModalHistoryInventary from 'components/modals/ModalHistoryInventary'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { connect } from 'react-redux'
+let inventaryColumns = []
 
 const InventaryTab = (props) => {
 
@@ -33,26 +36,96 @@ const InventaryTab = (props) => {
 
   useEffect(() => {
     fetchData()
-  },[])
+  },[props.id_branch_office])
 
   useMemo(() => {
 
-    if(inventaryColumns.length > 6){
-      inventaryColumns.pop()
-    }
+    inventaryColumns = [
+          {
+            Header: 'Nombre Producto',
+            accessor: props1 => props1.products.name_product
+          },
+          {
+            Header: 'Proveedor',
+            accessor: props1 => props1.products.providers ? props1.products.providers.name_fantasy : 'Sin Proveedor'
+          },
+          {
+            Header: 'Categoría',
+            accessor: props1 => props1.products.categories.map(v => v.categories ? v.categories.name_category : ''),
+            Cell: props1 => {
+              const {original} = props1.cell.row
+              if(original.products.categories.length > 1){
+                return(
+                  <OverlayTrigger placement={'right'} overlay={
+                    <Tooltip id={"tooltip-right"}>
+                      <ul className="list-group">
+                        {original.products.categories.map((v,i) => (
+                          <li key={i} className="list-group-item">{v.categories ? v.categories.name_category : ''}</li>
+                        ))}
+                      </ul>
+                    </Tooltip>
+                  }>
+                    <Button sm="sm" type="button" variant="link" block={true}>Categorias</Button>
+                  </OverlayTrigger>
+                )
+              }else{
+                if(original.products.categories.length > 0){
+                  return original.products.categories[0].categories.name_category
+                }else{
+                  return ''
+                }
+              }
+            }
+          },
+          {
+            Header: 'Stock Mínimo',
+            accessor: 'minimun_stock',
+            Cell: props1 => {
+              const stock = props1.cell.row.original.minimun_stock
+              return (<Badge variant="danger" className="font_badge">{stock}</Badge>)
+            }
+          },
+          {
+            Header: 'Stock Actual',
+            accessor: 'stock',
+            Cell: props1 => {
+              const stock = props1.cell.row.original.stock
+              return (<Badge variant="danger" className="font_badge">{stock}</Badge>)
+            }
+          },
+          {
+            Header: 'Estado',
+            accessor: 'estado',
+            Cell: props1 => {
 
-    inventaryColumns.push({
-      Header: 'Acciones',
-      Cell: props => {
-        const id = props.cell.row.original.id
-        return(
-          <DropdownButton size="sm" id={'drop'+props.cell.row.original.id} title="Seleccione"  block="true">
-            <Dropdown.Item onClick={() => handleUpdateStock(props.cell.row.original) }>Modificar Stock</Dropdown.Item>
-            <Dropdown.Item onClick={() => showHistoryModal(props.cell.row.original) }>Ver Historial</Dropdown.Item>
-          </DropdownButton>
-        )
-      }
-    })
+              if(props1.cell.row.original.estado === "Normal"){
+                return (
+                  <Badge variant="success" className="font-badge">
+                    {props1.cell.row.original.estado}
+                  </Badge>
+                )
+              }else{
+                return (
+                  <Badge variant="danger" className="font-badge">
+                    {props1.cell.row.original.estado}
+                  </Badge>
+                )
+              }
+            }
+          },
+          {
+            Header: 'Acciones',
+            Cell: props1 => {
+              const id = props1.cell.row.original.id
+              return(
+                <DropdownButton size="sm" id={'drop'+props1.cell.row.original.id} title="Seleccione"  block="true">
+                  <Dropdown.Item onClick={() => handleUpdateStock(props1.cell.row.original) }>Modificar Stock</Dropdown.Item>
+                  <Dropdown.Item onClick={() => showHistoryModal(props1.cell.row.original) }>Ver Historial</Dropdown.Item>
+                </DropdownButton>
+              )
+            }
+          }
+        ]
 
   },[])
 
@@ -126,4 +199,16 @@ const InventaryTab = (props) => {
   )
 }
 
-export default InventaryTab
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+InventaryTab.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(InventaryTab)

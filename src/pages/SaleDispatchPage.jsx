@@ -26,6 +26,7 @@ import InputField from 'components/input/InputComponent'
 import 'styles/components/modalComponents.css'
 import {Doughnut} from 'react-chartjs-2';
 import { ARRAY_COLORS } from 'utils/constants'
+import { connect } from 'react-redux'
 
 let saleColumns = []
 
@@ -87,7 +88,7 @@ const SaleDispatchPage = (props) => {
       saleColumns = []
       resetChartData()
     }
-  },[])
+  },[props.id_branch_office])
 
   useEffect(() => {
     handleDataDonutSsStatus()
@@ -158,13 +159,13 @@ const SaleDispatchPage = (props) => {
             if(original.status_dispatch >= 5){
               return (
                 <React.Fragment>
-                  <Badge variant="danger" className="font_badge">{val_status}</Badge>
+                  <Badge variant="danger" className="font-badge">{val_status}</Badge>
                   <br/>
                   <b>Motivo:</b> {original.description_dispatch}
                 </React.Fragment>
               )
             }else{
-              return (<Badge variant="danger" className="font_badge">{val_status}</Badge>)
+              return (<Badge variant="danger" className="font-badge">{val_status}</Badge>)
             }
           }
         },
@@ -193,7 +194,7 @@ const SaleDispatchPage = (props) => {
             }else if(original.status_payment_dispatch == 4){
               val = 'Anulado'
             }
-            return ( <Badge variant="secondary" className="font_badge">{val}</Badge>)
+            return ( <Badge variant="secondary" className="font-badge">{val}</Badge>)
           }
         },
         {
@@ -225,6 +226,7 @@ const SaleDispatchPage = (props) => {
                       <Dropdown.Item onClick={() => printInvoice(original)} >Imprimir Factura</Dropdown.Item>
                   ) : ''
                 }
+                <Dropdown.Item onClick={() => seeDetails(original)} >Ver Detalle</Dropdown.Item>
               </DropdownButton>
             )
           }
@@ -399,7 +401,6 @@ const SaleDispatchPage = (props) => {
         config={props.config}
         configStore={props.configStore}
         dataToPay={saleDataOption}
-        isDispatch={true}
       />
     {props.config && props.configStore ? (
       <ModalDetailSale
@@ -408,6 +409,7 @@ const SaleDispatchPage = (props) => {
         config={props.config}
         configStore={props.configStore}
         dataSale={saleDataOption}
+        isDispatch={true}
         />
     ) : ''}
       <Modal
@@ -474,9 +476,20 @@ const SaleDispatchPage = (props) => {
   )
 }
 
-SaleDispatchPage.defaultProps = {
- config: JSON.parse(localStorage.getItem('configGeneral')),
- configStore: JSON.parse(localStorage.getItem('configStore')),
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+    config: state.configs.config,
+    configStore: state.configs.configStore,
+  }
 }
 
-export default SaleDispatchPage
+SaleDispatchPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+  config: PropTypes.object,
+  configStore: PropTypes.object,
+}
+
+export default connect(mapStateToProps,{})(SaleDispatchPage)

@@ -34,6 +34,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableProductsCotization from 'components/TableProductsCotization'
 import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
+import { connect } from 'react-redux'
 
 let DetailCotizacion = null
 
@@ -70,7 +71,7 @@ const Styles = styled.div`
     overflow-y: auto;
   }
 `
-
+let count = 0
 const SellNoteInvoicePage = (props) => {
 
   const [clients,setClients] = useState([])
@@ -122,72 +123,38 @@ const SellNoteInvoicePage = (props) => {
   const [displayReturnButton, setDisplayReturnButton] = useState(false)
 
   useEffect(() => {
-    layoutHelpers.toggleCollapsed()
     if(localStorage.getItem('configStore') === "null"){
       toast.error('Debe hacer su configuración de tienda primero')
       setTimeout(function () {
         props.history.replace('/config/config_store')
       }, 1500);
     }else{
-      let config = JSON.parse(localStorage.getItem('configStore'))
-      fetchClients()
-      fetchProducts()
-      fetchDataUpdate()
-      setDisplayModals(true)
+
+      count++
+      if(count > 1 && props.id_branch_office !== cotizationData.id_branch_office){
+        toast.error('Esta Nota de venta no pertenece a esta sucursal')
+        setTimeout(function () {
+          props.history.replace('/quotitation/sell_note')
+        }, 1500);
+      }else{
+        let config = JSON.parse(localStorage.getItem('configStore'))
+        fetchClients()
+        fetchProducts()
+        fetchDataUpdate()
+        setDisplayModals(true)
+      }
     }
+  },[props.id_branch_office])
+
+  useEffect(() => {
+    layoutHelpers.toggleCollapsed()
     return () => {
-      DetailCotizacion = null
       layoutHelpers.toggleCollapsed()
+      count = 0
     }
   },[])
 
   useMemo(() => {
-
-    DetailCotizacion = [
-      {
-        Header: 'Producto',
-        accessor: 'name_product'
-      },
-      {
-        Header: 'Precio',
-        accessor: v => {
-
-          if(v.is_neto){
-            return [showPriceWithDecimals(props.configGeneral,v.price)]
-          }else{
-            let tax =  (v.price * props.configStore.tax) / 100
-            let new_price = v.price + tax
-            return [showPriceWithDecimals(props.configGeneral,new_price)]
-          }
-
-        }
-      },
-      {
-        Header: 'Cantidad',
-        accessor: 'quantity'
-      },
-      {
-        Header: 'Total',
-        accessor: v =>{
-          if(v.is_neto){
-            return [showPriceWithDecimals(props.configGeneral,v.price * v.quantity)]
-          }else{
-            let tax =  (v.price * props.configStore.tax) / 100
-            let new_price = v.price + tax
-            return [showPriceWithDecimals(props.configGeneral,new_price * v.quantity)]
-          }
-        }
-      },
-      {
-        Header: 'Acciones',
-        Cell: props => {
-          const id = props.cell.row.original
-          return(
-            <Button size="sm" size="sm" variant="primary" block={true} onClick={() => removeItemDetail(props.cell.row.original) }>Remover</Button>
-          )
-        }
-      }
-    ]
 
     if(GastosCotizacion.length > 2){
       GastosCotizacion.pop()
@@ -255,6 +222,7 @@ const SellNoteInvoicePage = (props) => {
           way_of_payment: result.data.way_of_payment ? result.data.way_of_payment : 1,
           discount_global: result.data.discount_global,
           days_expiration: result.data.days_expiration,
+          id_branch_office : result.data.id_branch_office,
         }
       })
 
@@ -1473,4 +1441,16 @@ SellNoteInvoicePage.defaultProps = {
   configGeneral: JSON.parse(localStorage.getItem('configGeneral'))
 }
 
-export default SellNoteInvoicePage
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+SellNoteInvoicePage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(SellNoteInvoicePage)

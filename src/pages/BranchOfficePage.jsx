@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { FaPlusCircle } from "react-icons/fa";
 import axios from 'axios'
+import { connect } from 'react-redux'
 import {
   Container,
   Row,
@@ -21,6 +22,8 @@ import Table from 'components/Table'
 import 'styles/components/modalComponents.css'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { setBranchOffices } from 'actions/enterpriseSucursal'
+let count = 1
 
 const BranchOfficePage = (props) => {
 
@@ -45,18 +48,30 @@ const BranchOfficePage = (props) => {
     id_rol: 3,
   })
   const [branchOffice, setBranchOffice] = useState([])
-  const [requiredInput,setRequiredInput] = useState(true)
+  const [requiredInput,setRequiredInput] = useState(false)
 
   useEffect(() => {
     fetchData()
+    return () => {
+      count = 0
+    }
   },[])
 
-  const fetchData = () => {
+  useEffect(() => {
+    fetchData(false)
+  },[props.id_enterprise])
 
+  const fetchData = (type = false, update = false) => {
     let promises = [axios.get(API_URL+'branch_office')]
 
     Promise.all(promises).then(result => {
       setBranchOffice(result[0].data)
+      if(type){
+        props.setBranchOffices(result[0].data)
+        if(!update){
+          toast.info('Si desea trabajar con alguna sucursal , debe seleccionarla en el select de la barra superior de navegación')
+        }
+      }
     }).catch(err => {
       if(err.response){
         toast.error(err.response.data.message)
@@ -104,19 +119,39 @@ const BranchOfficePage = (props) => {
 
     if(dataBranch.id){
       axios.put(API_URL+'branch_office/'+dataBranch.id,dataBranch).then(result => {
-        axios.put(API_URL+'user_by_branch_office/'+dataUser.id,dataUser).then(result => {
+      let validateUser = validate_user(dataUser)
+        if(validateUser.validate){
+          if(validateUser.required){
+            toast.error('Todos los campos del usuario son requeridos')
+            return false
+          }
+          axios.put(API_URL+'user_by_branch_office/'+dataUser.id,dataUser).then(result => {
+            toast.success('Sucursal Modificada')
+            cleanForm()
+            handleOpenModalAdd()
+            if( parseInt(JSON.parse(localStorage.getItem('user')).id_rol,10) === 2){
+              fetchData(true,true)
+            }else{
+              fetchData()
+            }
+          }).catch(err => {
+            const { response } = err
+            if(response){
+              toast.error(response.data.message)
+            }else{
+              toast.error('Error, contacte con soporte')
+            }
+          })
+        }else{
           toast.success('Sucursal Modificada')
           cleanForm()
           handleOpenModalAdd()
-          fetchData()
-        }).catch(err => {
-          const { response } = err
-          if(response){
-            toast.error(response.data.message)
+          if( parseInt(JSON.parse(localStorage.getItem('user')).id_rol,10) === 2){
+            fetchData(true,true)
           }else{
-            toast.error('Error, contacte con soporte')
+            fetchData()
           }
-        })
+        }
       }).catch(err => {
         const { response } = err
         if(response){
@@ -126,21 +161,67 @@ const BranchOfficePage = (props) => {
         }
       })
     }else{
-      dataUser.branch = dataBranch
-      axios.post(API_URL+'user_by_brach_office',dataUser).then(result => {
-        toast.success('Sucursal Creada con éxito')
-        cleanForm()
-        handleOpenModalAdd()
-        fetchData(true)
-      }).catch(err => {
-        const { response } = err
-        if(response){
-          toast.error(response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
+      let validateUser = validate_user(dataUser)
+      if(validateUser.validate){
+        if(validateUser.required){
+          toast.error('Todos los campos del usuario son requeridos')
+          return false
         }
-      })
+        dataUser.branch = dataBranch
+        axios.post(API_URL+'user_by_brach_office',dataUser).then(result => {
+          toast.success('Sucursal Creada con éxito')
+          cleanForm()
+          handleOpenModalAdd()
+          count++
+          if( parseInt(JSON.parse(localStorage.getItem('user')).id_rol,10) === 2 && count > 1 && count < 3){
+            fetchData(true)
+          }else{
+            fetchData()
+          }
+        }).catch(err => {
+          const { response } = err
+          if(response){
+            toast.error(response.data.message)
+          }else{
+            toast.error('Error, contacte con soporte')
+          }
+        })
+      }else{
+         axios.post(API_URL+'branch_office',dataBranch).then(result => {
+           toast.success('Sucursal Creada con éxito')
+           cleanForm()
+           handleOpenModalAdd()
+           count++
+           if( parseInt(JSON.parse(localStorage.getItem('user')).id_rol,10) === 2 && count > 1 && count < 3){
+             fetchData(true)
+           }else{
+             fetchData()
+           }
+         }).catch(err => {
+           if(err.response){
+             toast.error(err.response.data.message)
+           }else{
+             console.log(err);
+             toast.error('Error, contacte con soporte')
+           }
+         })
+      }
+    }
+  }
 
+  const validate_user = (userDatos) => {
+    let validate = false
+    let required = false
+    Object.keys(userDatos).forEach((item, i) => {
+      if(userDatos[item] !== "" && userDatos[item] !== null && item !== "id_rol"){
+        validate = true
+      }else if(validate === true && !userDatos[item]){
+        required = true
+      }
+    });
+    return {
+      validate,
+      required
     }
   }
 
@@ -160,7 +241,7 @@ const BranchOfficePage = (props) => {
       id: '',
       is_open: true,
     })
-    setRequiredInput(true)
+    setRequiredInput(false)
     setValidated(false)
   }
 
@@ -170,16 +251,19 @@ const BranchOfficePage = (props) => {
       is_open: values.is_open,
       id: values.id,
     })
-    setUserForm({
-      email: values.user[0].email,
-      password: '',
-      password_repeat: '',
-      rut: values.user[0].rut,
-      name: values.user[0].name,
-      phone: values.user[0].phone,
-      id: values.user[0].id,
-      id_rol: values.user[0].id_rol,
-    })
+
+    if(values.user.length){
+      setUserForm({
+        email: values.user[0].email,
+        password: '',
+        password_repeat: '',
+        rut: values.user[0].rut,
+        name: values.user[0].name,
+        phone: values.user[0].phone,
+        id: values.user[0].id,
+        id_rol: values.user[0].id_rol,
+      })
+    }
     setTitleModal('Modificar Sucursal '+values.name)
     setRequiredInput(false)
     handleOpenModalAdd()
@@ -242,7 +326,7 @@ const BranchOfficePage = (props) => {
                 type="text"
                 label="Nombre Completo"
                 name="name"
-                required={true}
+                required={false}
                 messageErrors={[
                   'Requerido*'
                 ]}
@@ -254,7 +338,7 @@ const BranchOfficePage = (props) => {
                 type="text"
                 label="Rut"
                 name="rut"
-                required={true}
+                required={false}
                 messageErrors={[
                   'Requerido*'
                 ]}
@@ -266,7 +350,7 @@ const BranchOfficePage = (props) => {
                 type="email"
                 label="Email"
                 name="email"
-                required={true}
+                required={false}
                 messageErrors={[
                   'Requerido* ','Formato Tipo Email*'
                 ]}
@@ -310,6 +394,11 @@ const BranchOfficePage = (props) => {
                 value={userForm.password_repeat}
                 handleChange={onChangeUser}
               />
+            </Row>
+            <Row>
+              <Col sm={12} md={12} lg={12}>
+                <p className="text-center" style={{color: "rgb(215, 71, 40)"}}>No requeridos*</p>
+              </Col>
             </Row>
             <Row>
               <Col sm={12} md={12} lg={12}>
@@ -360,4 +449,23 @@ const BranchOfficePage = (props) => {
   )
 }
 
-export default BranchOfficePage
+BranchOfficePage.propTypes ={
+  setBranchOffices: PropTypes.func.isRequired,
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+function mapDispatchToProps(){
+  return {
+    setBranchOffices
+  }
+}
+
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps())(BranchOfficePage)

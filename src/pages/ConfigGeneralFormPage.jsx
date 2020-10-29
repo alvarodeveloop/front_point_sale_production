@@ -32,7 +32,7 @@ const ConfigGeneralFormPage = (props) => {
     if(props.match.params.id){
       fetchDataUpdate()
     }
-  },[])
+  },[props.id_enterprise])
 
   const fetchDataUpdate = () => {
     axios.get(API_URL+'config_general_update').then(result => {
@@ -189,10 +189,6 @@ const ConfigGeneralFormPage = (props) => {
   )
 }
 
-ConfigGeneralFormPage.propTypes = {
-  setConfig: PropTypes.func.isRequired
-}
-
 ConfigGeneralFormPage.defaultProps ={
   inputSymbol: {
     type: 'text',
@@ -226,10 +222,23 @@ ConfigGeneralFormPage.defaultProps ={
   },
 }
 
+ConfigGeneralFormPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+  setConfig: PropTypes.func.isRequired,
+}
+
 function mapDispatchToProps(){
   return {
     setConfig
   }
 }
 
-export default connect(null,mapDispatchToProps())(ConfigGeneralFormPage)
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+export default connect(mapStateToProps,{})(ConfigGeneralFormPage)

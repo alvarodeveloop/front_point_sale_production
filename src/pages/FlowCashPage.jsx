@@ -10,7 +10,7 @@ import {
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import axios from 'axios'
-
+import { connect } from 'react-redux'
 import FlowCashAccountPage from 'pages/FlowCashAccountPage'
 import FlowCashCenterCostePage from 'pages/FlowCashCenterCostePage'
 import FlowCashEarningPage from 'pages/FlowCashEarningPage'
@@ -18,13 +18,12 @@ import FlowCashExpensivePage from 'pages/FlowCashExpensivePage'
 
 const FlowCashPage = (props) => {
 
-
   const [centerCostes , setCenterCostes] = useState([])
   const [accounts , setAccounts] = useState([])
 
   useEffect(() => {
     fetchData()
-  },[])
+  },[props.id_branch_office])
 
   const fetchData = () => {
     let promises = [
@@ -74,4 +73,16 @@ const FlowCashPage = (props) => {
   )
 }
 
-export default FlowCashPage
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+FlowCashPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(FlowCashPage)

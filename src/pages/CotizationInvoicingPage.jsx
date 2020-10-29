@@ -23,7 +23,7 @@ import ModalGastosCotizacion from 'components/modals/ModalGastosCotizacion'
 import { showPriceWithDecimals } from 'utils/functions'
 import * as moment from 'moment-timezone'
 import InputField from 'components/input/InputComponent'
-
+import { connect } from 'react-redux'
 import { ColumnsCotization, GastosCotizacion } from 'utils/columns/cotization'
 import ModalClientCotizacion from 'components/modals/ModalClientCotizacion'
 import ModalContacts from 'components/modals/ModalContacts'
@@ -70,7 +70,7 @@ const Styles = styled.div`
     overflow-y: auto;
   }
 `
-
+let count = 0
 const CotizationInvoicingPage = (props) => {
 
   const [clients,setClients] = useState([])
@@ -122,72 +122,36 @@ const CotizationInvoicingPage = (props) => {
   const [displayReturnButton, setDisplayReturnButton] = useState(false)
 
   useEffect(() => {
-    layoutHelpers.toggleCollapsed()
     if(localStorage.getItem('configStore') === "null"){
       toast.error('Debe hacer su configuración de tienda primero')
       setTimeout(function () {
         props.history.replace('/config/config_store')
       }, 1500);
     }else{
-      let config = JSON.parse(localStorage.getItem('configStore'))
-      fetchClients()
-      fetchProducts()
-      fetchDataUpdate()
-      setDisplayModals(true)
+      count++
+      if(count > 1 && props.id_branch_office !== cotizationData.id_branch_office){
+        toast.error('Esta cotización no pertenece a esta sucursal')
+        setTimeout(function () {
+          props.history.replace('/quotitation/search_quotitation')
+        }, 1500);
+      }else{
+        let config = JSON.parse(localStorage.getItem('configStore'))
+        fetchClients()
+        fetchProducts()
+        fetchDataUpdate()
+      }
     }
+  },[props.id_branch_office])
+
+  useEffect(() => {
+    layoutHelpers.toggleCollapsed()
     return () => {
-      DetailCotizacion = null
       layoutHelpers.toggleCollapsed()
+      count = 0
     }
   },[])
 
   useMemo(() => {
-
-    DetailCotizacion = [
-      {
-        Header: 'Producto',
-        accessor: 'name_product'
-      },
-      {
-        Header: 'Precio',
-        accessor: v => {
-
-          if(v.is_neto){
-            return [showPriceWithDecimals(props.configGeneral,v.price)]
-          }else{
-            let tax =  (v.price * props.configStore.tax) / 100
-            let new_price = v.price + tax
-            return [showPriceWithDecimals(props.configGeneral,new_price)]
-          }
-
-        }
-      },
-      {
-        Header: 'Cantidad',
-        accessor: 'quantity'
-      },
-      {
-        Header: 'Total',
-        accessor: v =>{
-          if(v.is_neto){
-            return [showPriceWithDecimals(props.configGeneral,v.price * v.quantity)]
-          }else{
-            let tax =  (v.price * props.configStore.tax) / 100
-            let new_price = v.price + tax
-            return [showPriceWithDecimals(props.configGeneral,new_price * v.quantity)]
-          }
-        }
-      },
-      {
-        Header: 'Acciones',
-        Cell: props => {
-          const id = props.cell.row.original
-          return(
-            <Button size="sm" size="sm" variant="primary" block={true} onClick={() => removeItemDetail(props.cell.row.original) }>Remover</Button>
-          )
-        }
-      }
-    ]
 
     if(GastosCotizacion.length > 2){
       GastosCotizacion.pop()
@@ -255,6 +219,7 @@ const CotizationInvoicingPage = (props) => {
           way_of_payment: result.data.way_of_payment ? result.data.way_of_payment : 1,
           discount_global: result.data.discount_global,
           days_expiration: result.data.days_expiration,
+          id_branch_office : result.data.id_branch_office
         }
       })
 
@@ -1475,4 +1440,16 @@ CotizationInvoicingPage.defaultProps = {
   configGeneral: JSON.parse(localStorage.getItem('configGeneral'))
 }
 
-export default CotizationInvoicingPage
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+CotizationInvoicingPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(CotizationInvoicingPage)

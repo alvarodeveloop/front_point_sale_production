@@ -2,8 +2,7 @@ import React, { useMemo, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Table from 'components/Table'
 import {
-  DropdownButton,
-  Dropdown,
+  Button,
   Badge
 } from 'react-bootstrap'
 import { showPriceWithDecimals } from 'utils/functions'
@@ -71,17 +70,7 @@ const TableProductComponent = (props) => {
           return (<Badge variant="danger" className="font_badge"> {propsTable.cell.row.original.inventary[0].stock} </Badge>)
         }
       },
-      {
-        Header: 'Acciones',
-        Cell: propsTable => {
-          const id = propsTable.cell.row.original.id
-          return(
-            <DropdownButton size="sm" id={'drop'+propsTable.cell.row.original.id} title="Seleccione"  block="true">
-              <Dropdown.Item onClick={() => handleAddCart(propsTable.cell.row.original)}>Añadir al Carrito</Dropdown.Item>
-            </DropdownButton>
-          )
-        }
-      }
+      
     )
 
   },[])

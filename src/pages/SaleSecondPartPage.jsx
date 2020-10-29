@@ -22,6 +22,7 @@ import { API_URL } from 'utils/constants'
 import { FaPlusCircle,FaShoppingCart} from 'react-icons/fa'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import { showPriceWithDecimals } from 'utils/functions'
 
 const SaleSecondPartPage = (props) => {
 
@@ -101,7 +102,6 @@ const SaleSecondPartPage = (props) => {
     })
 
     setOpenModalRechargeTotal(!openModalRechargeTotal)
-
   }
 
   const handleDiscountTotal = data => {
@@ -121,7 +121,6 @@ const SaleSecondPartPage = (props) => {
         isRegistered: Object.assign({},{},{isRegister: isRegisteredUpdate}).isRegister,
         configStore: props.configStore,
       })
-
       setOpenModalRecharge(!openModalRecharge)
   }
 
@@ -150,15 +149,15 @@ const SaleSecondPartPage = (props) => {
       switch (props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.type) {
         case 'resta':
           return (
-            <React.Fragment>
-              <Badge variant="danger">
-                {props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.amount}
+            <div style={{widh: "100%"}} className="text-center">
+              <Badge variant="danger" className="font-badge">
+                {props.config.simbolo_moneda+props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.amount}
               </Badge>
               <br/>
-              <span>
-                { props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.percentajeFixed === "percentaje" ? 'porcentaje' : 'fijo' }
+              <span style={{fontWeight: "bold"}}>
+                Tipo : { props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.percentajeFixed === "percentaje" ? 'porcentaje' : 'fijo' }
               </span>
-            </React.Fragment>
+            </div>
 
           )
         break;
@@ -170,15 +169,15 @@ const SaleSecondPartPage = (props) => {
       switch (props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.type) {
         case 'suma':
           return (
-            <React.Fragment>
-              <Badge variant="danger">
-                {props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.amount}
+            <div style={{widh: "100%"}} className="text-center">
+              <Badge variant="danger" className="font-badge">
+                {props.config.simbolo_moneda+props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.amount}
               </Badge>
               <br/>
-              <span>
-                { props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.percentajeFixed === "percentaje" ? 'porcentaje' : 'fijo' }
+              <span style={{fontWeight: "bold"}}>
+                tipo : { props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.percentajeFixed === "percentaje" ? 'porcentaje' : 'fijo' }
               </span>
-            </React.Fragment>
+            </div>
           )
         break;
         default:
@@ -206,9 +205,9 @@ const SaleSecondPartPage = (props) => {
               <hr/>
               <Row>
                 <Col sm={12} md={12} lg={12}>
-                  <h4 className="font-title">Neto: {props.sale.rooms[props.sale.idCartSelected].totales.neto}</h4>
-                  <h4 className="font-title">Tax: {props.sale.rooms[props.sale.idCartSelected].totales.tax}</h4>
-                  <h4 className="font-title">Total: {props.sale.rooms[props.sale.idCartSelected].totales.total}</h4>
+                  <h4 className="font-title">Neto: {showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.neto)}</h4>
+                  <h4 className="font-title">Tax: {showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.tax)}</h4>
+                  <h4 className="font-title">Total: {showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.total)}</h4>
                 </Col>
               </Row>
               <hr/>

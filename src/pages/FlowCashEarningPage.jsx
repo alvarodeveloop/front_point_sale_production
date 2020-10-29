@@ -28,7 +28,7 @@ import {
   FaPlusCircle
 } from 'react-icons/fa'
 import {formatNumber} from 'utils/functions'
-let columns_earning = []
+import { connect } from 'react-redux'
 
 const FlowCashEarningPage = (props) => {
 
@@ -55,52 +55,7 @@ const FlowCashEarningPage = (props) => {
 
   useEffect(() => {
     fetchData()
-    return () => {
-      columns_earning = []
-    }
-  },[])
-
-  useMemo(() => {
-    columns_earning = [
-
-          {
-            Header: 'Nombre',
-            accessor: 'name'
-          },
-          {
-            Header: 'Descripción',
-            accessor: 'description'
-          },
-          {
-            Header: 'Monto',
-            accessor: 'amount',
-            Cell : props1 => {
-              return <Badge variant="danger" className="font_badge">{formatNumber(props1.cell.row.original.amount,2,',','.')}</Badge>
-            }
-          },
-          {
-            Header: 'Cuenta',
-            accessor: props1 => [props1.account.account_name]
-          },
-          {
-            Header: 'Centro de Costros',
-            accessor: props1 => [props1.centerCoste.name]
-          },
-          {
-            Header: 'Acciones',
-            Cell: props1 => {
-              const id = props1.cell.row.original.id
-              return (
-                <DropdownButton size="sm" id={'drop'+id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetails(props1.cell.row.original)}>Ver Detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
-                </DropdownButton>
-              )
-            }
-          }
-        ]
-  },[])
+  },[props.id_branch_office])
 
   const cleanForm = () => {
     setEarningForm({
@@ -429,7 +384,45 @@ const FlowCashEarningPage = (props) => {
             </Row>
             <Row>
               <Col sm={12} md={12} lg={12} xs={12}>
-                <Table data={earnings} columns={columns_earning} />
+                <Table data={earnings} columns={[
+
+                      {
+                        Header: 'Nombre',
+                        accessor: 'name'
+                      },
+                      {
+                        Header: 'Descripción',
+                        accessor: 'description'
+                      },
+                      {
+                        Header: 'Monto',
+                        accessor: 'amount',
+                        Cell : props1 => {
+                          return <Badge variant="danger" className="font_badge">{formatNumber(props1.cell.row.original.amount,2,',','.')}</Badge>
+                        }
+                      },
+                      {
+                        Header: 'Cuenta',
+                        accessor: props1 => [props1.account.account_name]
+                      },
+                      {
+                        Header: 'Centro de Costros',
+                        accessor: props1 => [props1.centerCoste.name]
+                      },
+                      {
+                        Header: 'Acciones',
+                        Cell: props1 => {
+                          const id = props1.cell.row.original.id
+                          return (
+                            <DropdownButton size="sm" id={'drop'+id} title="Seleccione"  block="true">
+                              <Dropdown.Item onClick={() => seeDetails(props1.cell.row.original)}>Ver Detalle</Dropdown.Item>
+                              <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
+                              <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
+                            </DropdownButton>
+                          )
+                        }
+                      }
+                    ]} />
               </Col>
             </Row>
           </Col>
@@ -559,4 +552,16 @@ FlowCashEarningPage.defaultProps = {
   },
 }
 
-export default FlowCashEarningPage
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+FlowCashEarningPage.propTypes = {
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(FlowCashEarningPage)

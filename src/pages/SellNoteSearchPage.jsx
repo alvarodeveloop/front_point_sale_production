@@ -25,6 +25,7 @@ import layoutHelpers from 'shared/layouts/helpers'
 import * as moment from 'moment-timezone'
 import { formatNumber } from 'utils/functions'
 import 'styles/components/modalComponents.css'
+import { connect } from 'react-redux'
 let cotizacionColumns = null
 
 const SellNoteSearchPage = props => {
@@ -200,13 +201,16 @@ const SellNoteSearchPage = props => {
   },[])
 
   useEffect(() => {
-    fetchData()
     layoutHelpers.toggleCollapsed()
     return () =>{
       cotizacionColumns = null
       layoutHelpers.toggleCollapsed()
     }
   },[])
+
+  useEffect(() => {
+    fetchData()
+  },[props.id_branch_office])
 
   const fetchData = () => {
     axios.get(API_URL+'sell_note').then(result => {
@@ -600,4 +604,16 @@ SellNoteSearchPage.defaultProps = {
   configGeneral: JSON.parse(localStorage.getItem('configGeneral')),
 }
 
-export default SellNoteSearchPage
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+SellNoteSearchPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(SellNoteSearchPage)

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import PropTypes from 'prop-types'
 import {
   Modal,
@@ -6,7 +6,8 @@ import {
   Col,
   Form,
   Button,
-  Image
+  Image,
+  Badge
 } from 'react-bootstrap'
 import { API_URL } from 'utils/constants'
 import * as moment from 'moment-timezone'
@@ -43,6 +44,12 @@ const ModalDetailSale = ({dataSale, ...props}) => {
     }
   }
 
+  const displayTotal = datos => {
+    let amount_descuento = datos.discount_recharge.length > 0 ? parseFloat(datos.discount_recharge[0].amount) : 0
+    let total = (parseFloat(datos.price) * datos.quantity) - amount_descuento
+    return showPriceWithDecimals(props.config,total)
+  }
+
   return (
 
     <Modal
@@ -54,11 +61,11 @@ const ModalDetailSale = ({dataSale, ...props}) => {
     >
       <Modal.Header closeButton style={{ backgroundColor: 'black', color: 'white'}}>
         <Modal.Title id="contained-modal-title-vcenter">
-          Detalle de la Compra { dataSale.ref }
+          Detalle {props.isDispatch ? "del despacho " : "de la compra "} { dataSale.ref }
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h3 className="text-center">Cliente</h3>
+        <h3 className="title_principal text-center">Cliente</h3>
         <table className="table table-bordered">
           <thead>
             <tr style={{ backgroundColor: 'lightblue', color: 'black' }}>
@@ -78,7 +85,7 @@ const ModalDetailSale = ({dataSale, ...props}) => {
           </tbody>
         </table>
         <br/><br/><br/>
-        <h3 className="text-center">Productos</h3>
+        <h3 className="title_principal text-center">Productos</h3>
           <table className="table table-bordered">
             <thead>
               <tr style={{ backgroundColor: 'lightblue', color: 'black' }}>
@@ -95,30 +102,18 @@ const ModalDetailSale = ({dataSale, ...props}) => {
               {dataSale.products ? dataSale.products.map((v,i) => (
                 <tr key={i}>
                   <td>{v.product.name_product}</td>
-                  <td>{props.config.simbolo_moneda+' '+showPriceWithDecimals(props.config,v.price)}</td>
+                  <td>{props.config.simbolo_moneda+showPriceWithDecimals(props.config,v.price)}</td>
                   <td>{v.quantity}</td>
                   <td>{v.description}</td>
                   <td>{methodSaleHandle(v.method_sale)}</td>
                   <td>{ v.discount_recharge.length > 0 ? v.discount_recharge[0].discount_or_recharge ? 'Descuento' : 'Recargo' : 'No posee' }</td>
-                  <td>{ v.discount_recharge.length > 0 ? v.discount_recharge[0].amount : 'No posee' }</td>
-                </tr>
-              )) : ''}
-
-              {dataSale.products_not_registered ? dataSale.products_not_registered.map((v,i) => (
-                <tr key={i}>
-                  <td>{v.product.name_product}<br/> ( Producto no Registrado )</td>
-                  <td>{props.config.simbolo_moneda+' '+showPriceWithDecimals(props.config,v.price)}</td>
-                  <td>{v.quantity}</td>
-                  <td>{v.descriptionSale}</td>
-                  <td></td>
-                    <td>{ v.discount_recharge.length > 0 ? v.discount_recharge[0].discount_or_recharge ? 'Descuento' : 'Recargo' : '' }</td>
-                    <td>{ v.discount_recharge.length > 0 ? v.discount_recharge[0].amount : '' }</td>
+                  <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+displayTotal(v) }</Badge></td>
                 </tr>
               )) : ''}
             </tbody>
           </table>
         <br/><br/><br/>
-        <h3 className="text-center">Descuento o Recargo del Monto Total</h3>
+        <h3 className="title_principal text-center">Descuento o Recargo del Monto Total</h3>
         <table className="table table-bordered">
           <thead>
             <tr style={{ backgroundColor: 'lightblue', color: 'black' }}>
@@ -136,7 +131,7 @@ const ModalDetailSale = ({dataSale, ...props}) => {
           </tbody>
         </table>
         <br/><br/><br/>
-        <h3 className="text-center">Totales</h3>
+        <h3 className="title_principal text-center">Totales</h3>
           <table className="table table-bordered">
             <thead>
               <tr style={{ backgroundColor: 'lightblue', color: 'black' }}>
@@ -149,11 +144,11 @@ const ModalDetailSale = ({dataSale, ...props}) => {
             </thead>
             <tbody className="text-center">
               <tr>
-                <td>{ props.config.simbolo_moneda+' '+showPriceWithDecimals(props.config,dataSale.total) }</td>
-                <td>{ props.config.simbolo_moneda+' '+dataSale.tax }</td>
-                <td>{ props.config.simbolo_moneda+' '+dataSale.sub_total }</td>
-                <td>{ props.config.simbolo_moneda+' '+showPriceWithDecimals(props.config,dataSale.payment) }</td>
-                <td>{ props.config.simbolo_moneda+' '+showPriceWithDecimals(props.config,dataSale.turned) }</td>
+                <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+showPriceWithDecimals(props.config,dataSale.total) }</Badge></td>
+                <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+dataSale.tax }</Badge></td>
+                <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+dataSale.sub_total }</Badge></td>
+                <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+showPriceWithDecimals(props.config,dataSale.payment) }</Badge></td>
+                <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+showPriceWithDecimals(props.config,dataSale.turned) }</Badge></td>
               </tr>
             </tbody>
           </table>
@@ -178,7 +173,7 @@ const ModalDetailSale = ({dataSale, ...props}) => {
           </table>
       </Modal.Body>
       <Modal.Footer>
-        <Button size="sm" variant="secondary" onClick={props.onHide}>Cerrar</Button>
+        <Button size="md" variant="secondary" onClick={props.onHide}>Cerrar</Button>
       </Modal.Footer>
     </Modal>
   )
@@ -187,7 +182,8 @@ const ModalDetailSale = ({dataSale, ...props}) => {
 ModalDetailSale.propTypes = {
   config: PropTypes.object.isRequired,
   configStore: PropTypes.object.isRequired,
-  dataSale: PropTypes.object.isRequired
+  dataSale: PropTypes.object.isRequired,
+  isDispatch: PropTypes.bool
 }
 
 export default ModalDetailSale

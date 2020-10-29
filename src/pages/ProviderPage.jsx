@@ -14,13 +14,14 @@ import {
 } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
-import { providerColumns } from 'utils/columns/provider'
 import Table from 'components/Table'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import 'styles/components/modalComponents.css'
 import { FaUser } from 'react-icons/fa'
-
+import { connect } from 'react-redux'
 
 const ProviderPage = (props) => {
 
@@ -29,30 +30,7 @@ const ProviderPage = (props) => {
   const [directionRegister,setDirectionRegister] = useState('')
   useEffect(() => {
     fetchData()
-  },[])
-
-  useMemo(() => {
-
-    if(providerColumns.length > 4){
-      providerColumns.pop()
-    }
-
-    providerColumns.push({
-      Header: 'Acciones',
-      Cell: props => {
-        const id = props.cell.row.original.id
-        return(
-          <DropdownButton size="sm" id={'drop'+props.cell.row.original.id} title="Seleccione"  block="true">
-            <Dropdown.Item onClick={() => seeDirection(props.cell.row.original)}>Ver Dirección</Dropdown.Item>
-            <Dropdown.Item onClick={() => createRepresent(props.cell.row.original)}>Crear Representante</Dropdown.Item>
-            <Dropdown.Item onClick={() => modifyRegister(id)}>Modificar</Dropdown.Item>
-            <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
-          </DropdownButton>
-        )
-      }
-    })
-
-  },[])
+  },[props.id_enterprise])
 
   const deleteRegister = id => {
     confirmAlert({
@@ -112,20 +90,6 @@ const ProviderPage = (props) => {
     props.history.replace('/provider/form')
   }
 
-  const seeDirection = data => {
-    setIsOpen(true)
-    setDirectionRegister(prev => {
-        return (
-          <ul className="list-group">
-            <li className="list-group-item text-center"><h4><b>Pais:</b> {data.pais.nombre}</h4></li>
-            <li className="list-group-item text-center"><h4><b>Ciudad:</b>  {data.city}</h4></li>
-            <li className="list-group-item text-center"><h4><b>Comuna:</b>  {data.comuna}</h4></li>
-            <li className="list-group-item text-center"><h4><b>Detalles:</b>  {data.address}</h4></li>
-          </ul>
-        )
-    })
-  }
-
   const createRepresent = data => {
     props.history.replace('/provider/represent/'+data.id)
   }
@@ -141,11 +105,62 @@ const ProviderPage = (props) => {
           <h4 className="title_principal">Proveedores</h4>
           <hr/>
         </Col>
-        <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
-          <div className="button-add">
-            <Button size="sm" title="Crear Proveedor" onClick={goToForm} variant="success"><FaPlusCircle /></Button>
-          </div>
-          <Table columns={providerColumns} data={provider} />
+        <Col sm={6} md={6} lg={6} xs={12} className="">
+          <Button size="sm" title="Crear Proveedor" onClick={goToForm} variant="success" block={true}>Crear Proveedor <FaPlusCircle /></Button>
+        </Col>
+        <Col sm={6} md={6} lg={6} xs={12} className="text-right">
+          <h5 className="title_principal">Total Proveedores: <Badge variant="danger" className="font_badge">{provider.length}</Badge></h5>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12} md={12} lg={12} xs={12}>
+          <Table columns={[
+            {
+              Header: 'Nombre',
+              accessor: 'name_fantasy',
+              Cell: props1 => {
+                return (
+                  <OverlayTrigger placement={'right'} overlay={
+                    <Tooltip id={"tooltip-right"}>
+                      <ul className="list-group">
+                        <li className="list-group-item text-center"><b>Pais:</b> {props1.cell.row.original.pais.nombre}</li>
+                        <li className="list-group-item text-center"><b>Ciudad:</b>  {props1.cell.row.original.city}</li>
+                        <li className="list-group-item text-center"><b>Comuna:</b>  {props1.cell.row.original.comuna}</li>
+                        <li className="list-group-item text-center"><b>Detalles:</b>  {props1.cell.row.original.address}</li>
+                      </ul>
+                    </Tooltip>
+                  }>
+                    <Button size="sm" type="button" block={true} variant="link" onClick={() => modifyRegister(props1.cell.row.original.id)}>{props1.cell.row.original.name_fantasy}</Button>
+                  </OverlayTrigger>
+                )
+              }
+            },
+            {
+              Header: 'Rut',
+              accessor: 'rut_provider',
+            },
+            {
+              Header: 'Teléfono',
+              accessor: 'phone',
+            },
+            {
+              Header: 'Spin',
+              accessor: 'spin',
+            },
+            {
+              Header: 'Acciones',
+              Cell: props => {
+                const id = props.cell.row.original.id
+                return(
+                  <DropdownButton size="sm" id={'drop'+props.cell.row.original.id} title="Seleccione"  block="true">
+                    <Dropdown.Item onClick={() => createRepresent(props.cell.row.original)}>Crear Representante</Dropdown.Item>
+                    <Dropdown.Item onClick={() => modifyRegister(id)}>Modificar</Dropdown.Item>
+                    <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
+                  </DropdownButton>
+                )
+              }
+            }
+          ]} data={provider} />
         </Col>
       </Row>
       <Modal
@@ -172,8 +187,16 @@ const ProviderPage = (props) => {
   )
 }
 
-ProviderPage.propTypes = {
-
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
 }
 
-export default ProviderPage
+ProviderPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(ProviderPage)

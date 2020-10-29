@@ -16,6 +16,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import InputField from 'components/input/InputComponent'
 import Table from 'components/Table'
+import {formatRut} from 'utils/functions'
 
 let sellerColumns = []
 
@@ -99,7 +100,28 @@ const ModalSeller = (props) => {
   }
 
   const handleOnChange = e => {
-    setSeller({...seller, [e.target.name] : e.target.value})
+    e.persist()
+    if(e.target.name === "type_document"){
+      if(e.target.value === "Rut"){
+        setSeller(oldData => {
+          return Object.assign({},oldData,{
+            data_document : formatRut(oldData.data_document),
+            type_document: e.target.value
+          })
+        })
+      }else{
+        setSeller(oldData => {
+          return Object.assign({},oldData,{
+            data_document : oldData.data_document.replace(/-/g,''),
+            type_document: e.target.value
+          })
+        })
+      }
+    }else if(e.target.name === "data_document"){
+      setSeller({...seller, [e.target.name] : seller.type_document === "Rut" ? formatRut(e.target.value) : e.target.value})
+    }else{
+      setSeller({...seller, [e.target.name] : e.target.value})
+    }
   }
 
   const onSubmit = e => {

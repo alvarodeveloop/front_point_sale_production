@@ -17,11 +17,13 @@ import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import 'styles/pages/AuthPage.css'
 import 'styles/animate.css'
+import { formatRut } from 'utils/functions'
 
 const AuthPageTemplate = props => {
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
+    is_email: true
   })
   const [validated, setValidated] = useState(false);
   const [enterprises, setEnterprises] = useState([])
@@ -36,7 +38,13 @@ const AuthPageTemplate = props => {
   })
 
   const onValueChange = (field, e) => {
-    setCredentials({...credentials,[field] : field === 'rememberMe' ? e.target.checked : e.target.value})
+    if(field === "email" && credentials.is_email === false){
+      let val = formatRut(e.target.value)
+      setCredentials({...credentials,[field] : val})
+    }else{
+      setCredentials({...credentials,[field] : field === 'is_email' ? e.target.checked : e.target.value})
+
+    }
   }
 
   const prevent = e => {
@@ -58,7 +66,6 @@ const AuthPageTemplate = props => {
       setStorage({
         user: data.user,
         token: data.token,
-        token_facturacion: data.token_facturacion
       })
       setAuthorizationToken(data.token)
       if(data.user.branch_offices.length > 0){
@@ -67,6 +74,8 @@ const AuthPageTemplate = props => {
           await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: data.user.branch_offices[0].id, id_enterprise: data.user.enterprises[0].id, id_parent : data.user.id_parent, email: data.user.email})
           localStorage.setItem('user',JSON.stringify(data.user))
           localStorage.setItem('token',data.token)
+          localStorage.setItem('id_enterprise',data.user.enterprises[0].id)
+          localStorage.setItem('id_branch_office',data.user.branch_offices[0].id)
           props.loginDispatch(data.user)
         }else{
           // si solo hay una empresa y más de una sucursal
@@ -77,10 +86,9 @@ const AuthPageTemplate = props => {
       }else{
         if(data.user.enterprises.length > 0){
           if(data.user.enterprises.length === 1){
-
-            localStorage.setItem('id_enterprise',data.user.enterprises[0].id)
             localStorage.setItem('user',JSON.stringify(data.user))
             localStorage.setItem('token',data.token)
+            localStorage.setItem('id_enterprise',data.user.enterprises[0].id)
             await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: '', id_enterprise: data.user.enterprises[0].id, id_parent : data.user.id_parent, email: data.user.email})
             props.loginDispatch(data.user)
           }else{
@@ -155,18 +163,20 @@ const AuthPageTemplate = props => {
   }
 
   const responseGoogleFail = err => {
-      console.log(err)
-
+    console.log(err)
   }
 
   const registerUserBySocialMedia = data => {
 
     axios.post(API_URL+'user_by_social_media',data).then(result => {
+      toast.success('Felicidades, usuario registrado con éxito')
       const { data } = result
       localStorage.setItem('user',JSON.stringify(data.user))
       localStorage.setItem('token',data.token)
       setAuthorizationToken(data.token)
-      props.loginDispatch(data.user)
+      setTimeout(() => {
+        props.loginDispatch(data.user)
+      },1500)
 
     }).catch(err => {
       if(err.response){
@@ -186,9 +196,10 @@ const AuthPageTemplate = props => {
     setShowGif(true)
     let userLocal = Object.assign({},storage).user
     let id_enterprise = Object.assign({},storage).id_enterprise
-    localStorage.setItem('id_enterprise',id_enterprise)
     localStorage.setItem('user',JSON.stringify(userLocal))
     localStorage.setItem('token',storage.token)
+    localStorage.setItem('id_enterprise',id_enterprise)
+    localStorage.setItem('id_branch_office',idBranch)
     await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: idBranch, id_enterprise: id_enterprise,  id_parent: userLocal.id_parent, email: userLocal.email})
 
     setTimeout(() => {
@@ -201,9 +212,9 @@ const AuthPageTemplate = props => {
     let userLocal = Object.assign({},storage).user
     if(userLocal.id_rol == 2){
       await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: null, id_enterprise: idEnteprise,  id_parent: userLocal.id_parent, email: userLocal.email})
-      localStorage.setItem('id_enterprise',idEnteprise)
       localStorage.setItem('user',JSON.stringify(userLocal))
       localStorage.setItem('token',storage.token)
+      localStorage.setItem('id_enterprise',idEnteprise)
       setTimeout(function () {
         props.loginDispatch(userLocal)
       }, 1500);
@@ -225,7 +236,7 @@ const AuthPageTemplate = props => {
   }
 
   const resetLogin = async () => {
-    let userLocal = JSON.parse(localStorage.getItem('user'))
+    let userLocal = Object.assign({},storage).user
     await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: null, id_enterprise: null, id_parent: userLocal.id_parent, email: userLocal.email})
     setAuthorizationToken(null)
     setBranchOffices([])
@@ -334,11 +345,8 @@ const AuthPageTemplate = props => {
 
                     {/* Logo */}
                     <div className="d-flex justify-content-center align-items-center">
-                      <div className="ui-w-60">
-                        <div className="w-100 position-relative" style={{ paddingBottom: '54%' }}>
-                          <svg className="w-100 h-100 position-absolute" viewBox="0 0 148 80" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"><defs><linearGradient id="a" x1="46.49" x2="62.46" y1="53.39" y2="48.2" gradientUnits="userSpaceOnUse"><stop stopOpacity=".25" offset="0"></stop><stop stopOpacity=".1" offset=".3"></stop><stop stopOpacity="0" offset=".9"></stop></linearGradient><linearGradient id="e" x1="76.9" x2="92.64" y1="26.38" y2="31.49" xlinkHref="#a"></linearGradient><linearGradient id="d" x1="107.12" x2="122.74" y1="53.41" y2="48.33" xlinkHref="#a"></linearGradient></defs><path className="fill-primary" transform="translate(-.1)" d="M121.36,0,104.42,45.08,88.71,3.28A5.09,5.09,0,0,0,83.93,0H64.27A5.09,5.09,0,0,0,59.5,3.28L43.79,45.08,26.85,0H.1L29.43,76.74A5.09,5.09,0,0,0,34.19,80H53.39a5.09,5.09,0,0,0,4.77-3.26L74.1,35l16,41.74A5.09,5.09,0,0,0,94.82,80h18.95a5.09,5.09,0,0,0,4.76-3.24L148.1,0Z"></path><path transform="translate(-.1)" d="M52.19,22.73l-8.4,22.35L56.51,78.94a5,5,0,0,0,1.64-2.19l7.34-19.2Z" fill="url(#a)"></path><path transform="translate(-.1)" d="M95.73,22l-7-18.69a5,5,0,0,0-1.64-2.21L74.1,35l8.33,21.79Z" fill="url(#e)"></path><path transform="translate(-.1)" d="M112.73,23l-8.31,22.12,12.66,33.7a5,5,0,0,0,1.45-2l7.3-18.93Z" fill="url(#d)"></path></svg>
-                        </div>
-
+                      <div className="position-relative text-center">
+                        <Image src={require('../assets/img/logo/AIDY_01.jpg')} width="55%" />
                       </div>
                     </div>
                     {/* / Logo */}
@@ -349,7 +357,7 @@ const AuthPageTemplate = props => {
                     <Form className="my-5" onSubmit={prevent} noValidate validated={validated}>
                       <Form.Group>
                         <Form.Label>Email o Rut</Form.Label>
-                        <Form.Control value={credentials.email} onChange={e => onValueChange('email', e)} />
+                        <Form.Control type={credentials.is_email ? "email" : "text"} value={credentials.email} onChange={e => onValueChange('email', e)} />
                       </Form.Group>
                       <Form.Group>
                         <Form.Label className="d-flex justify-content-between align-items-end">
@@ -358,9 +366,19 @@ const AuthPageTemplate = props => {
                         </Form.Label>
                         <Form.Control type="password" value={credentials.password} onChange={e => onValueChange('password', e)} />
                       </Form.Group>
+                      <Form.Group>
+                        <Form.Check
+                          name="is_email"
+                          type={'checkbox'}
+                          id={`checkbox-1`}
+                          label={`Entrar con Email`}
+                          checked={credentials.is_email}
+                          onChange={e => onValueChange('is_email', e)}
+                        />
+                      </Form.Group>
 
                       <div className="d-flex justify-content-center align-items-center m-0">
-                        <Button size="sm" variant="secondary" type="submit" disabled={disabledButton}>{disabledButton ? "Verificado Datos..." : "Acceder"}</Button>
+                        <Button block={true} size="sm" variant="secondary" type="submit" disabled={disabledButton}>{disabledButton ? "Verificado Datos..." : "Acceder"}</Button>
                       </div>
                       <br/>
                       <Row>

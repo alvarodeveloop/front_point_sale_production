@@ -25,6 +25,8 @@ import layoutHelpers from 'shared/layouts/helpers'
 import * as moment from 'moment-timezone'
 import { formatNumber } from 'utils/functions'
 import 'styles/components/modalComponents.css'
+import { connect } from 'react-redux'
+
 let cotizacionColumns = null
 
 const CotizacionSearchPage = props => {
@@ -200,13 +202,16 @@ const CotizacionSearchPage = props => {
   },[])
 
   useEffect(() => {
-    fetchData()
     layoutHelpers.toggleCollapsed()
     return () =>{
       cotizacionColumns = null
       layoutHelpers.toggleCollapsed()
     }
   },[])
+
+  useEffect(() => {
+    fetchData()
+  },[props.id_branch_office])
 
   const fetchData = () => {
     axios.get(API_URL+'cotizacion').then(result => {
@@ -600,4 +605,16 @@ CotizacionSearchPage.defaultProps = {
   configGeneral: JSON.parse(localStorage.getItem('configGeneral')),
 }
 
-export default CotizacionSearchPage
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+CotizacionSearchPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(CotizacionSearchPage)

@@ -16,6 +16,7 @@ import Table from 'components/Table'
 import FormClientModal from 'components/modals/FormClientModal'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { connect } from 'react-redux'
 
 let columns_client = []
 
@@ -26,8 +27,11 @@ const ClientPage = (props) => {
   const [isOpenModal, setIsOpenModal] = useState(false)
 
   useEffect(() => {
-    fetchData()
-    return () => {
+    fetchData()  
+  },[props.id_branch_office])
+
+  useEffect(() => {
+    return() => {
       columns_client = []
     }
   },[])
@@ -162,4 +166,16 @@ const ClientPage = (props) => {
   )
 }
 
-export default ClientPage
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+ClientPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(ClientPage)

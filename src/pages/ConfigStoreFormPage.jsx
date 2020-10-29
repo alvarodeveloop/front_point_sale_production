@@ -19,6 +19,7 @@ import {
   Image
 } from 'react-bootstrap'
 
+
 const ConfigStoreFormPage = (props) => {
 
   const [dataStore,setDataStore] = useState({
@@ -48,7 +49,7 @@ const ConfigStoreFormPage = (props) => {
 
   useEffect(() => {
     fetchData()
-  },[])
+  },[props.id_branch_office])
 
   const onChange = e => {
     if(e.target.name === "client_data_foot_page"){
@@ -66,7 +67,7 @@ const ConfigStoreFormPage = (props) => {
       axios.get(API_URL+'country')
     ]
 
-    if(props.match.params.id){
+    if(props.match.params.id || (JSON.parse(localStorage.getItem('user')).id_rol == 2 && props.id_branch_office)){
       promise.push(
         axios.get(API_URL+'config_store')
       )
@@ -74,7 +75,7 @@ const ConfigStoreFormPage = (props) => {
     Promise.all(promise).then(result => {
 
       setPaises(result[0].data)
-      if(result.length > 1){
+      if(result.length > 1 && result[1].data){
         setDataStore({
           logo: result[1].data.logo,
           name_store: result[1].data.name_store,
@@ -98,8 +99,26 @@ const ConfigStoreFormPage = (props) => {
               id="imagen_logo" style={{ width: '80px' }} roundedCircle />
           )
         }
+      }else{
+        if((JSON.parse(localStorage.getItem('user')).id_rol == 2 && !props.id_branch_office)){
+          setDataStore({
+            logo: '',
+            name_store: '',
+            country: '',
+            phone: '',
+            whatssap: '',
+            address: '',
+            email: '',
+            tax: '',
+            handle_stock: false,
+            header_text: '',
+            foot_page_text: '',
+            client_data_foot_page: '',
+            ref: 1,
+            rut: ''
+          })
+        }
       }
-
     }).catch(err => {
       if(err.response){
         toast.error(err.response.data.message)
@@ -217,7 +236,7 @@ const ConfigStoreFormPage = (props) => {
                type='text'
                label='Rut'
                name='rut'
-               required={true}
+               required={false}
                messageErrors={[
                'Requerido*'
                ]}
@@ -362,13 +381,6 @@ const ConfigStoreFormPage = (props) => {
 
 ConfigStoreFormPage.defaultProps ={
   inputNameStore: {
-    type: 'file',
-    required: false,
-    name: 'logo',
-    label : 'Logo de la Tienda',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
-  },
-  inputNameStore: {
     type: 'text',
     required: true,
     name: 'name_store',
@@ -380,11 +392,11 @@ ConfigStoreFormPage.defaultProps ={
   },
   inputEmail: {
     type: 'email',
-    required: true,
+    required: false,
     name: 'email',
     label : 'Correo',
     messageErrors: [
-      'Requerido*'
+      'Requerido*', ' Formato Email*'
     ],
     cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
   },
@@ -400,7 +412,7 @@ ConfigStoreFormPage.defaultProps ={
   },
   inputPhone: {
     type: 'number',
-    required: true,
+    required: false,
     name: 'phone',
     label : 'Teléfono',
     messageErrors: [
@@ -418,7 +430,7 @@ ConfigStoreFormPage.defaultProps ={
   },
   inputAddress: {
     type: 'textarea',
-    required: true,
+    required: false,
     name: 'address',
     label : 'Dirección',
     messageErrors: [
@@ -443,34 +455,26 @@ ConfigStoreFormPage.defaultProps ={
     cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
   },
   inputHeaderText: {
-    type: 'text',
+    type: 'textarea',
     required: false,
+    rows: 3,
     name: 'header_text',
     label : 'Texto de Cabecera',
     messageErrors: [],
     cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
   },
   inputFooterPageText: {
-    type: 'text',
+    type: 'textarea',
     required: false,
+    rows: 3,
     name: 'foot_page_text',
     label : 'Texto Pie de Página',
     messageErrors: [],
     cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
   },
-  inputClientDataFoot: {
-    type: 'select',
-    required: true,
-    name: 'client_data_foot_page',
-    label : 'Datos del Cliente en el Pie de Página',
-    messageErrors: [
-      'Requerido*'
-    ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
-  },
   inputRut: {
     type: 'text',
-    required: true,
+    required: false,
     name: 'rut',
     label : 'Rut de la tienda',
     messageErrors: [
@@ -497,4 +501,16 @@ function mapDispatchToProps(){
   }
 }
 
-export default connect(null,mapDispatchToProps)(ConfigStoreFormPage)
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+ConfigStoreFormPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(ConfigStoreFormPage)

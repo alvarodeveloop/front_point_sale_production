@@ -668,7 +668,8 @@ export default (state = initialState, action = {}) => {
       let totalesResetTotal = Object.assign({},{},{
         total: totalResetTotal,
         neto: netoResetTotal,
-        tax: taxResetTotal
+        tax: taxResetTotal,
+        total_backup: stateResetTotal.rooms[stateResetTotal.idCartSelected].totales.total_backup
       })
 
       stateResetTotal.rooms[stateResetTotal.idCartSelected].totales = totalesResetTotal

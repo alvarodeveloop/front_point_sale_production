@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { FaPlusCircle } from "react-icons/fa";
 import axios from 'axios'
+import { connect } from 'react-redux'
 import {
   Container,
   Row,
@@ -15,14 +16,16 @@ import {
 } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
-import { productColumns } from 'utils/columns/inventario'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import 'styles/components/modalComponents.css'
 import 'styles/pages/productStyle.css'
 import CategoyPage from 'pages/CategoryPage'
-
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import {formatNumber} from 'utils/functions'
+let productColumns = []
 
 const ProductPage = (props) => {
 
@@ -32,27 +35,83 @@ const ProductPage = (props) => {
 
   useEffect(() => {
     fetchData()
+  },[props.id_branch_office])
+
+  useEffect(() => {
+    return () => {
+      productColumns = []
+    }
   },[])
 
   useMemo(() => {
 
-    if(productColumns.length > 5){
-      productColumns.pop()
-    }
-
-    productColumns.push({
-      Header: 'Acciones',
-      Cell: props => {
-        const id = props.cell.row.original.id
-        return(
-          <DropdownButton size="sm" id={'drop'+props.cell.row.original.id} title="Seleccione"  block="true">
-            <Dropdown.Item onClick={() => seeAllInformation(props.cell.row.original)}>Ver Detalle</Dropdown.Item>
-            <Dropdown.Item onClick={() => modifyRegister(id)}>Modificar</Dropdown.Item>
-            <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
-          </DropdownButton>
-        )
-      }
-    })
+      productColumns = [
+          {
+            Header: 'Nombre Producto',
+            accessor: 'name_product'
+          },
+          {
+            Header: 'P.Venta',
+            accessor: 'price',
+            Cell: props1 => {
+              const price = props1.cell.row.original.price
+              return ( <Badge variant="danger">{formatNumber(price,2,',','.')}</Badge>)
+            }
+          },
+          {
+            Header: 'P.Compra',
+            accessor: 'cost',
+            Cell: props1 => {
+              const cost = props1.cell.row.original.cost
+              return ( <Badge variant="danger">{formatNumber(cost,2,',','.')}</Badge>)
+            }
+          },
+          {
+            Header: 'Categoria',
+            accessor: props => props.categories.map(v => v.categories ? v.categories.name_category : ''),
+            Cell: props1 => {
+              const {original} = props1.cell.row
+              if(original.categories.length > 1){
+                return(
+                  <OverlayTrigger placement={'right'} overlay={
+                    <Tooltip id={"tooltip-right"}>
+                      <ul className="list-group">
+                        {original.categories.map((v,i) => (
+                          <li key={i} className="list-group-item">{v.categories ? v.categories.name_category : ''}</li>
+                        ))}
+                      </ul>
+                    </Tooltip>
+                  }>
+                    <Button sm="sm" type="button" variant="link" block={true}>Categorías</Button>
+                  </OverlayTrigger>
+                )
+              }else{
+                if(original.categories.length > 0){
+                  return original.categories[0].categories.name_category
+                }else{
+                  return ''
+                }
+              }
+            }
+          },
+          {
+            Header: 'Tipo de Venta',
+            accessor: 'method_sale_format'
+          },
+          {
+            Header: 'Acciones',
+            Cell: props1 => {
+              const id = props1.cell.row.original.id
+              return(
+                <DropdownButton size="sm" id={'drop'+props1.cell.row.original.id} title="Seleccione"  block="true">
+                  <Dropdown.Item onClick={() => seeAllInformation(props1.cell.row.original)}>Ver Detalle</Dropdown.Item>
+                  <Dropdown.Item onClick={() => modifyRegister(id)}>Modificar</Dropdown.Item>
+                  <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
+                </DropdownButton>
+              )
+            }
+          }
+        ]
 
   },[])
 
@@ -244,8 +303,16 @@ const ProductPage = (props) => {
   )
 }
 
-ProductPage.propTypes = {
-
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
 }
 
-export default ProductPage
+ProductPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(ProductPage)

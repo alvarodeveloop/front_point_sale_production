@@ -47,7 +47,6 @@ const SalePage = (props) => {
   const [isEanScaner, setIsEanScaner] = useState(false)
 
   useEffect(() => {
-    fetchProductsMostSolds()
     fetchCategorys()
     fetchClients()
     fetchAllProductsAdviable()
@@ -78,6 +77,8 @@ const SalePage = (props) => {
   const fetchAllProductsAdviable = () => {
     axios.get(API_URL+'productByCategory/todos').then(result => {
       setProductsAll(result.data)
+      setProducts(result.data)
+      setProductsBackup(result.data)
     }).catch(err => {
       if(err.response){
         toast.error(err.response.data.message)
@@ -109,27 +110,6 @@ const SalePage = (props) => {
         toast.error('Error, contacte con soporte')
       }
 
-    })
-  }
-
-  const fetchProductsMostSolds = () => {
-    let promise = [
-      axios.get(API_URL+'productByCategory/mas_vendidos'),
-    ]
-    Promise.all(promise).then(async result => {
-      setProducts(result[0].data)
-      setProductsBackup(result[0].data)
-        //props.history.replace('/config/config_store')
-    }).catch(err => {
-      if(err.response){
-        if(err.response.data.message === "Debe hacer la configuración de empresa para continuar"){
-          props.history.replace('/config/config_store')
-        }else{
-          toast.error(err.response.data.message)
-        }
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
     })
   }
 
@@ -270,7 +250,7 @@ const SalePage = (props) => {
   }
 
   const handleSelectClient = data => {
-    let data_document = data.split('-')[1]
+    let data_document = data.split('/')[1]
     let client = clients.find(v => v.data_document === data_document)
     props.setBuyer(client)
   }
@@ -435,7 +415,6 @@ const SalePage = (props) => {
               <Col sm={7} md={7} lg={7} xs={7}>
                 <select className="form-control" onChange={handleChangeCategoryProduct} defaultValue="mas_vendidos" id="select_category">
                   <option value='todos'>Todos</option>
-                  <option value='mas_vendidos'>Más Vendidos</option>
                   {categorys.map((v,i) => (
                     <option key={i} value={v.id}>{v.name_category}</option>
                   ))}

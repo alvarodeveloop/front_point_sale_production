@@ -23,6 +23,7 @@ import * as moment from 'moment-timezone'
 import { showPriceWithDecimals } from 'utils/functions'
 import {Doughnut} from 'react-chartjs-2';
 import { ARRAY_COLORS } from 'utils/constants'
+import { connect } from 'react-redux'
 let saleColumns = []
 
 let optionsBar = {
@@ -68,14 +69,17 @@ const HistorySalePage = (props) => {
           props.history.replace('/config/config_store')
         }, 2000);
       }
-    }else{
-      fetchData()
     }
     return () =>{
       saleColumns = []
       resetChartData()
     }
   },[])
+
+  useEffect(() => {
+    resetChartData()
+    fetchData()
+  },[props.id_branch_office])
 
   useEffect(() => {
     handleDataDonutSsStatus()
@@ -260,9 +264,17 @@ const HistorySalePage = (props) => {
   )
 }
 
-HistorySalePage.defaultProps = {
- config: JSON.parse(localStorage.getItem('configGeneral')),
- configStore: JSON.parse(localStorage.getItem('configStore')),
+HistorySalePage.propTypes = {
+ config: PropTypes.object,
+ configStore: PropTypes.object,
 }
 
-export default HistorySalePage
+function mapDispatchToProps(state){
+  return {
+    config: state.configs.config,
+    configStore: state.configs.configStore,
+    id_branch_office: state.enterpriseSucursal.id_branch_office
+  }
+}
+
+export default connect(mapDispatchToProps,{})(HistorySalePage)

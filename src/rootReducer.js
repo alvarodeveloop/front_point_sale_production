@@ -3,6 +3,7 @@ import auth from './reducer/auth';
 import sale from './reducer/sale';
 import configs from './reducer/configs';
 import menu from './reducer/menu';
+import enterpriseSucursal from './reducer/enterpriseSucursal';
 import theme from './store/reducers/themeStore';
 
 export default combineReducers({
@@ -10,5 +11,6 @@ export default combineReducers({
   sale,
   configs,
   menu,
-  theme
+  theme,
+  enterpriseSucursal
 });

@@ -164,4 +164,16 @@ export const routes = [
     path: '/quotitation/create_sell_note/:id?',
     component: lazy(() => import('./pages/SellNotePage'))
   },
+  {
+    path: '/enterprise',
+    component: lazy(() => import('./pages/EnterprisePage'))
+  },
+  {
+    path: '/enterprise/form/:id?',
+    component: lazy(() => import('./pages/EnterpriseFormPage'))
+  },
+  {
+    path: '/planes',
+    component: lazy(() => import('./pages/PlanPage'))
+  },
 ]

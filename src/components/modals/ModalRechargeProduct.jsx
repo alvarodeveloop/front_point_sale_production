@@ -28,7 +28,6 @@ const ModalRechargeProduct = (props) => {
         type: 'fijo',
         amount: ''
       })
-
       setTotalCalculado(0)
     }
   },[props.isShow])
@@ -81,7 +80,9 @@ const ModalRechargeProduct = (props) => {
       }else{
         let total = parseFloat(props.totales.total_backup) + parseFloat(e.target.value)
         total = total ? total : 0
-        setTotalCalculado(total)
+        setTotalCalculado(oldData => {
+          return total
+        })
       }
     }
   }
@@ -155,7 +156,7 @@ const ModalRechargeProduct = (props) => {
               </Col>
               <Col sm={6} md={6} lg={6}>
                 <br/>
-                <Button size="sm" variant="secondary" onClick={handleResetRechargeDiscount}>Reestablecer Precio Base</Button>
+                <Button size="sm" variant="danger" onClick={handleResetRechargeDiscount}>Reestablecer Precio Base</Button>
               </Col>
             </Row>
           ): (
@@ -172,14 +173,14 @@ const ModalRechargeProduct = (props) => {
               </Col>
               <Col sm={6} md={6} lg={6}>
                 <br/>
-                <Button size="sm" variant="secondary" onClick={handleResetTotal}>Reestablecer Precio Base</Button>
+                <Button size="sm" variant="danger" onClick={handleResetTotal}>Reestablecer Precio Base</Button>
               </Col>
             </Row>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button size="sm" variant="secondary" type="submit">Enviar</Button>
-          <Button size="sm" onClick={handleOnHide}>Cerrar</Button>
+          <Button size="md" variant="secondary" type="submit">Enviar</Button>
+          <Button size="md" onClick={handleOnHide}>Cerrar</Button>
         </Modal.Footer>
       </Form>
     </Modal>

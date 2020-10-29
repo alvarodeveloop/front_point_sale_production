@@ -279,7 +279,8 @@ const SaleThirdPartPage = (props) => {
 
     let cartSale = Object.assign({},props.sale.rooms[props.sale.idCartSelected],{
       payment,
-      status
+      status,
+      id_cash_register: JSON.parse(localStorage.getItem('cash_register')).id_cash_register
     })
 
     axios.post(API_URL+'sale_by_dispatch',cartSale).then(result => {

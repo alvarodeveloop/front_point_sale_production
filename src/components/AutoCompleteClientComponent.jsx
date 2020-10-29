@@ -31,7 +31,7 @@ const AutoCompleteClientComponent = (props) => {
 
             renderItem={ (item, isHighlighted) =>
               <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} key={item.name_client+"-"+item.data_document} >
-                { item.name_client }
+                { item.name_client+"/"+item.data_document } 
               </div>
             }
             value={value}
@@ -39,7 +39,6 @@ const AutoCompleteClientComponent = (props) => {
             onChange={(e) =>setValue(e.target.value) }
 
             onClick={(val) =>{
-              console.log('aqui perro');
               setValue(val)
               props.returnValue(val)
             }}

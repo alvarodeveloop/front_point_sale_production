@@ -20,7 +20,7 @@ import {
   Button,
   ListGroup,
   ListGroupItem,
-  
+
   // NavbarToggler,
   Nav,
   Navbar,
@@ -30,6 +30,7 @@ import {
   PopoverBody,
 } from 'reactstrap';
 import bn from 'utils/bemnames';
+import InputField from 'components/input/InputComponent'
 
 const bem = bn.create('header');
 
@@ -73,7 +74,7 @@ class Header extends React.Component {
     event.preventDefault();
     event.stopPropagation();
 
-    
+
   };
 
   render() {
@@ -86,7 +87,6 @@ class Header extends React.Component {
             <MdClearAll size={25} />
           </Button>
         </Nav>
-
         <Nav navbar className={bem.e('nav-right')}>
         {/*<NavItem className="d-inline-flex">
             <NavLink id="Popover1" className="position-relative">

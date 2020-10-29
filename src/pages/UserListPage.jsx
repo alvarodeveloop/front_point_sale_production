@@ -118,11 +118,11 @@ const UserListPage = (props) => {
         </Col>
       </Row>
       <hr/>
-      <Row>
+      <Row className="justify-content-center">
+        <Col sm={6} md={6} lg={6} xs={12}>
+          <Button block={true} size="sm" title="Crear Usuario" onClick={goToForm} variant="success">Crear Usuario <FaPlusCircle /></Button>
+        </Col>
         <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
-          <div className="button-add">
-            <Button size="sm" title="Crear Usuario" onClick={goToForm} variant="success"><FaPlusCircle /></Button>
-          </div>
           <Table columns={userColumns} data={users} />
         </Col>
       </Row>

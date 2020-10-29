@@ -34,8 +34,7 @@ import layoutHelpers from 'shared/layouts/helpers'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableProductsCotization from 'components/TableProductsCotization'
-
-let DetailCotizacion = null
+import { connect } from 'react-redux'
 
 const Styles = styled.div`
 
@@ -70,7 +69,7 @@ const Styles = styled.div`
     overflow-y: auto;
   }
 `
-
+let count = 0
 const CotizationPage = (props) => {
 
   const [clients,setClients] = useState([])
@@ -117,7 +116,7 @@ const CotizationPage = (props) => {
   const [displayModals,setDisplayModals] = useState(false)
 
   useEffect(() => {
-    layoutHelpers.toggleCollapsed()
+    count++
     if(localStorage.getItem('configStore') === "null"){
       toast.error('Debe hacer su configuración de tienda primero')
       setTimeout(function () {
@@ -125,11 +124,20 @@ const CotizationPage = (props) => {
       }, 1500);
     }else{
       let config = JSON.parse(localStorage.getItem('configStore'))
-      fetchClients()
-      fetchProducts()
       if(props.match.params.id){
-        fetchDataUpdate()
+        if(count > 1 && props.id_branch_office !== cotizationData.id_branch_office){
+          toast.error('Esta cotización no pertenece a esta sucursal')
+          setTimeout(function () {
+            props.history.replace('/quotitation/search_quotitation')
+          }, 1500);
+        }else{
+          fetchClients()
+          fetchProducts()
+          fetchDataUpdate()
+        }
       }else{
+        fetchClients()
+        fetchProducts()
         setTimeout(function () {
           setCotizationData(oldData => {
             let test = Object.assign({},oldData,{
@@ -147,59 +155,17 @@ const CotizationPage = (props) => {
       }
       setDisplayModals(true)
     }
+  },[props.id_branch_office])
+
+  useEffect(() => {
+    layoutHelpers.toggleCollapsed()
     return () => {
-      DetailCotizacion = null
       layoutHelpers.toggleCollapsed()
+      count = 0
     }
   },[])
 
   useMemo(() => {
-
-    DetailCotizacion = [
-      {
-        Header: 'Producto',
-        accessor: 'name_product'
-      },
-      {
-        Header: 'Precio',
-        accessor: v => {
-
-          if(v.is_neto){
-            return [showPriceWithDecimals(props.configGeneral,v.price)]
-          }else{
-            let tax =  (v.price * props.configStore.tax) / 100
-            let new_price = v.price + tax
-            return [showPriceWithDecimals(props.configGeneral,new_price)]
-          }
-
-        }
-      },
-      {
-        Header: 'Cantidad',
-        accessor: 'quantity'
-      },
-      {
-        Header: 'Total',
-        accessor: v =>{
-          if(v.is_neto){
-            return [showPriceWithDecimals(props.configGeneral,v.price * v.quantity)]
-          }else{
-            let tax =  (v.price * props.configStore.tax) / 100
-            let new_price = v.price + tax
-            return [showPriceWithDecimals(props.configGeneral,new_price * v.quantity)]
-          }
-        }
-      },
-      {
-        Header: 'Acciones',
-        Cell: props => {
-          const id = props.cell.row.original
-          return(
-            <Button size="sm" size="sm" variant="primary" block={true} onClick={() => removeItemDetail(props.cell.row.original) }>Remover</Button>
-          )
-        }
-      }
-    ]
 
     if(GastosCotizacion.length > 2){
       GastosCotizacion.pop()
@@ -215,7 +181,7 @@ const CotizationPage = (props) => {
       }
     })
 
-  },[])
+  },[props.id_branch_office])
 
   const clearData = () => {
     setDetailProducts([])
@@ -264,7 +230,8 @@ const CotizationPage = (props) => {
           price_list: "",
           type_effect: result.data.type_effect,
           status: result.data.status,
-          ref: result.data.ref
+          ref: result.data.ref,
+          id_branch_office: result.data.id_branch_office
         }
       })
 
@@ -548,7 +515,7 @@ const CotizationPage = (props) => {
         });
       }
     }
-  
+
     setDetailProducts([...detailProducts, product])
     setIsShowModalProduct(false)
   }
@@ -1268,4 +1235,16 @@ CotizationPage.defaultProps = {
   configGeneral: JSON.parse(localStorage.getItem('configGeneral'))
 }
 
-export default CotizationPage
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+CotizationPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(CotizationPage)

@@ -5,6 +5,13 @@ export const setMenu = data => {
     }
 }
 
+export const setDisplayMessage = display => {
+    return {
+      type: 'setDisplayMessage',
+      display
+    }
+}
+
 export const removeMenu = () => {
     return {
       type: 'removeMenu',

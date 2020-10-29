@@ -15,6 +15,7 @@ import 'styles/components/modalComponents.css'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import InputField from 'components/input/InputComponent'
+import {formatRut} from 'utils/functions'
 import Table from 'components/Table'
 
 let contactColumns = []
@@ -99,7 +100,28 @@ const ModalContacts = (props) => {
   }
 
   const handleOnChange = e => {
-    setContact({...contact, [e.target.name] : e.target.value})
+    e.persist()
+    if(e.target.name === "type_document"){
+      if(e.target.value === "Rut"){
+        setContact(oldData => {
+          return Object.assign({},oldData,{
+            data_document : formatRut(oldData.data_document),
+            type_document: e.target.value
+          })
+        })
+      }else{
+        setContact(oldData => {
+          return Object.assign({},oldData,{
+            data_document : oldData.data_document.replace(/-/g,''),
+            type_document: e.target.value
+          })
+        })
+      }
+    }else if(e.target.name === "data_document"){
+      setContact({...contact, [e.target.name] : contact.type_document === "Rut" ? formatRut(e.target.value) : e.target.value})
+    }else{
+      setContact({...contact, [e.target.name] : e.target.value})
+    }
   }
 
   const onSubmit = e => {

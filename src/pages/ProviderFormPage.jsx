@@ -6,6 +6,7 @@ import InputField from 'components/input/InputComponent'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import { formatRut } from 'utils/functions'
+import { connect } from 'react-redux'
 import {
   Row,
   Col,
@@ -20,7 +21,7 @@ const ProviderFormPage = (props) => {
   const [dataProvider,setDataProvider] = useState({
     name_fantasy: '',
     rut_provider: '',
-    id_country: JSON.parse(localStorage.getItem('configStore')) ? JSON.parse(localStorage.getItem('configStore')).country : '',
+    id_country: '',
     comuna: '',
     city: '',
     phone: '',
@@ -40,14 +41,18 @@ const ProviderFormPage = (props) => {
     fetchData()
   },[])
 
+  useEffect(() => {
+
+    setDataProvider({...dataProvider,id_country : props.configStore && Object.keys(props.configStore).length > 0 ? props.configStore.country : ''})
+  },[props.id_branch_office])
+
   const onChange = async e => {
     if(e.target.name === "type_id"){
-      await setDataProvider({...dataProvider, [e.target.name] : e.target.value, rut_provider: ''})
+      setDataProvider({...dataProvider, [e.target.name] : e.target.value, rut_provider: ''})
     }else if(e.target.name === "rut_provider"){
-      let val = formatRut(e.target.value)
-      setDataProvider({...dataProvider, [e.target.name] : val})
+      setDataProvider({...dataProvider, [e.target.name] : dataProvider.type_id == 1 ? formatRut(e.target.value) : e.target.value})
     }else{
-      await setDataProvider({...dataProvider, [e.target.name] : e.target.value})
+      setDataProvider({...dataProvider, [e.target.name] : e.target.value})
     }
   }
 
@@ -170,7 +175,7 @@ const ProviderFormPage = (props) => {
       <Form onSubmit={onSubmit} noValidate validated={validate}>
         <Row className="justify-content-center align-items-center">
           <Col sm={7} md={7} lg={7} xs={12} className="containerDivSeparated">
-            <h3 className="text-center font-title">Datos del Proveedor</h3>
+            <h3 className="text-center title_principal">Formulario de Proveedores</h3>
             <br/>
             <Row>
               <InputField
@@ -267,7 +272,7 @@ const ProviderFormPage = (props) => {
             )}
             <br/>
             <p className="text-center">O</p>
-            <Button size="sm" type="button" onClick={goToProvider} variant="info" block={true}>Volver a los Proveedores</Button>
+            <Button size="sm" type="button" onClick={goToProvider} variant="danger" block={true}>Volver a los Proveedores</Button>
           </Col>
         </Row>
       </Form>
@@ -394,4 +399,12 @@ ProviderFormPage.defaultProps ={
   }
 }
 
-export default ProviderFormPage
+
+function mapStateToProps(state){
+  return {
+    configStore: state.configs.configStore,
+    id_branch_office: state.enterpriseSucursal.id_branch_office
+  }
+}
+
+export default connect(mapStateToProps,{})(ProviderFormPage)

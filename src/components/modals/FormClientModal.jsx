@@ -48,12 +48,11 @@ const FormClientModal = (props) => {
   },[props.dataModify])
 
   const handleOnChange = e => {
-    if(e.target.name === "type_document" && e.target.value === "Rut"){
-      let client_rut = formatRut(Object.assign({},client).data_document)
+    if(e.target.name === "type_document"){
+      let client_rut = e.target.value === "Rut" ? formatRut(Object.assign({},client).data_document) : Object.assign({},client).data_document.replace(/-/g,'')
       setClient({...client, [e.target.name] : e.target.value, data_document: client_rut})
     }else if(e.target.name === "data_document" && client.type_document === "Rut"){
-      let val = formatRut(e.target.value)
-      setClient({...client, [e.target.name] : val})
+      setClient({...client, [e.target.name] : formatRut(e.target.value)})
     }else{
       setClient({...client, [e.target.name] : e.target.value})
     }
@@ -214,7 +213,7 @@ FormClientModal.defaultProps = {
     ],
   },
   inputPhone: {
-    type: 'phone',
+    type: 'number',
     required: false,
     name: 'phone',
     label : 'Teléfono',

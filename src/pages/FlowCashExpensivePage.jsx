@@ -28,8 +28,7 @@ import {
   FaPlusCircle
 } from 'react-icons/fa'
 import {formatNumber} from 'utils/functions'
-
-let columns_expensive = []
+import { connect } from 'react-redux'
 
 const FlowCashExpensivePage = (props) => {
 
@@ -56,52 +55,7 @@ const FlowCashExpensivePage = (props) => {
 
   useEffect(() => {
     fetchData()
-    return () => {
-      columns_expensive = []
-    }
-  },[])
-
-  useMemo(() => {
-    columns_expensive = [
-
-          {
-            Header: 'Nombre',
-            accessor: 'name'
-          },
-          {
-            Header: 'Descripción',
-            accessor: 'description'
-          },
-          {
-            Header: 'Monto',
-            accessor: 'amount',
-            Cell : props1 => {
-              return <Badge variant="danger" className="font_badge">{formatNumber(props1.cell.row.original.amount,2,',','.')}</Badge>
-            }
-          },
-          {
-            Header: 'Cuenta',
-            accessor: props1 => [props1.account.account_name]
-          },
-          {
-            Header: 'Centro de Costros',
-            accessor: props1 => [props1.centerCoste.name]
-          },
-          {
-            Header: 'Acciones',
-            Cell: props1 => {
-              const id = props1.cell.row.original.id
-              return (
-                <DropdownButton size="sm" id={'drop'+id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetails(props1.cell.row.original)}>Ver Detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
-                </DropdownButton>
-              )
-            }
-          }
-        ]
-  },[])
+  },[props.id_branch_office])
 
   const cleanForm = () => {
     setExpensiveForm({
@@ -429,7 +383,45 @@ const FlowCashExpensivePage = (props) => {
             </Row>
             <Row>
               <Col sm={12} md={12} lg={12} xs={12}>
-                <Table data={expensives} columns={columns_expensive} />
+                <Table data={expensives} columns={[
+
+                      {
+                        Header: 'Nombre',
+                        accessor: 'name'
+                      },
+                      {
+                        Header: 'Descripción',
+                        accessor: 'description'
+                      },
+                      {
+                        Header: 'Monto',
+                        accessor: 'amount',
+                        Cell : props1 => {
+                          return <Badge variant="danger" className="font_badge">{formatNumber(props1.cell.row.original.amount,2,',','.')}</Badge>
+                        }
+                      },
+                      {
+                        Header: 'Cuenta',
+                        accessor: props1 => [props1.account.account_name]
+                      },
+                      {
+                        Header: 'Centro de Costros',
+                        accessor: props1 => [props1.centerCoste.name]
+                      },
+                      {
+                        Header: 'Acciones',
+                        Cell: props1 => {
+                          const id = props1.cell.row.original.id
+                          return (
+                            <DropdownButton size="sm" id={'drop'+id} title="Seleccione"  block="true">
+                              <Dropdown.Item onClick={() => seeDetails(props1.cell.row.original)}>Ver Detalle</Dropdown.Item>
+                              <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
+                              <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
+                            </DropdownButton>
+                          )
+                        }
+                      }
+                    ]} />
               </Col>
             </Row>
           </Col>
@@ -558,4 +550,16 @@ FlowCashExpensivePage.defaultProps = {
   },
 }
 
-export default FlowCashExpensivePage
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+FlowCashExpensivePage.propTypes = {
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(FlowCashExpensivePage)

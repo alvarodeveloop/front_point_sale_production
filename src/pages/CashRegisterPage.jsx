@@ -21,6 +21,7 @@ import Table from 'components/Table'
 import 'styles/components/modalComponents.css'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { connect } from 'react-redux'
 
 const CashRegisterPage = (props) => {
 
@@ -40,7 +41,7 @@ const CashRegisterPage = (props) => {
 
   useEffect(() => {
     fetchData(true)
-  },[])
+  },[props.id_branch_office])
 
   const fetchData = typeFetch => {
 
@@ -257,7 +258,7 @@ const CashRegisterPage = (props) => {
                   <Button block={true} variant="primary" size="sm" type="submit">Guardar</Button>
                 </Col>
                 <Col sm={4} md={4} lg={4}>
-                  <Button variant="danger" size="sm" onClick={handleOpenModalAdd} type="button">Cerrar</Button>
+                  <Button block={true} variant="danger" size="sm" onClick={handleOpenModalAdd} type="button">Cerrar</Button>
                 </Col>
               </Row>
           </Modal.Body>
@@ -267,4 +268,16 @@ const CashRegisterPage = (props) => {
   )
 }
 
-export default CashRegisterPage
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+CashRegisterPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(CashRegisterPage)

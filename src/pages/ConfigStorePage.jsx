@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
+import { connect } from 'react-redux'
 import {FaCogs, FaPlusCircle, FaEdit } from "react-icons/fa";
 import {
   Container,
@@ -44,7 +45,7 @@ const ConfigStorePage = (props) => {
 
   useEffect(() => {
     fetchData()
-  },[])
+  },[props.id_branch_office])
 
   const fetchData = () => {
     axios.get(API_URL+'config_store').then(result => {
@@ -165,4 +166,16 @@ const ConfigStorePage = (props) => {
   )
 }
 
-export default ConfigStorePage
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
+
+ConfigStorePage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(ConfigStorePage)

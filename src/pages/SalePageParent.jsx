@@ -39,7 +39,8 @@ import {
 } from 'react-bootstrap'
 import InputFieldRef from 'components/input/InputComponentRef'
 import { MdSend } from 'react-icons/md'
-
+import {FaPlusCircle} from 'react-icons/fa'
+let count = 0
 const SalePageParent = (props) => {
 
   const [view,setView] = useState(1)
@@ -58,12 +59,21 @@ const SalePageParent = (props) => {
   const inputRef = useRef(null)
 
   useEffect(() => {
+    count++
+    if(count > 1){
+      localStorage.removeItem('cash_register')
+      props.resetCart()
+      fetchConfig()
+    }
+  },[props.id_branch_office])
 
-    fetchConfig()
+  useEffect(() => {
     layoutHelpers.toggleCollapsed()
+    fetchConfig()
     return () => {
       props.resetCart()
       layoutHelpers.toggleCollapsed()
+      count = 0
     }
   },[])
 
@@ -226,6 +236,9 @@ const SalePageParent = (props) => {
       [e.target.name] : e.target.value
     })
   }
+  const goToCashRegister = () => {
+    props.history.replace('/cashRegister')
+  }
 
   return (
     <React.Fragment>
@@ -282,15 +295,26 @@ const SalePageParent = (props) => {
                 </Row>
                 <hr/>
                 <Row className="justify-content-center">
-                  {cashRegisters.map((v,i) => (
-                    <Col sm={3} lg={3} md={3} className="text-center" key={i}>
-                      <h5 style={{color: 'rgb(180, 55, 33)'}}>CAJA N° {v.nro_caja}</h5>
-                      <Image src={require('../assets/img/caja_registradora.jpg')} style={{width: '100%'}}/>
-                      Estado : {v.status ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
-                      <br/><br/>
-                      <Button variant="primary" block={true} size="sm" onClick={() => handleChoiceCashRegister(v)}>Seleccionar Caja</Button>
+                  { cashRegisters.length > 0 ? (
+                    <React.Fragment>
+                      {cashRegisters.map((v,i) => (
+                        <Col sm={3} lg={3} md={3} className="text-center" key={i}>
+                          <h5 style={{color: 'rgb(180, 55, 33)'}}>CAJA N° {v.nro_caja}</h5>
+                          <Image src={require('../assets/img/caja_registradora.jpg')} style={{width: '100%'}}/>
+                          Estado : {v.status ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
+                          <br/><br/>
+                          <Button variant="primary" block={true} size="sm" onClick={() => handleChoiceCashRegister(v)}>Seleccionar Caja</Button>
+                        </Col>
+                      ))}
+                    </React.Fragment>
+                  ) : (
+                    <Col sm={6} md={6} lg={6} className="text-center">
+                      <Image src={require('../assets/img/denied.png')} style={{width: '30%'}}/>
+                      <br/>
+                      <h4 className="">No posee cajas registradoras asociadas</h4>
+                      <Button variant="success" type="button" block={true} size="sm" onClick={goToCashRegister}>Agregar Caja Registradora <FaPlusCircle /></Button>
                     </Col>
-                  ))}
+                  )}
                 </Row>
               </Col>
             </Row>
@@ -375,7 +399,9 @@ function mapDispatchToProps(){
 
 function mapStateToProps(state){
   return {
-    sale: state.sale.sale
+    sale: state.sale.sale,
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
   }
 }
 
@@ -395,7 +421,9 @@ SalePageParent.propTypes = {
   setBuyer: PropTypes.func.isRequired,
   deleteBuyer: PropTypes.func.isRequired,
   resetDiscountRecharge: PropTypes.func.isRequired,
-  handleResetTotal: PropTypes.func.isRequired
+  handleResetTotal: PropTypes.func.isRequired,
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
 }
 
 export default connect(mapStateToProps,mapDispatchToProps())(SalePageParent)

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { FaPlusCircle } from "react-icons/fa";
 import axios from 'axios'
@@ -13,6 +13,7 @@ import {
 } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import InputField from 'components/input/InputComponent'
+import InputFieldRef from 'components/input/InputComponentRef'
 import { API_URL } from 'utils/constants'
 import { providerRepresentColumns } from 'utils/columns/provider'
 import Table from 'components/Table'
@@ -34,8 +35,11 @@ const ProviderRepresentPage = (props) => {
     id_provider
   })
 
+  const inputRef = useRef(null)
+
   useEffect(() => {
     fetchData()
+    inputRef.current.focus()
   },[])
 
   useMemo(() => {
@@ -197,7 +201,8 @@ const ProviderRepresentPage = (props) => {
           <br/>
           <Form onSubmit={onSubmit} noValidate validated={validate}>
             <Row>
-              <InputField
+              <InputFieldRef
+                ref={inputRef}
                 {...props.inputName}
                 handleChange={onChange}
                 value={dataRepresent.name_contact}
@@ -236,7 +241,7 @@ const ProviderRepresentPage = (props) => {
               <Row className="justify-content-center">
                 <Col sm={6} md={6} lg={6} xs={6}>
                   <br/>
-                  <Button size="sm" type="button" onClick={goToProvider} variant="info" block="true">Ir a los Proveedores</Button>
+                  <Button size="sm" type="button" onClick={goToProvider} variant="danger" block="true">Ir a los Proveedores</Button>
                 </Col>
               </Row>
             )}

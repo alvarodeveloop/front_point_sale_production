@@ -17,6 +17,7 @@ import { API_URL } from 'utils/constants'
 import { categoryColumns } from 'utils/columns/category'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
+import { connect } from 'react-redux'
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
 
@@ -31,7 +32,7 @@ const CategoryPage = (props) => {
 
   useEffect(() => {
     fetchData()
-  },[])
+  },[props.id_branch_office])
 
   useMemo(() => {
 
@@ -178,7 +179,7 @@ const CategoryPage = (props) => {
       <Row className="justify-content-center">
         <Col sm={12} md={12} lg={12} xs={12} className="containerDivSeparated">
           <br/>
-          <h3 className="text-center font-title">Formulario De Categorias</h3>
+          <h4 className="text-center title_principal">Formulario De Categorias</h4>
           <br/>
           <Form onSubmit={onSubmit} noValidate validated={validate}>
             <Row className="justify-content-center">
@@ -227,5 +228,16 @@ CategoryPage.defaultProps = {
   }
 }
 
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+  }
+}
 
-export default CategoryPage
+CategoryPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+}
+
+export default connect(mapStateToProps,{})(CategoryPage)
