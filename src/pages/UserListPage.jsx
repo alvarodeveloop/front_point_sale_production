@@ -18,6 +18,7 @@ import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import 'styles/pages/users.css'
+import {connect} from 'react-redux'
 
 
 const UserListPage = (props) => {
@@ -26,7 +27,7 @@ const UserListPage = (props) => {
 
   useEffect(() => {
     fetchData()
-  },[])
+  },[props.id_branch_office])
 
   useMemo(() => {
 
@@ -131,7 +132,13 @@ const UserListPage = (props) => {
 }
 
 UserListPage.propTypes = {
-
+  id_branch_office : PropTypes.string.isRequired
 }
 
-export default UserListPage
+function mapDispatchToProps(state){
+    return{
+      id_branch_office : state.enterpriseSucursal.id_branch_office
+    }
+}
+
+export default connect(mapDispatchToProps,{})(UserListPage)

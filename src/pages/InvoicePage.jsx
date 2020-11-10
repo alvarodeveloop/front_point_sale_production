@@ -26,12 +26,13 @@ import * as moment from 'moment-timezone'
 import { formatNumber } from 'utils/functions'
 import 'styles/components/modalComponents.css'
 import { connect } from 'react-redux'
-
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { confirmAlert } from 'react-confirm-alert'; // Import
 let cotizacionColumns = null
 
-const CotizacionSearchPage = props => {
+const InvoiceSearchPage = props => {
 
-  const [cotizacionData, setCotizacionData] = useState([])
+  const [invoiceData, setInvoiceData] = useState([])
   const [cotizationDetail, setCotizationDetail] = useState({})
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false)
 
@@ -42,10 +43,10 @@ const CotizacionSearchPage = props => {
           accessor: 'ref',
           Cell: props1 => {
             const {original} = props1.cell.row
-            if(original.status < 3){
+            if(original.status == 1){
               return (
-                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para modificar</Tooltip>}>
-                  <Button size="sm" variant="link" block={true} onClick={() => updateCotizacion(original.id)}>{ original.ref } </Button>
+                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para acceder a los pagos</Tooltip>}>
+                  <Button size="sm" variant="link" block={true} onClick={() => goToBond(original)}>{ original.ref } </Button>
                 </OverlayTrigger>
               )
             }else{
@@ -80,39 +81,33 @@ const CotizacionSearchPage = props => {
         },
         {
           Header: 'Tipo',
-          accessor: props1 => props1.type_effect == 1 ? ['Afecta'] : ['Excento'],
+          accessor: props1 => props1.type_invoicing == 1 ? ['Afecta'] : ['Excento'],
         },
         {
           Header: 'Fecha-Emisión',
-          accessor: props1 => [moment(props1.date_issue).format('DD-MM-YYYY')],
+          accessor: props1 => [moment(props1.date_issue_invoice).tz('America/Santiago').format('DD-MM-YYYY')],
         },
         {
-          Header: 'Fecha Vencimiento',
-          accessor: props1 => [moment(props1.date_expiration).format('DD-MM-YYYY')],
+          Header: 'Días de Vencimiento',
+          accessor: 'days_expiration'
         },
         {
           Header: 'Status',
-          accessor: props1 => props1.status === 1 ? ['Pendiente'] : props1.status === 2 ? ['Aprobado'] : props1.status === 3 ? ['Facturado'] : ['Anulada'] ,
-          Cell: props1 => {
-            const { original } = props1.cell.row
-            if(original.status === 1){
-              return (
-                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para cambiar el Status</Tooltip>}>
-                  <Button variant="secondary" block={true} size="sm" onClick={() => changeStatus(original.id,2)}>Pendiente</Button>
-                </OverlayTrigger>
-              )
-            }else if(original.status === 2){
-              return (
-                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para cambiar el Status</Tooltip>}>
-                  <Button variant="secondary" block={true} size="sm" onClick={() => changeStatus(original.id,1)}>Aprobada</Button>
-                </OverlayTrigger>
-              )
-            }else if(original.status === 3){
-              return (<Badge variant="primary" className="font-badge">Facturada</Badge>)
+          accessor: props1 => {
+            if(props1.status == 1){
+              if(props1.days_expiration){
+                let date1 = moment().tz('America/Santiago')
+                let date2 = moment(props1.date_issue_invoice).tz('America/Santiago').add(props1.days_expiration,'days')
+                return date2.diff(date1,'days') >= 0 ? (<Badge variant="secondary" className="font-badge">Pendiente</Badge>) : (<Badge variant="secondary" className="font-badge">Vencida</Badge>)
+              }else{
+                return (<Badge variant="secondary" className="font-badge">Pendiente</Badge>)
+              }
+            }else if(props1.status == 2){
+              return (<Badge variant="secondary" className="font-badge">Pagada</Badge>)
             }else{
-              return (<Badge variant="danger" className="font-badge">Anulada</Badge>)
+              return (<Badge variant="secondary" className="font-badge">Anulada</Badge>)
             }
-          }
+          },
         },
         {
           Header: 'Total Productos',
@@ -166,7 +161,7 @@ const CotizacionSearchPage = props => {
             return (
               <OverlayTrigger placement={'left'} overlay={
                 <Tooltip id={"tooltip-total_pagar"+props1.cell.row.original.id}>
-                  {props1.cell.row.original.discount_global ? props1.cell.row.original.discount_global : 0}%
+                  {props1.cell.row.original.discount_global}%
                 </Tooltip>}>
                   <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
                     {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.discount_global_amount)}
@@ -187,54 +182,47 @@ const CotizacionSearchPage = props => {
           }
         },
         {
+          Header: 'Abonado',
+          accessor: 'total_bond',
+          Cell: props1 => {
+            return (
+              <Badge variant="danger" className="font-badge">
+                {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_bond)}
+              </Badge>
+
+            )
+          }
+        },
+        {
+          Header: 'Saldo Deudor',
+          accessor: 'debit_balance',
+          Cell: props1 => {
+            return (
+              <Badge variant="danger" className="font-badge">
+                {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.debit_balance)}
+              </Badge>
+
+            )
+          }
+        },
+        {
           Header: 'Acciones',
           Cell: props1 => {
             const { original } = props1.cell.row
-            if(original.status === 1){
-              return (
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => updateCotizacion(original.id)}>Modificar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => changeStatus(original.id,2)}>Aprobar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => changeStatus(original.id,4)}>Anular</Dropdown.Item>
-                </DropdownButton>
-              )
-            }else if(original.status === 2){
-              return (
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => updateCotizacion(original.id)}>Modificar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver Detalle</Dropdown.Item>
-                  {
-                    !original.is_done_invoice ? (
-                      <Dropdown.Item onClick={() => goToFacturation(original.id)}>Facturar</Dropdown.Item>
-                    ) : ''
-                  }
-                  {
-                    !original.is_done_note_sale ? (
-                      <Dropdown.Item onClick={() => goToNoteSale(original.id)}>Nota de Venta</Dropdown.Item>
-                    ) : ''
-                  }
-                  {
-                    !original.is_done_bill_sale ? (
-                      <Dropdown.Item onClick={() => goToBillOfSale(original.id)}>Boleta de Venta</Dropdown.Item>
-                    ) : ''
-                  }
-                  <Dropdown.Item onClick={() => changeStatus(original.id,1)}>Pendiente</Dropdown.Item>
-                  <Dropdown.Item onClick={() => changeStatus(original.id,4)}>Anular</Dropdown.Item>
-                </DropdownButton>
-              )
-            }else if(original.status === 3){
+            if(original.status == 1){
               return (
                 <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
                   <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printCotizacion(original.id)}>Imprimir</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printCotizacionNew(original.id)}>Imprimir Nuevo Pdf</Dropdown.Item>
+                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
+                  <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
+                  <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
                 </DropdownButton>
               )
             }else{
               return (
                 <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
                   <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
+                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
                 </DropdownButton>
               )
             }
@@ -256,28 +244,11 @@ const CotizacionSearchPage = props => {
   },[props.id_branch_office])
 
   const fetchData = () => {
-    axios.get(API_URL+'cotizacion').then(result => {
-      setCotizacionData(result.data)
+    axios.get(API_URL+'invoice/0/1').then(result => {
+      setInvoiceData(result.data)
     }).catch(err => {
       if(err.response){
         toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-    })
-  }
-
-  const updateCotizacion = id => {
-    props.history.replace('/quotitation/create_quotitation/'+id)
-  }
-
-  const deleteCotizacion = id => {
-    axios.delete(API_URL+'cotizacion/'+id).then(result => {
-      toast.success('Proceso completado')
-      fetchData()
-    }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.messsage)
       }else{
         toast.error('Error, contacte con soporte')
       }
@@ -285,54 +256,20 @@ const CotizacionSearchPage = props => {
   }
 
   const goToForm = () => {
-    props.history.replace('/quotitation/create_quotitation')
+    props.history.replace('/invoice/create_invoice')
   }
 
-  const printCotizacion = id => {
-
-    toast.info('Buscando documento, espere por favor...')
-
-    axios.get(API_URL+'cotizacion_print/'+id+'/0').then(result => {
-      window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
+  const printInvoice = original => {
+    toast.inf('Cargando documento, espere por favor')
+    axios.get(API_URL+'invoice_print/'+original.id+"/0").then(result => {
+      window.open(API_URL+'documents/invoice/files_pdf/'+result.data.name)
     }).catch(err => {
       if(err.response){
         toast.error(err.response.data.message)
       }else{
-        console.log(err);
         toast.error('Error, contacte con soporte')
       }
     })
-  }
-
-  const printCotizacionNew = id => {
-    toast.info('Generando documento, espere por favor...')
-    axios.get(API_URL+'cotizacion_print/'+id+'/0/1').then(result => {
-      window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
-    }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
-    })
-  }
-
-  const changeStatus = (id,status) => {
-   let objectStatus = {
-     status
-   }
-   axios.put(API_URL+'cotizacion_status/'+id,objectStatus).then(result => {
-    toast.success('Status Cambiado')
-    fetchData()
-   }).catch(err => {
-     if(err.response){
-       toast.error(err.response.data.message)
-     }else{
-       console.log(err);
-       toast.error('Error, contacte con soporte')
-     }
-   })
   }
 
   const handleModalDetail = () => {
@@ -355,29 +292,56 @@ const CotizacionSearchPage = props => {
     handleModalDetail()
   }
 
-  const goToFacturation = id => {
-    props.history.replace('/quotitation/invoicing/'+id)
+  const goToBond = datos => {
+    props.history.replace('/invoice/invoice_bond/'+datos.id)
   }
 
-  const goToNoteSale = id => {
-    props.history.replace('/quotitation/create_sell_note/'+id)
+  const anulateInvoice = datos => {
+    confirmAlert({
+      customUI: ({ onClose }) => {
+        return (
+          <div className='custom-ui-edit'>
+            <h1>¿Esta seguro?</h1>
+            <p className="font-alert">¿Desea realmente anular este registro?</p>
+            <button className="button-alert"
+              onClick={() => {
+                confirmAnulateInvoice(datos.id);
+                onClose();
+              }}
+            >
+              Si, Aceptar
+            </button>
+            <button className="button-alert" onClick={onClose}>No</button>
+          </div>
+        );
+      }
+    }); 
   }
 
-  const goToBillOfSale = id => {
-    props.history.replace('/quotitation/bill_sale_create/'+id)
+  const confirmAnulateInvoice = id => {
+    axios.put(API_URL+'invoice_status/'+id).then(result => {
+        toast.success('Factura anulada con éxito')
+        fetchData()
+     }).catch(err => {
+       if(err.response){
+         toast.error(err.response.data.message)
+       }else{
+         console.log(err);
+         toast.error('Error, contacte con soporte')
+       }
+    })
   }
-
   return (
 
     <Container fluid>
       <Row>
         <Col sm={6} md={6} lg={6} className="text-center">
-          <h4 className="title_principal">Tabla de Cotizaciones</h4>
-          <Button block={true} variant="success" onClick={goToForm} size="sm">Nueva Cotización <FaPlusCircle /></Button>
+          <h4 className="title_principal">Tabla de Facturas</h4>
+          <Button block={true} variant="success" onClick={goToForm} size="sm">Nueva Factura <FaPlusCircle /></Button>
         </Col>
         <Col sm={6} md={6} lg={6} className="text-center title_principal">
-          <h4>Total Cotizaciones Realizadas</h4>
-          <Badge variant="danger">{cotizacionData.length}</Badge>
+          <h4>Total Facturas Realizadas</h4>
+          <Badge variant="danger">{invoiceData.length}</Badge>
         </Col>
       </Row>
       <hr/>
@@ -398,7 +362,7 @@ const CotizacionSearchPage = props => {
       </Row>
       <Row>
         <Col sm={12} md={12} lg={12} xs={12}>
-          <Table columns={cotizacionColumns} data={cotizacionData}/>
+          <Table columns={cotizacionColumns} data={invoiceData}/>
         </Col>
       </Row>
       <Modal
@@ -410,7 +374,7 @@ const CotizacionSearchPage = props => {
         >
         <Modal.Header closeButton className="header_dark">
           <Modal.Title id="contained-modal-title-vcenter">
-            Detalles de la Cotización N° {Object.keys(cotizationDetail).length > 0 ? cotizationDetail.ref : ''}
+            Detalles de la Factura N° {Object.keys(cotizationDetail).length > 0 ? cotizationDetail.ref : ''}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -522,7 +486,7 @@ const CotizacionSearchPage = props => {
           <br/>
           <Row>
             <Col sm={12} md={12} lg={12} className="table-responsive">
-              <h4 className="title_principal text-center">Productos de la Cotización</h4>
+              <h4 className="title_principal text-center">Productos de la Factura</h4>
               <br/>
               <table className="table table-striped table-bordered">
                 <thead>
@@ -563,7 +527,7 @@ const CotizacionSearchPage = props => {
           <br/>
           <Row>
             <Col sm={12} md={12} lg={12} className="">
-              <h4 className="title_principal text-center">Gastos de la Cotización</h4>
+              <h4 className="title_principal text-center">Gastos de la Factura</h4>
               <br/>
               <table className="table table-striped table-bordered">
                 <thead>
@@ -588,10 +552,10 @@ const CotizacionSearchPage = props => {
             </Col>
           </Row>
           <br/>
-          {Object.keys(cotizationDetail).length > 0 && cotizationDetail.referencias && cotizationDetail.referencias.length > 0 ? (
+          {Object.keys(cotizationDetail).length > 0 && cotizationDetail.refs.length > 0 ? (
             <Row>
               <Col sm={12} md={12} lg={12} className="">
-                <h4 className="title_principal text-center">Referencias de la Cotización</h4>
+                <h4 className="title_principal text-center">Referencias de la Factura</h4>
                 <br/>
                 <table className="table table-striped table-bordered">
                   <thead>
@@ -607,10 +571,10 @@ const CotizacionSearchPage = props => {
                   <tbody className="text-center">
                     {Object.keys(cotizationDetail).length > 0 ? (
                       <React.Fragment>
-                        {cotizationDetail.referencias.map((v,i) => (
+                        {cotizationDetail.refs.map((v,i) => (
                           <tr>
                             <td>{v.type_document}</td>
-                            <td>{v.ref_cotizacion}</td>
+                            <td>{v.ref_invoice}</td>
                             <td>{v.ind}</td>
                             <td>{v.date_ref ? moment(v.date_ref).tz('America/Santiago').format('DD-MM-YYYY') : ''}</td>
                             <td>{v.reason_ref}</td>
@@ -631,10 +595,10 @@ const CotizacionSearchPage = props => {
               <table className="table table-striped table-bordered">
                 <thead>
                   <tr>
-                    <th className="text-center">Neto</th>
-                    <th className="text-center">Iva</th>
-                    <th className="text-center">Gastos</th>
-                    <th className="text-center">Descuento Global</th>
+                    <th className="text-center">Total Neto</th>
+                    <th className="text-center">Total Iva</th>
+                    <th className="text-center">Total Gastos</th>
+                    <th className="text-center">Total Descuento Global</th>
                     <th className="text-center">Total Balance</th>
                   </tr>
                 </thead>
@@ -654,9 +618,14 @@ const CotizacionSearchPage = props => {
           </Row>
           <br/>
           <Row>
-            <Col sm={12} md={12} lg={12}>
+            <Col sm={6} md={6} lg={6}>
               {Object.keys(cotizationDetail).length > 0 ? (
                 <h5>Mostrar solo los Totales: <Badge variant="primary" className="font-badge">{cotizationDetail.total_with_iva ? 'No' : "Si"}</Badge></h5>
+              ) : ''}
+            </Col>
+            <Col sm={6} md={6} lg={6} className="text-center">
+              {Object.keys(cotizationDetail).length > 0 ? (
+                <h5>Método de Pago: <Badge variant="primary" className="font-badge">{cotizationDetail.way_of_payment}</Badge></h5>
               ) : ''}
             </Col>
           </Row>
@@ -669,20 +638,20 @@ const CotizacionSearchPage = props => {
   )
 }
 
-CotizacionSearchPage.defaultProps = {
-  configGeneral: JSON.parse(localStorage.getItem('configGeneral')),
-}
-
 function mapStateToProps(state){
   return {
     id_branch_office : state.enterpriseSucursal.id_branch_office,
     id_enterprise : state.enterpriseSucursal.id_enterprise,
+    configGeneral: state.configs.config,
+    configStore: state.configs.configStore
   }
 }
 
-CotizacionSearchPage.propTypes ={
+InvoiceSearchPage.propTypes ={
   id_branch_office: PropTypes.string.isRequired,
   id_enterprise : PropTypes.string.isRequired,
+  configGeneral: PropTypes.object,
+  configStore : PropTypes.object,
 }
 
-export default connect(mapStateToProps,{})(CotizacionSearchPage)
+export default connect(mapStateToProps,{})(InvoiceSearchPage)

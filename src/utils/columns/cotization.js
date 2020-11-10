@@ -1,3 +1,4 @@
+
 export const ColumnsCotization = [
 
       {
@@ -15,12 +16,5 @@ export const ColumnsCotization = [
 ]
 
 export const GastosCotizacion = [
-  {
-    Header: 'Descripción',
-    accessor: 'description'
-  },
-  {
-    Header: 'Monto',
-    accessor: 'amount'
-  }
+  
 ]

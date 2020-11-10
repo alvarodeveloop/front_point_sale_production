@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -14,8 +14,7 @@ import {
   Form
 } from 'react-bootstrap'
 import { API_URL, FRONT_URL } from 'utils/constants'
-import { FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt, FaUser, FaUsers } from 'react-icons/fa'
-import { MdPrint } from 'react-icons/md'
+import { FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt, FaUser, FaUsers, FaBook } from 'react-icons/fa'
 import Table from 'components/Table'
 import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
 import FormClientModal from 'components/modals/FormClientModal'
@@ -24,7 +23,7 @@ import ModalGastosCotizacion from 'components/modals/ModalGastosCotizacion'
 import { showPriceWithDecimals } from 'utils/functions'
 import * as moment from 'moment-timezone'
 import InputField from 'components/input/InputComponent'
-
+import { connect } from 'react-redux'
 import { ColumnsCotization, GastosCotizacion } from 'utils/columns/cotization'
 import ModalClientCotizacion from 'components/modals/ModalClientCotizacion'
 import ModalContacts from 'components/modals/ModalContacts'
@@ -34,10 +33,10 @@ import layoutHelpers from 'shared/layouts/helpers'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableProductsCotization from 'components/TableProductsCotization'
-import { connect } from 'react-redux'
+import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
 
 let DetailCotizacion = null
-let count = 0
+
 const Styles = styled.div`
 
   .divContainerFlex{
@@ -62,7 +61,15 @@ const Styles = styled.div`
     height: 55px;
     border-radius: 100%;
     box-shadow: 3px 3px rgb(219, 222, 215);
-    width: 100%;
+    width: 55px;
+    padding: 5px;
+  }
+
+  .button_product_base{
+    height: 55px;
+    border-radius: 100%;
+    box-shadow: 3px 3px rgb(219, 222, 215);
+    width: 55px;
     padding: 5px;
   }
 
@@ -71,8 +78,8 @@ const Styles = styled.div`
     overflow-y: auto;
   }
 `
-
-const SellNotePage = (props) => {
+let count = 0
+const BillPage = (props) => {
 
   const [clients,setClients] = useState([])
   const [clientDetail,setClientDetail] = useState({})
@@ -89,7 +96,8 @@ const SellNotePage = (props) => {
   const [isShowModalSeller,setIsShowModalSeller] = useState(false)
   const [rutFacturacionClientSearch, setRutFacturacionClientSearch] = useState('')
   const [validated, setValidated] = useState(false)
-  const [cotizationData, setCotizationData] = useState({
+  const [isOpenModalInvoice, setIsOpenModalInvoice] = useState(false)
+  const [invoiceData, setInvoiceData] = useState({
     business_name_transmitter: '',
     rut_transmitter: '',
     address_transmitter: '',
@@ -97,8 +105,7 @@ const SellNotePage = (props) => {
     email_transmitter: '',
     phone_transmitter: '',
     comment: '',
-    date_issue: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-    date_expiration: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+    date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
     type_api: true,
     rut_client: '',
     business_name_client: '',
@@ -111,79 +118,51 @@ const SellNotePage = (props) => {
     email_seller: '',
     total_with_iva : true , // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
     price_list: "",
-    type_effect: true,
+    type_invoicing: true,
     status: 1,
     ref: '',
+    discount_global: '',
+    way_of_payment: "",
+    date_expiration: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+    type: 3
   })
   const [displayModals,setDisplayModals] = useState(false)
+  const [refCotizacion, setRefCotizacion] = useState([])
+  const [displayReturnButton, setDisplayReturnButton] = useState(false)
+  const [typeBond,setTypeBond] = useState([])
+
+  const inputForm = useRef(null)
 
   useEffect(() => {
-    count++
     if(localStorage.getItem('configStore') === "null"){
       toast.error('Debe hacer su configuración de tienda primero')
       setTimeout(function () {
         props.history.replace('/config/config_store')
       }, 1500);
     }else{
-      let config = JSON.parse(localStorage.getItem('configStore'))
-      if(props.match.params.id){
-        if(count > 1 && props.id_branch_office !== cotizationData.id_branch_office){
-          toast.error('Esta Nota de venta no pertenece a esta sucursal')
-          setTimeout(function () {
-            props.history.replace('/quotitation/sell_note')
-          }, 1500);
-        }else{
-          fetchClients()
-          fetchProducts()
-          fetchDataUpdate()
-        }
-      }else{
-        fetchClients()
-        fetchProducts()
-        setTimeout(function () {
-          setCotizationData(oldData => {
-            let test = Object.assign({},oldData,{
-              business_name_transmitter: config.name_store,
-              rut_transmitter: config.rut,
-              address_transmitter: config.address,
-              country_transmitter: config.pais.nombre,
-              email_transmitter: config.email,
-              phone_transmitter: config.phone
-            })
-            return test
-          })
-        }, 1000);
-        get_ref()
-      }
-    setDisplayModals(true)
-  }
-
+      fetchClients()
+      fetchProducts()
+      fetchTypeBond()
+      setInvoiceData(oldData => {
+        return Object.assign({},oldData,{
+          business_name_transmitter: props.configStore.name_store,
+          rut_transmitter: props.configStore.rut,
+          address_transmitter: props.configStore.address,
+          country_transmitter: props.configStore.pais.nombre,
+          email_transmitter: props.configStore.email,
+          phone_transmitter: props.configStore.phone,
+        })
+      })
+      setDisplayModals(true)
+    }
   },[props.id_branch_office])
 
   useEffect(() => {
     layoutHelpers.toggleCollapsed()
-    return() => {
+    return () => {
       layoutHelpers.toggleCollapsed()
       count = 0
     }
-  },[])
-
-  useMemo(() => {
-
-    if(GastosCotizacion.length > 2){
-      GastosCotizacion.pop()
-    }
-
-    GastosCotizacion.push({
-      Header: 'Acciones',
-      Cell: props => {
-        const id = props.cell.row.original.id
-        return(
-          <Button size="sm" size="sm" variant="primary" block={true} onClick={() => removeGastoDetail(props.cell.row.original) }>Remover</Button>
-        )
-      }
-    })
-
   },[])
 
   const clearData = () => {
@@ -191,10 +170,16 @@ const SellNotePage = (props) => {
     setGastosDetail([])
     setClientDetail({})
     setResetValueClient(true)
-    setCotizationData(oldData => {
+    setInvoiceData(oldData => {
       return {
+        business_name_transmitter: props.configStore.name_store,
+        rut_transmitter: props.configStore.rut,
+        address_transmitter: props.configStore.address,
+        country_transmitter: props.configStore.pais.nombre,
+        email_transmitter: props.configStore.email,
+        phone_transmitter: props.configStore.phone,
         comment: '',
-        date_issue : moment().tz('America/Santiago').format('YYYY-MM-DD'),
+        date_issue_invoice : moment().tz('America/Santiago').format('YYYY-MM-DD'),
         date_expiration : moment().tz('America/Santiago').format('YYYY-MM-DD'),
       }
     })
@@ -203,124 +188,33 @@ const SellNotePage = (props) => {
     },300)
   }
 
-  const fetchDataUpdate = () => {
-    axios.get(API_URL+'sell_note/'+props.match.params.id).then(result => {
-      setGastosDetail(result.data.gastos)
-      setDetailProducts(result.data.products)
-
-      setCotizationData(oldData => {
-        return {
-          business_name_transmitter: result.data.business_name_transmitter,
-          rut_transmitter: result.data.rut_transmitter,
-          address_transmitter: result.data.address_transmitter,
-          country_transmitter: result.data.country_transmitter,
-          email_transmitter: result.data.email_transmitter,
-          phone_transmitter: result.data.phone_transmitter,
-          comment: result.data.comment,
-          date_issue: moment(result.data.date_issue).tz('America/Santiago').format('YYYY-MM-DD'),
-          date_expiration: moment(result.data.date_expiration).tz('America/Santiago').format('YYYY-MM-DD'),
-          type_api: result.data.type_api,
-          rut_client: result.data.rut_client,
-          business_name_client: result.data.business_name_client,
-          address_client: result.data.address_client,
-          name_contact: result.data.name_contact,
-          phone_contact: result.data.phone_contact,
-          email_contact: result.data.email_contact,
-          name_seller: result.data.name_seller,
-          phone_seller: result.data.phone_seller,
-          email_seller: result.data.email_seller,
-          total_with_iva : result.data.total_with_iva, // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
-          price_list: "",
-          type_effect: result.data.type_effect,
-          status: result.data.status,
-          ref: result.data.ref,
-          id_branch_office : result.data.id_branch_office
-        }
-      })
-
-    }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-    })
-  }
-
   const goToDashboard = () => {
-      props.history.replace('/quotitation/sell_note')
+      props.history.replace('/bill/bill_search')
   }
 
-  const goToFacturation = () => {
-      props.history.replace('/facturation/dashboard')
-  }
+  const displayTotalDiscount = () => {
+    let total = 0
 
-  const submitData = type => {
+    detailProducts.forEach((item, i) => {
 
-    let object_post = {
-      cotization: Object.assign({},cotizationData),
-      products: [...detailProducts],
-      gastos: [...gastosDetail],
-      status: type,
-    }
-    setDisableButton(true)
-    if(props.match.params.id){
-      axios.put(API_URL+'sell_note/'+props.match.params.id,object_post).then(result => {
-        toast.success('Nota de Venta modificada con éxito')
-        setDisableButton(false)
-        clearData()
-        if(type === 4){
-          setTimeout(function () {
-            goToFacturation()
-          }, 1300);
+      let item1 = Object.assign({},item)
+      let value = 0
+      if(item1.is_neto){
+        item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+        value  = invoiceData.discount_global ? ((item1.price * invoiceData.discount_global) / 100) : 0
+      }else{
+        if(invoiceData.total_with_iva){
+
+          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          value = invoiceData.discount_global ?  ((item1.price * invoiceData.discount_global) / 100) : 0
         }else{
-          setTimeout(function () {
-            goToDashboard()
-          }, 1300);
+          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          value = invoiceData.discount_global ? ((item1.price * invoiceData.discount_global) / 100) : 0
         }
-      }).catch(err => {
-
-        setDisableButton(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
-      })
-    }else{
-      axios.post(API_URL+'sell_note',object_post).then(result => {
-        setDisableButton(false)
-        toast.success('Nota de Venta guardada con éxito')
-        clearData()
-        if(type === 4){
-          goToFacturation()
-        }else{
-          setTimeout(function () {
-            props.history.replace('/quotitation/sell_note')
-          }, 1500);
-        }
-      }).catch(err => {
-
-        setDisableButton(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
-      })
-    }
-
-  }
-
-  const copyLinkOfCotizacion = () => {
-
-    navigator.clipboard.writeText("http://localhost:3000/quotitation/create_sell_note").then(function() {
-      toast.success('Url Copiada y Guardando...')
-      submitData(2)
-    }, function() {
-      console.log('error')
-    });
-
+      }
+      total+= value
+    })
+    return total
   }
 
   const displayTotalProduct = () => {
@@ -332,19 +226,19 @@ const SellNotePage = (props) => {
 
       if(item1.is_neto){
         item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-        total+= parseFloat(item1.price) * item1.quantity
+        item1.price = invoiceData.discount_global ? parseFloat(item1.price) - ((item1.price * invoiceData.discount_global) / 100) : item1.price
       }else{
-        if(cotizationData.total_with_iva){
+        if(invoiceData.total_with_iva){
           item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-          total+= parseFloat(item1.price) * item1.quantity
+          item1.price = invoiceData.discount_global ? parseFloat(item1.price) - ((item1.price * invoiceData.discount_global) / 100) : item1.price
         }else{
           item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          item1.price = invoiceData.discount_global ? parseFloat(item1.price) - ((item1.price * invoiceData.discount_global) / 100) : item1.price
           item1.price = parseFloat( (item1.price * props.configStore.tax) / 100) + parseFloat(item1.price) // linea para sumar el iva
-          total+= parseFloat(item1.price) * item1.quantity
         }
       }
+      total+= parseFloat(item1.price) * item1.quantity
     })
-
     return total
   }
 
@@ -354,8 +248,9 @@ const SellNotePage = (props) => {
     detailProducts.forEach((item, i) => {
       let item1 = Object.assign({},item)
       if(!item1.is_neto){
-        if(cotizationData.total_with_iva){
+        if(invoiceData.total_with_iva){
           item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          item1.price = invoiceData.discount_global ? parseFloat(item1.price) - ((item1.price * invoiceData.discount_global) / 100) : item1.price
           total+= parseFloat(((item1.price * props.configStore.tax) / 100))
         }else{
           total+= 0
@@ -379,7 +274,7 @@ const SellNotePage = (props) => {
     let total_product = displayTotalProduct()
     let total_gastos  = displayTotalGastos()
     let total_iva = 0
-    if(cotizationData.total_with_iva){
+    if(invoiceData.total_with_iva){
       total_iva = displayTotalIva()
     }
     return (parseFloat(total_product) + parseFloat(total_iva)) - parseFloat(total_gastos)
@@ -409,10 +304,23 @@ const SellNotePage = (props) => {
     })
   }
 
+  const fetchTypeBond = () => {
+    axios.get(API_URL+'type_bond').then(result => {
+        setTypeBond(result.data)
+      }).catch(err => {
+         if(err.response){
+           toast.error(err.response.data.message)
+         }else{
+           console.log(err);
+           toast.error('Error, contacte con soporte')
+         }
+    })
+  }
+
   const handleClientSubmit = data => {
     // funcion para manejar el envio de correos a los clientes con la cotización
     let object_post = {
-      cotization: Object.assign({},cotizationData),
+      cotization: Object.assign({},invoiceData),
       products: Object.assign({},detailProducts),
       gastos: Object.assign({},gastosDetail),
       client: Object.assign({},clientDetail),
@@ -421,7 +329,7 @@ const SellNotePage = (props) => {
     }
     setDisableButton(true)
     if(props.match.params.id){
-      axios.put(API_URL+'sell_note/'+props.match.params.id,object_post).then(result => {
+      axios.put(API_URL+'invoice/'+props.match.params.id,object_post).then(result => {
         toast.success('Operación realizada con éxito')
         setOpenModalClientMail(false)
         setDisableButton(false)
@@ -437,7 +345,7 @@ const SellNotePage = (props) => {
         }
       })
     }else{
-      axios.post(API_URL+'sell_note',object_post).then(result => {
+      axios.post(API_URL+'invoice',object_post).then(result => {
         toast.success('Operación realizada con éxito')
         setOpenModalClientMail(false)
         setDisableButton(false)
@@ -455,17 +363,17 @@ const SellNotePage = (props) => {
   }
 
   const onChange = e => {
-    if(e.target.name === "type_api" || e.target.name === "total_with_iva" || e.target.name === "type_effect"){
+    if(e.target.name === "type_api" || e.target.name === "total_with_iva" || e.target.name === "type_invoicing"){
       let val = e.target.value === "false" ? false : true
-      setCotizationData({...cotizationData, [e.target.name] : val})
+      setInvoiceData({...invoiceData, [e.target.name] : val})
     }else{
-      setCotizationData({...cotizationData, [e.target.name] : e.target.value})
+      setInvoiceData({...invoiceData, [e.target.name] : e.target.value})
     }
   }
 
   const get_ref = () => {
-    axios.get(API_URL+'sell_note_get_ref').then(result => {
-      setCotizationData({...cotizationData, ref: result.data.ref})
+    axios.get(API_URL+'invoice_get_ref').then(result => {
+      setInvoiceData({...invoiceData, ref: result.data.ref})
     }).catch(err => {
       if(err.response){
        toast.error(err.response.data.message)
@@ -503,12 +411,12 @@ const SellNotePage = (props) => {
   const handleSelectClient = data => {
     let data_document = data.split('/')[1]
     let client = clients.find(v => v.data_document === data_document)
-    setCotizationData({...cotizationData, rut_client : client.data_document, business_name_client: client.name_client, address_client: client.address})
+    setInvoiceData({...invoiceData, rut_client : client.data_document, business_name_client: client.name_client, address_client: client.address})
     setClientDetail(client)
   }
 
   const handleSelectProduct = product => {
-    // metodo para manejar la escogencia del producto en la modal de productos para el detalle de la sell_note
+    // metodo para manejar la escogencia del producto en la modal de productos para el detalle de la cotizacion
     if(!product.quantity) product.quantity = 1
     if(!product.category){
       product.category = ""
@@ -518,7 +426,8 @@ const SellNotePage = (props) => {
         });
       }
     }
-
+    product.id_product = product.id
+    product.discount_stock = true
     setDetailProducts([...detailProducts, product])
     setIsShowModalProduct(false)
   }
@@ -526,7 +435,7 @@ const SellNotePage = (props) => {
   const removeCLient = () => {
     setClientDetail({})
     handleResetValueClient()
-    setCotizationData({...cotizationData, rut_client : '', business_name_client: '', address_client: ''})
+    setInvoiceData({...invoiceData, rut_client : '', business_name_client: '', address_client: ''})
   }
 
   const removeItemDetail = data => {
@@ -541,20 +450,11 @@ const SellNotePage = (props) => {
     })
   }
 
-  const saveCotizacion = type => {
-    //
-    if(type === 1 && !!clientDetail){
-      toast.error('Debe seleccionar al menos 1 cliente')
-      return false
-    }
-    submitData(type)
-  }
-
   const searchClientByApiFacturacion = () =>{
      let val = rutFacturacionClientSearch
      toast.info('Buscando Receptor, espere por favor')
      axios.get(API_URL+'search_receptor/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
-      setCotizationData(oldData => {
+      setInvoiceData(oldData => {
         return Object.assign({},oldData,{
           rut_client : result.data.rut,
           business_name_client: result.data.razon_social,
@@ -572,7 +472,7 @@ const SellNotePage = (props) => {
   }
 
   const handleSelectContact = dataContact => {
-    setCotizationData(oldData => {
+    setInvoiceData(oldData => {
       return Object.assign({},oldData,{
         name_contact : dataContact.name,
         phone_contact : dataContact.phone,
@@ -583,7 +483,7 @@ const SellNotePage = (props) => {
   }
 
   const handleSelectSeller = dataSeller => {
-    setCotizationData(oldData => {
+    setInvoiceData(oldData => {
       return Object.assign({},oldData,{
         name_seller : dataSeller.name,
         phone_seller : dataSeller.phone,
@@ -614,38 +514,116 @@ const SellNotePage = (props) => {
       discount: '',
       method_sale: '',
       total: '',
-      is_neto: type
+      is_neto: type,
+      discount_stock: false
+    }])
+  }
+
+  const onChangeTableRef = (e,i) => {
+    e.persist()
+    setRefCotizacion( oldData => {
+      let newData = [...oldData]
+      newData[i][e.target.name] = e.target.value
+      return newData
+    })
+  }
+
+  const removeProductRef = i => {
+    let array_copy = [...refCotizacion]
+    array_copy.splice(i,1)
+    setRefCotizacion(array_copy)
+  }
+
+  const handleSubmit = e => {
+    const form = e.currentTarget;
+    e.preventDefault();
+    if (form.checkValidity() === false) {
+      e.stopPropagation();
+      setValidated(true);
+      toast.error('Revise los campos del formulario que hay errores en los requisitos pedidos')
+      return
+    }
+
+    if(detailProducts.length < 1){
+      toast.error('Debe tener al menos un producto para la facturación')
+      return false
+    }
+
+    handleModalInvoice()
+  }
+
+  const handleModalInvoice = () => {
+    setIsOpenModalInvoice(!isOpenModalInvoice)
+  }
+
+  const handleSubmitInvoice = () => {
+
+    const form = inputForm.current;
+    if (form.checkValidity() === false) {
+      setValidated(true);
+      toast.error('Hay campos en el formulario que requieren información')
+      handleModalInvoice()
+      return
+    }
+
+    let object_post = {
+      cotization: Object.assign({},invoiceData),
+      products: detailProducts,
+      gastos: gastosDetail,
+      referencias: refCotizacion,
+      status: 2
+    }
+
+    if(object_post.products.length < 1){
+      toast.error('Error debe escoger al menos 1 producto')
+      return false
+    }
+
+    setDisableButton(true)
+
+    axios.post(API_URL+'invoice',object_post).then(result => {
+      toast.success('Boleta realizada con éxito')
+
+      setTimeout( () => {
+        goToDashboard()
+      }, 1500);
+
+    }).catch(err => {
+      setDisableButton(false)
+      if(err.response){
+        toast.error(err.response.data.message)
+      }else{
+        toast.error('Error, contacte con soporte')
+      }
+    })
+
+  }
+
+  const addRef = () => {
+    setRefCotizacion([...refCotizacion,{
+      ind: 'ind',
+      type_document: 'Hoja Entrada de Servicio',
+      ref_invoice: '',
+      date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+      reason_ref: 'Cotización',
+      type_code: '',
+      id_invoice: ''
     }])
   }
 
   return (
     <Styles>
       <Container fluid>
-        <Form onSubmit={() => {}} noValidate validated={validated}>
+        <Form ref={inputForm} onSubmit={handleSubmit} noValidate validated={validated}>
           <Row>
             <Col sm={8} md={8} lg={8}>
-              <h4 className="title_principal">Formulario De Notas de Ventas</h4>
-            </Col>
-            <Col sm={4} md={4} lg={4}>
-              <InputField
-               type='text'
-               label={(<h5 style={{color: "rgb(153, 31, 31)"}}>Ref.Nota de Venta</h5>)}
-               name='id_sell_note'
-               required={true}
-               messageErrors={[
-
-               ]}
-               cols='col-md-12 col-lg-12 col-sm-12'
-               readonly={true}
-               value={cotizationData.ref}
-               handleChange={() => {}}
-              />
+              <h4 className="title_principal">Emisión de Boletas</h4>
             </Col>
           </Row>
           <hr/>
           <Row>
             <Col sm={12} md={12} lg={12} xs={12}>
-              <Accordion defaultActiveKey="1">
+              <Accordion defaultActiveKey="2">
                 <Card>
                   <Accordion.Toggle as={Card.Header} eventKey="0" className="header_card">
                     <b>Datos del Emisor</b> <FaUser />
@@ -657,36 +635,36 @@ const SellNotePage = (props) => {
                          type='text'
                          label='Razón Social'
                          name='business_name_transmitter'
-                         required={true}
+                         required={false}
                          messageErrors={[
                          'Requerido*'
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
-                         value={cotizationData.business_name_transmitter}
+                         value={invoiceData.business_name_transmitter}
                          handleChange={onChange}
                         />
                         <InputField
                          type='text'
                          label='Rut'
                          name='rut_transmitter'
-                         required={true}
+                         required={false}
                          messageErrors={[
                          'Requerido*'
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
-                         value={cotizationData.rut_transmitter}
+                         value={invoiceData.rut_transmitter}
                          handleChange={onChange}
                         />
                         <InputField
                          type='text'
                          label='Direccion'
                          name='address_transmitter'
-                         required={true}
+                         required={false}
                          messageErrors={[
                          'Requerido*'
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
-                         value={cotizationData.address_transmitter}
+                         value={invoiceData.address_transmitter}
                          handleChange={onChange}
                         />
                       </Row>
@@ -695,36 +673,36 @@ const SellNotePage = (props) => {
                          type='text'
                          label='País'
                          name='country_transmitter'
-                         required={true}
+                         required={false}
                          messageErrors={[
                          'Requerido*'
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
-                         value={cotizationData.country_transmitter}
+                         value={invoiceData.country_transmitter}
                          handleChange={onChange}
                         />
                         <InputField
                          type='email'
                          label='Email'
                          name='email_transmitter'
-                         required={true}
+                         required={false}
                          messageErrors={[
                          'Requerido*'
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
-                         value={cotizationData.email_transmitter}
+                         value={invoiceData.email_transmitter}
                          handleChange={onChange}
                         />
                         <InputField
                          type='text'
                          label='Fono'
                          name='phone_transmitter'
-                         required={true}
+                         required={false}
                          messageErrors={[
                          'Requerido*'
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
-                         value={cotizationData.phone_transmitter}
+                         value={invoiceData.phone_transmitter}
                          handleChange={onChange}
                         />
                       </Row>
@@ -751,7 +729,7 @@ const SellNotePage = (props) => {
                                   id={`radio-2`}
                                   label={`Sii`}
                                   value={true}
-                                  checked={cotizationData.type_api}
+                                  checked={invoiceData.type_api}
                                   onChange={onChange}
                                 />
                               </Form.Group>
@@ -764,14 +742,14 @@ const SellNotePage = (props) => {
                                   id={`radio-1`}
                                   label={`Aidy`}
                                   value={false}
-                                  checked={!cotizationData.type_api}
+                                  checked={!invoiceData.type_api}
                                   onChange={onChange}
                                 />
                               </Form.Group>
                             </Col>
                           </Row>
                         </Col>
-                        {cotizationData.type_api ? (
+                        {invoiceData.type_api ? (
                           <Col sm={4} md={4} lg={4}>
                             <Form.Label className="fontBold">Rut</Form.Label>
                             <Form.Group className={"divContainerFlex"}>
@@ -820,36 +798,36 @@ const SellNotePage = (props) => {
                          type='text'
                          label='Rut'
                          name='rut_client'
-                         required={true}
+                         required={false}
                          messageErrors={[
-
+                           'Requerido*'
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
-                         value={cotizationData.rut_client}
+                         value={invoiceData.rut_client}
                          handleChange={onChange}
                         />
                        <InputField
                           type='text'
                           label='Razón Social'
                           name='business_name_client'
-                          required={true}
+                          required={false}
                           messageErrors={[
                           'Requerido*'
                           ]}
                           cols='col-md-4 col-lg-4 col-sm-4'
-                          value={cotizationData.business_name_client}
+                          value={invoiceData.business_name_client}
                           handleChange={onChange}
                         />
                         <InputField
                          type='text'
                          label='Direccion'
                          name='address_client'
-                         required={true}
+                         required={false}
                          messageErrors={[
-
+                           'Requerido*'
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
-                         value={cotizationData.address_client}
+                         value={invoiceData.address_client}
                          handleChange={onChange}
                         />
                       </Row>
@@ -869,10 +847,10 @@ const SellNotePage = (props) => {
                          name='name_contact'
                          required={false}
                          messageErrors={[
-
+                           'Requerido*'
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
-                         value={cotizationData.name_contact}
+                         value={invoiceData.name_contact}
                          handleChange={onChange}
                         />
                         <InputField
@@ -881,10 +859,10 @@ const SellNotePage = (props) => {
                          name='phone_contact'
                          required={false}
                          messageErrors={[
-
+                           'Requerido*'
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
-                         value={cotizationData.phone_contact}
+                         value={invoiceData.phone_contact}
                          handleChange={onChange}
                         />
                         <InputField
@@ -893,10 +871,10 @@ const SellNotePage = (props) => {
                          name='email_contact'
                          required={false}
                          messageErrors={[
-
+                           'Requerido*, ','Formato Email*'
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
-                         value={cotizationData.email_contact}
+                         value={invoiceData.email_contact}
                          handleChange={onChange}
                         />
                       </Row>
@@ -916,10 +894,10 @@ const SellNotePage = (props) => {
                            name='name_seller'
                            required={false}
                            messageErrors={[
-
+                             'Requerido*'
                            ]}
                            cols='col-md-4 col-lg-4 col-sm-4'
-                           value={cotizationData.name_seller}
+                           value={invoiceData.name_seller}
                            handleChange={onChange}
                           />
                           <InputField
@@ -928,10 +906,10 @@ const SellNotePage = (props) => {
                            name='phone_seller'
                            required={false}
                            messageErrors={[
-
+                             'Requerido*'
                            ]}
                            cols='col-md-4 col-lg-4 col-sm-4'
-                           value={cotizationData.phone_seller}
+                           value={invoiceData.phone_seller}
                            handleChange={onChange}
                           />
                           <InputField
@@ -940,13 +918,172 @@ const SellNotePage = (props) => {
                            name='email_seller'
                            required={false}
                            messageErrors={[
-
+                             'Requerido*'
                            ]}
                            cols='col-md-4 col-lg-4 col-sm-4'
-                           value={cotizationData.email_seller}
+                           value={invoiceData.email_seller}
                            handleChange={onChange}
                           />
                         </Row>
+                    </Card.Body>
+                  </Accordion.Collapse>
+                </Card>
+                <Card>
+                  <Accordion.Toggle as={Card.Header} eventKey="2" className="header_card">
+                    <b>Referencias </b> <FaBook />
+                  </Accordion.Toggle>
+                  <Accordion.Collapse eventKey="2">
+                    <Card.Body>
+                      <Row>
+                        <Col sm={12} md={12} lg={12} className="table-responsive">
+                          <table className="table table-bordered">
+                            <thead>
+                              <tr>
+                                <th className="text-center tr_cabecera">#</th>
+                                <th className="text-center tr_cabecera">Tipo Documento</th>
+                                <th className="text-center tr_cabecera">Ind</th>
+                                <th className="text-center tr_cabecera">Folio</th>
+                                <th className="text-center tr_cabecera">Fecha Ref</th>
+                                <th className="text-center tr_cabecera">Razón Ref</th>
+                                <th className="text-center tr_cabecera">Tipo de Código</th>
+                                <th className="text-center tr_cabecera"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {refCotizacion.map((v,i) => (
+                                <tr key={i}>
+                                  <td>
+                                    <br/>
+                                    {i + 1}
+                                  </td>
+                                  <td>
+                                    <Row>
+                                      <InputField
+                                        className="letras_grandes"
+                                        type='select'
+                                        label=''
+                                        id={"type_document_ref"+i}
+                                        name='type_document'
+                                        required={i === 0 ? true : false}
+                                        messageErrors={[
+                                          'Requerido*'
+                                        ]}
+                                        cols='col-md-12 col-lg-12 col-sm-12'
+                                        value={refCotizacion[i].type_document}
+                                        handleChange={(e) => {onChangeTableRef(e,i)}}
+                                      >
+                                        <option value="">--Seleccione--</option>
+                                        <option value={"Hoja Entrada de Servicio"}>Hoja Entrada de Servicio</option>
+                                      </InputField>
+                                    </Row>
+                                  </td>
+                                  <td>
+                                    <Row>
+                                      <InputField
+                                        className="letras_grandes"
+                                        type='text'
+                                        label=''
+                                        id={"ind_ref"+i}
+                                        name='ind'
+                                        required={i === 0 ? true : false}
+                                        messageErrors={[
+                                          'Requerido*'
+                                        ]}
+                                        cols='col-md-12 col-lg-12 col-sm-12'
+                                        value={refCotizacion[i].ind}
+                                        handleChange={(e) => {onChangeTableRef(e,i)}}
+                                      />
+                                    </Row>
+                                  </td>
+                                  <td>
+                                    <Row>
+                                      <InputField
+                                        className="letras_grandes"
+                                        type='text'
+                                        label=''
+                                        id={"ref_cotizacion_ref"+i}
+                                        name='ref_cotizacion'
+                                        required={i === 0 ? true : false}
+                                        messageErrors={[
+                                          'Requerido*'
+                                        ]}
+                                        cols='col-md-12 col-lg-12 col-sm-12'
+                                        value={refCotizacion[i].ref_cotizacion}
+                                        handleChange={(e) => {onChangeTableRef(e,i)}}
+                                      />
+                                    </Row>
+                                  </td>
+                                  <td>
+                                    <Row>
+                                      <InputField
+                                        className="letras_grandes"
+                                        type='date'
+                                        label=''
+                                        id={"date_ref_ref"+i}
+                                        name='date_ref'
+                                        required={i === 0 ? true : false}
+                                        messageErrors={[
+                                          'Requerido*'
+                                        ]}
+                                        cols='col-md-12 col-lg-12 col-sm-12'
+                                        value={refCotizacion[i].date_ref}
+                                        handleChange={(e) => {onChangeTableRef(e,i)}}
+                                      />
+                                    </Row>
+                                  </td>
+                                  <td>
+                                    <Row>
+                                      <InputField
+                                        className="letras_grandes"
+                                        type='text'
+                                        label=''
+                                        id={"reason_ref_ref"+i}
+                                        name='reason_ref'
+                                        required={i === 0 ? true : false}
+                                        messageErrors={[
+                                          'Requerido*'
+                                        ]}
+                                        cols='col-md-12 col-lg-12 col-sm-12'
+                                        value={refCotizacion[i].reason_ref}
+                                        handleChange={(e) => {onChangeTableRef(e,i)}}
+                                      />
+                                    </Row>
+                                  </td>
+                                  <td>
+                                    <Row>
+                                      <InputField
+                                        className="letras_grandes"
+                                        type='text'
+                                        label=''
+                                        id={"type_code_ref"+i}
+                                        name='type_code'
+                                        required={false}
+                                        messageErrors={[
+
+                                        ]}
+                                        cols='col-md-12 col-lg-12 col-sm-12'
+                                        value={refCotizacion[i].type_code}
+                                        handleChange={(e) => {onChangeTableRef(e,i)}}
+                                      />
+                                    </Row>
+                                  </td>
+                                  <td>
+                                    <br/>
+                                    <Button variant="danger" size="sm" type="button" onClick={() => {removeProductRef(i)}}><FaTrash /></Button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </Col>
+                      </Row>
+                      <Row className="justify-content-center">
+                        <Col sm={1} md={1} lg={1}>
+                          <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Referencia a la Facturación</Tooltip>}>
+                            <Button className="button_product_base" variant="danger" block={true} type="button" onClick={addRef}><FaPlusCircle /></Button>
+                          </OverlayTrigger>
+                        </Col>
+                      </Row>
                     </Card.Body>
                   </Accordion.Collapse>
                 </Card>
@@ -979,7 +1116,7 @@ const SellNotePage = (props) => {
                           id={`radio-3`}
                           label={`Con Iva`}
                           value={true}
-                          checked={cotizationData.total_with_iva}
+                          checked={invoiceData.total_with_iva}
                           onChange={onChange}
                         />
                       </Form.Group>
@@ -992,7 +1129,7 @@ const SellNotePage = (props) => {
                           id={`radio-4`}
                           label={`Solo totales`}
                           value={false}
-                          checked={!cotizationData.total_with_iva}
+                          checked={!invoiceData.total_with_iva}
                           onChange={onChange}
                         />
                       </Form.Group>
@@ -1005,12 +1142,12 @@ const SellNotePage = (props) => {
                       type='select'
                       label='Listado de Productos'
                       name='price_list'
-                      required={true}
+                      required={false}
                       messageErrors={[
-                        'Requerido*'
+
                       ]}
                       cols='col-md-12 col-lg-12 col-sm-12'
-                      value={cotizationData.price_list}
+                      value={invoiceData.price_list}
                       handleChange={onChange}
                     >
                       <option value="">--Seleccione--</option>
@@ -1018,10 +1155,10 @@ const SellNotePage = (props) => {
                   </Row>
                 </Col>
               </Row>
-              <TableProductsCotization setDetailProducts={setDetailProducts} detailProducts={detailProducts} isShowIva={cotizationData.total_with_iva}/>
+              <TableProductsCotization setDetailProducts={setDetailProducts} detailProducts={detailProducts} isShowIva={invoiceData.total_with_iva}/>
               <Row className="justify-content-center">
                 <Col sm={1} md={1} lg={1}>
-                  <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Producto a la Nota</Tooltip>}>
+                  <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Producto a la Factura</Tooltip>}>
                     <DropdownButton size="sm" variant="danger" id={'dropdown_product'} title={(<FaPlusCircle />)} className="button_product">
                       <Dropdown.Item onClick={() => setIsShowModalProduct(true) }>Agregar Producto desde Inventario</Dropdown.Item>
                       <Dropdown.Item onClick={() => addNewProductIrregular(true)}>Agregar producto irregular con precio neto </Dropdown.Item>
@@ -1041,86 +1178,117 @@ const SellNotePage = (props) => {
           </Row>
           <Row>
             <Col sm={12} md={12} lg={12}>
-              <Table data={gastosDetail} columns={GastosCotizacion} />
+              <Table data={gastosDetail} columns={[
+                {
+                  Header: 'Descripción',
+                  accessor: 'description'
+                },
+                {
+                  Header: 'Monto',
+                  accessor: 'amount',
+                  Cell: props1 => {
+                    return showPriceWithDecimals(props.configGeneral,props1.cell.row.original.amount)
+                  }
+                },
+                {
+                  Header: 'Acciones',
+                  Cell: props1 => {
+                    const id = props1.cell.row.original.id
+                    return(
+                      <Button size="sm" size="sm" variant="primary" block={true} onClick={() => removeGastoDetail(props.cell.row.original) }>Remover</Button>
+                    )
+                  }
+                }
+              ]} />
             </Col>
           </Row>
           <Row className="justify-content-center">
             <Col sm={1} md={1} lg={1}>
-              <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Agregar Gastos a la Nota</Tooltip>}>
-                <div className="button-add">
-                  <Button size="sm" variant="danger" block={true} onClick={() => setIsShowModalGastos(true)}><FaPlusCircle /></Button>
-                </div>
+              <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Agregar Gastos a la Factura</Tooltip>}>
+                <Button className="button_product_base" size="sm" variant="danger" block={true} onClick={() => setIsShowModalGastos(true)}><FaPlusCircle /></Button>
               </OverlayTrigger>
             </Col>
           </Row>
-          <br/>
+          <hr/>
           <Row>
             <InputField
               type='date'
               label='Fecha de Emisión'
-              name='date_issue'
-              required={true}
+              name='date_issue_invoice'
+              required={false}
               messageErrors={[
                 'Requerido*'
               ]}
               cols='col-md-4 col-lg-4 col-sm-4 col-xs-12'
-              value={cotizationData.date_issue}
+              value={invoiceData.date_issue_invoice}
               handleChange={onChange}
               />
-            <InputField
-              type='date'
-              label='Fecha de Vencimiento'
-              name='date_expiration'
-              required={true}
-              messageErrors={[
-                'Requerido*'
-              ]}
-              cols='col-md-4 col-lg-4 col-sm-4 col-xs-12'
-              value={cotizationData.date_expiration}
-              handleChange={onChange}
-            />
             <Col sm={4} md={4} lg={4}>
               <Row>
                 <Col sm={12} md={12} lg={12} className="text-center">
-                  <b>Tipo Venta</b>
+                  <b>Tipo Factura</b>
                 </Col>
               </Row>
               <Row>
                 <Col sm={6} md={6} lg={6}>
                   <Form.Group>
                     <Form.Check
-                      name="type_effect"
+                      name="type_invoicing"
                       type={'radio'}
                       id={`radio-5`}
                       label={`Afecta`}
                       value={true}
-                      checked={cotizationData.type_effect}
-                      onChange={onChange}
-                      />
-                  </Form.Group>
-                </Col>
-                <Col sm={6} md={6} lg={6} className="text-right">
-                  <Form.Group>
-                    <Form.Check
-                      name="type_effect"
-                      type={'radio'}
-                      id={`radio-6`}
-                      label={`Excento`}
-                      value={false}
-                      checked={!cotizationData.type_effect}
+                      checked={invoiceData.type_invoicing}
                       onChange={onChange}
                       />
                   </Form.Group>
                 </Col>
               </Row>
             </Col>
+            <InputField
+             type='date'
+             label='Fecha de Expiración'
+             name='date_expiration'
+             required={false}
+             messageErrors={[
+
+             ]}
+             cols='col-md-4 col-lg-4 col-sm-4'
+             value={invoiceData.date_expiration}
+             handleChange={onChange}
+            />
           </Row>
           <br/>
           <Row>
-            <Col sm={12} md={12} lg={12}>
-              <label htmlFor="">Comentario de la Nota de Venta (Opcional)</label>
-              <textarea rows={3} name="comment" className="form-control" onChange={onChange} value={cotizationData.comment} />
-            </Col>
+            <InputField
+             type='select'
+             label='Forma de Pago'
+             name='way_of_payment'
+             required={true}
+             messageErrors={[
+             'Requerido*'
+             ]}
+             cols='col-md-4 col-lg-4 col-sm-4'
+             value={invoiceData.way_of_payment}
+             handleChange={onChange}
+            >
+              <option value="">--Seleccione--</option>
+              {typeBond.map((v,i) => (
+                <option value={v.name} key={i}>{v.name}</option>
+              ))}
+            </InputField>
+            <InputField
+             type='number'
+             label='Descuento Global'
+             name='discount_global'
+             required={false}
+             messageErrors={[
+
+             ]}
+             cols='col-md-4 col-lg-4 col-sm-4'
+             value={invoiceData.discount_global}
+             handleChange={onChange}
+            />
           </Row>
           <br/>
           <Row>
@@ -1130,17 +1298,19 @@ const SellNotePage = (props) => {
               <table className="table table-bordered">
                 <thead>
                   {
-                    cotizationData.total_with_iva ? (
+                    invoiceData.total_with_iva ? (
                       <tr>
                         <th className="text-center">Neto(Productos)</th>
                         <th className="text-center">Iva</th>
                         <th className="text-center">Gastos</th>
+                        <th className="text-center">Descuento Total</th>
                         <th className="text-center">Balance Total</th>
                       </tr>
                     ) : (
                       <tr>
                         <th className="text-center">Neto(Productos)</th>
                         <th className="text-center">Gastos</th>
+                        <th className="text-center">Descuento Total</th>
                         <th className="text-center">Balance Total</th>
                       </tr>
                     )
@@ -1148,17 +1318,19 @@ const SellNotePage = (props) => {
                 </thead>
                 <tbody className="text-center">
                   {
-                    cotizationData.total_with_iva ? (
+                    invoiceData.total_with_iva ? (
                       <tr>
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalProduct())}</td>
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalIva())}</td>
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalGastos())}</td>
+                        <td>{showPriceWithDecimals(props.configGeneral,displayTotalDiscount())}</td>
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalTotal())}</td>
                       </tr>
                     ) : (
                       <tr>
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalProduct())}</td>
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalGastos())}</td>
+                        <td>{showPriceWithDecimals(props.configGeneral,displayTotalDiscount())}</td>
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalTotal())}</td>
                       </tr>
                     )
@@ -1168,29 +1340,22 @@ const SellNotePage = (props) => {
             </Col>
           </Row>
           <br/>
-          <Row>
-            <Col sm={4} md={4} lg={4}>
-              <Button size="sm" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => saveCotizacion(1)}>{disableButtons ? 'Guardando...' : 'Guardar y Enviar por Mail'} <FaMailBulk /></Button>
-            </Col>
-            <Col sm={4} md={4} lg={4}>
-              <Button size="sm" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => saveCotizacion(4)}>{disableButtons ? 'Guardando...' : 'Guardar y Facturar'} <MdPrint /></Button>
-            </Col>
-            <Col sm={4} md={4} lg={4}>
-              <Button size="sm" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => saveCotizacion(2)}>{disableButtons ? 'Guardando...' : 'Guardar'} <FaLocationArrow /></Button>
-            </Col>
-          </Row>
-          <br/>
-          <Row className="justify-content-center">
-            <Col sm={3} md={3} lg={3}>
-              <DropdownButton size="sm" id={'drop'} title={disableButtons ? 'Guardando' : "Compartir"}  className="dropdown_block" disabled={disableButtons} variant="secondary">
-                <Dropdown.Item onClick={() => setOpenModalClientMail(true) }>Enviar por Mail</Dropdown.Item>
-                <Dropdown.Item onClick={ copyLinkOfCotizacion } >Copiar Link</Dropdown.Item>
-              </DropdownButton>
-            </Col>
-            <Col sm={3} md={3} lg={3}>
-              <Button variant="danger" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
-            </Col>
-          </Row>
+          {!displayReturnButton ? (
+            <Row className="justify-content-center">
+              <Col sm={3} md={3} lg={3}>
+                <Button variant="secondary" size="sm" block={true} type="button" onClick={() => handleModalInvoice()}>Emitir Boleta</Button>
+              </Col>
+              <Col sm={3} md={3} lg={3}>
+                <Button variant="danger" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
+              </Col>
+            </Row>
+          ) : (
+            <Row className="justify-content-center">
+              <Col sm={3} md={3} lg={3}>
+                <Button variant="secondary" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
+              </Col>
+            </Row>
+          )}
           {displayModals ? (
             <React.Fragment>
               <FormClientModal
@@ -1224,7 +1389,15 @@ const SellNotePage = (props) => {
                 isShow={isShowModalSeller}
                 onHide={handleModalSeller}
                 handleSelectContact={handleSelectSeller}
-                />
+              />
+              <ModalInvoiceCotization
+                isShow={isOpenModalInvoice}
+                onHide={handleModalInvoice}
+                handleSubmit={handleSubmitInvoice}
+                setDetailProducts={setDetailProducts}
+                products={detailProducts}
+                disableButtons={disableButtons}
+              />
             </React.Fragment>
           ) : ''}
         </Form>
@@ -1233,21 +1406,20 @@ const SellNotePage = (props) => {
   )
 }
 
-SellNotePage.defaultProps = {
-  configStore : JSON.parse(localStorage.getItem('configStore')),
-  configGeneral: JSON.parse(localStorage.getItem('configGeneral'))
-}
-
 function mapStateToProps(state){
   return {
     id_branch_office : state.enterpriseSucursal.id_branch_office,
     id_enterprise : state.enterpriseSucursal.id_enterprise,
+    configStore: state.configs.configStore,
+    configGeneral: state.configs.config
   }
 }
 
-SellNotePage.propTypes ={
+BillPage.propTypes ={
   id_branch_office: PropTypes.string.isRequired,
   id_enterprise : PropTypes.string.isRequired,
+  configStore: PropTypes.object,
+  configGeneral: PropTypes.object,
 }
 
-export default connect(mapStateToProps,{})(SellNotePage)
+export default connect(mapStateToProps,{})(BillPage)

@@ -155,6 +155,7 @@ const ConfigStoreFormPage = (props) => {
       axios.put(API_URL+'config_store/'+props.match.params.id,formData).then(result => {
         toast.success('Configuración Modificada')
         localStorage.setItem('configStore',JSON.stringify(result.data))
+        props.setConfigStore(result.data)
         setTimeout(() => {
           props.history.push('/config/config_store')
         },1500)
@@ -171,6 +172,7 @@ const ConfigStoreFormPage = (props) => {
       axios.post(API_URL+'config_store',formData).then(result => {
         toast.success('Configuración Creada')
         localStorage.setItem('configStore',JSON.stringify(result.data))
+        props.setConfigStore(result.data)
         setTimeout(() => {
           props.history.push('/config/config_store')
         },1500)
@@ -511,6 +513,7 @@ function mapStateToProps(state){
 ConfigStoreFormPage.propTypes ={
   id_branch_office: PropTypes.string.isRequired,
   id_enterprise : PropTypes.string.isRequired,
+  setConfigStore: PropTypes.func.isRequired
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(ConfigStoreFormPage)

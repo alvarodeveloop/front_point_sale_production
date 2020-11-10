@@ -23,6 +23,7 @@ import 'styles/components/modalComponents.css'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { setBranchOffices } from 'actions/enterpriseSucursal'
+import { formatRut } from 'utils/functions'
 let count = 1
 
 const BranchOfficePage = (props) => {
@@ -95,7 +96,11 @@ const BranchOfficePage = (props) => {
   }
 
   const onChangeUser = e => {
-    setUserForm({...userForm, [e.target.name] : e.target.value})
+    if(e.target.name === "rut"){
+      setUserForm({...userForm, [e.target.name] : formatRut(e.target.value)})
+    }else{
+      setUserForm({...userForm, [e.target.name] : e.target.value})
+    }
   }
 
   const onSubmit = e => {
@@ -168,7 +173,7 @@ const BranchOfficePage = (props) => {
           return false
         }
         dataUser.branch = dataBranch
-        axios.post(API_URL+'user_by_brach_office',dataUser).then(result => {
+        axios.post(API_URL+'user_and_branch_office',dataUser).then(result => {
           toast.success('Sucursal Creada con éxito')
           cleanForm()
           handleOpenModalAdd()
@@ -215,7 +220,7 @@ const BranchOfficePage = (props) => {
     Object.keys(userDatos).forEach((item, i) => {
       if(userDatos[item] !== "" && userDatos[item] !== null && item !== "id_rol"){
         validate = true
-      }else if(validate === true && !userDatos[item]){
+      }else if(validate === true && !userDatos[item] && item !== "id_rol" && item !== "id"){
         required = true
       }
     });

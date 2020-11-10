@@ -1,0 +1,605 @@
+import React, { useEffect, useState, useMemo } from 'react'
+import PropTypes from 'prop-types'
+import {
+  Row,
+  Col,
+  Container,
+  Button,
+  Dropdown,
+  DropdownButton,
+  Badge,
+  Accordion,
+  Card,
+  Modal
+} from 'react-bootstrap'
+import Table from 'components/Table'
+import axios from 'axios'
+import { API_URL } from 'utils/constants'
+import { toast } from 'react-toastify'
+import { showPriceWithDecimals } from 'utils/functions'
+import { FaPlusCircle, FaChartLine } from "react-icons/fa";
+import FileSaver from 'file-saver'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import layoutHelpers from 'shared/layouts/helpers'
+import * as moment from 'moment-timezone'
+import { formatNumber } from 'utils/functions'
+import 'styles/components/modalComponents.css'
+import { connect } from 'react-redux'
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { confirmAlert } from 'react-confirm-alert'; // Import
+let cotizacionColumns = null
+
+const BillSearchPage = props => {
+
+  const [billData, setBillData] = useState([])
+  const [cotizationDetail, setCotizationDetail] = useState({})
+  const [isOpenModalDetail, setIsOpenModalDetail] = useState(false)
+
+  useMemo(() => {
+    cotizacionColumns = [
+      {
+        Header: 'Referencia',
+        accessor: 'ref',
+        Cell: props1 => {
+          const {original} = props1.cell.row
+          if(original.status == 1){
+            return (
+              <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para acceder a los pagos</Tooltip>}>
+                <Button size="sm" variant="link" block={true} onClick={() => goToBond(original)}>{ original.ref } </Button>
+              </OverlayTrigger>
+            )
+          }else{
+            return original.ref
+          }
+        }
+      },
+      {
+        Header: 'Rut Cliente',
+        accessor: 'rut_client',
+      },
+      {
+        Header: 'Razón Social',
+        accessor: 'business_name_client',
+        Cell: props1 => {
+          const {original} = props1.cell.row
+          return(
+            <OverlayTrigger placement={'right'} overlay={
+            <Tooltip id="tooltip-disabled2">
+              <ul className="list-group">
+                <li className="list-group-item"><b>Vendedor: </b> {original.name_seller}</li>
+                <li className="list-group-item"><b>Fono del Vendedor: </b> {original.phone_seller ? original.phone_seller : 'No posee'}</li>
+                <li className="list-group-item"><b>Contacto</b> {original.name_contact ? original.name_contact : 'No posee'}</li>
+                <li className="list-group-item"><b>Fono del Contacto: </b> {original.phone_contact}</li>
+                <li className="list-group-item"><b>Comentario: </b> {original.comment}</li>
+              </ul>
+            </Tooltip>}>
+              <Button variant="link" size="sm" block={true} type="button">{original.business_name_client}</Button>
+            </OverlayTrigger>
+          )
+        }
+      },
+      {
+        Header: 'Tipo',
+        accessor: props1 => props1.type_invoicing == 1 ? ['Afecta'] : ['Excento'],
+      },
+      {
+        Header: 'Fecha-Emisión',
+        accessor: props1 => [moment(props1.date_issue_invoice).tz('America/Santiago').format('DD-MM-YYYY')],
+      },
+      {
+        Header: 'Fecha-Vencimiento',
+        accessor: props1 => props1.date_expiration ? [moment(props1.date_expiration).tz('America/Santiago').format('DD-MM-YYYY')] : ['Indefinida'],
+      },
+      {
+        Header: 'Status',
+        accessor: props1 => {
+          if(props1.status == 1){
+            if(props1.date_expiration){
+              let date1 = moment().tz('America/Santiago')
+              let date2 = moment(props1.date_expiration).tz('America/Santiago').add(props1.days_expiration,'days')
+              return date2.diff(date1,'days') >= 0 ? (<Badge variant="secondary" className="font-badge">Pendiente</Badge>) : (<Badge variant="secondary" className="font-badge">Vencida</Badge>)
+            }else{
+              return (<Badge variant="secondary" className="font-badge">Pendiente</Badge>)
+            }
+          }else if(props1.status == 2){
+            return (<Badge variant="secondary" className="font-badge">Pagada</Badge>)
+          }else{
+            return (<Badge variant="secondary" className="font-badge">Anulada</Badge>)
+          }
+        },
+      },
+      {
+        Header: 'Total Productos',
+        accessor: 'total_product',
+        Cell: props1 => {
+          return (
+            <OverlayTrigger placement={'left'} overlay={
+              <Tooltip id={"tooltip-total_pagar"+props1.cell.row.original.id}>
+                <ul className="list-group">
+                  {props1.cell.row.original.products.map((v,i) => (
+                    <li className="list-group-item" key={i}>
+                      <b>Producto</b>: {v.name_product}<br/>
+                      <b>Precio</b> : {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,v.price)}<br/>
+                      <b>Cantidad</b>: {v.quantity}</li>
+                  ))}
+                </ul>
+              </Tooltip>}>
+                <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
+                  {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_product)}
+                </Badge>
+            </OverlayTrigger>
+          )
+        }
+      },
+      {
+        Header: 'Total gastos',
+        accessor: 'total_gastos',
+        Cell: props1 => {
+          return (
+            <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
+              {props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_gastos)}
+            </Badge>
+          )
+        }
+      },
+      {
+        Header: 'Total Iva',
+        accessor: 'total_iva',
+        Cell: props1 => {
+          return (
+            <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
+              {props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_iva)}
+            </Badge>
+          )
+        }
+      },
+      {
+        Header: 'Descuento Global',
+        accessor: 'discount_global_total',
+        Cell: props1 => {
+          return (
+            <OverlayTrigger placement={'left'} overlay={
+              <Tooltip id={"tooltip-total_pagar"+props1.cell.row.original.id}>
+                {props1.cell.row.original.discount_global}%
+              </Tooltip>}>
+                <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
+                  {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.discount_global_amount)}
+                </Badge>
+            </OverlayTrigger>
+          )
+        }
+      },
+      {
+        Header: 'Total Balance',
+        accessor: 'total_balance',
+        Cell: props1 => {
+          return (
+            <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
+              {props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_balance)}
+            </Badge>
+          )
+        }
+      },
+      {
+        Header: 'Abonado',
+        accessor: 'total_bond',
+        Cell: props1 => {
+          return (
+            <Badge variant="danger" className="font-badge">
+              {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_bond)}
+            </Badge>
+
+          )
+        }
+      },
+      {
+        Header: 'Saldo Deudor',
+        accessor: 'debit_balance',
+        Cell: props1 => {
+          return (
+            <Badge variant="danger" className="font-badge">
+              {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.debit_balance)}
+            </Badge>
+
+          )
+        }
+      },
+      {
+        Header: 'Acciones',
+        Cell: props1 => {
+          const { original } = props1.cell.row
+          if(original.status == 1){
+            return (
+              <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
+                <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
+                <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
+                <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
+                <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
+              </DropdownButton>
+            )
+          }else{
+            return (
+              <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
+                <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
+                <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
+              </DropdownButton>
+            )
+          }
+        }
+      }
+    ]
+  },[])
+
+  useEffect(() => {
+    layoutHelpers.toggleCollapsed()
+    return () =>{
+      cotizacionColumns = null
+      layoutHelpers.toggleCollapsed()
+    }
+  },[])
+
+  useEffect(() => {
+    fetchData()
+  },[props.id_branch_office])
+
+  const fetchData = () => {
+    axios.get(API_URL+'invoice/0/3').then(result => {
+      setBillData(result.data)
+    }).catch(err => {
+      if(err.response){
+        toast.error(err.response.data.message)
+      }else{
+        toast.error('Error, contacte con soporte')
+      }
+    })
+  }
+
+  const goToForm = () => {
+    props.history.replace('/bill/create_bill')
+  }
+
+  const printInvoice = original => {
+    toast.inf('Cargando documento, espere por favor')
+    axios.get(API_URL+'invoice_print/'+original.id+"/0/3").then(result => {
+      window.open(API_URL+'documents/bills/files_pdf/'+result.data.name)
+    }).catch(err => {
+      if(err.response){
+        toast.error(err.response.data.message)
+      }else{
+        toast.error('Error, contacte con soporte')
+      }
+    })
+  }
+
+  const handleModalDetail = () => {
+    setIsOpenModalDetail(!isOpenModalDetail)
+  }
+
+  const displayMehotdSale = method => {
+    method = parseInt(method)
+    if(method === 1){
+      return "Unidad"
+    }else if(method === 2){
+      return "Mayorista"
+    }else{
+      return "(Litros, Kg, Etc..)"
+    }
+  }
+
+  const seeDetailCotization = data => {
+    setCotizationDetail(data)
+    handleModalDetail()
+  }
+
+  const goToBond = datos => {
+    props.history.replace('/bill/bill_bond/'+datos.id)
+  }
+
+  const anulateInvoice = datos => {
+    confirmAlert({
+      customUI: ({ onClose }) => {
+        return (
+          <div className='custom-ui-edit'>
+            <h1>¿Esta seguro?</h1>
+            <p className="font-alert">¿Desea realmente anular este registro?</p>
+            <button className="button-alert"
+              onClick={() => {
+                confirmAnulateInvoice(datos.id);
+                onClose();
+              }}
+            >
+              Si, Aceptar
+            </button>
+            <button className="button-alert" onClick={onClose}>No</button>
+          </div>
+        );
+      }
+    }); 
+  }
+
+  const confirmAnulateInvoice = id => {
+    axios.put(API_URL+'invoice_status/'+id).then(result => {
+        toast.success('Boleta anulada con éxito')
+        fetchData()
+     }).catch(err => {
+       if(err.response){
+         toast.error(err.response.data.message)
+       }else{
+         console.log(err);
+         toast.error('Error, contacte con soporte')
+       }
+    })
+  }
+  return (
+
+    <Container fluid>
+      <Row>
+        <Col sm={6} md={6} lg={6} className="text-center">
+          <h4 className="title_principal">Tabla de Boletas</h4>
+          <Button block={true} variant="success" onClick={goToForm} size="sm">Nueva Boleta <FaPlusCircle /></Button>
+        </Col>
+        <Col sm={6} md={6} lg={6} className="text-center title_principal">
+          <h4>Total Boletas Realizadas</h4>
+          <Badge variant="danger">{billData.length}</Badge>
+        </Col>
+      </Row>
+      <hr/>
+      <Row>
+        <Col sm={12} md={12} lg={12} xs={12}>
+          <Accordion>
+            <Card>
+              <Accordion.Toggle as={Card.Header} eventKey="0" className="header_card">
+                <b>Estadísticas</b> <FaChartLine />
+              </Accordion.Toggle>
+              <Accordion.Collapse eventKey="0">
+                <Card.Body>
+                </Card.Body>
+              </Accordion.Collapse>
+            </Card>
+          </Accordion>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12} md={12} lg={12} xs={12}>
+          <Table columns={cotizacionColumns} data={billData}/>
+        </Col>
+      </Row>
+      <Modal
+        show={isOpenModalDetail}
+        onHide={handleModalDetail}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        >
+        <Modal.Header closeButton className="header_dark">
+          <Modal.Title id="contained-modal-title-vcenter">
+            Detalles de la Factura N° {Object.keys(cotizationDetail).length > 0 ? cotizationDetail.ref : ''}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            <Col sm={12} md={12} lg={12}>
+              <h4 className="title_principal text-center">Datos del Registrador</h4>
+              <br/>
+              <table className="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th className="text-center">Nombre</th>
+                    <th className="text-center">Rut</th>
+                    <th className="text-center">Dirección</th>
+                    <th className="text-center">Email</th>
+                    <th className="text-center">Fono</th>
+                    <th className="text-center">País</th>
+                  </tr>
+                </thead>
+                <tbody className="text-center">
+                  {Object.keys(cotizationDetail).length > 0 ? (
+                    <tr>
+                      <td>{cotizationDetail.business_name_transmitter}</td>
+                      <td>{cotizationDetail.rut_transmitter}</td>
+                      <td>{cotizationDetail.address_transmitter}</td>
+                      <td>{cotizationDetail.email_transmitter}</td>
+                      <td>{cotizationDetail.phone_transmitter}</td>
+                      <td>{cotizationDetail.country_transmitter}</td>
+                    </tr>
+                  ) : ''}
+                </tbody>
+              </table>
+            </Col>
+          </Row>
+          <br/>
+          <Row>
+            <Col sm={12} md={12} lg={12}>
+              <h4 className="title_principal text-center">Datos del Cliente</h4>
+              <br/>
+              <table className="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th className="text-center">Razon Social / Nombre</th>
+                    <th className="text-center">Rut</th>
+                    <th className="text-center">Dirección</th>
+                  </tr>
+                </thead>
+                <tbody className="text-center">
+                  {Object.keys(cotizationDetail).length > 0 ? (
+                    <tr>
+                      <td>{cotizationDetail.business_name_client}</td>
+                      <td>{cotizationDetail.rut_client}</td>
+                      <td>{cotizationDetail.address_client}</td>
+                    </tr>
+                  ) : ''}
+                </tbody>
+              </table>
+            </Col>
+          </Row>
+          <br/>
+          <Row>
+            <Col sm={12} md={12} lg={12} className="table-responsive">
+              <h4 className="title_principal text-center">Productos de la Factura</h4>
+              <br/>
+              <table className="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th className="text-center">Categoria</th>
+                    <th className="text-center">Nombre</th>
+                    <th className="text-center">Descripción</th>
+                    <th className="text-center">Cantidad</th>
+                    <th className="text-center">Precio</th>
+                    <th className="text-center">Descuento</th>
+                    <th className="text-center">Método de Venta</th>
+                    <th className="text-center">Neto</th>
+                    <th className="text-center">Total</th>
+                  </tr>
+                </thead>
+                <tbody className="text-center">
+                  {Object.keys(cotizationDetail).length > 0 ? (
+                    <React.Fragment>
+                      {cotizationDetail.products.map((v,i) => (
+                        <tr>
+                          <td>{v.category}</td>
+                          <td>{v.name_product}</td>
+                          <td>{v.description}</td>
+                          <td>{v.quantity}</td>
+                          <td>{props.configGeneral.simbolo_moneda}{formatNumber(v.price,2,',','.')}</td>
+                          <td>{v.discount}</td>
+                          <td>{displayMehotdSale(v.method_sale)}</td>
+                          <td>{v.is_neto ? 'Neto' : "Iva"}</td>
+                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(v.total,2,',','.')}</Badge></td>
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  ) : ''}
+                </tbody>
+              </table>
+            </Col>
+          </Row>
+          <br/>
+          <Row>
+            <Col sm={12} md={12} lg={12} className="">
+              <h4 className="title_principal text-center">Gastos de la Factura</h4>
+              <br/>
+              <table className="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th className="text-center">Descripción</th>
+                    <th className="text-center">Monto</th>
+                  </tr>
+                </thead>
+                <tbody className="text-center">
+                  {Object.keys(cotizationDetail).length > 0 ? (
+                    <React.Fragment>
+                      {cotizationDetail.gastos.map((v,i) => (
+                        <tr>
+                          <td>{v.description}</td>
+                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(v.amount,2,',','.')}</Badge></td>
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  ) : ''}
+                </tbody>
+              </table>
+            </Col>
+          </Row>
+          <br/>
+          {Object.keys(cotizationDetail).length > 0 && cotizationDetail.refs.length > 0 ? (
+            <Row>
+              <Col sm={12} md={12} lg={12} className="">
+                <h4 className="title_principal text-center">Referencias de la Factura</h4>
+                <br/>
+                <table className="table table-striped table-bordered">
+                  <thead>
+                    <tr>
+                      <th className="text-center">Tipo de Documento</th>
+                      <th className="text-center">Referencia Cotiz.</th>
+                      <th className="text-center">Ind</th>
+                      <th className="text-center">Fecha Ref.</th>
+                      <th className="text-center">Razón de Referencia</th>
+                      <th className="text-center">Tipo de Código</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-center">
+                    {Object.keys(cotizationDetail).length > 0 ? (
+                      <React.Fragment>
+                        {cotizationDetail.refs.map((v,i) => (
+                          <tr>
+                            <td>{v.type_document}</td>
+                            <td>{v.ref_invoice}</td>
+                            <td>{v.ind}</td>
+                            <td>{v.date_ref ? moment(v.date_ref).tz('America/Santiago').format('DD-MM-YYYY') : ''}</td>
+                            <td>{v.reason_ref}</td>
+                            <td>{v.type_code}</td>
+                          </tr>
+                        ))}
+                      </React.Fragment>
+                    ) : ''}
+                  </tbody>
+                </table>
+              </Col>
+            </Row>
+          ) : ''}
+          <Row>
+            <Col sm={12} md={12} lg={12} className="">
+              <h4 className="title_principal text-center">Totales</h4>
+              <br/>
+              <table className="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th className="text-center">Total Neto</th>
+                    <th className="text-center">Total Iva</th>
+                    <th className="text-center">Total Gastos</th>
+                    <th className="text-center">Total Balance</th>
+                  </tr>
+                </thead>
+                <tbody className="text-center">
+                  {Object.keys(cotizationDetail).length > 0 ? (
+                    <tr>
+                      <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_product,2,',','.')}</Badge></td>
+                      <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_iva,2,',','.')}</Badge></td>
+                      <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_gastos,2,',','.')}</Badge></td>
+                      <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_balance,2,',','.')}</Badge></td>
+                    </tr>
+                  ) : ''}
+                </tbody>
+              </table>
+            </Col>
+          </Row>
+          <br/>
+          <Row>
+            <Col sm={6} md={6} lg={6} className="text-center">
+              {Object.keys(cotizationDetail).length > 0 ? (
+                <h5>Mostrar solo los Totales: <Badge variant="primary" className="font-badge">{cotizationDetail.total_with_iva ? 'No' : "Si"}</Badge></h5>
+              ) : ''}
+            </Col>
+            <Col sm={6} md={6} lg={6} className="text-center">
+              {Object.keys(cotizationDetail).length > 0 ? (
+                <h5>Método de Pago: <Badge variant="primary" className="font-badge">{cotizationDetail.way_of_payment}</Badge></h5>
+              ) : ''}
+            </Col>
+          </Row>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button size="md" variant="secondary" onClick={handleModalDetail}>cerrar</Button>
+        </Modal.Footer>
+      </Modal>
+    </Container>
+  )
+}
+
+function mapStateToProps(state){
+  return {
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
+    id_enterprise : state.enterpriseSucursal.id_enterprise,
+    configGeneral: state.configs.config,
+    configStore: state.configs.configStore
+  }
+}
+
+BillSearchPage.propTypes ={
+  id_branch_office: PropTypes.string.isRequired,
+  id_enterprise : PropTypes.string.isRequired,
+  configGeneral: PropTypes.object,
+  configStore : PropTypes.object,
+}
+
+export default connect(mapStateToProps,{})(BillSearchPage)

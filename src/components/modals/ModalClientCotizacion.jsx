@@ -14,6 +14,7 @@ import {
 import InputField from 'components/input/InputComponent'
 import { toast } from 'react-toastify'
 import Table from 'components/Table'
+import 'styles/components/modalComponents.css'
 let client_columns = null
 
 const ModalClientCotizacion = (props) => {

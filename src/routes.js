@@ -153,16 +153,12 @@ export const routes = [
     component: lazy(() => import('./pages/CotizationInvoicingPage'))
   },
   {
-    path: '/quotitation/sell_note/invoicing/:id?',
-    component: lazy(() => import('./pages/SellNoteInvoicePage'))
+    path: '/sale_note/sale_note_search',
+    component: lazy(() => import('./pages/SaleNoteSearchPage'))
   },
   {
-    path: '/quotitation/sell_note',
-    component: lazy(() => import('./pages/SellNoteSearchPage'))
-  },
-  {
-    path: '/quotitation/create_sell_note/:id?',
-    component: lazy(() => import('./pages/SellNotePage'))
+    path: '/sale_note/sale_note_create/:id?',
+    component: lazy(() => import('./pages/SaleNotePage'))
   },
   {
     path: '/enterprise',
@@ -175,5 +171,37 @@ export const routes = [
   {
     path: '/planes',
     component: lazy(() => import('./pages/PlanPage'))
+  },
+  {
+    path: '/invoice/invoice_search',
+    component: lazy(() => import('./pages/InvoicePage'))
+  },
+  {
+    path: '/invoice/create_invoice',
+    component: lazy(() => import('./pages/InvoiceCreatePage'))
+  },
+  {
+    path: '/invoice/invoice_bond/:id',
+    component: lazy(() => import('./pages/InvoiceBondPage'))
+  },
+  {
+    path: '/sale_note/sale_note_bond/:id',
+    component: lazy(() => import('./pages/SaleNoteBondPage'))
+  },
+  {
+    path: '/bill/bill_bonds/:id',
+    component: lazy(() => import('./pages/SaleNoteBondPage'))
+  },
+  {
+    path: '/bill/bill_search',
+    component: lazy(() => import('./pages/BillSearchPage'))
+  },
+  {
+    path: '/bill/bill_create',
+    component: lazy(() => import('./pages/BillPage'))
+  },
+  {
+    path: '/bill/bill_bond/:id',
+    component: lazy(() => import('./pages/BillBondsPage'))
   },
 ]

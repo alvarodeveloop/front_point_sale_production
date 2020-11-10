@@ -72,8 +72,8 @@ const ModalInvoiceCotization = (props) => {
                     <td>{v.name_product}</td>
                     <td>{<Badge variant="danger" className="font-badge">{formatNumber(v.price,2,',','.')}</Badge>}</td>
                     <td>{determinatedMethodSale(v.method_sale)}</td>
-                    <td>{v.id_product ? 'Si' : 'No'}</td>
-                    <td>{v.id_product ? v.products.inventary.stock : 'Sin Stock'}</td>
+                    <td>{v.id_product ? (<Badge variant="primary" className="font-badge">Si</Badge>) : (<Badge variant="secondary" className="font-badge">No</Badge>)}</td>
+                    <td>{v.id_product ? v.products ?  v.products.inventary.stock :  v.inventary ? v.inventary[0].stock : 'Sin Stock' : 'Sin Stock'}</td>
                     <td>{v.quantity}</td>
                     <td>
                       {

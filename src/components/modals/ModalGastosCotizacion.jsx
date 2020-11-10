@@ -41,17 +41,15 @@ const ModalGastosCotizacion = (props) => {
     props.onHide()
   }
 
-  const handleSubmit = e => {
-
-    const form = e.currentTarget;
-    e.preventDefault();
-    if (form.checkValidity() === false) {
-      e.stopPropagation();
-      setValidateForm(true);
-      return
-    }
+  const handleSubmit = () => {
 
     let gastoSubmit = Object.assign({},gastoNew)
+
+    if(gastoSubmit.description === "" || gastoSubmit.amount === ""){
+      toast.error('Todos los campos son requeridos')
+      return false
+    }
+
     props.handleGastoSubmit(gastoSubmit)
     setGastoNew({
       description: '',
@@ -104,7 +102,7 @@ const ModalGastosCotizacion = (props) => {
           <br/>
           <Row className="justify-content-center">
             <Col sm={12} md={12} lg={12}>
-              <Button size="sm" type="submit" variant="primary" block={true}>
+              <Button size="sm" type="button" variant="primary" block={true} onClick={handleSubmit}>
                 Agregar
               </Button>
             </Col>
