@@ -127,27 +127,26 @@ export const NOTIFICATION_SYSTEM_STYLE = {
     },
   },
 };
+export const ARRAY_MONTH = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre'
+]
 
 export const ARRAY_COLORS = [
-  "rgb(1, 63, 201)",
-  "rgb(17, 89, 97)",
-  "rgb(37, 52, 2)",
-  "rgb(131, 46, 32)",
-  "rgb(182, 38, 200)",
-  "rgb(158, 212, 57)",
-  "rgb(124, 210, 251)",
-  "rgb(121, 246, 195)",
-  "rgb(249, 70, 107)",
-  "rgb(51, 238, 196)",
-  "rgb(19, 119, 95)",
-  "rgb(82, 29, 53)",
-  "rgb(230, 212, 106)",
-  "rgb(30, 128, 171)",
-  "rgb(156, 85, 232)",
-  "rgb(101, 147, 59)",
-  "rgb(251, 46, 49)",
-  "rgb(228, 5, 74)",
-  "rgb(128, 135, 94)"
+  "rgb(147, 52, 12)",
+  "rgb(21, 26, 88)",
+  "rgb(133, 124, 124)",
+  "rgb(39, 107, 21)",
 ]
 
 //export const API_URL = 'https://api-app.anclick.tech/'
