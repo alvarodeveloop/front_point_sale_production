@@ -22,7 +22,9 @@ import Table from 'components/Table'
 import 'styles/components/modalComponents.css'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-import { setBranchOffices } from 'actions/enterpriseSucursal'
+import { setBranchOffices, setIdBranchOffice } from 'actions/enterpriseSucursal'
+import { setConfigStore } from 'actions/configs'
+
 import { formatRut } from 'utils/functions'
 let count = 1
 
@@ -65,12 +67,20 @@ const BranchOfficePage = (props) => {
   const fetchData = (type = false, update = false) => {
     let promises = [axios.get(API_URL+'branch_office')]
 
-    Promise.all(promises).then(result => {
+    Promise.all(promises).then(async result => {
       setBranchOffice(result[0].data)
       if(type){
         props.setBranchOffices(result[0].data)
         if(!update){
-          toast.info('Si desea trabajar con alguna sucursal , debe seleccionarla en el select de la barra superior de navegación')
+          if(result[0].data.length === 1){
+
+            let branch = await axios.get(API_URL+'enterprises_branch_office/'+null+'/'+result[0].data[0].id+'/'+1)
+            localStorage.setItem('id_branch_office',result[0].data[0].id)
+            localStorage.setItem('configStore',JSON.stringify(branch.data.config))
+            props.setConfigStore(branch.data.config)
+            props.setIdBranchOffice(result[0].data[0].id)
+            toast.info('Sucursal seleccionada para trabajar')
+          }
         }
       }
     }).catch(err => {
@@ -456,13 +466,17 @@ const BranchOfficePage = (props) => {
 
 BranchOfficePage.propTypes ={
   setBranchOffices: PropTypes.func.isRequired,
-  id_branch_office: PropTypes.string.isRequired,
-  id_enterprise : PropTypes.string.isRequired,
+  id_branch_office: PropTypes.any.isRequired,
+  id_enterprise : PropTypes.any.isRequired,
+  setIdBranchOffice: PropTypes.func.isRequired,
+  setConfigStore: PropTypes.func.isRequired,
 }
 
 function mapDispatchToProps(){
   return {
-    setBranchOffices
+    setBranchOffices,
+    setIdBranchOffice,
+    setConfigStore,
   }
 }
 

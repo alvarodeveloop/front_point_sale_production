@@ -93,6 +93,7 @@ const PlanPage = (props) => {
         }
       })
     }else{
+      toast.info('Guardando... espere mientras se modifican los modulos de los usuarios con este plan')
       axios.put(API_URL+'plans/'+objectPost.id,objectPost).then(result => {
         toast.success('Plan modificado con éxito')
         handleModal()

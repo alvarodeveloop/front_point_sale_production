@@ -23,6 +23,7 @@ import { setMenu } from 'actions/menu'
 import { setDisplayMessage } from 'actions/menu'
 import { setConfig } from 'actions/configs'
 import { connect } from 'react-redux'
+import layoutHelpers from 'shared/layouts/helpers'
 
 const EnterpriseFormPage = (props) => {
 
@@ -35,12 +36,17 @@ const EnterpriseFormPage = (props) => {
     address: '',
     phone: '',
     spin: '',
-    plan: {}
+    plan: {},
+    actividad_economica: '',
   })
   const accordionRef = useRef(null)
 
   useEffect(() => {
+    layoutHelpers.toggleCollapsed()
     fetchData()
+    return () => {
+      layoutHelpers.toggleCollapsed()
+    }
   },[])
 
   const fetchData = () => {
@@ -65,6 +71,7 @@ const EnterpriseFormPage = (props) => {
           spin: result[1].data.spin,
           plan: result[1].data.plan,
           id: result[1].data.id,
+          actividad_economica: result[1].data.actividad_economica,
           plan_backup: result[1].data.plan,
         })
       }
@@ -287,6 +294,20 @@ const EnterpriseFormPage = (props) => {
                 cols='col-md-4 col-lg-4 col-sm-4'
                 value={dataForm.spin}
                 handleChange={onChange}
+               />
+            </Row>
+            <Row>
+              <InputField
+               type='text'
+               label='Actividad Económica'
+               name='actividad_economica'
+               required={true}
+               messageErrors={[
+               'Requerido*'
+               ]}
+               cols='col-md-4 col-lg-4 col-sm-4'
+               value={dataForm.actividad_economica}
+               handleChange={onChange}
                />
             </Row>
             <Row className="justify-content-center">

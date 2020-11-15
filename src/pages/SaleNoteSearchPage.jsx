@@ -8,8 +8,6 @@ import {
   Dropdown,
   DropdownButton,
   Badge,
-  Accordion,
-  Card,
   Modal
 } from 'react-bootstrap'
 import Table from 'components/Table'
@@ -28,6 +26,7 @@ import 'styles/components/modalComponents.css'
 import { connect } from 'react-redux'
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { confirmAlert } from 'react-confirm-alert'; // Import
+import StadisticsInvoiceComponent from 'components/StadisticsInvoiceComponent'
 let cotizacionColumns = null
 
 const SaleNoteSearchPage = props => {
@@ -35,6 +34,14 @@ const SaleNoteSearchPage = props => {
   const [invoiceData, setInvoiceData] = useState([])
   const [saleNoteDetail, setSaleNoteDetail] = useState({})
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false)
+  const [redraw, setRedraw] = useState(false)
+  const [statusCotization, setStatusCotization] = useState({})
+  const [displayFilter,setDisplayFilter] = useState(1)
+  const [dataForm, setDataForm] = useState({
+    date_desde : '',
+    date_hasta: '',
+    type : 2
+  })
 
   useMemo(() => {
     cotizacionColumns = [
@@ -95,15 +102,11 @@ const SaleNoteSearchPage = props => {
           Header: 'Status',
           accessor: props1 => {
             if(props1.status == 1){
-              if(props1.days_expiration){
-                let date1 = moment().tz('America/Santiago')
-                let date2 = moment(props1.date_issue_invoice).tz('America/Santiago').add(props1.days_expiration,'days')
-                return date2.diff(date1,'days') >= 0 ? (<Badge variant="secondary" className="font-badge">Pendiente</Badge>) : (<Badge variant="secondary" className="font-badge">Vencida</Badge>)
-              }else{
-                return (<Badge variant="secondary" className="font-badge">Pendiente</Badge>)
-              }
+              return (<Badge variant="secondary" className="font-badge">Pendiente</Badge>)
             }else if(props1.status == 2){
               return (<Badge variant="secondary" className="font-badge">Pagada</Badge>)
+            }else if(props1.status == 3){
+              return (<Badge variant="secondary" className="font-badge">Vencida</Badge>)
             }else{
               return (<Badge variant="secondary" className="font-badge">Anulada</Badge>)
             }
@@ -218,8 +221,25 @@ const SaleNoteSearchPage = props => {
                   <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
                 </DropdownButton>
               )
-            }else{
+            }else if(original.status == 2){
               return (
+                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
+                  <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
+                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
+                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
+                </DropdownButton>
+              )
+            }else if(original.status == 3){
+              return(
+                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
+                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
+                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
+                  <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
+                  <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
+                </DropdownButton>
+              )
+            }else{
+              return(
                 <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
                   <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
                   <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
@@ -243,10 +263,60 @@ const SaleNoteSearchPage = props => {
     fetchData()
   },[props.id_branch_office])
 
+  useEffect(() => {
+    if(redraw){
+      handleDataDonutSsStatus()
+    }
+  },[redraw])
+
+  const handleDataDonutSsStatus = () => {
+    setTimeout(function () {
+      setRedraw(false)
+    }, 2000);
+  }
+
+  const handleStadistics = () => {
+    let objectPost = Object.assign({},dataForm)
+    setDisplayFilter(3)
+     axios.post(API_URL+'invoice_stadistics',objectPost).then(result => {
+      setStatusCotization({...statusCotization,statusesBonds: result.data.statusesBonds, statuses : result.data.statuses, bondsByMonth: result.data.bondsByMonth, invoiceByYear: result.data.invoiceByYear, totalByStatus: result.data.totalByStatus})
+      setTimeout(function () {
+        setRedraw(true)
+        setDisplayFilter(1)
+      }, 1000);
+     }).catch(err => {
+       setDisplayFilter(1)
+       if(err.response){
+         toast.error(err.response.data.message)
+       }else{
+         console.log(err);
+         toast.error('Error, contacte con soporte')
+       }
+     })
+  }
+
+  const handleDisplayFilter = filter => {
+    if(filter == 3){
+      setDataForm({date_desde: '', date_hasta: ''})
+    }
+    setDisplayFilter(filter)
+  }
+
   const fetchData = () => {
-    axios.get(API_URL+'invoice/0/2').then(result => {
-      setInvoiceData(result.data)
+
+    let objectPost = Object.assign({},dataForm)
+    let promises = [
+      axios.get(API_URL+'invoice/0/2'),
+      axios.post(API_URL+'invoice_stadistics',objectPost),
+    ]
+    Promise.all(promises).then(result => {
+      setInvoiceData(result[0].data)
+      setStatusCotization({...statusCotization, statusesBonds: result[1].data.statusesBonds, statuses : result[1].data.statuses, bondsByMonth: result[1].data.bondsByMonth, invoiceByYear: result[1].data.invoiceByYear, totalByStatus: result[1].data.totalByStatus})
+      setTimeout(function () {
+        setRedraw(true)
+      }, 1000);
     }).catch(err => {
+      console.log(err);
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -345,21 +415,16 @@ const SaleNoteSearchPage = props => {
         </Col>
       </Row>
       <hr/>
-      <Row>
-        <Col sm={12} md={12} lg={12} xs={12}>
-          <Accordion>
-            <Card>
-              <Accordion.Toggle as={Card.Header} eventKey="0" className="header_card">
-                <b>Estadísticas</b> <FaChartLine />
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey="0">
-                <Card.Body>
-                </Card.Body>
-              </Accordion.Collapse>
-            </Card>
-          </Accordion>
-        </Col>
-      </Row>
+      <StadisticsInvoiceComponent
+        setDataForm={setDataForm}
+        dataForm={dataForm}
+        redraw={redraw}
+        statusCotization={statusCotization}
+        handleDisplayFilter={handleDisplayFilter}
+        handleStadistics={handleStadistics}
+        displayFilter={displayFilter}
+        configGeneral={props.configGeneral}
+      />
       <Row>
         <Col sm={12} md={12} lg={12} xs={12}>
           <Table columns={cotizacionColumns} data={invoiceData}/>
@@ -419,6 +484,9 @@ const SaleNoteSearchPage = props => {
                     <th className="text-center">Razon Social / Nombre</th>
                     <th className="text-center">Rut</th>
                     <th className="text-center">Dirección</th>
+                    <th className="text-center">Ciudad</th>
+                    <th className="text-center">Comuna</th>
+                    <th className="text-center">Giro</th>
                   </tr>
                 </thead>
                 <tbody className="text-center">
@@ -427,6 +495,9 @@ const SaleNoteSearchPage = props => {
                       <td>{saleNoteDetail.business_name_client}</td>
                       <td>{saleNoteDetail.rut_client}</td>
                       <td>{saleNoteDetail.address_client}</td>
+                      <td>{saleNoteDetail.city_client}</td>
+                      <td>{saleNoteDetail.comuna_client}</td>
+                      <td>{saleNoteDetail.spin_client}</td>
                     </tr>
                   ) : ''}
                 </tbody>

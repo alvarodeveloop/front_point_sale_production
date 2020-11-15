@@ -24,6 +24,7 @@ const ConfigGeneralFormPage = (props) => {
     simbolo_moneda: '',
     active_price_decimals : '',
     close_session: '',
+    actividad_economica: '',
   })
   const [validated, setValidated] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);

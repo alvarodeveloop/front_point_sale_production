@@ -8,9 +8,7 @@ import {
   Dropdown,
   DropdownButton,
   Badge,
-  Accordion,
-  Card,
-  Modal
+  Modal,
 } from 'react-bootstrap'
 import Table from 'components/Table'
 import axios from 'axios'
@@ -28,6 +26,8 @@ import 'styles/components/modalComponents.css'
 import { connect } from 'react-redux'
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { confirmAlert } from 'react-confirm-alert'; // Import
+import StadisticsInvoiceComponent from 'components/StadisticsInvoiceComponent'
+
 let cotizacionColumns = null
 
 const BillSearchPage = props => {
@@ -35,6 +35,14 @@ const BillSearchPage = props => {
   const [billData, setBillData] = useState([])
   const [cotizationDetail, setCotizationDetail] = useState({})
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false)
+  const [redraw, setRedraw] = useState(false)
+  const [statusCotization, setStatusCotization] = useState({})
+  const [displayFilter,setDisplayFilter] = useState(1)
+  const [dataForm, setDataForm] = useState({
+    date_desde : '',
+    date_hasta: '',
+    type : 3
+  })
 
   useMemo(() => {
     cotizacionColumns = [
@@ -95,15 +103,11 @@ const BillSearchPage = props => {
         Header: 'Status',
         accessor: props1 => {
           if(props1.status == 1){
-            if(props1.date_expiration){
-              let date1 = moment().tz('America/Santiago')
-              let date2 = moment(props1.date_expiration).tz('America/Santiago').add(props1.days_expiration,'days')
-              return date2.diff(date1,'days') >= 0 ? (<Badge variant="secondary" className="font-badge">Pendiente</Badge>) : (<Badge variant="secondary" className="font-badge">Vencida</Badge>)
-            }else{
-              return (<Badge variant="secondary" className="font-badge">Pendiente</Badge>)
-            }
+            return (<Badge variant="secondary" className="font-badge">Pendiente</Badge>)
           }else if(props1.status == 2){
             return (<Badge variant="secondary" className="font-badge">Pagada</Badge>)
+          }else if(props1.status == 3){
+            return (<Badge variant="secondary" className="font-badge">Vencida</Badge>)
           }else{
             return (<Badge variant="secondary" className="font-badge">Anulada</Badge>)
           }
@@ -243,10 +247,60 @@ const BillSearchPage = props => {
     fetchData()
   },[props.id_branch_office])
 
+  useEffect(() => {
+    if(redraw){
+      handleDataDonutSsStatus()
+    }
+  },[redraw])
+
+  const handleDataDonutSsStatus = () => {
+    setTimeout(function () {
+      setRedraw(false)
+    }, 2000);
+  }
+
+  const handleStadistics = () => {
+    let objectPost = Object.assign({},dataForm)
+    setDisplayFilter(3)
+     axios.post(API_URL+'invoice_stadistics',objectPost).then(result => {
+      setStatusCotization({...statusCotization,statusesBonds: result.data.statusesBonds, statuses : result.data.statuses, bondsByMonth: result.data.bondsByMonth, invoiceByYear: result.data.invoiceByYear, totalByStatus: result.data.totalByStatus})
+      setTimeout(function () {
+        setRedraw(true)
+        setDisplayFilter(1)
+      }, 1000);
+     }).catch(err => {
+       setDisplayFilter(1)
+       if(err.response){
+         toast.error(err.response.data.message)
+       }else{
+         console.log(err);
+         toast.error('Error, contacte con soporte')
+       }
+     })
+  }
+
+  const handleDisplayFilter = filter => {
+    if(filter == 3){
+      setDataForm({date_desde: '', date_hasta: ''})
+    }
+    setDisplayFilter(filter)
+  }
+
   const fetchData = () => {
-    axios.get(API_URL+'invoice/0/3').then(result => {
-      setBillData(result.data)
+
+    let objectPost = Object.assign({},dataForm)
+    let promises = [
+      axios.get(API_URL+'invoice/0/3'),
+      axios.post(API_URL+'invoice_stadistics',objectPost),
+    ]
+    Promise.all(promises).then(result => {
+      setBillData(result[0].data)
+      setStatusCotization({...statusCotization, statusesBonds: result[1].data.statusesBonds, statuses : result[1].data.statuses, bondsByMonth: result[1].data.bondsByMonth, invoiceByYear: result[1].data.invoiceByYear, totalByStatus: result[1].data.totalByStatus})
+      setTimeout(function () {
+        setRedraw(true)
+      }, 1000);
     }).catch(err => {
+      console.log(err);
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -256,7 +310,7 @@ const BillSearchPage = props => {
   }
 
   const goToForm = () => {
-    props.history.replace('/bill/create_bill')
+    props.history.replace('/bill/bill_create')
   }
 
   const printInvoice = original => {
@@ -345,21 +399,16 @@ const BillSearchPage = props => {
         </Col>
       </Row>
       <hr/>
-      <Row>
-        <Col sm={12} md={12} lg={12} xs={12}>
-          <Accordion>
-            <Card>
-              <Accordion.Toggle as={Card.Header} eventKey="0" className="header_card">
-                <b>Estadísticas</b> <FaChartLine />
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey="0">
-                <Card.Body>
-                </Card.Body>
-              </Accordion.Collapse>
-            </Card>
-          </Accordion>
-        </Col>
-      </Row>
+      <StadisticsInvoiceComponent
+        setDataForm={setDataForm}
+        dataForm={dataForm}
+        redraw={redraw}
+        statusCotization={statusCotization}
+        handleDisplayFilter={handleDisplayFilter}
+        handleStadistics={handleStadistics}
+        displayFilter={displayFilter}
+        configGeneral={props.configGeneral}
+      />
       <Row>
         <Col sm={12} md={12} lg={12} xs={12}>
           <Table columns={cotizacionColumns} data={billData}/>
@@ -419,6 +468,9 @@ const BillSearchPage = props => {
                     <th className="text-center">Razon Social / Nombre</th>
                     <th className="text-center">Rut</th>
                     <th className="text-center">Dirección</th>
+                    <th className="text-center">Ciudad</th>
+                    <th className="text-center">Comuna</th>
+                    <th className="text-center">Giro</th>
                   </tr>
                 </thead>
                 <tbody className="text-center">
@@ -427,6 +479,9 @@ const BillSearchPage = props => {
                       <td>{cotizationDetail.business_name_client}</td>
                       <td>{cotizationDetail.rut_client}</td>
                       <td>{cotizationDetail.address_client}</td>
+                      <td>{cotizationDetail.city_client}</td>
+                      <td>{cotizationDetail.comuna_client}</td>
+                      <td>{cotizationDetail.spin_client}</td>
                     </tr>
                   ) : ''}
                 </tbody>

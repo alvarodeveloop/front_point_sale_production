@@ -276,6 +276,8 @@ const CotizacionSearchPage = props => {
                 <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
                   <Dropdown.Item onClick={() => updateCotizacion(original.id)}>Modificar</Dropdown.Item>
                   <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
+                    <Dropdown.Item onClick={() => printCotizacion(original.id)}>Imprimir</Dropdown.Item>
+                    <Dropdown.Item onClick={() => printCotizacionNew(original.id)}>Imprimir Nuevo Pdf</Dropdown.Item>
                   <Dropdown.Item onClick={() => changeStatus(original.id,2)}>Aprobar</Dropdown.Item>
                   <Dropdown.Item onClick={() => changeStatus(original.id,4)}>Anular</Dropdown.Item>
                 </DropdownButton>
@@ -301,6 +303,8 @@ const CotizacionSearchPage = props => {
                     ) : ''
                   }
                   <Dropdown.Item onClick={() => changeStatus(original.id,1)}>Pendiente</Dropdown.Item>
+                  <Dropdown.Item onClick={() => printCotizacion(original.id)}>Imprimir</Dropdown.Item>
+                  <Dropdown.Item onClick={() => printCotizacionNew(original.id)}>Imprimir Nuevo Pdf</Dropdown.Item>
                   <Dropdown.Item onClick={() => changeStatus(original.id,4)}>Anular</Dropdown.Item>
                 </DropdownButton>
               )
@@ -428,8 +432,10 @@ const CotizacionSearchPage = props => {
     setDisplayFilter(3)
      axios.post(API_URL+'cotizacion_stadistics',objectPost).then(result => {
       setStatusCotization({...statusCotization,statuses : result.data.statuses, invoice: result.data.invoice, invoiceByYear: result.data.invoiceByYear, totalByStatus: result.data.totalByStatus})
-      setRedraw(true)
-      setDisplayFilter(1)
+      setTimeout(function () {
+        setRedraw(true)
+        setDisplayFilter(1)
+      }, 1000);
      }).catch(err => {
        setDisplayFilter(1)
        if(err.response){
@@ -639,7 +645,7 @@ const CotizacionSearchPage = props => {
                         <br/>
                         <Image src={require('../assets/img/loading.gif')} width="30" />
                         <br/>
-                        Cargando Documento...
+                        Cargando datos...
                       </Col>
                     )}
                   </Row>
@@ -793,6 +799,9 @@ const CotizacionSearchPage = props => {
                     <th className="text-center">Razon Social / Nombre</th>
                     <th className="text-center">Rut</th>
                     <th className="text-center">Dirección</th>
+                    <th className="text-center">Ciudad</th>
+                    <th className="text-center">Comuna</th>
+                    <th className="text-center">Giro</th>
                   </tr>
                 </thead>
                 <tbody className="text-center">
@@ -801,6 +810,9 @@ const CotizacionSearchPage = props => {
                       <td>{cotizationDetail.business_name_client}</td>
                       <td>{cotizationDetail.rut_client}</td>
                       <td>{cotizationDetail.address_client}</td>
+                      <td>{cotizationDetail.city_client}</td>
+                      <td>{cotizationDetail.comuna_client}</td>
+                      <td>{cotizationDetail.spin_client}</td>
                     </tr>
                   ) : ''}
                 </tbody>

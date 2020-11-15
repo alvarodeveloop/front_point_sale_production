@@ -32,6 +32,7 @@ const ConfigStorePage = (props) => {
     logo: '',
     name_store: '',
     country: '',
+    city: '',
     phone: '',
     whatssap: '',
     address: '',
@@ -41,6 +42,7 @@ const ConfigStorePage = (props) => {
     ref: '',
     client_data_foot_page: false,
     rut: '',
+    comuna: '',
   })
 
   useEffect(() => {
@@ -56,6 +58,7 @@ const ConfigStorePage = (props) => {
           name_store: result.data.name_store,
           rut : result.data.rut,
           country: result.data.pais,
+          city: result.data.city,
           phone: result.data.phone,
           whatssap: result.data.whatssap,
           address: result.data.address,
@@ -66,6 +69,7 @@ const ConfigStorePage = (props) => {
           foot_page_text: result.data.foot_page_text,
           ref: result.data.ref,
           client_data_foot_page: result.data.client_data_foot_page,
+          comuna : result.data.comuna
         })
       }
     }).catch(err => {
@@ -125,6 +129,8 @@ const ConfigStorePage = (props) => {
               <li className="list-group-item melon_y_melames"><b>Rut de la Tienda:</b><br/> { dataStore.rut }</li>
               <li className="list-group-item melon_y_melames"><b>Nombre de la Tienda:</b><br/> { dataStore.name_store }</li>
               <li className="list-group-item melon_y_melames"><b>País: </b> <br/> { dataStore.country.nombre }</li>
+              <li className="list-group-item melon_y_melames"><b>Ciudad: </b> <br/> { dataStore.city }</li>
+              <li className="list-group-item melon_y_melames"><b>Comuna: </b> <br/> { dataStore.comuna }</li>
               <li className="list-group-item melon_y_melames"><b>Teléfono:</b> <br/> { dataStore.phone }</li>
               <li className="list-group-item melon_y_melames"><b>Whatssap:</b> <br/> { dataStore.whatssap }</li>
               <li className="list-group-item melon_y_melames"><b>Dirección:</b> <br/> { dataStore.address }</li>

@@ -21,7 +21,8 @@ const ConfigGeneralPage = (props) => {
   const [config,setConfig] = useState({
     simbolo_moneda: '',
     active_price_decimals: '',
-    close_session: ''
+    close_session: '',
+    actividad_economica: '',
   })
 
   const [isOpenModal, setIsOpenModal] = useState(false)
@@ -37,6 +38,7 @@ const ConfigGeneralPage = (props) => {
             simbolo_moneda: result.data.simbolo_moneda,
             active_price_decimals: result.data.active_price_decimals,
             close_session: result.data.close_session,
+            actividad_economica: result.data.actividad_economica
           })
         }
 
@@ -76,13 +78,14 @@ const ConfigGeneralPage = (props) => {
         </Col>
       </Row>
       <Row className="justify-content-center align-items-center">
-        <Col md={6} sm={6} lg={6} xs={6}>
+        <Col md={12} sm={12} lg={12} xs={12}>
           <table className="table table-bordered">
             <thead>
               <tr style={{ backgroundColor: 'rgb(218,236,242)', color: 'black'}}>
                 <th className="text-center">Simbolo Moneda</th>
                 <th className="text-center">Precios Decimales</th>
                 <th className="text-center">Cerrar Sesión</th>
+                <th className="text-center">Actividad Económica</th>
               </tr>
             </thead>
             <tbody className="text-center">
@@ -90,6 +93,7 @@ const ConfigGeneralPage = (props) => {
                 <td>{config.simbolo_moneda}</td>
                 <td>{config.active_price_decimals}</td>
                 <td>{config.close_session}</td>
+                <td>{config.actividad_economica}</td>
               </tr>
             </tbody>
           </table>

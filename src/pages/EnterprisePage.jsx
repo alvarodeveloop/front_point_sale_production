@@ -24,6 +24,7 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { connect } from 'react-redux'
 import {formatNumber} from 'utils/functions'
+import layoutHelpers from 'shared/layouts/helpers'
 
 let columns_enterprise = []
 
@@ -35,7 +36,9 @@ const EnterprisePage = (props) => {
 
   useEffect(() => {
     fetchData()
+    layoutHelpers.toggleCollapsed()
     return() => {
+      layoutHelpers.toggleCollapsed()
       columns_enterprise = []
     }
   },[])
@@ -64,6 +67,10 @@ const EnterprisePage = (props) => {
       {
         Header:'Dirección',
         accessor: 'address'
+      },
+      {
+        Header:'Actidad Económica',
+        accessor: 'actividad_economica'
       },
       {
         Header:'Plan',

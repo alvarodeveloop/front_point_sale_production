@@ -1,5 +1,5 @@
 const initialState = {
-  config_store: null,
+  configStore: null,
   config: null
 };
 

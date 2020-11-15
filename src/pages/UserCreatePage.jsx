@@ -328,7 +328,7 @@ const UserCreatePage  = props => {
           </Col>
           {
             typeDisplayModule == 1 ? (
-              <Col sm={7} md={7} lg={7} xs={12} className="containerDivSeparated">
+              <Col sm={7} md={7} lg={7} xs={12} className="containerDivSeparated" style={{height: '450px'}}>
                 <h4 className="text-center title_principal">Módulos</h4>
                 <Row>
                   {modules.map((v,i) => (

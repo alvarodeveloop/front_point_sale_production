@@ -34,6 +34,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableProductsCotization from 'components/TableProductsCotization'
 import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
+import {formatRut} from 'utils/functions'
 
 let DetailCotizacion = null
 
@@ -124,7 +125,14 @@ const BillPage = (props) => {
     discount_global: '',
     way_of_payment: "",
     date_expiration: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-    type: 3
+    type: 3,
+    comuna_client: '',
+    city_client: '',
+    spin_client: '',
+    comuna_transmitter: '',
+    actividad_economica_client: '',
+    actividad_economica_transmitter: '',
+
   })
   const [displayModals,setDisplayModals] = useState(false)
   const [refCotizacion, setRefCotizacion] = useState([])
@@ -151,6 +159,9 @@ const BillPage = (props) => {
           country_transmitter: props.configStore.pais.nombre,
           email_transmitter: props.configStore.email,
           phone_transmitter: props.configStore.phone,
+          actividad_economica_transmitter: props.configGeneral.actividad_economica,
+          city_transmitter : props.configStore.city,
+          comuna_transmitter : props.configStore.comuna,
         })
       })
       setDisplayModals(true)
@@ -212,7 +223,7 @@ const BillPage = (props) => {
           value = invoiceData.discount_global ? ((item1.price * invoiceData.discount_global) / 100) : 0
         }
       }
-      total+= value
+      total+= value * item1.quantity
     })
     return total
   }
@@ -366,8 +377,11 @@ const BillPage = (props) => {
     if(e.target.name === "type_api" || e.target.name === "total_with_iva" || e.target.name === "type_invoicing"){
       let val = e.target.value === "false" ? false : true
       setInvoiceData({...invoiceData, [e.target.name] : val})
+    }else if(e.target.name === "rut_transmitter" || e.target.name === "rut_client"){
+      setInvoiceData({...invoiceData, [e.target.name] : formatRut(e.target.value)})
     }else{
       setInvoiceData({...invoiceData, [e.target.name] : e.target.value})
+
     }
   }
 
@@ -411,7 +425,7 @@ const BillPage = (props) => {
   const handleSelectClient = data => {
     let data_document = data.split('/')[1]
     let client = clients.find(v => v.data_document === data_document)
-    setInvoiceData({...invoiceData, rut_client : client.data_document, business_name_client: client.name_client, address_client: client.address})
+    setInvoiceData({...invoiceData, rut_client : client.data_document, business_name_client: client.name_client, address_client: client.address, comuna_client: client.comuna, city_client : client.city, spin_client: client.spin, actividad_economica_client: client.actividad_economica})
     setClientDetail(client)
   }
 
@@ -435,7 +449,7 @@ const BillPage = (props) => {
   const removeCLient = () => {
     setClientDetail({})
     handleResetValueClient()
-    setInvoiceData({...invoiceData, rut_client : '', business_name_client: '', address_client: ''})
+    setInvoiceData({...invoiceData, rut_client : '', business_name_client: '', address_client: '', city_client: '', comuna_client : '', spin_client: ''})
   }
 
   const removeItemDetail = data => {
@@ -456,9 +470,11 @@ const BillPage = (props) => {
      axios.get(API_URL+'search_receptor/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
       setInvoiceData(oldData => {
         return Object.assign({},oldData,{
-          rut_client : result.data.rut,
+          rut_client : result.data.rut +"-"+result.data.dv,
           business_name_client: result.data.razon_social,
-          address_client: result.data.direccion_seleccionada
+          address_client: result.data.direccion_seleccionada,
+          comuna_client : result.data.comuna_seleccionada,
+          city_client : result.data.ciudad_seleccionada,
         })
       })
      }).catch(err => {
@@ -682,6 +698,18 @@ const BillPage = (props) => {
                          handleChange={onChange}
                         />
                         <InputField
+                         type='text'
+                         label='Ciudad'
+                         name='city_transmitter'
+                         required={false}
+                         messageErrors={[
+                         'Requerido*'
+                         ]}
+                         cols='col-md-4 col-lg-4 col-sm-4'
+                         value={invoiceData.city_transmitter}
+                         handleChange={onChange}
+                        />
+                        <InputField
                          type='email'
                          label='Email'
                          name='email_transmitter'
@@ -693,6 +721,8 @@ const BillPage = (props) => {
                          value={invoiceData.email_transmitter}
                          handleChange={onChange}
                         />
+                    </Row>
+                    <Row>
                         <InputField
                          type='text'
                          label='Fono'
@@ -703,6 +733,30 @@ const BillPage = (props) => {
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
                          value={invoiceData.phone_transmitter}
+                         handleChange={onChange}
+                        />
+                        <InputField
+                         type='text'
+                         label='Actividad Económica'
+                         name='actividad_economica_transmitter'
+                         required={false}
+                         messageErrors={[
+                         'Requerido*'
+                         ]}
+                         cols='col-md-4 col-lg-4 col-sm-4'
+                         value={invoiceData.actividad_economica_transmitter}
+                         handleChange={onChange}
+                        />
+                        <InputField
+                         type='text'
+                         label='Comuna'
+                         name='comuna_transmitter'
+                         required={false}
+                         messageErrors={[
+                         'Requerido*'
+                         ]}
+                         cols='col-md-4 col-lg-4 col-sm-4'
+                         value={invoiceData.comuna_transmitter}
                          handleChange={onChange}
                         />
                       </Row>
@@ -828,6 +882,59 @@ const BillPage = (props) => {
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
                          value={invoiceData.address_client}
+                         handleChange={onChange}
+                        />
+                      </Row>
+                      <Row>
+                        <InputField
+                         type='text'
+                         label='Ciudad'
+                         name='city_client'
+                         required={true}
+                         messageErrors={[
+
+                         ]}
+                         cols='col-md-4 col-lg-4 col-sm-4'
+                         value={invoiceData.city_client}
+                         handleChange={onChange}
+                        />
+                       <InputField
+                          type='text'
+                          label='Comuna'
+                          name='comuna_client'
+                          required={true}
+                          messageErrors={[
+                          'Requerido*'
+                          ]}
+                          cols='col-md-4 col-lg-4 col-sm-4'
+                          value={invoiceData.comuna_client}
+                          handleChange={onChange}
+                        />
+                        <InputField
+                         type='text'
+                         label='Giro'
+                         name='spin_client'
+                         required={false}
+                         messageErrors={[
+                           'Requerido*'
+                         ]}
+                         cols='col-md-4 col-lg-4 col-sm-4'
+                         value={invoiceData.spin_client}
+                         handleChange={onChange}
+                        />
+                      </Row>
+                      <Row>
+                        <InputField
+                         type='text'
+                         label='Actividad Económica'
+                         name='actividad_economica_client'
+                         placeholder="opcional"
+                         required={false}
+                         messageErrors={[
+                         'Requerido*'
+                         ]}
+                         cols='col-md-4 col-lg-4 col-sm-4'
+                         value={invoiceData.actividad_economica_client}
                          handleChange={onChange}
                         />
                       </Row>
@@ -1226,7 +1333,7 @@ const BillPage = (props) => {
             <Col sm={4} md={4} lg={4}>
               <Row>
                 <Col sm={12} md={12} lg={12} className="text-center">
-                  <b>Tipo Factura</b>
+                  <b>Tipo Boleta</b>
                 </Col>
               </Row>
               <Row>
@@ -1239,6 +1346,19 @@ const BillPage = (props) => {
                       label={`Afecta`}
                       value={true}
                       checked={invoiceData.type_invoicing}
+                      onChange={onChange}
+                      />
+                  </Form.Group>
+                </Col>
+                <Col sm={6} md={6} lg={6}>
+                  <Form.Group>
+                    <Form.Check
+                      name="type_invoicing"
+                      type={'radio'}
+                      id={`radio-6`}
+                      label={`Excento`}
+                      value={false}
+                      checked={!invoiceData.type_invoicing}
                       onChange={onChange}
                       />
                   </Form.Group>

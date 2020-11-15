@@ -33,6 +33,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableProductsCotization from 'components/TableProductsCotization'
 import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
+import {formatRut} from 'utils/functions'
 import { connect } from 'react-redux'
 
 const Styles = styled.div`
@@ -102,8 +103,10 @@ const CotizationPage = (props) => {
     rut_transmitter: '',
     address_transmitter: '',
     country_transmitter: '',
+    city_transmitter: '',
     email_transmitter: '',
     phone_transmitter: '',
+    actividad_economica_transmitter: '',
     comment: '',
     date_issue: moment().tz('America/Santiago').format('YYYY-MM-DD'),
     date_expiration: moment().tz('America/Santiago').format('YYYY-MM-DD'),
@@ -111,6 +114,8 @@ const CotizationPage = (props) => {
     rut_client: '',
     business_name_client: '',
     address_client: '',
+    actividad_economica_client: '',
+    city_client: '',
     name_contact: '',
     phone_contact: '',
     email_contact: '',
@@ -127,20 +132,16 @@ const CotizationPage = (props) => {
     discount_global: '',
     date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
     type_invoicing: true,
+    comuna_client: '',
+    city_client: '',
+    spin_client: '',
+    actividad_economica_client: '',
+    actividad_economica_transmitter: '',
+    comuna_transmitter: '',
   })
   const [displayModals,setDisplayModals] = useState(false)
   const [isOpenModalInvoice, setIsOpenModalInvoice] = useState(false)
-  const [refCotizacion, setRefCotizacion] = useState([
-    {
-      ind: 'ind',
-      type_document: 'Hoja Entrada de Servicio',
-      ref_invoice: '',
-      date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-      reason_ref: 'Cotización',
-      type_code: '',
-      id_invoice: ''
-    }
-  ])
+  const [refCotizacion, setRefCotizacion] = useState([])
 
   const inputRef = useRef(null)
 
@@ -152,7 +153,8 @@ const CotizationPage = (props) => {
         props.history.replace('/config/config_store')
       }, 1500);
     }else{
-      let config = JSON.parse(localStorage.getItem('configStore'))
+      let config = props.configStore
+      let config_general = props.configGeneral
       if(props.match.params.id){
         if(count > 1 && props.id_branch_office !== cotizationData.id_branch_office){
           toast.error('Esta cotización no pertenece a esta sucursal')
@@ -173,9 +175,12 @@ const CotizationPage = (props) => {
               business_name_transmitter: config.name_store,
               rut_transmitter: config.rut,
               address_transmitter: config.address,
-              country_transmitter: config.pais.nombre,
+              country_transmitter: config.pais ? config.pais.nombre : '',
               email_transmitter: config.email,
-              phone_transmitter: config.phone
+              phone_transmitter: config.phone,
+              actividad_economica_transmitter: config_general.actividad_economica,
+              city_transmitter:  config.city,
+              comuna_transmitter: config.comuna
             })
             return test
           })
@@ -184,7 +189,7 @@ const CotizationPage = (props) => {
       }
       setDisplayModals(true)
     }
-  },[props.id_branch_office])
+  },[props.id_branch_office,props.id_enterprise])
 
   useEffect(() => {
     layoutHelpers.toggleCollapsed()
@@ -250,28 +255,7 @@ const CotizationPage = (props) => {
   }
 
   const clearData = () => {
-    setDetailProducts([])
-    setGastosDetail([])
-    setClientDetail({})
-    setResetValueClient(true)
-    setRefCotizacion([])
-    setCotizationData(oldData => {
-      return {
-        comment: '',
-        date_issue : moment().tz('America/Santiago').format('YYYY-MM-DD'),
-        date_expiration : moment().tz('America/Santiago').format('YYYY-MM-DD'),
-        ref: '',
-        days_expiration: '',
-        way_of_payment: '',
-        discount_global: 0,
-        type_invoicing: '',
-        date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-        type_invoicing: true,
-      }
-    })
-    setTimeout(() => {
-      setResetValueClient(false)
-    },300)
+
   }
 
   const fetchDataUpdate = () => {
@@ -287,6 +271,7 @@ const CotizationPage = (props) => {
           country_transmitter: result.data.country_transmitter,
           email_transmitter: result.data.email_transmitter,
           phone_transmitter: result.data.phone_transmitter,
+          actividad_economica_transmitter: result.data.actividad_economica_transmitter,
           comment: result.data.comment,
           date_issue: moment(result.data.date_issue).tz('America/Santiago').format('YYYY-MM-DD'),
           date_expiration: moment(result.data.date_expiration).tz('America/Santiago').format('YYYY-MM-DD'),
@@ -294,6 +279,7 @@ const CotizationPage = (props) => {
           rut_client: result.data.rut_client,
           business_name_client: result.data.business_name_client,
           address_client: result.data.address_client,
+          actividad_economica_client: result.data.actividad_economica_client,
           name_contact: result.data.name_contact,
           phone_contact: result.data.phone_contact,
           email_contact: result.data.email_contact,
@@ -308,6 +294,11 @@ const CotizationPage = (props) => {
           id_branch_office: result.data.id_branch_office,
           date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
           type_invoicing: true,
+          comuna_client: result.data.comuna_client,
+          city_client: result.data.city_client,
+          spin_client: result.data.spin_client,
+          comuna_transmitter: result.data.comuna_transmitter,
+          city_transmitter: result.data.city_transmitter
         }
       })
 
@@ -334,6 +325,9 @@ const CotizationPage = (props) => {
     if (form.checkValidity() === false) {
       setValidated(true);
       toast.error('Hay campos en el formulario que le falta por llenar')
+      if(type == 3 ){
+        handleModalInvoice()
+      }
       return
     }
 
@@ -343,8 +337,54 @@ const CotizationPage = (props) => {
       gastos: [...gastosDetail],
       status: type,
     }
+
+    let validate = false
+
+    let array_validation_invoice = [
+      'business_name_transmitter','rut_transmitter',
+      'rut_client','business_name_client','spin_client'
+    ]
+
+    let array_validation_invoice_excenta = [
+      'actividad_economica_transmitter','comuna_transmitter','city_client','address_client',
+      'comuna_client','actividad_economica_transmitter'
+    ]
+
+    if(requireInvoice || type === 3){
+      array_validation_invoice.forEach((item, i) => {
+        if(object_post.cotization[item] === '' || object_post.cotization[item] === null){
+          validate = true
+        }
+      });
+
+      if(object_post.cotization.type_invoicing === false){
+        array_validation_invoice_excenta.forEach((item, i) => {
+          if(object_post.cotization[item] === '' || object_post.cotization[item] === null){
+            validate = true
+          }
+        });
+      }
+    }
+
+    if(validate){
+      setValidated(true);
+      toast.error('Hay campos en el formulario que le falta por llenar')
+      if(type == 3 ){
+        handleModalInvoice()
+      }
+      return false
+    }
+
     if(type == 3){
       object_post.referencias = refCotizacion
+    }else{
+      object_post.cotization = Object.assign({},object_post.cotization,{
+        days_expiration: '',
+        way_of_payment: '',
+        discount_global: 0,
+        date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+        type_invoicing: true,
+      })
     }
 
     setDisableButton(true)
@@ -354,9 +394,23 @@ const CotizationPage = (props) => {
         clearData()
         if(type === 3){
           toast.success('Cotización modificada y facturada con éxito')
-          setTimeout(function () {
-            props.history.replace('/quotitation/search_quotitation')
-          }, 1500);
+          handleModalInvoice()
+          setDisplayDataInvoice(false)
+
+          toast.info('Generando pdf de la Cotización, espere por favor...')
+
+          axios.get(API_URL+'cotizacion_print/'+props.match.params.id+"/0").then(result => {
+            window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
+            setTimeout( () => {
+              goToDashboard()
+            }, 1500);
+          }).catch(err => {
+            if(err.response){
+              toast.error(err.response.data.message)
+            }else{
+              toast.error('Error, contacte con soporte')
+            }
+          })
         }else{
           toast.success('Cotización modificada con éxito')
           setTimeout(function () {
@@ -445,7 +499,7 @@ const CotizationPage = (props) => {
           value = cotizationData.discount_global ? ((item1.price * cotizationData.discount_global) / 100) : 0
         }
       }
-      total+= value
+      total+= value * item1.quantity
     })
     return total
   }
@@ -586,8 +640,11 @@ const CotizationPage = (props) => {
     if(e.target.name === "type_api" || e.target.name === "total_with_iva" || e.target.name === "type_effect" || e.target.name === "type_invoicing"){
       let val = e.target.value === "false" ? false : true
       setCotizationData({...cotizationData, [e.target.name] : val})
+    }else if(e.target.name === "rut_transmitter" || e.target.name === "rut_client"){
+      setCotizationData({...cotizationData, [e.target.name] : formatRut(e.target.value)})
     }else{
       setCotizationData({...cotizationData, [e.target.name] : e.target.value})
+
     }
   }
 
@@ -631,7 +688,7 @@ const CotizationPage = (props) => {
   const handleSelectClient = data => {
     let data_document = data.split('/')[1]
     let client = clients.find(v => v.data_document === data_document)
-    setCotizationData({...cotizationData, rut_client : client.data_document, business_name_client: client.name_client, address_client: client.address})
+    setCotizationData({...cotizationData, rut_client : client.data_document, business_name_client: client.name_client, address_client: client.address, comuna_client: client.comuna, city_client : client.city, spin_client: client.spin, actividad_economica_client: client.actividad_economica})
     setClientDetail(client)
   }
 
@@ -655,7 +712,7 @@ const CotizationPage = (props) => {
   const removeCLient = () => {
     setClientDetail({})
     handleResetValueClient()
-    setCotizationData({...cotizationData, rut_client : '', business_name_client: '', address_client: ''})
+    setCotizationData({...cotizationData, rut_client : '', business_name_client: '', address_client: '', city_client: '', comuna_client : '', spin_client: '', actividad_economica_client: '' })
   }
 
   const removeItemDetail = data => {
@@ -672,9 +729,26 @@ const CotizationPage = (props) => {
 
   const saveCotizacion = type => {
     //
-    if(type === 3){
+    if(type == 3){
       setDisplayDataInvoice(true)
       setRequireInvoice(true)
+      setRefCotizacion(oldData => {
+        if(oldData.length === 0){
+          return [
+            {
+              ind: 'ind',
+              type_document: 'Hoja Entrada de Servicio',
+              ref_cotizacion: cotizationData.ref,
+              date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+              reason_ref: 'Cotización',
+              type_code: '',
+              id_invoice: ''
+            }
+          ]
+        }else{
+          return oldData
+        }
+      })
     }else{
       if(requireInvoice){
         setRequireInvoice(false)
@@ -693,9 +767,11 @@ const CotizationPage = (props) => {
      axios.get(API_URL+'search_receptor/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
       setCotizationData(oldData => {
         return Object.assign({},oldData,{
-          rut_client : result.data.rut,
+          rut_client : result.data.rut +"-"+result.data.dv,
           business_name_client: result.data.razon_social,
-          address_client: result.data.direccion_seleccionada
+          address_client: result.data.direccion_seleccionada,
+          comuna_client : result.data.comuna_seleccionada,
+          city_client : result.data.ciudad_seleccionada,
         })
       })
      }).catch(err => {
@@ -756,15 +832,6 @@ const CotizationPage = (props) => {
   }
 
   const handleDisplayCotizacionField = () => {
-    setCotizationData(oldData => {
-      return Object.assign({},oldData,{
-        days_expiration: '',
-        way_of_payment: '',
-        discount_global: '',
-        type_invoicing: false,
-        date_issue_invoice: '',
-      })
-    })
     setDisplayDataInvoice(false)
   }
 
@@ -842,7 +909,7 @@ const CotizationPage = (props) => {
                                type='text'
                                label='Direccion'
                                name='address_transmitter'
-                               required={requireInvoice}
+                               required={!cotizationData.type_invoicing ? true : false}
                                messageErrors={[
                                'Requerido*'
                                ]}
@@ -865,27 +932,65 @@ const CotizationPage = (props) => {
                                handleChange={onChange}
                               />
                               <InputField
+                               type='text'
+                               label='Ciudad'
+                               name='city_transmitter'
+                               required={!cotizationData.type_invoicing ? true : false}
+                               messageErrors={[
+                               'Requerido*'
+                               ]}
+                               cols='col-md-4 col-lg-4 col-sm-4'
+                               value={cotizationData.city_transmitter}
+                               handleChange={onChange}
+                              />
+                              <InputField
                                type='email'
                                label='Email'
                                name='email_transmitter'
-                               required={requireInvoice}
+                               required={false}
                                messageErrors={[
-                               'Requerido*'
+                               'Requerido*','Formato tipo email*'
                                ]}
                                cols='col-md-4 col-lg-4 col-sm-4'
                                value={cotizationData.email_transmitter}
                                handleChange={onChange}
                               />
+                            </Row>
+                            <Row>
                               <InputField
                                type='text'
                                label='Fono'
                                name='phone_transmitter'
-                               required={requireInvoice}
+                               required={false}
                                messageErrors={[
                                'Requerido*'
                                ]}
                                cols='col-md-4 col-lg-4 col-sm-4'
                                value={cotizationData.phone_transmitter}
+                               handleChange={onChange}
+                              />
+                              <InputField
+                               type='text'
+                               label='Actividad Económica'
+                               name='actividad_economica_transmitter'
+                               required={!cotizationData.type_invoicing ? true : false}
+                               messageErrors={[
+                               'Requerido*'
+                               ]}
+                               cols='col-md-4 col-lg-4 col-sm-4'
+                               value={cotizationData.actividad_economica_transmitter}
+                               handleChange={onChange}
+                              />
+                              <InputField
+                               type='text'
+                               label='Comuna'
+                               name='comuna_transmitter'
+                               required={!cotizationData.type_invoicing ? true : false}
+                               messageErrors={[
+                               'Requerido*'
+                               ]}
+                               cols='col-md-4 col-lg-4 col-sm-4'
+                               value={cotizationData.comuna_transmitter}
                                handleChange={onChange}
                               />
                             </Row>
@@ -983,7 +1088,7 @@ const CotizationPage = (props) => {
                                name='rut_client'
                                required={requireInvoice}
                                messageErrors={[
-
+                                 'Requerido*'
                                ]}
                                cols='col-md-4 col-lg-4 col-sm-4'
                                value={cotizationData.rut_client}
@@ -1005,12 +1110,64 @@ const CotizationPage = (props) => {
                                type='text'
                                label='Direccion'
                                name='address_client'
-                               required={requireInvoice}
+                               required={!cotizationData.type_invoicing ? true : false}
                                messageErrors={[
-
+                                 'Requerido*'
                                ]}
                                cols='col-md-4 col-lg-4 col-sm-4'
                                value={cotizationData.address_client}
+                               handleChange={onChange}
+                              />
+                            </Row>
+                            <Row>
+                              <InputField
+                               type='text'
+                               label='Ciudad'
+                               name='city_client'
+                               required={!cotizationData.type_invoicing ? true : false}
+                               messageErrors={[
+                                 'Requerido*'
+                               ]}
+                               cols='col-md-4 col-lg-4 col-sm-4'
+                               value={cotizationData.city_client}
+                               handleChange={onChange}
+                              />
+                             <InputField
+                                type='text'
+                                label='Comuna'
+                                name='comuna_client'
+                                required={!cotizationData.type_invoicing ? true : false}
+                                messageErrors={[
+                                'Requerido*'
+                                ]}
+                                cols='col-md-4 col-lg-4 col-sm-4'
+                                value={cotizationData.comuna_client}
+                                handleChange={onChange}
+                              />
+                              <InputField
+                               type='text'
+                               label='Giro'
+                               name='spin_client'
+                               required={requireInvoice}
+                               messageErrors={[
+                                 'Requerido*'
+                               ]}
+                               cols='col-md-4 col-lg-4 col-sm-4'
+                               value={cotizationData.spin_client}
+                               handleChange={onChange}
+                              />
+                            </Row>
+                            <Row>
+                              <InputField
+                               type='text'
+                               label='Actividad Económica'
+                               name='actividad_economica_client'
+                               required={false}
+                               messageErrors={[
+                               'Requerido*'
+                               ]}
+                               cols='col-md-4 col-lg-4 col-sm-4'
+                               value={cotizationData.actividad_economica_client}
                                handleChange={onChange}
                               />
                             </Row>
@@ -1030,7 +1187,7 @@ const CotizationPage = (props) => {
                                name='name_contact'
                                required={requireInvoice}
                                messageErrors={[
-
+                                 'Requerido*'
                                ]}
                                cols='col-md-4 col-lg-4 col-sm-4'
                                value={cotizationData.name_contact}
@@ -1042,7 +1199,7 @@ const CotizationPage = (props) => {
                                name='phone_contact'
                                required={requireInvoice}
                                messageErrors={[
-
+                                 'Requerido*'
                                ]}
                                cols='col-md-4 col-lg-4 col-sm-4'
                                value={cotizationData.phone_contact}
@@ -1054,7 +1211,7 @@ const CotizationPage = (props) => {
                                name='email_contact'
                                required={requireInvoice}
                                messageErrors={[
-
+                                 'Requerido*'
                                ]}
                                cols='col-md-4 col-lg-4 col-sm-4'
                                value={cotizationData.email_contact}
@@ -1077,7 +1234,7 @@ const CotizationPage = (props) => {
                                  name='name_seller'
                                  required={requireInvoice}
                                  messageErrors={[
-
+                                   'Requerido*'
                                  ]}
                                  cols='col-md-4 col-lg-4 col-sm-4'
                                  value={cotizationData.name_seller}
@@ -1089,7 +1246,7 @@ const CotizationPage = (props) => {
                                  name='phone_seller'
                                  required={requireInvoice}
                                  messageErrors={[
-
+                                   'Requerido*'
                                  ]}
                                  cols='col-md-4 col-lg-4 col-sm-4'
                                  value={cotizationData.phone_seller}
@@ -1101,7 +1258,7 @@ const CotizationPage = (props) => {
                                  name='email_seller'
                                  required={requireInvoice}
                                  messageErrors={[
-
+                                   'Requerido*'
                                  ]}
                                  cols='col-md-4 col-lg-4 col-sm-4'
                                  value={cotizationData.email_seller}
@@ -1621,9 +1778,9 @@ const CotizationPage = (props) => {
                    handleChange={onChange}
                   >
                     <option value="">--Seleccione--</option>
-                    <option value={1}>Contado</option>
-                    <option value={2}>Crédito</option>
-                    <option value={3}>Sin Costo</option>
+                    <option value={"Contado"}>Contado</option>
+                    <option value={"Crédito"}>Crédito</option>
+                    <option value={"Sin Costo"}>Sin Costo</option>
                   </InputField>
                   <InputField
                    type='number'

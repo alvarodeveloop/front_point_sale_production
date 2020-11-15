@@ -54,6 +54,10 @@ const Styles = styled.div`
     background-color: rgb(218, 236, 242);
     color: black;
   }
+
+  .table_responsive_eddit{
+    overflow-x: auto;
+  }
 `
 
 function DefaultColumnFilter({
@@ -142,7 +146,7 @@ function DataTable({ columns, data, menuTop }) {
   // Render the UI for your table
 
   return (
-    <div className="table-responsive">
+    <div className="table_responsive_eddit">
       {menuTop ? (
         <div className="pagination">
           <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>

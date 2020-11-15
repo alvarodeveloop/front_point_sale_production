@@ -26,6 +26,7 @@ const ConfigStoreFormPage = (props) => {
     logo: '',
     name_store: '',
     country: '',
+    city: '',
     phone: '',
     whatssap: '',
     address: '',
@@ -37,6 +38,7 @@ const ConfigStoreFormPage = (props) => {
     client_data_foot_page: '',
     ref: 1,
     rut: '',
+    comuna : '',
   })
   const [logo, setLogo] = useState([])
   const [paises, setPaises] = useState([])
@@ -48,7 +50,14 @@ const ConfigStoreFormPage = (props) => {
   )
 
   useEffect(() => {
-    fetchData()
+    if(props.id_branch_office){
+      fetchData()
+    }else{
+      toast.error('Debe crear una sucursal o escoger una')
+      setTimeout(function () {
+        props.history.replace('/config/config_store')
+      }, 1000);
+    }
   },[props.id_branch_office])
 
   const onChange = e => {
@@ -80,6 +89,7 @@ const ConfigStoreFormPage = (props) => {
           logo: result[1].data.logo,
           name_store: result[1].data.name_store,
           country: result[1].data.country,
+          city: result[1].data.city,
           phone: result[1].data.phone,
           whatssap: result[1].data.whatssap,
           address: result[1].data.address,
@@ -91,6 +101,7 @@ const ConfigStoreFormPage = (props) => {
           client_data_foot_page: result[1].data.client_data_foot_page,
           ref: result[1].data.ref,
           rut: result[1].data.rut,
+          comuna : result[1].data.comuna
         })
         setIsUpdate(true)
         if(result[1].data.logo){
@@ -105,6 +116,7 @@ const ConfigStoreFormPage = (props) => {
             logo: '',
             name_store: '',
             country: '',
+            city: '',
             phone: '',
             whatssap: '',
             address: '',
@@ -115,7 +127,8 @@ const ConfigStoreFormPage = (props) => {
             foot_page_text: '',
             client_data_foot_page: '',
             ref: 1,
-            rut: ''
+            rut: '',
+            comuna: '',
           })
         }
       }
@@ -154,8 +167,8 @@ const ConfigStoreFormPage = (props) => {
     if(isUpdate){
       axios.put(API_URL+'config_store/'+props.match.params.id,formData).then(result => {
         toast.success('Configuración Modificada')
-        localStorage.setItem('configStore',JSON.stringify(result.data))
         props.setConfigStore(result.data)
+        localStorage.setItem('configStore',JSON.stringify(result.data))
         setTimeout(() => {
           props.history.push('/config/config_store')
         },1500)
@@ -270,6 +283,32 @@ const ConfigStoreFormPage = (props) => {
                   <option value={v.id} key={i}>{v.nombre}</option>
                 ))}
               </InputField>
+              <InputField
+               type='text'
+               label='Ciudad'
+               name='city'
+               required={true}
+               messageErrors={[
+               'Requerido*'
+               ]}
+               cols='col-md-6 col-lg-6 col-sm-6'
+               value={dataStore.city}
+               handleChange={onChange}
+               />
+            </Row>
+            <Row>
+              <InputField
+               type='text'
+               label='Comuna'
+               name='comuna'
+               required={true}
+               messageErrors={[
+               'Requerido*'
+               ]}
+               cols='col-md-6 col-lg-6 col-sm-6'
+               value={dataStore.comuna}
+               handleChange={onChange}
+              />
               <InputField
                 {...props.inputPhone}
                 handleChange={onChange}
@@ -516,4 +555,4 @@ ConfigStoreFormPage.propTypes ={
   setConfigStore: PropTypes.func.isRequired
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(ConfigStoreFormPage)
+export default connect(mapStateToProps,mapDispatchToProps())(ConfigStoreFormPage)

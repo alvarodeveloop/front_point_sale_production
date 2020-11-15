@@ -34,6 +34,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableProductsCotization from 'components/TableProductsCotization'
 import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
+import {formatRut} from 'utils/functions'
 
 let DetailCotizacion = null
 
@@ -125,19 +126,14 @@ const SaleNotePage = (props) => {
     way_of_payment: "Contado",
     days_expiration: '',
     type: 2,
+    comuna_client: '',
+    city_client: '',
+    spin_client: '',
+    actividad_economica_transmitter: '',
+    actividad_economica_client: '',
   })
   const [displayModals,setDisplayModals] = useState(false)
-  const [refCotizacion, setRefCotizacion] = useState([
-    {
-      ind: 'ind',
-      type_document: 'Hoja Entrada de Servicio',
-      ref_invoice: '',
-      date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-      reason_ref: 'Cotización',
-      type_code: '',
-      id_invoice: '',
-    }
-  ])
+  const [refCotizacion, setRefCotizacion] = useState([])
   const [displayReturnButton, setDisplayReturnButton] = useState(false)
 
   useEffect(() => {
@@ -157,6 +153,9 @@ const SaleNotePage = (props) => {
           country_transmitter: props.configStore.pais.nombre,
           email_transmitter: props.configStore.email,
           phone_transmitter: props.configStore.phone,
+          actividad_economica_transmitter: props.configGeneral.actividad_economica,
+          comuna_transmitter: props.configStore.comuna,
+          city_transmitter: props.configStore.city,
         })
       })
       setDisplayModals(true)
@@ -197,6 +196,32 @@ const SaleNotePage = (props) => {
 
   const goToDashboard = () => {
       props.history.replace('/sale_note/sale_note_search')
+  }
+
+
+  const displayTotalDiscount = () => {
+    let total = 0
+
+    detailProducts.forEach((item, i) => {
+
+      let item1 = Object.assign({},item)
+      let value = 0
+      if(item1.is_neto){
+        item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+        value  = invoiceData.discount_global ? ((item1.price * invoiceData.discount_global) / 100) : 0
+      }else{
+        if(invoiceData.total_with_iva){
+
+          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          value = invoiceData.discount_global ?  ((item1.price * invoiceData.discount_global) / 100) : 0
+        }else{
+          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          value = invoiceData.discount_global ? ((item1.price * invoiceData.discount_global) / 100) : 0
+        }
+      }
+      total+= value * item1.quantity
+    })
+    return total
   }
 
   const displayTotalProduct = () => {
@@ -335,6 +360,8 @@ const SaleNotePage = (props) => {
     if(e.target.name === "type_api" || e.target.name === "total_with_iva" || e.target.name === "type_invoicing"){
       let val = e.target.value === "false" ? false : true
       setInvoiceData({...invoiceData, [e.target.name] : val})
+    }else if(e.target.name === "rut_transmitter" || e.target.name === "rut_client"){
+      setInvoiceData({...invoiceData, [e.target.name] : formatRut(e.target.value)})
     }else{
       setInvoiceData({...invoiceData, [e.target.name] : e.target.value})
     }
@@ -380,7 +407,7 @@ const SaleNotePage = (props) => {
   const handleSelectClient = data => {
     let data_document = data.split('/')[1]
     let client = clients.find(v => v.data_document === data_document)
-    setInvoiceData({...invoiceData, rut_client : client.data_document, business_name_client: client.name_client, address_client: client.address})
+    setInvoiceData({...invoiceData, rut_client : client.data_document, business_name_client: client.name_client, address_client: client.address, comuna_client: client.comuna, city_client : client.city, spin_client: client.spin, actividad_economica_client: client.actividad_economica})
     setClientDetail(client)
   }
 
@@ -404,7 +431,7 @@ const SaleNotePage = (props) => {
   const removeCLient = () => {
     setClientDetail({})
     handleResetValueClient()
-    setInvoiceData({...invoiceData, rut_client : '', business_name_client: '', address_client: ''})
+    setInvoiceData({...invoiceData, rut_client : '', business_name_client: '', address_client: '', city_client: '', comuna_client : '', spin_client: ''})
   }
 
   const removeItemDetail = data => {
@@ -425,9 +452,11 @@ const SaleNotePage = (props) => {
      axios.get(API_URL+'search_receptor/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
       setInvoiceData(oldData => {
         return Object.assign({},oldData,{
-          rut_client : result.data.rut,
+          rut_client : result.data.rut +"-"+result.data.dv,
           business_name_client: result.data.razon_social,
-          address_client: result.data.direccion_seleccionada
+          address_client: result.data.direccion_seleccionada,
+          comuna_client : result.data.comuna_seleccionada,
+          city_client : result.data.ciudad_seleccionada,
         })
       })
      }).catch(err => {
@@ -637,6 +666,18 @@ const SaleNotePage = (props) => {
                          handleChange={onChange}
                         />
                         <InputField
+                         type='text'
+                         label='Ciudad'
+                         name='city_transmitter'
+                         required={true}
+                         messageErrors={[
+                         'Requerido*'
+                         ]}
+                         cols='col-md-4 col-lg-4 col-sm-4'
+                         value={invoiceData.city_transmitter}
+                         handleChange={onChange}
+                         />
+                        <InputField
                          type='email'
                          label='Email'
                          name='email_transmitter'
@@ -648,6 +689,8 @@ const SaleNotePage = (props) => {
                          value={invoiceData.email_transmitter}
                          handleChange={onChange}
                         />
+                      </Row>
+                      <Row>
                         <InputField
                          type='text'
                          label='Fono'
@@ -658,6 +701,30 @@ const SaleNotePage = (props) => {
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
                          value={invoiceData.phone_transmitter}
+                         handleChange={onChange}
+                        />
+                        <InputField
+                         type='text'
+                         label='Actividad Económica'
+                         name='actividad_economica_transmitter'
+                         required={true}
+                         messageErrors={[
+                         'Requerido*'
+                         ]}
+                         cols='col-md-4 col-lg-4 col-sm-4'
+                         value={invoiceData.actividad_economica_transmitter}
+                         handleChange={onChange}
+                        />
+                        <InputField
+                         type='text'
+                         label='Comuna'
+                         name='comuna_transmitter'
+                         required={true}
+                         messageErrors={[
+                         'Requerido*'
+                         ]}
+                         cols='col-md-4 col-lg-4 col-sm-4'
+                         value={invoiceData.comuna_transmitter}
                          handleChange={onChange}
                         />
                       </Row>
@@ -783,6 +850,59 @@ const SaleNotePage = (props) => {
                          ]}
                          cols='col-md-4 col-lg-4 col-sm-4'
                          value={invoiceData.address_client}
+                         handleChange={onChange}
+                        />
+                      </Row>
+                      <Row>
+                        <InputField
+                         type='text'
+                         label='Ciudad'
+                         name='city_client'
+                         required={false}
+                         messageErrors={[
+
+                         ]}
+                         cols='col-md-4 col-lg-4 col-sm-4'
+                         value={invoiceData.city_client}
+                         handleChange={onChange}
+                        />
+                       <InputField
+                          type='text'
+                          label='Comuna'
+                          name='comuna_client'
+                          required={false}
+                          messageErrors={[
+                          'Requerido*'
+                          ]}
+                          cols='col-md-4 col-lg-4 col-sm-4'
+                          value={invoiceData.comuna_client}
+                          handleChange={onChange}
+                        />
+                        <InputField
+                         type='text'
+                         label='Giro'
+                         name='spin_client'
+                         required={false}
+                         messageErrors={[
+                           'Requerido*'
+                         ]}
+                         cols='col-md-4 col-lg-4 col-sm-4'
+                         value={invoiceData.spin_client}
+                         handleChange={onChange}
+                        />
+                      </Row>
+                      <Row>
+                        <InputField
+                         type='text'
+                         label='Actividad Económica'
+                         name='actividad_economica_client'
+                         placeholder="opcional"
+                         required={false}
+                         messageErrors={[
+                         'Requerido*'
+                         ]}
+                         cols='col-md-4 col-lg-4 col-sm-4'
+                         value={invoiceData.actividad_economica_client}
                          handleChange={onChange}
                         />
                       </Row>
@@ -1271,12 +1391,14 @@ const SaleNotePage = (props) => {
                         <th className="text-center">Neto(Productos)</th>
                         <th className="text-center">Iva</th>
                         <th className="text-center">Gastos</th>
+                        <th className="text-center">Descuento Global</th>
                         <th className="text-center">Balance Total</th>
                       </tr>
                     ) : (
                       <tr>
                         <th className="text-center">Neto(Productos)</th>
                         <th className="text-center">Gastos</th>
+                        <th className="text-center">Descuento Global</th>
                         <th className="text-center">Balance Total</th>
                       </tr>
                     )
@@ -1289,12 +1411,14 @@ const SaleNotePage = (props) => {
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalProduct())}</td>
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalIva())}</td>
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalGastos())}</td>
+                        <td>{showPriceWithDecimals(props.configGeneral,displayTotalDiscount())}</td>
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalTotal())}</td>
                       </tr>
                     ) : (
                       <tr>
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalProduct())}</td>
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalGastos())}</td>
+                        <td>{showPriceWithDecimals(props.configGeneral,displayTotalDiscount())}</td>
                         <td>{showPriceWithDecimals(props.configGeneral,displayTotalTotal())}</td>
                       </tr>
                     )

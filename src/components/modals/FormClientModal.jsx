@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import {
   Modal,
@@ -27,8 +27,11 @@ const FormClientModal = (props) => {
     phone: '',
     address: '',
     observation: '',
-    picture: ''
+    picture: '',
+    actividad_economica: ''
   })
+
+  const inputRef = useRef(null)
 
   useEffect(() => {
     if(props.dataModify){
@@ -42,6 +45,7 @@ const FormClientModal = (props) => {
         address: updateClient.address,
         observation: updateClient.observation,
         picture: updateClient.picture,
+        actividad_economica: updateClient.actividad_economica,
         id: updateClient.id
       })
     }
@@ -58,12 +62,11 @@ const FormClientModal = (props) => {
     }
   }
 
-  const onSubmit = e => {
+  const onSubmit = () => {
 
-    const form = e.currentTarget;
-    e.preventDefault();
+    const form = inputRef.current
+
     if (form.checkValidity() === false) {
-      e.stopPropagation();
       setValidate(true);
       return
     }
@@ -105,7 +108,11 @@ const FormClientModal = (props) => {
       phone: '',
       address: '',
       observation: '',
-      picture: ''
+      picture: '',
+      city: '',
+      comuna: '',
+      giro: '',
+      actividad_economica: ''
     })
     props.onHide()
   }
@@ -123,7 +130,7 @@ const FormClientModal = (props) => {
           Formulario de Clientes <FaUserCircle/>
         </Modal.Title>
       </Modal.Header>
-      <Form onSubmit={onSubmit} noValidate validated={validate}>
+      <Form onSubmit={() => {}} noValidate validated={validate} ref={inputRef}>
       <Modal.Body>
         <Row>
           <Col sm={12} md={12} lg={12} xs={12}>
@@ -138,16 +145,16 @@ const FormClientModal = (props) => {
                   handleChange={handleOnChange}
                   value={client.email}
                 />
-              <InputField
-                {...props.inputTypeDocument}
-                handleChange={handleOnChange}
-                value={client.type_document}
-                >
-                <option value=''>--Seleccione--</option>
-                <option value={'Rut'}>Rut</option>
-                <option value={'Id'}>Id</option>
-                <option value={'Nro pasaporte'}>N° pasaporte</option>
-              </InputField>
+                <InputField
+                  {...props.inputTypeDocument}
+                  handleChange={handleOnChange}
+                  value={client.type_document}
+                  >
+                  <option value=''>--Seleccione--</option>
+                  <option value={'Rut'}>Rut</option>
+                  <option value={'Id'}>Id</option>
+                  <option value={'Nro pasaporte'}>N° pasaporte</option>
+                </InputField>
               </Row>
               <Row>
                 <InputField
@@ -158,27 +165,84 @@ const FormClientModal = (props) => {
                 <InputField
                   {...props.inputPhone}
                   handleChange={handleOnChange}
+                  placeholder="opcional"
                   value={client.phone}
                   />
                 <InputField
                   {...props.inputAddress}
+                  placeholder="opcional"
                   handleChange={handleOnChange}
                   value={client.address}
                 />
               </Row>
               <Row>
                 <InputField
+                 type='text'
+                 label='Ciudad'
+                 name='city'
+                 required={false}
+                 placeholder="opcional"
+                 messageErrors={[
+                 'Requerido*'
+                 ]}
+                 cols='col-md-4 col-lg-4 col-sm-4'
+                 value={client.city}
+                 handleChange={handleOnChange}
+                 />
+                 <InputField
+                  type='text'
+                  label='Comuna'
+                  name='comuna'
+                  required={false}
+                  placeholder="opcional"
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={client.comuna}
+                  handleChange={handleOnChange}
+                  />
+                  <InputField
+                   type='text'
+                   label='Giro'
+                   name='spin'
+                   required={false}
+                   placeholder="opcional"
+                   messageErrors={[
+                   'Requerido*'
+                   ]}
+                   cols='col-md-4 col-lg-4 col-sm-4'
+                   value={client.spin}
+                   handleChange={handleOnChange}
+                   />
+              </Row>
+              <Row>
+                <InputField
                   {...props.inputObservation}
                   handleChange={handleOnChange}
+                  placeholder="opcional"
                   value={client.observation}
                   />
+                  <InputField
+                   type='text'
+                   label='Actividad Económica'
+                   placeholder="opcional"
+                   name='actividad_economica'
+                   required={false}
+                   messageErrors={[
+                   'Requerido*'
+                   ]}
+                   cols='col-md-4 col-lg-4 col-sm-4'
+                   value={client.actividad_economica}
+                   handleChange={handleOnChange}
+                   />
               </Row>
           </Col>
         </Row>
       </Modal.Body>
       <Modal.Footer>
-        <Button size="sm" variant="success" type="submit">Guardar</Button>
-        <Button size="sm" onClick={handleOnHide}>Cerrar</Button>
+        <Button size="md" variant="success" type="button" onClick={onSubmit}>Guardar</Button>
+        <Button size="md" onClick={handleOnHide}>Cerrar</Button>
       </Modal.Footer>
       </Form>
     </Modal>
