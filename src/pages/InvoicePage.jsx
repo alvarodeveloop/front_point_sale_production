@@ -62,6 +62,10 @@ const InvoiceSearchPage = props => {
           }
         },
         {
+          Header: 'Ref Cotización',
+          accessor: 'ref_cotizacion',
+        },
+        {
           Header: 'Rut Cliente',
           accessor: 'rut_client',
         },
@@ -390,6 +394,7 @@ const InvoiceSearchPage = props => {
   }
 
   const confirmAnulateInvoice = id => {
+    toast.info('Anulando factura, esto podría tardar unos segundos... espere por favor')
     axios.put(API_URL+'invoice_status/'+id).then(result => {
         toast.success('Factura anulada con éxito')
         fetchData()

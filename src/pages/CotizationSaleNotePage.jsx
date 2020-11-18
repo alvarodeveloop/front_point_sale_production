@@ -593,22 +593,12 @@ const CotizationSaleNotePage = (props) => {
   }
 
   const getEmisorReceptorInvoicing = async type => {
-    if(type){
-      //let transmitter = await axios.get(API_URL+'get_transmitter_invoice')
-      setCotizationData(oldData => {
-        return Object.assign({},cotizationData,{
-          type_invoicing: type,
-          searchReceptorDefault : true
-        })
+    setCotizationData(oldData => {
+      return Object.assign({},cotizationData,{
+        type_invoicing: type,
+        searchReceptorDefault : true
       })
-
-    }else{
-      toast.error('En construcción...')
-      setTimeout(function () {
-        goToDashboard()
-      }, 1000);
-    }
-
+    })
   }
 
   return (

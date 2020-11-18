@@ -62,6 +62,10 @@ const SaleNoteSearchPage = props => {
           }
         },
         {
+          Header: 'Referencia Cotización',
+          accessor: 'ref_cotizacion',
+        },
+        {
           Header: 'Rut Cliente',
           accessor: 'rut_client',
         },
@@ -389,6 +393,7 @@ const SaleNoteSearchPage = props => {
   }
 
   const confirmAnulateInvoice = id => {
+    toast.info('Anulando nota, esto podría tardar algunos segundos... espere por favor')
     axios.put(API_URL+'invoice_status/'+id).then(result => {
         toast.success('Nota de venta anulada con éxito')
         fetchData()

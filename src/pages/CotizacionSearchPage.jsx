@@ -207,7 +207,9 @@ const CotizacionSearchPage = props => {
                       <li className="list-group-item" key={i}>
                         <b>Producto</b>: {v.name_product}<br/>
                         <b>Precio</b> : {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,v.price)}<br/>
-                        <b>Cantidad</b>: {v.quantity}</li>
+                        <b>Cantidad</b>: {v.quantity}<br/>
+                        <b>Status</b>: {v.status == 1 ? 'Pendiente' : v.status == 2 ? 'Pagado' : 'Anulado'}
+                      </li>
                     ))}
                   </ul>
                 </Tooltip>}>
@@ -265,6 +267,25 @@ const CotizacionSearchPage = props => {
                 {props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_balance)}
               </Badge>
             )
+          }
+        },
+        {
+          Header: 'Productos Pagados',
+          Cell: props1 => {
+            const original = props1.cell.row.original
+            if(original.is_products_paid){
+              return (
+                <Badge variant="success" className="font-badge">
+                  {original.total_quantity_products_paid}/{original.total_quantity_products}
+                </Badge>
+              )
+            }else{
+              return (
+                <Badge variant="danger" className="font-badge">
+                  {original.total_quantity_products_paid}/{original.total_quantity_products}
+                </Badge>
+              )
+            }
           }
         },
         {
@@ -925,6 +946,7 @@ const CotizacionSearchPage = props => {
                     <th className="text-center">Método de Venta</th>
                     <th className="text-center">Neto</th>
                     <th className="text-center">Total</th>
+                    <th className="text-center">Status</th>
                   </tr>
                 </thead>
                 <tbody className="text-center">
@@ -941,6 +963,7 @@ const CotizacionSearchPage = props => {
                           <td>{displayMehotdSale(v.method_sale)}</td>
                           <td>{v.is_neto ? 'Neto' : "Iva"}</td>
                           <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(v.total,2,',','.')}</Badge></td>
+                          <td>{v.status == 1 ? "Pendiente" : v.status == 2 ? "Pagado" : "Anulado"}</td>
                         </tr>
                       ))}
                     </React.Fragment>
@@ -1051,7 +1074,7 @@ const CotizacionSearchPage = props => {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button size="md" variant="secondary" onClick={handleModalDetail}>cerrar</Button>
+          <Button size="md" variant="info" onClick={handleModalDetail}>cerrar</Button>
         </Modal.Footer>
       </Modal>
     </Container>
