@@ -106,8 +106,8 @@ const ModalClientCotizacion = (props) => {
         <Table data={props.clients} columns={client_columns} />
       </Modal.Body>
       <Modal.Footer>
-        <Button size="sm" variant="primary" onClick={handleSubmit} disabled={disableButton}>Enviar</Button>
-        <Button size="sm" variant="secondary" onClick={handleOnHide} disabled={disableButton}>cerrar</Button>
+        <Button type="button" size="md" variant="primary" onClick={handleSubmit}>Enviar</Button>
+        <Button type="button" size="md" variant="secondary" onClick={handleOnHide}>cerrar</Button>
       </Modal.Footer>
     </Modal>
   )

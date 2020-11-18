@@ -22,7 +22,7 @@ const Styles = styled.div`
   }
 
   .div_overflow{
-    max-height: 400px;
+    max-height: 1700px;
     overflow-y: auto;
   }
 `
@@ -63,8 +63,8 @@ const TableProductsCotization = (props) => {
 
   return (
     <Styles>
-      <Row className="div_overflow">
-        <Col sm={12} md={12} lg={12} className="table-responsive">
+      <Row className="">
+        <Col sm={12} md={12} lg={12} className="table_responsive">
           <table className="table table-bordered">
             <thead>
               <tr>

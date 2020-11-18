@@ -38,6 +38,7 @@ const EnterpriseFormPage = (props) => {
     spin: '',
     plan: {},
     actividad_economica: '',
+    giro : '',
   })
   const accordionRef = useRef(null)
 
@@ -73,6 +74,7 @@ const EnterpriseFormPage = (props) => {
           id: result[1].data.id,
           actividad_economica: result[1].data.actividad_economica,
           plan_backup: result[1].data.plan,
+          giro: result[1].data.giro
         })
       }
     }).catch(err => {
@@ -192,7 +194,8 @@ const EnterpriseFormPage = (props) => {
       address: '',
       phone: '',
       spin: '',
-      plan: {}
+      plan: {},
+      giro : ''
     })
   }
 

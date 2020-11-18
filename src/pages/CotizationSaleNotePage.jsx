@@ -85,7 +85,7 @@ const Styles = styled.div`
 `
 let count = 0
 
-const CotizationInvoicingPage = (props) => {
+const CotizationSaleNotePage = (props) => {
 
   const [clients,setClients] = useState([])
   const [clientDetail,setClientDetail] = useState({})
@@ -134,7 +134,7 @@ const CotizationInvoicingPage = (props) => {
     discount_global: '',
     date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
     type_invoicing: 3,
-    type: 1,
+    type : 2,
     comuna_client: '',
     city_client: '',
     spin_client: '',
@@ -389,7 +389,6 @@ const CotizationInvoicingPage = (props) => {
     if(e.target.name === "type_api" || e.target.name === "total_with_iva" || e.target.name === "type_invoicing"){
       if(e.target.name === "type_invoicing"){
         if(cotizationData.type_invoicing !== true && cotizationData.type_invoicing !== false){
-          toast.info('Preparando Facturación')
           let val = e.target.value === "false" ? false : true
           await getEmisorReceptorInvoicing(val)
         }else{
@@ -551,11 +550,11 @@ const CotizationInvoicingPage = (props) => {
     setDisableButton(true)
 
     axios.put(API_URL+'cotizacion_facturar/'+props.match.params.id,object_post).then(result => {
-      toast.success('Cotización facturada con éxito')
+      toast.success('Nota de venta realizada con éxito')
       setDisableButton(false)
       handleModalInvoice()
       clearData()
-      toast.info('Generando pdf de la Factura, espere por favor...')
+      toast.info('Generando pdf de la cotización, espere por favor...')
 
       axios.get(API_URL+'cotizacion_print/'+props.match.params.id+'/0').then(result => {
         window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
@@ -595,23 +594,10 @@ const CotizationInvoicingPage = (props) => {
 
   const getEmisorReceptorInvoicing = async type => {
     if(type){
-      let transmitter = await axios.get(API_URL+'get_transmitter_invoice')
-
+      //let transmitter = await axios.get(API_URL+'get_transmitter_invoice')
       setCotizationData(oldData => {
         return Object.assign({},cotizationData,{
           type_invoicing: type,
-          actividad_economica_transmitter_array: transmitter.data.emisor.actvidades_economicas,
-          actividad_economica_transmitter : transmitter.data.emisor.actvidades_economicas.length > 0 ? transmitter.data.emisor.actvidades_economicas[0].actvidad1 : props.configGeneral.actividad_economica,
-          city_transmitter : transmitter.data.emisor.ciudad_seleccionada,
-          comuna_transmitter: transmitter.data.emisor.comuna_seleccionada,
-          address_transmitter:  transmitter.data.emisor.direccion_seleccionada,
-          address_transmitter_array: transmitter.data.emisor.direcciones,
-          business_name_transmitter : transmitter.data.emisor.razon_social,
-          rut_transmitter : transmitter.data.emisor.rut +"-"+transmitter.data.emisor.dv,
-          type_sale_transmitter_array: transmitter.data.emisor.tipos_de_venta,
-          type_sale_transmitter: transmitter.data.emisor.tipos_de_venta.length > 0 ? transmitter.data.emisor.tipos_de_venta[0].tipo1 : '',
-          facturaId: transmitter.data.facturaId,
-          token: transmitter.data.token,
           searchReceptorDefault : true
         })
       })
@@ -631,12 +617,12 @@ const CotizationInvoicingPage = (props) => {
         <Form ref={inputRef} onSubmit={handleSubmit} noValidate validated={validated}>
           <Row>
             <Col sm={8} md={8} lg={8}>
-              <h4 className="title_principal">Facturación de Cotizaciones</h4>
+              <h4 className="title_principal">Formulario de notas de ventas</h4>
             </Col>
             <Col sm={4} md={4} lg={4}>
               <InputField
                type='text'
-               label={(<h5 style={{color: "rgb(153, 31, 31)"}}>Ref.Cotización</h5>)}
+               label={(<h5 style={{color: "rgb(153, 31, 31)"}}>Ref. Nota de Venta</h5>)}
                name='id_cotizacion'
                required={true}
                messageErrors={[
@@ -654,7 +640,7 @@ const CotizationInvoicingPage = (props) => {
             <Col sm={4} md={4} lg={4}>
               <Row>
                 <Col sm={12} md={12} lg={12} className="text-center">
-                  <b>Tipo de Factura</b>
+                  <b>Tipo de nota de venta</b>
                 </Col>
               </Row>
                <Row>
@@ -695,13 +681,13 @@ const CotizationInvoicingPage = (props) => {
                 <Col sm={12} md={12} lg={12}>
                   <Accordion defaultActiveKey="2">
                     <TransmitterInvoiceComponent
-                      isType="facturacion"
+                      isType="sale_note"
                       cotizationData={cotizationData}
                       setCotizationData={setCotizationData}
                       onChange={onChange}
                       />
                     <ClientInvoiceComponent
-                      isType="facturacion"
+                      isType="sale_note"
                       cotizationData={cotizationData}
                       setCotizationData={setCotizationData}
                       setIsShowModalClient={setIsShowModalClient}
@@ -717,7 +703,7 @@ const CotizationInvoicingPage = (props) => {
                       refCotizacion={refCotizacion}
                       removeProductRef={removeProductRef}
                       addRef={addRef}
-                    />
+                      />
                   </Accordion>
                 </Col>
               </Row>
@@ -749,7 +735,7 @@ const CotizationInvoicingPage = (props) => {
                               value={true}
                               checked={cotizationData.total_with_iva}
                               onChange={onChange}
-                            />
+                              />
                           </Form.Group>
                         </Col>
                         <Col sm={4} md={4} lg={4} className="text-right">
@@ -762,7 +748,7 @@ const CotizationInvoicingPage = (props) => {
                               value={false}
                               checked={!cotizationData.total_with_iva}
                               onChange={onChange}
-                            />
+                              />
                           </Form.Group>
                         </Col>
                       </Row>
@@ -780,7 +766,7 @@ const CotizationInvoicingPage = (props) => {
                           cols='col-md-12 col-lg-12 col-sm-12'
                           value={cotizationData.price_list}
                           handleChange={onChange}
-                        >
+                          >
                           <option value="">--Seleccione--</option>
                         </InputField>
                       </Row>
@@ -810,117 +796,117 @@ const CotizationInvoicingPage = (props) => {
               <Row>
                 <Col sm={12} md={12} lg={12}>
                   <Table data={gastosDetail} columns={[
-                    {
-                      Header: 'Descripción',
-                      accessor: 'description'
-                    },
-                    {
-                      Header: 'Monto',
-                      accessor: 'amount',
-                      Cell: props1 => {
-                        return showPriceWithDecimals(props.configGeneral,props1.cell.row.original.amount)
+                      {
+                        Header: 'Descripción',
+                        accessor: 'description'
+                      },
+                      {
+                        Header: 'Monto',
+                        accessor: 'amount',
+                        Cell: props1 => {
+                          return showPriceWithDecimals(props.configGeneral,props1.cell.row.original.amount)
+                        }
+                      },
+                      {
+                        Header: 'Acciones',
+                        Cell: props1 => {
+                          const id = props1.cell.row.original.id
+                          return(
+                            <Button size="sm" size="sm" variant="primary" block={true} onClick={() => removeGastoDetail(props1.cell.row.original) }>Remover</Button>
+                          )
+                        }
                       }
-                    },
-                    {
-                      Header: 'Acciones',
-                      Cell: props1 => {
-                        const id = props1.cell.row.original.id
-                        return(
-                          <Button size="sm" size="sm" variant="primary" block={true} onClick={() => removeGastoDetail(props1.cell.row.original) }>Remover</Button>
-                        )
-                      }
-                    }
-                  ]} />
-                </Col>
-              </Row>
-              <Row className="justify-content-center">
-                <Col sm={1} md={1} lg={1}>
-                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Agregar Gastos a la Factura</Tooltip>}>
-                    <Button className="button_product_base" size="sm" variant="danger" block={true} onClick={() => setIsShowModalGastos(true)}><FaPlusCircle /></Button>
-                  </OverlayTrigger>
-                </Col>
-              </Row>
-              <br/>
-              <Row>
-                <InputField
-                  type='date'
-                  label='Fecha emisión de la factura'
-                  name='date_issue_invoice'
-                  required={true}
-                  messageErrors={[
-                    'Requerido*'
-                  ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
-                  value={cotizationData.date_issue_invoice}
-                  handleChange={onChange}
-                  />
-                <InputField
-                  type='number'
-                  label='Dias de Expiración'
-                  name='days_expiration'
-                  required={false}
-                  messageErrors={[
-                    'Requerido*'
-                  ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
-                  value={cotizationData.days_expiration}
-                  handleChange={onChange}
-                  />
-                <InputField
-                  type='select'
-                  label='Forma de Pago'
-                  name='way_of_payment'
-                  required={true}
-                  messageErrors={[
-                    'Requerido*'
-                  ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
-                  value={cotizationData.way_of_payment}
-                  handleChange={onChange}
-                  >
-                  <option value="">--Seleccione--</option>
-                  <option value={"Contado"}>Contado</option>
-                  <option value={"Crédito"}>Crédito</option>
-                  <option value={"Sin Costo"}>Sin Costo</option>
-                </InputField>
-              </Row>
-              <Row>
-                <InputField
-                  type='number'
-                  label='Descuento Global'
-                  name='discount_global'
-                  required={false}
-                  messageErrors={[
+                    ]} />
+                  </Col>
+                </Row>
+                <Row className="justify-content-center">
+                  <Col sm={1} md={1} lg={1}>
+                    <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Agregar Gastos a la Factura</Tooltip>}>
+                      <Button className="button_product_base" size="sm" variant="danger" block={true} onClick={() => setIsShowModalGastos(true)}><FaPlusCircle /></Button>
+                    </OverlayTrigger>
+                  </Col>
+                </Row>
+                <br/>
+                <Row>
+                  <InputField
+                    type='date'
+                    label='Fecha emisión de la factura'
+                    name='date_issue_invoice'
+                    required={true}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={cotizationData.date_issue_invoice}
+                    handleChange={onChange}
+                    />
+                  <InputField
+                    type='number'
+                    label='Dias de Expiración'
+                    name='days_expiration'
+                    required={false}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={cotizationData.days_expiration}
+                    handleChange={onChange}
+                    />
+                  <InputField
+                    type='select'
+                    label='Forma de Pago'
+                    name='way_of_payment'
+                    required={true}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={cotizationData.way_of_payment}
+                    handleChange={onChange}
+                    >
+                    <option value="">--Seleccione--</option>
+                    <option value={"Contado"}>Contado</option>
+                    <option value={"Crédito"}>Crédito</option>
+                    <option value={"Sin Costo"}>Sin Costo</option>
+                  </InputField>
+                </Row>
+                <Row>
+                  <InputField
+                    type='number'
+                    label='Descuento Global'
+                    name='discount_global'
+                    required={false}
+                    messageErrors={[
 
-                  ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
-                  value={cotizationData.discount_global}
-                  handleChange={onChange}
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={cotizationData.discount_global}
+                    handleChange={onChange}
+                    />
+                </Row>
+                <TableTotalComponent
+                  configGeneral={props.configGeneral}
+                  displayTotalProduct={displayTotalProduct}
+                  displayTotalIva={displayTotalIva}
+                  displayTotalGastos={displayTotalGastos}
+                  displayTotalDiscount={displayTotalDiscount}
+                  displayTotalTotal={displayTotalTotal}
+                  cotizationData={cotizationData}
+                  isType={"facturacion"}
                   />
-              </Row>
-              <TableTotalComponent
-                configGeneral={props.configGeneral}
-                displayTotalProduct={displayTotalProduct}
-                displayTotalIva={displayTotalIva}
-                displayTotalGastos={displayTotalGastos}
-                displayTotalDiscount={displayTotalDiscount}
-                displayTotalTotal={displayTotalTotal}
-                cotizationData={cotizationData}
-                isType={"facturacion"}
-                />
-              <br/>
-              <Row className="justify-content-center">
-                <Col sm={3} md={3} lg={3}>
-                  <Button variant="secondary" size="sm" block={true} type="submit">Emitir y Facturar</Button>
-                </Col>
-                <Col sm={3} md={3} lg={3}>
-                  <Button variant="danger" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
-                </Col>
-              </Row>
-            </React.Fragment>
+                <br/>
+                <Row className="justify-content-center">
+                  <Col sm={3} md={3} lg={3}>
+                    <Button variant="secondary" size="sm" block={true} type="submit">Emitir y Facturar</Button>
+                  </Col>
+                  <Col sm={3} md={3} lg={3}>
+                    <Button variant="danger" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
+                  </Col>
+                </Row>
+              </React.Fragment>
           ) : (
             <Row className="justify-content-center">
-              <Col sm={3} md={3} lg={3}>
+              <Col sm={4} md={4} lg={4}>
                 <Button variant="secondary" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
               </Col>
             </Row>
@@ -979,11 +965,11 @@ function mapStateToProps(state){
   }
 }
 
-CotizationInvoicingPage.propTypes ={
+CotizationSaleNotePage.propTypes ={
   id_branch_office: PropTypes.string.isRequired,
   id_enterprise : PropTypes.string.isRequired,
   configStore: PropTypes.object,
   configGeneral: PropTypes.object,
 }
 
-export default connect(mapStateToProps,{})(CotizationInvoicingPage)
+export default connect(mapStateToProps,{})(CotizationSaleNotePage)

@@ -204,4 +204,8 @@ export const routes = [
     path: '/bill/bill_bond/:id',
     component: lazy(() => import('./pages/BillBondsPage'))
   },
+  {
+    path: '/quotitation/sale_note_create/:id',
+    component: lazy(() => import('./pages/CotizationSaleNotePage'))
+  },
 ]

@@ -77,7 +77,7 @@ let data_bar_failure_tipology = {
   labels: [],
   datasets: [
     {
-      label: 'Monto acumulado de facturaciones hechas por mes',
+      label: 'Monto acumulado de documentos hechos por mes',
       backgroundColor: 'rgb(15, 13, 74)',
       borderColor: 'rgb(27, 13, 74)',
       borderWidth: 1,
@@ -92,7 +92,7 @@ let data_line_by_year = {
   labels: [],
   datasets: [
     {
-      label: 'Cantidad facturada por años',
+      label: 'Cantidad facturada de documentos por años',
       data: [],
       fill: false,
       backgroundColor: 'rgb(125, 81, 52)',
@@ -173,7 +173,7 @@ const CotizacionSearchPage = props => {
         },
         {
           Header: 'Status',
-          accessor: props1 => props1.status === 1 ? ['Pendiente'] : props1.status === 2 ? ['Aprobado'] : props1.status === 3 ? ['Facturado'] : ['Anulada'] ,
+          accessor: props1 => [determinateStatus(props1.status)],
           Cell: props1 => {
             const { original } = props1.cell.row
             if(original.status === 1){
@@ -185,11 +185,11 @@ const CotizacionSearchPage = props => {
             }else if(original.status === 2){
               return (
                 <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para cambiar el Status</Tooltip>}>
-                  <Button variant="secondary" block={true} size="sm" onClick={() => changeStatus(original.id,1)}>Aprobada</Button>
+                  <Button variant="danger" block={true} size="sm" onClick={() => changeStatus(original.id,1)}>Aprobada</Button>
                 </OverlayTrigger>
               )
-            }else if(original.status === 3){
-              return (<Badge variant="primary" className="font-badge">Facturada</Badge>)
+            }else if(original.status >= 3 && original.status < 7){
+              return (<Badge variant="primary" className="font-badge">{determinateStatus(original.status)}</Badge>)
             }else{
               return (<Badge variant="danger" className="font-badge">Anulada</Badge>)
             }
@@ -276,10 +276,10 @@ const CotizacionSearchPage = props => {
                 <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
                   <Dropdown.Item onClick={() => updateCotizacion(original.id)}>Modificar</Dropdown.Item>
                   <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                    <Dropdown.Item onClick={() => printCotizacion(original.id)}>Imprimir</Dropdown.Item>
-                    <Dropdown.Item onClick={() => printCotizacionNew(original.id)}>Imprimir Nuevo Pdf</Dropdown.Item>
+                  <Dropdown.Item onClick={() => printCotizacion(original.id)}>Imprimir</Dropdown.Item>
+                  <Dropdown.Item onClick={() => printCotizacionNew(original.id)}>Imprimir Nuevo Pdf</Dropdown.Item>
                   <Dropdown.Item onClick={() => changeStatus(original.id,2)}>Aprobar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => changeStatus(original.id,4)}>Anular</Dropdown.Item>
+                  <Dropdown.Item onClick={() => anulateCotization(original.id,original.status)}>Anular</Dropdown.Item>
                 </DropdownButton>
               )
             }else if(original.status === 2){
@@ -305,15 +305,18 @@ const CotizacionSearchPage = props => {
                   <Dropdown.Item onClick={() => changeStatus(original.id,1)}>Pendiente</Dropdown.Item>
                   <Dropdown.Item onClick={() => printCotizacion(original.id)}>Imprimir</Dropdown.Item>
                   <Dropdown.Item onClick={() => printCotizacionNew(original.id)}>Imprimir Nuevo Pdf</Dropdown.Item>
-                  <Dropdown.Item onClick={() => changeStatus(original.id,4)}>Anular</Dropdown.Item>
+                  <Dropdown.Item onClick={() => changeStatus(original.id,1)}>Pendiente</Dropdown.Item>
+                  <Dropdown.Item onClick={() => anulateCotization(original.id,original.status)}>Anular</Dropdown.Item>
                 </DropdownButton>
               )
-            }else if(original.status === 3){
+            }else if(original.status >= 3 && original.status < 7){
               return (
                 <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
                   <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
                   <Dropdown.Item onClick={() => printCotizacion(original.id)}>Imprimir</Dropdown.Item>
                   <Dropdown.Item onClick={() => printCotizacionNew(original.id)}>Imprimir Nuevo Pdf</Dropdown.Item>
+                  <Dropdown.Item onClick={() => printCotizacionNew(original.id)}>Imprimir Nuevo Pdf</Dropdown.Item>
+                  <Dropdown.Item onClick={() => anulateCotization(original.id,original.status)}>Anular</Dropdown.Item>
                 </DropdownButton>
               )
             }else{
@@ -356,7 +359,7 @@ const CotizacionSearchPage = props => {
         labels: [],
         datasets: [
           {
-            label: 'Monto acumulado de facturaciones hechas por mes',
+            label: 'Monto acumulado de documentos hechos por mes',
             backgroundColor: 'rgb(15, 13, 74)',
             borderColor: 'rgb(27, 13, 74)',
             borderWidth: 1,
@@ -371,7 +374,7 @@ const CotizacionSearchPage = props => {
         labels: [],
         datasets: [
           {
-            label: 'Cantidad facturada por años',
+            label: 'Cantidad facturada de documentos por años',
             data: [],
             fill: false,
             backgroundColor: 'rgb(125, 81, 52)',
@@ -392,6 +395,24 @@ const CotizacionSearchPage = props => {
       handleDataDonutSsStatus()
     }
   },[redraw])
+
+  const determinateStatus = status => {
+    if(status === 1){
+      return 'Pendiente'
+    }else if(status === 2){
+      return 'Aprobado'
+    }else if(status === 3){
+      return 'Facturado'
+    }else if(status === 4){
+      return 'Nota de Venta'
+    }else if(status === 5){
+      return 'Boleta'
+    }else if(status === 6){
+      return 'Guía Despacho'
+    }else{
+      return 'Anulada'
+    }
+  }
 
   const onChange = e => {
     setDataForm({...dataForm,[e.target.name] : e.target.value})
@@ -544,6 +565,24 @@ const CotizacionSearchPage = props => {
    })
   }
 
+  const anulateCotization = (id,status) => {
+   axios.delete(API_URL+'cotizacion/'+id).then(result => {
+    if(status >= 1 && status <= 2){
+      toast.success('Cotización Anulada con éxito')
+    }else if(status >= 3 && status <= 6){
+      toast.success('Documento anulado con éxito')
+    }
+    fetchData()
+   }).catch(err => {
+     if(err.response){
+       toast.error(err.response.data.message)
+     }else{
+       console.log(err);
+       toast.error('Error, contacte con soporte')
+     }
+   })
+  }
+
   const handleModalDetail = () => {
     setIsOpenModalDetail(!isOpenModalDetail)
   }
@@ -569,7 +608,7 @@ const CotizacionSearchPage = props => {
   }
 
   const goToNoteSale = id => {
-    props.history.replace('/quotitation/create_sell_note/'+id)
+    props.history.replace('/quotitation/sale_note_create/'+id)
   }
 
   const goToBillOfSale = id => {
@@ -728,7 +767,7 @@ const CotizacionSearchPage = props => {
                       <Doughnut data={data_donut_total_status} redraw={redraw} options={optionsBar} />
                     </Col>
                   </Row>
-                  <br/><br/><br/>
+                  <br/><br/><br/><br/><br/><br/><br/><br/><br/>
                   <Row>
                     <Col sm={12} md={12} lg={12} style={{height: "200px"}}>
                       <Line data={data_line_by_year} options={options_line} />

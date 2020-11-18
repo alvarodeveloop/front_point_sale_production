@@ -143,10 +143,13 @@ export const ARRAY_MONTH = [
 ]
 
 export const ARRAY_COLORS = [
-  "rgb(147, 52, 12)",
+  "rgb(39, 107, 21)",
   "rgb(21, 26, 88)",
   "rgb(133, 124, 124)",
-  "rgb(39, 107, 21)",
+  "rgb(147, 52, 12)",
+  "rgb(233, 166, 87)",
+  "rgb(68, 208, 162)",
+  "rgb(213, 235, 39)"
 ]
 
 //export const API_URL = 'https://api-app.anclick.tech/'
