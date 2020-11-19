@@ -12,7 +12,7 @@ const TableTotalComponent = (props) => {
     <Row>
       {props.isType === "cotizacion" ? (
         <Col sm={12} md={12} lg={12}>
-          <h3 className="text-center title_principal">Resumen y Totales</h3>
+          <h4 className="text-center title_principal">Resumen y Totales</h4>
           <br/>
           <table className="table table-bordered">
             <thead>

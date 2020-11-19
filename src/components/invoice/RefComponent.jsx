@@ -16,7 +16,7 @@ const RefComponent = (props) => {
   return (
     <Card>
       <Accordion.Toggle as={Card.Header} eventKey="2" className="header_card">
-        <b>Referencias </b> <FaBook />
+        <b>Referencias </b> <FaBook /> ( hacer click para desplegar los campos )
       </Accordion.Toggle>
       <Accordion.Collapse eventKey="2">
         <Card.Body>

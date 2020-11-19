@@ -633,7 +633,7 @@ const CotizacionSearchPage = props => {
   }
 
   const goToBillOfSale = id => {
-    props.history.replace('/quotitation/bill_sale_create/'+id)
+    props.history.replace('/quotitation/bill_create/'+id)
   }
 
   return (

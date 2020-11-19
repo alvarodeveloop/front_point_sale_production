@@ -208,4 +208,8 @@ export const routes = [
     path: '/quotitation/sale_note_create/:id',
     component: lazy(() => import('./pages/CotizationSaleNotePage'))
   },
+  {
+    path: '/quotitation/bill_create/:id',
+    component: lazy(() => import('./pages/CotizationBillPage'))
+  },
 ]

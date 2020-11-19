@@ -735,6 +735,9 @@ const CotizationPage = (props) => {
           return oldData
         }
       })
+      setTimeout(function () {
+        window.scrollTo(0, 0);
+      }, 500);
     }else{
       setCotizationData(oldData => {
         return Object.assign({},oldData,{
@@ -803,34 +806,43 @@ const CotizationPage = (props) => {
     submitData(3)
   }
 
+  const displayMembreteCotizacion = step => {
+    return (
+      <React.Fragment>
+        <Row>
+          <Col sm={8} md={8} lg={8}>
+            <h4 className="title_principal">Formulario De Cotizaciones</h4>
+            <h4 className="title_principal">Paso{step}</h4>
+          </Col>
+          <Col sm={4} md={4} lg={4}>
+            <InputField
+              type='text'
+              label={(<h5 style={{color: "rgb(153, 31, 31)"}}>Ref.Cotización</h5>)}
+              name='id_cotizacion'
+              required={true}
+              messageErrors={[
+
+              ]}
+              cols='col-md-12 col-lg-12 col-sm-12'
+              readonly={true}
+              value={cotizationData.ref}
+              handleChange={() => {}}
+              />
+          </Col>
+        </Row>
+        <hr/>
+      </React.Fragment>
+    )
+  }
+
   return (
     <Styles>
       <Container fluid>
         <Form onSubmit={() => {}} noValidate validated={validated} ref={inputRef}>
-          <Row>
-            <Col sm={8} md={8} lg={8}>
-              <h4 className="title_principal">Formulario De Cotizaciones</h4>
-            </Col>
-            <Col sm={4} md={4} lg={4}>
-              <InputField
-               type='text'
-               label={(<h5 style={{color: "rgb(153, 31, 31)"}}>Ref.Cotización</h5>)}
-               name='id_cotizacion'
-               required={true}
-               messageErrors={[
-
-               ]}
-               cols='col-md-12 col-lg-12 col-sm-12'
-               readonly={true}
-               value={cotizationData.ref}
-               handleChange={() => {}}
-              />
-            </Col>
-          </Row>
-          <hr/>
           {
             displayDataInvoice == 1 ? (
               <React.Fragment>
+                {displayMembreteCotizacion(1)}
                 <br/>
                 {/* tabla editable de los productos de las cotizaciones */}
                 <Row className="">
@@ -1040,7 +1052,7 @@ const CotizationPage = (props) => {
                     <Button type="button" size="sm" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => saveCotizacion(3)}>{disableButtons ? 'Guardando...' : 'Guardar y Facturar'} <MdPrint /></Button>
                   </Col>
                   <Col sm={4} md={4} lg={4}>
-                    <Button type="button" size="sm" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => saveCotizacion(2)}>{disableButtons ? 'Guardando...' : 'Guardar'} <FaLocationArrow /></Button>
+                    <Button type="button" size="sm" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => saveCotizacion(2)}>{disableButtons ? 'Guardando...' : 'Datos de emisor y receptor ( paso 2 )'} <FaUser /></Button>
                   </Col>
                   <Col sm={4} md={4} lg={4}>
                     <Button variant="danger" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
@@ -1049,6 +1061,7 @@ const CotizationPage = (props) => {
               </React.Fragment>
             ) : displayDataInvoice == 2 ? (
               <React.Fragment>
+                {displayMembreteCotizacion(2)}
                 <Row className="justify-content-center">
                   <Col sm={4} md={4} lg={4}>
                     <Row>
@@ -1206,6 +1219,9 @@ const CotizationPage = (props) => {
               </React.Fragment>
             ) : (
               <Row>
+                <Col sm={12} md={12} lg={12}>
+                  {displayMembreteCotizacion(2)}
+                </Col>
                 <Col sm={12} md={12} lg={12} xs={12}>
                   <Row>
                     <Col sm={12} md={12} lg={12} xs={12}>

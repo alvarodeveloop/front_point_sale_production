@@ -85,7 +85,7 @@ const Styles = styled.div`
 let count = 0
 let GastosCotizacion = []
 
-const BillPage = (props) => {
+const CotizationBillPage = (props) => {
 
   const [clients,setClients] = useState([])
   const [detailProducts, setDetailProducts] = useState([])
@@ -103,13 +103,13 @@ const BillPage = (props) => {
   const [requireInvoice, setRequireInvoice] = useState(false)
   const [detailBonds, setDetailBonds] = useState([])
   const [cotizationData, setCotizationData] = useState({
-    business_name_transmitter: props.configStore ? props.configStore.name_store : '',
-    rut_transmitter: props.configStore ? props.configStore.rut : '',
-    address_transmitter: props.configStore ? props.configStore.address : '',
-    spin_transmitter: props.configStore ? props.configGeneral.sping : '',
-    city_transmitter:  props.configStore ? props.configStore.city : '',
-    email_transmitter: props.configStore ? props.configStore.email : '',
-    phone_transmitter: props.configStore ? props.configStore.phone : '',
+    business_name_transmitter: '',
+    rut_transmitter: '',
+    address_transmitter: '',
+    spin_transmitter: '',
+    city_transmitter:  '',
+    email_transmitter: '',
+    phone_transmitter: '',
     comment: '',
     date_issue: moment().tz('America/Santiago').format('YYYY-MM-DD'),
     date_expiration: moment().tz('America/Santiago').format('YYYY-MM-DD'),
@@ -140,8 +140,8 @@ const BillPage = (props) => {
     city_client: '',
     spin_client: '',
     actividad_economica_client: '',
-    actividad_economica_transmitter: props.configGeneral ? props.configGeneral.actividad_economica : '',
-    comuna_transmitter: props.configStore ? props.configStore.comuna : '',
+    actividad_economica_transmitter: '',
+    comuna_transmitter: '',
     address_client_array: [],
     address_transmitter_array : [],
     actividad_economica_transmitter_array: [],
@@ -154,7 +154,7 @@ const BillPage = (props) => {
     type_buy_client : '',
     facturaId: '',
     token : '',
-    fetchTransmitter: false,
+    fetchTransmitter : false,
   })
   const [displayModals,setDisplayModals] = useState(false)
   const [isOpenModalInvoice, setIsOpenModalInvoice] = useState(false)
@@ -182,13 +182,15 @@ const BillPage = (props) => {
         }else{
           fetchClients()
           fetchProducts()
+          fetchDataUpdate()
+          fetchTypeBond()
+          fetchEmisor()
         }
       }else{
         fetchClients()
         fetchProducts()
         fetchTypeBond()
         fetchEmisor()
-        get_ref()
       }
       setDisplayModals(true)
     }
@@ -230,10 +232,60 @@ const BillPage = (props) => {
 
   },[])
 
+  const fetchDataUpdate = () => {
+    axios.get(API_URL+'cotizacion/'+props.match.params.id).then(result => {
+      setGastosDetail(result.data.gastos)
+      setDetailProducts(result.data.products)
+
+      setCotizationData(oldData => {
+        return Object.assign({},oldData,{
+          country_transmitter: result.data.country_transmitter ? result.data.country_transmitter : props.configStore.country,
+          email_transmitter: result.data.email_transmitter ? result.data.email_transmitter : props.configStore.email,
+          phone_transmitter: result.data.phone_transmitter ? result.data.phone_transmitter : props.configStore.phone,
+          actividad_economica_transmitter: result.data.actividad_economica_transmitter ? result.data.actividad_economica_transmitter : props.configGeneral.actividad_economica,
+          spin_transmitter : result.data.spin_transmitter ? result.data.spin_transmitter : props.configGeneral.giro,
+          comment: result.data.comment,
+          date_issue_invoice: result.data.date_issue_invoice ? moment(result.data.date_issue_invoice).tz('America/Santiago').format('YYYY-MM-DD') : moment().tz('America/Santiago').format('YYYY-MM-DD'),
+          type_api: result.data.type_api,
+          rut_client: result.data.rut_client,
+          business_name_client: result.data.business_name_client,
+          address_client: result.data.address_client,
+          actividad_economica_client: result.data.actividad_economica_client,
+          city_client : result.data.city_client,
+          name_contact: result.data.name_contact,
+          phone_contact: result.data.phone_contact,
+          email_contact: result.data.email_contact,
+          name_seller: result.data.name_seller,
+          phone_seller: result.data.phone_seller,
+          email_seller: result.data.email_seller,
+          total_with_iva : result.data.total_with_iva, // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
+          price_list: "",
+          status: result.data.status,
+          ref: result.data.ref,
+          way_of_payment: result.data.way_of_payment ? result.data.way_of_payment : 1,
+          discount_global: result.data.discount_global,
+          days_expiration: result.data.days_expiration,
+          id_branch_office : result.data.id_branch_office,
+          comuna_client: result.data.comuna_client,
+          city_client: result.data.city_client,
+          spin_client: result.data.spin_client,
+          type_buy_client: result.data.type_buy_client,
+          type_sale_transmitter: result.data.type_sale_transmitter,
+        })
+      })
+
+    }).catch(err => {
+      if(err.response){
+        toast.error(err.response.data.message)
+      }else{
+        toast.error('Error, contacte con soporte')
+      }
+    })
+  }
 
   const fetchEmisor = () => {
-    let rut = props.configStore.rut.split('-')[0]
-    let dv  = props.configStore.rut.split('-')[1]
+    let rut = props.configStore ? props.configStore.rut.split('-')[0] : ''
+    let dv  = props.configStore ?  props.configStore.rut.split('-')[1] : ''
 
     axios.get(API_URL+'search_receptor/'+rut+'/'+dv).then(result => {
         setCotizationData(oldData => {
@@ -244,7 +296,7 @@ const BillPage = (props) => {
             address_transmitter : result.data.direccion_seleccionada,
             comuna_transmitter: result.data.comuna_seleccionada,
             city_transmitter: result.data.ciudad_seleccionada,
-            fetchTransmitter: true,
+            fetchTransmitter: true
           })
         })
       }).catch(err => {
@@ -336,16 +388,27 @@ const BillPage = (props) => {
       return
     }
 
-
     setDisableButton(true)
-    axios.post(API_URL+'invoice',object_post).then(result => {
-      setDisableButton(false)
-      toast.success('Boleta guardada con éxito')
-      setTimeout(function () {
-        goToDashboard()
-      }, 1500);
-    }).catch(err => {
 
+    axios.put(API_URL+'cotizacion_facturar/'+props.match.params.id,object_post).then(result => {
+      toast.success('Boleta hecha con éxito')
+      setDisableButton(false)
+      toast.info('Generando pdf de la cotización, espere por favor...')
+
+      axios.get(API_URL+'cotizacion_print/'+props.match.params.id+'/0').then(result => {
+        window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
+        setTimeout( () => {
+          goToDashboard()
+        }, 1500);
+      }).catch(err => {
+        if(err.response){
+          toast.error(err.response.data.message)
+        }else{
+          toast.error('Error, contacte con soporte')
+        }
+      })
+
+    }).catch(err => {
       setDisableButton(false)
       if(err.response){
         toast.error(err.response.data.message)
@@ -353,6 +416,7 @@ const BillPage = (props) => {
         toast.error('Error, contacte con soporte')
       }
     })
+
   }
 
   const displayTotalProduct = () => {
@@ -458,18 +522,7 @@ const BillPage = (props) => {
     }
   }
 
-  const get_ref = () => {
-    axios.get(API_URL+'bill_get_ref').then(result => {
-      setCotizationData({...cotizationData, ref: result.data.ref})
-    }).catch(err => {
-      if(err.response){
-       toast.error(err.response.data.message)
-      }else{
-       console.log(err);
-       toast.error('Error, contacte con soporte')
-      }
-    })
-  }
+
   const handleGastoSubmit = data => {
     // funcion para manejar el submit de los gastos y agglos a la tabla de gastos
     setGastosDetail([...gastosDetail,data])
@@ -835,11 +888,11 @@ function mapStateToProps(state){
   }
 }
 
-BillPage.propTypes ={
+CotizationBillPage.propTypes ={
   id_branch_office: PropTypes.string.isRequired,
   id_enterprise : PropTypes.string.isRequired,
   configStore: PropTypes.object,
   configGeneral: PropTypes.object,
 }
 
-export default connect(mapStateToProps,{})(BillPage)
+export default connect(mapStateToProps,{})(CotizationBillPage)

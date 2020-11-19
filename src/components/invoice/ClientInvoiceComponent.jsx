@@ -165,7 +165,7 @@ const ClientInvoiceComponet = (props) => {
         <b>Datos para la Emisión</b> <FaUser /> (hacer click para desplegar campos)
       </Accordion.Toggle>
       <Accordion.Collapse eventKey="1">
-        {props.isType == "cotizacion" ? (
+        {props.isType == "cotizacion" || props.isType == "boleta" ? (
           <Card.Body>
             <Row>
               <Col sm={4} md={4} lg={4}>
@@ -329,100 +329,104 @@ const ClientInvoiceComponet = (props) => {
                 handleChange={onChange}
               />
             </Row>
-            <br/>
-            <Row style={{borderBottom: '1px solid rgb(229, 227, 231)'}}>
-              <Col sm={8} md={8} lg={8}>
-                <h4 className="title_principal">Contactos Asignados al Receptor</h4>
-              </Col>
-              <Col sm={4} md={4} lg={4}>
-                <Button variant="secondary" block={true} size="sm" type="button" onClick={props.handleModalContacts}>Contactos <FaUsers /> <FaPlusCircle /></Button>
-              </Col>
-            </Row>
-            <Row>
-              <InputField
-               type='text'
-               label='Nombre Contacto'
-               name='name_contact'
-               required={false}
-               messageErrors={[
-                 'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.name_contact}
-               handleChange={onChange}
-              />
-              <InputField
-               type='text'
-               label='Fono'
-               name='phone_contact'
-               required={false}
-               messageErrors={[
-                 'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.phone_contact}
-               handleChange={onChange}
-              />
-              <InputField
-               type='email'
-               label='Email'
-               name='email_contact'
-               required={false}
-               messageErrors={[
-                 'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.email_contact}
-               handleChange={onChange}
-              />
-            </Row>
-            <Row style={{borderBottom: '1px solid rgb(229, 227, 231)'}}>
-              <Col sm={8} md={8} lg={8}>
-                <h4 className="title_principal">Vendedor Asignado</h4>
-              </Col>
-              <Col sm={4} md={4} lg={4}>
-                <Button variant="secondary" block={true} size="sm" type="button" onClick={props.handleModalSeller}>Vendedores <FaUsers /> <FaPlusCircle /></Button>
-              </Col>
-            </Row>
-            <br/>
-              <Row>
-                <InputField
-                 type='text'
-                 label='Nombre Vendedor'
-                 name='name_seller'
-                 required={false}
-                 messageErrors={[
-                   'Requerido*'
-                 ]}
-                 cols='col-md-4 col-lg-4 col-sm-4'
-                 value={props.cotizationData.name_seller}
-                 handleChange={onChange}
-                />
-                <InputField
-                 type='text'
-                 label='Fono Vendedor'
-                 name='phone_seller'
-                 required={false}
-                 messageErrors={[
-                   'Requerido*'
-                 ]}
-                 cols='col-md-4 col-lg-4 col-sm-4'
-                 value={props.cotizationData.phone_seller}
-                 handleChange={onChange}
-                />
-                <InputField
-                 type='email'
-                 label='Email Vendedor'
-                 name='email_seller'
-                 required={false}
-                 messageErrors={[
-                   'Requerido*'
-                 ]}
-                 cols='col-md-4 col-lg-4 col-sm-4'
-                 value={props.cotizationData.email_seller}
-                 handleChange={onChange}
-                />
-              </Row>
+            {props.isType !== "boleta" ? (
+              <React.Fragment>
+                <br/>
+                <Row style={{borderBottom: '1px solid rgb(229, 227, 231)'}}>
+                  <Col sm={8} md={8} lg={8}>
+                    <h4 className="title_principal">Contactos Asignados al Receptor</h4>
+                  </Col>
+                  <Col sm={4} md={4} lg={4}>
+                    <Button variant="secondary" block={true} size="sm" type="button" onClick={props.handleModalContacts}>Contactos <FaUsers /> <FaPlusCircle /></Button>
+                  </Col>
+                </Row>
+                <Row>
+                  <InputField
+                    type='text'
+                    label='Nombre Contacto'
+                    name='name_contact'
+                    required={false}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={props.cotizationData.name_contact}
+                    handleChange={onChange}
+                    />
+                  <InputField
+                    type='text'
+                    label='Fono'
+                    name='phone_contact'
+                    required={false}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={props.cotizationData.phone_contact}
+                    handleChange={onChange}
+                    />
+                  <InputField
+                    type='email'
+                    label='Email'
+                    name='email_contact'
+                    required={false}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={props.cotizationData.email_contact}
+                    handleChange={onChange}
+                    />
+                </Row>
+                <Row style={{borderBottom: '1px solid rgb(229, 227, 231)'}}>
+                  <Col sm={8} md={8} lg={8}>
+                    <h4 className="title_principal">Vendedor Asignado</h4>
+                  </Col>
+                  <Col sm={4} md={4} lg={4}>
+                    <Button variant="secondary" block={true} size="sm" type="button" onClick={props.handleModalSeller}>Vendedores <FaUsers /> <FaPlusCircle /></Button>
+                  </Col>
+                </Row>
+                <br/>
+                <Row>
+                  <InputField
+                    type='text'
+                    label='Nombre Vendedor'
+                    name='name_seller'
+                    required={false}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={props.cotizationData.name_seller}
+                    handleChange={onChange}
+                    />
+                  <InputField
+                    type='text'
+                    label='Fono Vendedor'
+                    name='phone_seller'
+                    required={false}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={props.cotizationData.phone_seller}
+                    handleChange={onChange}
+                    />
+                  <InputField
+                    type='email'
+                    label='Email Vendedor'
+                    name='email_seller'
+                    required={false}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={props.cotizationData.email_seller}
+                    handleChange={onChange}
+                    />
+                </Row>
+              </React.Fragment>
+            ) : ''}
           </Card.Body>
         ) : props.isType == "facturacion" || props.isType == "sale_note" ? (
           <Card.Body>

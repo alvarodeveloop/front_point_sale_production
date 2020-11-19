@@ -63,6 +63,10 @@ const BillSearchPage = props => {
         }
       },
       {
+        Header: 'Ref Cotización',
+        accessor: 'ref_cotizacion',
+      },
+      {
         Header: 'Rut Cliente',
         accessor: 'rut_client',
       },
@@ -97,7 +101,7 @@ const BillSearchPage = props => {
       },
       {
         Header: 'Fecha-Vencimiento',
-        accessor: props1 => props1.date_expiration ? [moment(props1.date_expiration).tz('America/Santiago').format('DD-MM-YYYY')] : ['Indefinida'],
+        accessor: props1 => ['No posee'],
       },
       {
         Header: 'Status',
