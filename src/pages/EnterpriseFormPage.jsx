@@ -14,7 +14,7 @@ import InputField from 'components/input/InputComponent'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import axios from 'axios'
-import { FaPlusCircle, FaBuilding } from "react-icons/fa";
+import { FaSearch,FaPlusCircle, FaBuilding } from "react-icons/fa";
 import 'styles/components/tabla_plans.css'
 import TablePlansComponent from 'components/TablePlansComponent'
 import {formatRut} from 'utils/functions'
@@ -24,6 +24,8 @@ import { setDisplayMessage } from 'actions/menu'
 import { setConfig } from 'actions/configs'
 import { connect } from 'react-redux'
 import layoutHelpers from 'shared/layouts/helpers'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 const EnterpriseFormPage = (props) => {
 
@@ -34,6 +36,9 @@ const EnterpriseFormPage = (props) => {
     name: '',
     bussines_name: '',
     address: '',
+    city: '',
+    comuna: '',
+    email_enterprise: '',
     phone: '',
     spin: '',
     plan: {},
@@ -67,6 +72,9 @@ const EnterpriseFormPage = (props) => {
           rut: result[1].data.rut,
           name: result[1].data.name,
           bussines_name: result[1].data.bussines_name,
+          email_enterprise: result[1].data.email_enterprise,
+          city: result[1].data.city,
+          comuna: result[1].data.comuna,
           address: result[1].data.address,
           phone: result[1].data.phone,
           spin: result[1].data.spin,
@@ -186,19 +194,6 @@ const EnterpriseFormPage = (props) => {
     }
   }
 
-  const cleanForm = () => {
-    setDataForm({
-      rut: '',
-      name: '',
-      bussines_name: '',
-      address: '',
-      phone: '',
-      spin: '',
-      plan: {},
-      giro : ''
-    })
-  }
-
   const goToTable = () => {
     props.history.replace('/enterprise')
   }
@@ -207,6 +202,35 @@ const EnterpriseFormPage = (props) => {
     setDataForm({...dataForm, plan : Object.assign({},plan)})
     accordionRef.current.click()
     toast.info('Plan Seleccionado')
+  }
+
+  const searchClientByApiFacturacion = () =>{
+    // para buscar receptores simple
+    let val = Object.assign({},dataForm).rut
+     if(val){
+       toast.info('Buscando Receptor, espere por favor')
+       axios.get(API_URL+'search_receptor/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
+         setDataForm(oldData => {
+           return Object.assign({},oldData,{
+             rut : result.data.rut +"-"+result.data.dv,
+             bussines_name: result.data.razon_social,
+             address: result.data.direccion_seleccionada,
+             comuna : result.data.comuna_seleccionada,
+             city : result.data.ciudad_seleccionada,
+           })
+         })
+
+       }).catch(err => {
+         if(err.response){
+           toast.error(err.response.data.message)
+         }else{
+           console.log(err);
+           toast.error('Error, contacte con soporte')
+         }
+       })
+     }else{
+       toast.info('Debe ingresar un rut para buscar los datos de la empresa')
+     }
   }
 
   return (
@@ -224,18 +248,27 @@ const EnterpriseFormPage = (props) => {
         <Col sm={12} lg={12} md={12}>
           <Form onSubmit={onSubmit} noValidate validated={validated}>
             <Row>
-              <InputField
-               type='text'
-               label='Rut'
-               name='rut'
-               required={true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={dataForm.rut}
-               handleChange={onChange}
-               />
+              <Col sm={4} md={4} lg={4}>
+                <Form.Label className="fontBold">Rut</Form.Label>
+                <Form.Group className={"divContainerFlex"}>
+                  <Form.Control
+                    style={{flexGrow:2}}
+                    type='text'
+                    label='Rut'
+                    id="rut_client_sii"
+                    name='rut'
+                    required={false}
+                    placeholder="rut de la empresa"
+                    cols='col-md-12 col-lg-12 col-sm-12'
+                    className="form-control-sm"
+                    onChange={onChange}
+                    value={dataForm.rut}
+                    />
+                  <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para buscar datos de la empresa</Tooltip>}>
+                      <Button variant="secondary" size="sm" onClick={() => searchClientByApiFacturacion()}><FaSearch /></Button>
+                  </OverlayTrigger>
+                </Form.Group>
+              </Col>
                <InputField
                 type='text'
                 label='Razon Social'
@@ -275,43 +308,55 @@ const EnterpriseFormPage = (props) => {
                handleChange={onChange}
                />
                <InputField
-                type='number'
-                label='Fono'
-                name='phone'
+                type='text'
+                label='Ciudad'
+                name='city'
                 required={true}
                 messageErrors={[
                 'Requerido*'
                 ]}
                 cols='col-md-4 col-lg-4 col-sm-4'
-                value={dataForm.phone}
+                value={dataForm.city}
                 handleChange={onChange}
                />
                <InputField
                 type='text'
-                label='Giro'
-                name='spin'
+                label='Comuna'
+                name='comuna'
                 required={true}
                 messageErrors={[
                 'Requerido*'
                 ]}
                 cols='col-md-4 col-lg-4 col-sm-4'
-                value={dataForm.spin}
+                value={dataForm.comuna}
                 handleChange={onChange}
                />
             </Row>
             <Row>
               <InputField
-               type='text'
-               label='Actividad Económica'
-               name='actividad_economica'
+               type='email'
+               label='Email'
+               name='email_enterprise'
+               required={false}
+               messageErrors={[
+               'Requerido*'
+               ]}
+               cols='col-md-4 col-lg-4 col-sm-4'
+               value={dataForm.email_enterprise}
+               handleChange={onChange}
+              />
+              <InputField
+               type='number'
+               label='Fono'
+               name='phone'
                required={true}
                messageErrors={[
                'Requerido*'
                ]}
                cols='col-md-4 col-lg-4 col-sm-4'
-               value={dataForm.actividad_economica}
+               value={dataForm.phone}
                handleChange={onChange}
-               />
+              />
             </Row>
             <Row className="justify-content-center">
               <Col sm={12} md={12} lg={12}>

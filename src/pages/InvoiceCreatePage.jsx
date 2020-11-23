@@ -43,11 +43,6 @@ let DetailCotizacion = null
 
 const Styles = styled.div`
 
-  .divContainerFlex{
-    display: flex;
-    flex-direction:row;
-  }
-
   .inputFlex{
     flex-grow:2;
     border:none;
