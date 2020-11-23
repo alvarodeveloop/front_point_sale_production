@@ -69,11 +69,19 @@ const InvoiceBondComponent = ({invoice,...props}) => {
                     <br/>
                     {invoice ? invoice.name_contact : ''}
                   </Col>
-                  <Col sm={3} md={3} lg={3} className="text-center">
-                    <b>Email Contacto</b>
-                    <br/>
-                    {invoice ? invoice.email_contact : ''}
-                  </Col>
+                  {props.isGuide ? (
+                    <Col sm={3} md={3} lg={3} className="text-center">
+                      <b>Dirección Contacto</b>
+                      <br/>
+                      {invoice ? invoice.address_client : ''}
+                    </Col>
+                  ) : (
+                    <Col sm={3} md={3} lg={3} className="text-center">
+                      <b>Email Contacto</b>
+                      <br/>
+                      {invoice ? invoice.email_contact : ''}
+                    </Col>
+                  )}
                 </Row>
                 <br/>
                 <Row>
@@ -124,6 +132,7 @@ InvoiceBondComponent.propTypes = {
   invoice : PropTypes.any,
   configStore: PropTypes.object.isRequired,
   configGeneral: PropTypes.object.isRequired,
+  isGuide: PropTypes.bool,
 }
 
 export default InvoiceBondComponent

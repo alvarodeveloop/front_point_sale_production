@@ -39,6 +39,8 @@ import TransmitterInvoiceComponent from 'components/invoice/TransmitterInvoiceCo
 import ClientInvoiceComponent from 'components/invoice/ClientInvoiceComponent'
 import TableTotalComponent from 'components/invoice/TableTotalComponent'
 import RefComponent from 'components/invoice/RefComponent'
+import {OBJECT_COTIZATION} from 'utils/constants'
+import GastosComponent from 'components/invoice/GastosComponent'
 
 let DetailCotizacion = null
 
@@ -102,65 +104,21 @@ const SaleNotePage = (props) => {
   const [rutFacturacionClientSearch, setRutFacturacionClientSearch] = useState('')
   const [validated, setValidated] = useState(false)
   const [isOpenModalInvoice, setIsOpenModalInvoice] = useState(false)
-  const [cotizationData, setCotizationData] = useState({
-    business_name_transmitter: props.configStore.name_store,
-    rut_transmitter: props.configStore.rut,
-    address_transmitter: props.configStore.address,
-    country_transmitter: props.configStore.pais.nombre,
-    email_transmitter: props.configStore.email,
-    phone_transmitter: props.configStore.phone,
-    actividad_economica_transmitter: props.configGeneral.actividad_economica,
-    comuna_transmitter: props.configStore.comuna,
-    city_transmitter: props.configStore.city,
-    comment: '',
-    date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-    type_api: true,
-    rut_client: '',
-    business_name_client: '',
-    address_client: '',
-    name_contact: '',
-    phone_contact: '',
-    email_contact: '',
-    name_seller: '',
-    phone_seller: '',
-    email_seller: '',
-    total_with_iva : true , // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
-    price_list: "",
-    type_invoicing: true,
-    status: 1,
-    ref: '',
-    discount_global: '',
-    way_of_payment: "Contado",
-    days_expiration: '',
-    type: 2,
-    comuna_client: '',
-    city_client: '',
-    spin_client: '',
-    actividad_economica_client: '',
-    comment: '',
-    date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-    type_api: true,
-    total_with_iva : true , // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
-    price_list: "",
-    type_invoicing: null,
-    status: 1,
-    ref: '',
-    discount_global: '',
-    way_of_payment: "Contado",
-    days_expiration: '',
-    type: 2,
-    comuna_client: '',
-    address_client_array: [],
-    address_transmitter_array : [],
-    actividad_economica_transmitter_array: [],
-    actividad_economica_client_array: [],
-    spin_client_array : [],
-    spin_transmitter_array: [],
-    type_sale_transmitter_array: [],
-    type_sale_transmitter: '',
-    type_buy_client_array: [],
-    type_buy_client : '',
-  })
+  const [cotizationData, setCotizationData] = useState(
+    Object.assign({},OBJECT_COTIZATION,{
+      business_name_transmitter: props.configStore ? props.configStore.name_store : '',
+      rut_transmitter: props.configStore ? props.configStore.rut : '',
+      address_transmitter: props.configStore ? props.configStore.address : '',
+      country_transmitter: props.configStore ? props.configStore.pais.nombre : '',
+      email_transmitter: props.configStore ? props.configStore.email : '',
+      phone_transmitter: props.configStore ? props.configStore.phone : '',
+      actividad_economica_transmitter: props.configStore ? props.configGeneral.actividad_economica : '',
+      comuna_transmitter: props.configStore ? props.configStore.comuna : '',
+      city_transmitter: props.configStore ? props.configStore.city : '',
+      date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+      type: 2,
+      date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+    }))
   const [displayModals,setDisplayModals] = useState(false)
   const [refCotizacion, setRefCotizacion] = useState([])
 
@@ -680,44 +638,12 @@ const SaleNotePage = (props) => {
             </Row>
             {/* ======================================================= */}
             <hr/>
-            <Row className="">
-              <Col sm={12} md={12} lg={12} xs={12}>
-                <h4 className="title_principal text-center">Tabla de Gastos</h4>
-              </Col>
-            </Row>
-            <Row>
-              <Col sm={12} md={12} lg={12}>
-                <Table data={gastosDetail} columns={[
-                  {
-                    Header: 'Descripción',
-                    accessor: 'description'
-                  },
-                  {
-                    Header: 'Monto',
-                    accessor: 'amount',
-                    Cell: props1 => {
-                      return showPriceWithDecimals(props.configGeneral,props1.cell.row.original.amount)
-                    }
-                  },
-                  {
-                    Header: 'Acciones',
-                    Cell: props1 => {
-                      const id = props1.cell.row.original.id
-                      return(
-                        <Button size="sm" size="sm" variant="primary" block={true} onClick={() => removeGastoDetail(props1.cell.row.original) }>Remover</Button>
-                      )
-                    }
-                  }
-                ]} />
-              </Col>
-            </Row>
-            <Row className="justify-content-center">
-              <Col sm={1} md={1} lg={1}>
-                <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Agregar Gastos a la Factura</Tooltip>}>
-                  <Button className="button_product_base" size="sm" variant="danger" block={true} onClick={() => setIsShowModalGastos(true)}><FaPlusCircle /></Button>
-                </OverlayTrigger>
-              </Col>
-            </Row>
+            <GastosComponent
+              gastosDetail={gastosDetail}
+              setGastosDetail={setGastosDetail}
+              configGeneral={props.configGeneral}
+              setIsShowModalGastos={setIsShowModalGastos}
+            />
             <br/>
             <Row>
               <InputField
@@ -778,14 +704,12 @@ const SaleNotePage = (props) => {
             </Row>
             <TableTotalComponent
               configGeneral={props.configGeneral}
-              displayTotalProduct={displayTotalProduct}
-              displayTotalIva={displayTotalIva}
-              displayTotalGastos={displayTotalGastos}
-              displayTotalDiscount={displayTotalDiscount}
-              displayTotalTotal={displayTotalTotal}
+              configStore={props.configStore}
+              gastosDetail={gastosDetail}
+              detailProducts={detailProducts}
               cotizationData={cotizationData}
               isType={"facturacion"}
-              />
+            />
             <br/>
             <Row className="justify-content-center">
               <Col sm={3} md={3} lg={3}>

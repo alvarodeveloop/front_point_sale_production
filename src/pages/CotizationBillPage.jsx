@@ -40,6 +40,8 @@ import ClientInvoiceComponent from 'components/invoice/ClientInvoiceComponent'
 import TableTotalComponent from 'components/invoice/TableTotalComponent'
 import RefComponent from 'components/invoice/RefComponent'
 import TableBondsBillComponent from 'components/invoice/TableBondsBillComponent'
+import GastosComponent from 'components/invoice/GastosComponent'
+import {OBJECT_COTIZATION} from 'utils/constants'
 
 const Styles = styled.div`
 
@@ -102,60 +104,17 @@ const CotizationBillPage = (props) => {
   const [displayDataInvoice, setDisplayDataInvoice] = useState(1)
   const [requireInvoice, setRequireInvoice] = useState(false)
   const [detailBonds, setDetailBonds] = useState([])
-  const [cotizationData, setCotizationData] = useState({
-    business_name_transmitter: '',
-    rut_transmitter: '',
-    address_transmitter: '',
-    spin_transmitter: '',
-    city_transmitter:  '',
-    email_transmitter: '',
-    phone_transmitter: '',
-    comment: '',
-    date_issue: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-    date_expiration: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-    type_api: true,
-    rut_client: '',
-    business_name_client: '',
-    address_client: '',
-    actividad_economica_client: '',
-    city_client: '',
-    name_contact: '',
-    phone_contact: '',
-    email_contact: '',
-    name_seller: '',
-    phone_seller: '',
-    email_seller: '',
-    total_with_iva : false , // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
-    price_list: "",
-    type_effect: true,
-    status: 1,
-    ref: '',
-    days_expiration: '',
-    way_of_payment: '',
-    discount_global: '',
-    date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-    type_invoicing: true,
-    type : 3,
-    comuna_client: '',
-    city_client: '',
-    spin_client: '',
-    actividad_economica_client: '',
-    actividad_economica_transmitter: '',
-    comuna_transmitter: '',
-    address_client_array: [],
-    address_transmitter_array : [],
-    actividad_economica_transmitter_array: [],
-    actividad_economica_client_array: [],
-    spin_client_array : [],
-    spin_transmitter_array: [],
-    type_sale_transmitter_array: [],
-    type_sale_transmitter: '',
-    type_buy_client_array: [],
-    type_buy_client : '',
-    facturaId: '',
-    token : '',
-    fetchTransmitter : false,
-  })
+  const [cotizationData, setCotizationData] = useState(
+    Object.assign({},OBJECT_COTIZATION,{
+      date_issue: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+      date_expiration: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+      date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+      type_invoicing: true,
+      type : 3,
+      date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+      fetchTransmitter : false,
+      id_branch_office: props.id_branch_office
+  }))
   const [displayModals,setDisplayModals] = useState(false)
   const [isOpenModalInvoice, setIsOpenModalInvoice] = useState(false)
   const [refCotizacion, setRefCotizacion] = useState([])
@@ -727,44 +686,12 @@ const CotizationBillPage = (props) => {
               </Accordion.Toggle>
               <Accordion.Collapse eventKey="4">
                 <Card.Body>
-                  <Row className="">
-                    <Col sm={12} md={12} lg={12} xs={12}>
-                      <h4 className="title_principal text-center">Tabla de Gastos</h4>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col sm={12} md={12} lg={12}>
-                      <Table data={gastosDetail} columns={[
-                          {
-                            Header: 'Descripción',
-                            accessor: 'description'
-                          },
-                          {
-                            Header: 'Monto',
-                            accessor: 'amount',
-                            Cell: props1 => {
-                              return showPriceWithDecimals(props.configGeneral,props1.cell.row.original.amount)
-                            }
-                          },
-                          {
-                            Header: 'Acciones',
-                            Cell: props1 => {
-                              const id = props1.cell.row.original.id
-                              return(
-                                <Button size="sm" size="sm" variant="primary" block={true} onClick={() => removeGastoDetail(props1.cell.row.original) }>Remover</Button>
-                              )
-                            }
-                          }
-                        ]} />
-                      </Col>
-                    </Row>
-                    <Row className="justify-content-center">
-                      <Col sm={1} md={1} lg={1}>
-                        <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Agregar Gastos a la Cotización</Tooltip>}>
-                          <Button className="button_product_base" size="sm" variant="danger" block={true} onClick={() => setIsShowModalGastos(true)}><FaPlusCircle /></Button>
-                        </OverlayTrigger>
-                      </Col>
-                    </Row>
+                  <GastosComponent
+                    gastosDetail={gastosDetail}
+                    setGastosDetail={setGastosDetail}
+                    configGeneral={props.configGeneral}
+                    setIsShowModalGastos={setIsShowModalGastos}
+                  />
                 </Card.Body>
               </Accordion.Collapse>
             </Card>
@@ -819,12 +746,10 @@ const CotizationBillPage = (props) => {
           </Row>
           <TableTotalComponent
             configGeneral={props.configGeneral}
-            displayTotalProduct={displayTotalProduct}
-            displayTotalIva={displayTotalIva}
-            displayTotalGastos={displayTotalGastos}
-            displayTotalDiscount={() => {}}
-            displayTotalTotal={displayTotalTotal}
+            configStore={props.configStore}
+            detailProducts={detailProducts}
             cotizationData={cotizationData}
+            gastosDetail={gastosDetail}
             isType={"cotizacion"}
           />
         <br/>

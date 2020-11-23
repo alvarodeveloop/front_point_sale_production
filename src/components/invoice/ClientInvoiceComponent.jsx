@@ -14,7 +14,7 @@ import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
 import {toast} from 'react-toastify'
 import axios from 'axios'
 import {formatRut} from 'utils/functions'
-import {API_URL} from 'utils/constants'
+import {API_URL,API_FACTURACION} from 'utils/constants'
 
 const ClientInvoiceComponet = (props) => {
 
@@ -28,6 +28,7 @@ const ClientInvoiceComponet = (props) => {
       searchClientByApiFacturacionInvoice(props.cotizationData.rut_client)
     }
   },[props.cotizationData.searchReceptorDefault])
+
 
   const onChange = e => {
     if(e.target.name === "type_api" || e.target.name === "total_with_iva" || e.target.name === "type_effect" || e.target.name === "type_invoicing"){
@@ -47,92 +48,96 @@ const ClientInvoiceComponet = (props) => {
   const searchClientByApiFacturacion = (rut = false) =>{
     // para buscar receptores simple
      let val = !rut ? rutFacturacionClientSearch : rut
-
-     toast.info('Buscando Receptor, espere por favor')
-     axios.get(API_URL+'search_receptor/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
-      props.setCotizationData(oldData => {
-        return Object.assign({},oldData,{
-          rut_client : result.data.rut +"-"+result.data.dv,
-          business_name_client: result.data.razon_social,
-          address_client: result.data.direccion_seleccionada,
-          comuna_client : result.data.comuna_seleccionada,
-          city_client : result.data.ciudad_seleccionada,
-          address_client_array: result.data.direcciones
-        })
-      })
-      setReadonlyRut(true)
-     }).catch(err => {
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
-     })
+     if(val){
+       toast.info('Buscando Receptor, espere por favor')
+       axios.get(API_URL+'search_receptor/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
+         props.setCotizationData(oldData => {
+           return Object.assign({},oldData,{
+             rut_client : result.data.rut +"-"+result.data.dv,
+             business_name_client: result.data.razon_social,
+             address_client: result.data.direccion_seleccionada,
+             comuna_client : result.data.comuna_seleccionada,
+             city_client : result.data.ciudad_seleccionada,
+             address_client_array: result.data.direcciones
+           })
+         })
+         setReadonlyRut(true)
+       }).catch(err => {
+         if(err.response){
+           toast.error(err.response.data.message)
+         }else{
+           console.log(err);
+           toast.error('Error, contacte con soporte')
+         }
+       })
+     }
   }
 
   const searchClientByApiFacturacionInvoice = (rut = false) =>{
     // para buscar receptores a la factura o la nota de venta
     let val = !rut ? rutFacturacionClientSearch : rut
-    if(props.isType === "facturacion"){
-      toast.info('Buscando Receptor, espere por favor')
+    if(val){
+      
+      if(props.isType === "facturacion"){
+        toast.info('Buscando Receptor, espere por favor')
 
-      if(props.cotizationData.type_invoicing === true){
+        if(props.cotizationData.type_invoicing === true){
 
-        axios.get(API_URL+'get_client_invoice/'+props.cotizationData.facturaId+'/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
+          axios.get(API_URL+'get_client_invoice/'+props.cotizationData.facturaId+'/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
 
-          let giroReceptor = [{giroReceptor1: 'giroReceptor1'},{giroReceptor2: 'giroReceptor2'}]
-          let tipo_compra = [{tipoVenta1: 'tipoCompra1'},{tipoVenta2: 'tipoCompra2'}]
+            let giroReceptor = API_FACTURACION ? result.data.receptor.giroReceptor : [{giroReceptor1: 'giroReceptor1'},{giroReceptor2: 'giroReceptor2'}]
+            let tipo_compra = API_FACTURACION ? result.data.receptor.tipoDeCompra : [{tipoVenta1: 'tipoCompra1'},{tipoVenta2: 'tipoCompra2'}]
 
-          props.setCotizationData(oldData1 => {
-            let object_return = Object.assign({},oldData1,{
-              rut_client : result.data.receptor.rut +"-"+result.data.receptor.dv,
-              business_name_client: result.data.receptor.razon_social,
-              address_client: result.data.receptor.direccion_seleccionada,
-              address_client_array : result.data.receptor.direcciones,
-              comuna_client : result.data.receptor.comuna_seleccionada,
-              city_client : result.data.receptor.ciudad_seleccionada,
-              type_buy_client: tipo_compra.length > 0 ? tipo_compra[0].tipoCompra1 : '',
-              type_buy_client_array: tipo_compra,
-              spin_client_array : giroReceptor,
-              spin_client: giroReceptor.length > 0 ? giroReceptor[0].giroReceptor1 :  '',
+            props.setCotizationData(oldData1 => {
+              let object_return = Object.assign({},oldData1,{
+                rut_client : result.data.receptor.rut +"-"+result.data.receptor.dv,
+                business_name_client: result.data.receptor.razon_social,
+                address_client: result.data.receptor.direccion_seleccionada,
+                address_client_array : result.data.receptor.direcciones,
+                comuna_client : result.data.receptor.comuna_seleccionada,
+                city_client : result.data.receptor.ciudad_seleccionada,
+                type_buy_client: tipo_compra.length > 0 ? tipo_compra[0].tipoCompra1 : '',
+                type_buy_client_array: tipo_compra,
+                spin_client_array : giroReceptor,
+                spin_client: giroReceptor.length > 0 ? giroReceptor[0].giroReceptor1 :  '',
+              })
+
+              return object_return
             })
-
-            return object_return
+            setReadonlyRut(true)
+          }).catch(err => {
+            if(err.response){
+              toast.error(err.response.data.message)
+            }else{
+              console.log(err);
+              toast.error('Error, contacte con soporte')
+            }
           })
-          setReadonlyRut(true)
-        }).catch(err => {
-          if(err.response){
-            toast.error(err.response.data.message)
-          }else{
+        }else{
+          /*axios.get(API_URL+'get_client_invoice/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
+              props.setCotizationData(oldData => {
+              return Object.assign({},oldData,{
+              rut_client : result.data.rut +"-"+result.data.dv,
+              business_name_client: result.data.razon_social,
+              address_client: result.data.direccion_seleccionada,
+              comuna_client : result.data.comuna_seleccionada,
+              city_client : result.data.ciudad_seleccionada,
+              })
+              })
+              setReadonlyRut(true)
+              }).catch(err => {
+              if(err.response){
+              toast.error(err.response.data.message)
+            }else{
             console.log(err);
             toast.error('Error, contacte con soporte')
-          }
-        })
-      }else{
-          /*axios.get(API_URL+'get_client_invoice/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
-          props.setCotizationData(oldData => {
-          return Object.assign({},oldData,{
-          rut_client : result.data.rut +"-"+result.data.dv,
-          business_name_client: result.data.razon_social,
-          address_client: result.data.direccion_seleccionada,
-          comuna_client : result.data.comuna_seleccionada,
-          city_client : result.data.ciudad_seleccionada,
-          })
-          })
-          setReadonlyRut(true)
-          }).catch(err => {
-          if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
 
-        })*/
+          })*/
+        }
+      }else{
+        // si es nota de venta
+        searchClientByApiFacturacion(val)
       }
-    }else{
-      // si es nota de venta
-      searchClientByApiFacturacion(val)
     }
   }
 
@@ -165,7 +170,7 @@ const ClientInvoiceComponet = (props) => {
         <b>Datos para la Emisión</b> <FaUser /> (hacer click para desplegar campos)
       </Accordion.Toggle>
       <Accordion.Collapse eventKey="1">
-        {props.isType == "cotizacion" || props.isType == "boleta" ? (
+        {props.isType == "cotizacion" || props.isType == "boleta" || props.isType == "guide" ? (
           <Card.Body>
             <Row>
               <Col sm={4} md={4} lg={4}>
@@ -276,7 +281,7 @@ const ClientInvoiceComponet = (props) => {
                   type='select'
                   label='Dirección'
                   name='address_client'
-                  required={false}
+                  required={props.isType === "guide" ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -293,7 +298,7 @@ const ClientInvoiceComponet = (props) => {
                   type='text'
                   label='Dirección'
                   name='address_client'
-                  required={false}
+                  required={props.isType === "guide" ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -308,7 +313,7 @@ const ClientInvoiceComponet = (props) => {
                 type='text'
                 label='Ciudad'
                 name='city_client'
-                required={false}
+                required={props.isType === "guide" ? true : false}
                 messageErrors={[
                   'Requerido*'
                 ]}
@@ -320,7 +325,7 @@ const ClientInvoiceComponet = (props) => {
                 type='text'
                 label='Comuna'
                 name='comuna_client'
-                required={false}
+                required={props.isType === "guide" ? true : false}
                 messageErrors={[
                   'Requerido*'
                 ]}
@@ -328,8 +333,90 @@ const ClientInvoiceComponet = (props) => {
                 value={props.cotizationData.comuna_client}
                 handleChange={onChange}
               />
+              {props.isType === "guide" ? (
+                <React.Fragment>
+                  <InputField
+                    type='text'
+                    label='Contacto'
+                    name='name_contact'
+                    required={true}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={props.cotizationData.name_contact}
+                    handleChange={onChange}
+                    />
+                </React.Fragment>
+              ) : ''}
             </Row>
-            {props.isType !== "boleta" ? (
+            {props.isType === "guide" ? (
+              <Row>
+                {props.cotizationData.spin_client_array.length > 0 ? (
+                  <InputField
+                    type='select'
+                    label='Giro'
+                    name='spin_client'
+                    required={true}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={props.cotizationData.spin_client}
+                    handleChange={onChange}
+                  >
+                    {props.cotizationData.spin_client_array.map((v,i) => (
+                      <option value={v['giro'+(i+1)]} key={i}>{v['giro'+(i+1)]}</option>
+                    ))}
+                  </InputField>
+                ) : (
+                  <InputField
+                    type='text'
+                    label='Giro'
+                    name='spin_client'
+                    required={true}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={props.cotizationData.spin_client}
+                    handleChange={onChange}
+                  />
+                )}
+                {props.cotizationData.type_buy_client_array.length > 0 ? (
+                  <InputField
+                    type='select'
+                    label='Tipo de Compra'
+                    name='type_buy_client'
+                    required={true}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={props.cotizationData.type_buy_client}
+                    handleChange={onChange}
+                  >
+                    {props.cotizationData.type_buy_client_array.map((v,i) => (
+                      <option value={v['giro'+(i+1)]} key={i}>{v['giro'+(i+1)]}</option>
+                    ))}
+                  </InputField>
+                ) : (
+                  <InputField
+                    type='text'
+                    label='Tipo de Compra'
+                    name='type_buy_client'
+                    required={true}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={props.cotizationData.type_buy_client}
+                    handleChange={onChange}
+                  />
+                )}
+              </Row>
+            ) : ''}
+            {props.isType !== "boleta" && props.isType !== "guide" ? (
               <React.Fragment>
                 <br/>
                 <Row style={{borderBottom: '1px solid rgb(229, 227, 231)'}}>
@@ -352,7 +439,7 @@ const ClientInvoiceComponet = (props) => {
                     cols='col-md-4 col-lg-4 col-sm-4'
                     value={props.cotizationData.name_contact}
                     handleChange={onChange}
-                    />
+                  />
                   <InputField
                     type='text'
                     label='Fono'
@@ -592,22 +679,43 @@ const ClientInvoiceComponet = (props) => {
                 handleChange={onChange}
               />
               {props.cotizationData.spin_client_array.length > 0 ? (
-                <InputField
-                  type='select'
-                  label='Giro'
-                  name='spin_client'
-                  required={!props.cotizationData.type_invoicing ? true : false}
-                  messageErrors={[
-                    'Requerido*'
-                  ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
-                  value={props.cotizationData.spin_client}
-                  handleChange={onChange}
-                >
-                  {props.cotizationData.spin_client_array.map((v,i) => (
-                    <option value={v['giroReceptor'+(i+1)]} key={i}>{v['giroReceptor'+(i+1)]}</option>
-                  ))}
-                </InputField>
+                <React.Fragment>
+                  {props.cotizationData.type_invoicing ? (
+                    <InputField
+                      type='select'
+                      label='Giro'
+                      name='spin_client'
+                      required={false}
+                      messageErrors={[
+                        'Requerido*'
+                      ]}
+                      cols='col-md-4 col-lg-4 col-sm-4'
+                      value={props.cotizationData.spin_client}
+                      handleChange={onChange}
+                      >
+                      {props.cotizationData.spin_client_array.map((v,i) => (
+                        <option value={v['giroReceptor'+(i+1)]} key={i}>{v['giroReceptor'+(i+1)]}</option>
+                      ))}
+                    </InputField>
+                  ) : (
+                    <InputField
+                      type='select'
+                      label='Giro'
+                      name='spin_client'
+                      required={false}
+                      messageErrors={[
+                        'Requerido*'
+                      ]}
+                      cols='col-md-4 col-lg-4 col-sm-4'
+                      value={props.cotizationData.spin_client}
+                      handleChange={onChange}
+                      >
+                      {props.cotizationData.spin_client_array.map((v,i) => (
+                        <option value={v['giro'+(i+1)]} key={i}>{v['giro'+(i+1)]}</option>
+                      ))}
+                    </InputField>
+                  )}
+                </React.Fragment>
               ) : (
                 <InputField
                   type='text'
@@ -629,7 +737,7 @@ const ClientInvoiceComponet = (props) => {
                   type='select'
                   label='Actividad Económica'
                   name='actividad_economica_client'
-                  placeholder="opcional"
+                  placeholder={props.cotizationData.type_invoicing ? "opcional" : ""}
                   required={false}
                   messageErrors={[
                     'Requerido*'
@@ -647,7 +755,7 @@ const ClientInvoiceComponet = (props) => {
                   type='text'
                   label='Actividad Económica'
                   name='actividad_economica_client'
-                  placeholder="opcional"
+                  placeholder={"opcional"}
                   required={false}
                   messageErrors={[
                     'Requerido*'
@@ -662,8 +770,8 @@ const ClientInvoiceComponet = (props) => {
                     type='select'
                     label='Tipo de Compra'
                     name='type_buy_client'
-                    placeholder="opcional"
-                    required={false}
+                    placeholder={props.cotizationData.type_invoicing ? "opcional" : ""}
+                    required={props.cotizationData.type_invoicing ? false : true}
                     messageErrors={[
                       'Requerido*'
                     ]}
@@ -680,8 +788,8 @@ const ClientInvoiceComponet = (props) => {
                     type='text'
                     label='Tipo de Compra'
                     name='type_buy_client'
-                    placeholder="opcional"
-                    required={false}
+                    placeholder={props.cotizationData.type_invoicing ? "opcional" : ""}
+                    required={props.cotizationData.type_invoicing ? false : true}
                     messageErrors={[
                       'Requerido*'
                     ]}
@@ -717,7 +825,7 @@ const ClientInvoiceComponet = (props) => {
                type='text'
                label='Fono'
                name='phone_contact'
-               required={true}
+               required={false}
                messageErrors={[
                  'Requerido*'
                ]}
@@ -729,7 +837,7 @@ const ClientInvoiceComponet = (props) => {
                type='email'
                label='Email'
                name='email_contact'
-               required={true}
+               required={false}
                messageErrors={[
                  'Requerido*, ','Formato Email*'
                ]}
@@ -752,7 +860,7 @@ const ClientInvoiceComponet = (props) => {
                  type='text'
                  label='Nombre Vendedor'
                  name='name_seller'
-                 required={true}
+                 required={false}
                  messageErrors={[
                    'Requerido*'
                  ]}
@@ -764,7 +872,7 @@ const ClientInvoiceComponet = (props) => {
                  type='text'
                  label='Fono Vendedor'
                  name='phone_seller'
-                 required={true}
+                 required={false}
                  messageErrors={[
                    'Requerido*'
                  ]}
@@ -776,7 +884,7 @@ const ClientInvoiceComponet = (props) => {
                  type='email'
                  label='Email Vendedor'
                  name='email_seller'
-                 required={true}
+                 required={false}
                  messageErrors={[
                    'Requerido*'
                  ]}

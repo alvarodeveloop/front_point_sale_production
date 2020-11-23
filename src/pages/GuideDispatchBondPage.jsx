@@ -30,7 +30,7 @@ import FileSaver from 'file-saver'
 
 let bondColumns = []
 
-const SaleNoteBondPage = (props) => {
+const GuideDispatchBondPage = (props) => {
   const [invoice,setInvoice] = useState(null)
   const [bonds, setBonds] = useState([])
   const [typeBond, setTypeBond] = useState([])
@@ -88,7 +88,7 @@ const SaleNoteBondPage = (props) => {
         Header: 'Monto',
         accessor: props1 => [showPriceWithDecimals(props.configGeneral,props1.amount)],
         Cell : props1 => {
-          return <Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.amount)}</Badge>
+          return <Badge variant="danger" className="font-badge">{props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.amount)}</Badge>
         }
       },
       {
@@ -109,7 +109,7 @@ const SaleNoteBondPage = (props) => {
   const fetchData = () => {
     const id = props.match.params.id
     const promise = [
-      axios.get(API_URL+'invoice/'+id+"/"+2),
+      axios.get(API_URL+'invoice/'+id+"/"+4),
     ]
     Promise.all(promise).then(result => {
       setInvoice(result[0].data)
@@ -256,7 +256,7 @@ const SaleNoteBondPage = (props) => {
       let bodyTable = [['Fecha','Detalle','Tipo de Abono','Monto']]
 
       wb.Props = {
-        Title: "Pagos abonados de la nota de venta "+invoice.ref,
+        Title: "Pagos abonados de la guía de despacho "+invoice.ref,
         Subject: "Exportación de Data",
         Author: 'Aidy tecnology',
         CreatedDate: moment().format('YYYY-MM-DD')
@@ -288,7 +288,7 @@ const SaleNoteBondPage = (props) => {
       axios.get(API_URL+'print_invoice_bonds/'+props.match.params.id+'/2',{
         responseType: 'blob'
       }).then(result => {
-        FileSaver.saveAs(result.data,'Informe de los pagos de la nota de venta: '+invoice.ref+' fecha: '+moment().tz('America/Santiago').format('DD-MM-YYYY')+".pdf")
+        FileSaver.saveAs(result.data,'Informe de los pagos de la guía: '+invoice.ref+' fecha: '+moment().tz('America/Santiago').format('DD-MM-YYYY')+".pdf")
         setDisplayLoading(false)
       }).catch(err => {
         setDisplayLoading(false)
@@ -305,7 +305,7 @@ const SaleNoteBondPage = (props) => {
   }
 
   const goToInvoice = () => {
-    props.history.replace('/sale_note/sale_note_search')
+    props.history.replace('/guide/guide_search')
   }
 
   const printInvoice = () => {
@@ -328,16 +328,17 @@ const SaleNoteBondPage = (props) => {
     <Container fluid>
       <Row>
         <Col sm={7} md={7} lg={7}>
-          <h4 className="title_principal">Historial de Pagos de la Nota {invoice  ? (<Badge variant="danger" className="font-badge">{invoice.ref}</Badge>) : ''}</h4>
+          <h4 className="title_principal">Historial de Pagos de la Guía {invoice  ? (<Badge variant="danger" className="font-badge">{invoice.ref}</Badge>) : ''}</h4>
         </Col>
         <Col sm={5} md={5} lg={5}>
-          <Button variant="primary" block={true} type="button" onClick={goToInvoice} size="sm">Volver a las Notas</Button>
+          <Button variant="primary" block={true} type="button" onClick={goToInvoice} size="sm">Volver a las Guías</Button>
         </Col>
       </Row>
       <InvoiceBondComponent
         invoice={invoice}
         configGeneral={props.configGeneral}
         configStore={props.configStore}
+        isGuide={true}
       />
       <br/>
       <Row>
@@ -468,6 +469,12 @@ const SaleNoteBondPage = (props) => {
 }
 
 
+GuideDispatchBondPage.propTypes = {
+  id_branch_office: PropTypes.any.isRequired,
+  configGeneral : PropTypes.object.isRequired,
+  configStore: PropTypes.object.isRequired
+}
+
 function mapStateToProps(state){
   return {
     id_branch_office: state.enterpriseSucursal.id_branch_office,
@@ -476,4 +483,4 @@ function mapStateToProps(state){
   }
 }
 
-export default connect(mapStateToProps,{})(SaleNoteBondPage)
+export default connect(mapStateToProps,{})(GuideDispatchBondPage)

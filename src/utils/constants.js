@@ -152,6 +152,65 @@ export const ARRAY_COLORS = [
   "rgb(213, 235, 39)"
 ]
 
+export const OBJECT_COTIZATION = {
+  business_name_transmitter: '',
+  rut_transmitter: '',
+  address_transmitter: '',
+  country_transmitter: '',
+  email_transmitter: '',
+  phone_transmitter: '',
+  comment: '',
+  date_issue_invoice: '',
+  type_effect: true,
+  type_api: true,
+  rut_client: '',
+  business_name_client: '',
+  address_client: '',
+  name_contact: '',
+  phone_contact: '',
+  email_contact: '',
+  name_seller: '',
+  phone_seller: '',
+  email_seller: '',
+  total_with_iva : true , // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
+  price_list: "",
+  type_invoicing: 1,
+  status: 1,
+  ref: '',
+  discount_global: '',
+  way_of_payment: "Contado",
+  days_expiration: '',
+  type: 1,
+  comuna_client: '',
+  city_client: '',
+  spin_client: '',
+  comuna_transmitter: '',
+  actividad_economica_client: '',
+  actividad_economica_transmitter: '',
+  address_client_array: [],
+  address_transmitter_array : [],
+  actividad_economica_transmitter_array: [],
+  actividad_economica_client_array: [],
+  spin_client_array : [],
+  spin_transmitter: '',
+  spin_transmitter_array: [],
+  type_sale_transmitter_array: [],
+  type_sale_transmitter: '',
+  type_buy_client_array: [],
+  type_buy_client : '',
+  facturaId: '',
+  token : '',
+  searchReceptorDefault : false,
+  fetchTransmitter: false,
+  type_transfer: '',
+  rut_client_search: '', // rut para buscar el receptor en las guias
+  rut_transfer: '',
+  patent_transfer: '',
+  rut_driver: '',
+  name_driver: '',
+}
+
+export const API_FACTURACION = false
 //export const API_URL = 'https://api-app.anclick.tech/'
 //export const FRONT_URL = 'https://app.anclick.tech/create_quotitation'
 export const API_URL = 'http://localhost:5000/'

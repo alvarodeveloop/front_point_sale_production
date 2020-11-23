@@ -29,7 +29,7 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import StadisticsInvoiceComponent from 'components/StadisticsInvoiceComponent'
 let cotizacionColumns = null
 
-const InvoiceSearchPage = props => {
+const GuideDispatchSearchPage = props => {
 
   const [invoiceData, setInvoiceData] = useState([])
   const [cotizationDetail, setCotizationDetail] = useState({})
@@ -52,8 +52,8 @@ const InvoiceSearchPage = props => {
             const {original} = props1.cell.row
             if(original.status == 1){
               return (
-                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para acceder a los pagos</Tooltip>}>
-                  <Button size="sm" variant="link" block={true} onClick={() => goToBond(original)}>{ original.ref } </Button>
+                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para facturar</Tooltip>}>
+                  <Button size="sm" variant="link" block={true} onClick={() => goToInvoice(original.id)}>{ original.ref } </Button>
                 </OverlayTrigger>
               )
             }else{
@@ -64,10 +64,6 @@ const InvoiceSearchPage = props => {
         {
           Header: 'Ref Cotización',
           accessor: 'ref_cotizacion',
-        },
-        {
-          Header: 'Ref Guía',
-          accessor: 'ref_guide',
         },
         {
           Header: 'Rut Cliente',
@@ -82,10 +78,10 @@ const InvoiceSearchPage = props => {
               <OverlayTrigger placement={'right'} overlay={
               <Tooltip id="tooltip-disabled2">
                 <ul className="list-group">
-                  <li className="list-group-item"><b>Vendedor: </b> {original.name_seller}</li>
-                  <li className="list-group-item"><b>Fono del Vendedor: </b> {original.phone_seller ? original.phone_seller : 'No posee'}</li>
                   <li className="list-group-item"><b>Contacto</b> {original.name_contact ? original.name_contact : 'No posee'}</li>
-                  <li className="list-group-item"><b>Fono del Contacto: </b> {original.phone_contact}</li>
+                  <li className="list-group-item"><b>Ciudad</b> {original.city_client ? original.city_client : 'No posee'}</li>
+                  <li className="list-group-item"><b>Comuna</b> {original.comuna_client ? original.comuna_client : 'No posee'}</li>
+                  <li className="list-group-item"><b>Comuna</b> {original.address_client ? original.address_client : 'No posee'}</li>
                   <li className="list-group-item"><b>Comentario: </b> {original.comment}</li>
                 </ul>
               </Tooltip>}>
@@ -95,42 +91,22 @@ const InvoiceSearchPage = props => {
           }
         },
         {
-          Header: 'Tipo',
-          accessor: props1 => props1.type_invoicing == 1 ? ['Afecta'] : ['Excento'],
-        },
-        {
           Header: 'Fecha-Emisión',
           accessor: props1 => [moment(props1.date_issue_invoice).tz('America/Santiago').format('DD-MM-YYYY')],
-        },
-        {
-          Header: 'Días de Vencimiento',
-          accessor: 'days_expiration'
         },
         {
           Header: 'Status',
           accessor: props1 => {
             if(props1.status == 1){
-              return ['Pendiente']
-            }else if(props1.status == 2){
-              return ['Pagada']
-            }else if(props1.status == 3){
-              return ['Vencida']
-            }else{
-              return ['Anulada']
-            }
-          },
-          Cell: props1 => {
-            const original = props1.cell.row.original
-            if(original.status == 1){
               return (<Badge variant="secondary" className="font-badge">Pendiente</Badge>)
-            }else if(original.status == 2){
+            }else if(props1.status == 2){
+              return (<Badge variant="secondary" className="font-badge">Esperando por Pago</Badge>)
+            }else if(props1.status == 3){
               return (<Badge variant="secondary" className="font-badge">Pagada</Badge>)
-            }else if(original.status == 3){
-              return (<Badge variant="secondary" className="font-badge">Vencida</Badge>)
             }else{
               return (<Badge variant="secondary" className="font-badge">Anulada</Badge>)
             }
-          }
+          },
         },
         {
           Header: 'Total Productos',
@@ -178,22 +154,6 @@ const InvoiceSearchPage = props => {
           }
         },
         {
-          Header: 'Descuento Global',
-          accessor: 'discount_global_total',
-          Cell: props1 => {
-            return (
-              <OverlayTrigger placement={'left'} overlay={
-                <Tooltip id={"tooltip-total_pagar"+props1.cell.row.original.id}>
-                  {props1.cell.row.original.discount_global}%
-                </Tooltip>}>
-                  <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                    {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.discount_global_amount)}
-                  </Badge>
-              </OverlayTrigger>
-            )
-          }
-        },
-        {
           Header: 'Total Balance',
           accessor: 'total_balance',
           Cell: props1 => {
@@ -229,32 +189,42 @@ const InvoiceSearchPage = props => {
           }
         },
         {
+          Header: 'Productos Pagados',
+          Cell: props1 => {
+            const original = props1.cell.row.original
+            if(original.is_products_paid){
+              return (
+                <Badge variant="success" className="font-badge">
+                  {original.total_quantity_products_paid}/{original.total_quantity_products}
+                </Badge>
+              )
+            }else{
+              return (
+                <Badge variant="danger" className="font-badge">
+                  {original.total_quantity_products_paid}/{original.total_quantity_products}
+                </Badge>
+              )
+            }
+          }
+        },
+        {
           Header: 'Acciones',
           Cell: props1 => {
             const { original } = props1.cell.row
-            if(original.status == 1){
+            if(original.status == 1 || original.status == 3){
               return (
                 <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
                   <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
                   <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                  <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
+                  <Dropdown.Item onClick={() => goToInvoice(original.id)}>Facturar</Dropdown.Item>
                   <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
                 </DropdownButton>
               )
             }else if(original.status == 2){
               return (
                 <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
                   <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
                   <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                </DropdownButton>
-              )
-            }else if(original.status == 3){
-              return(
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                  <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
                   <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
                 </DropdownButton>
               )
@@ -299,7 +269,7 @@ const InvoiceSearchPage = props => {
   const handleStadistics = () => {
     let objectPost = Object.assign({},dataForm)
     setDisplayFilter(3)
-     axios.post(API_URL+'invoice_stadistics',objectPost).then(result => {
+     axios.post(API_URL+'guide_stadistics',objectPost).then(result => {
       setStatusCotization({...statusCotization,statusesBonds: result.data.statusesBonds, statuses : result.data.statuses, bondsByMonth: result.data.bondsByMonth, invoiceByYear: result.data.invoiceByYear, totalByStatus: result.data.totalByStatus})
       setTimeout(function () {
         setRedraw(true)
@@ -327,7 +297,7 @@ const InvoiceSearchPage = props => {
 
     let objectPost = Object.assign({},dataForm)
     let promises = [
-      axios.get(API_URL+'invoice/0/1'),
+      axios.get(API_URL+'guide'),
       axios.post(API_URL+'invoice_stadistics',objectPost),
     ]
     Promise.all(promises).then(result => {
@@ -346,14 +316,14 @@ const InvoiceSearchPage = props => {
     })
   }
 
-  const goToForm = () => {
-    props.history.replace('/invoice/create_invoice')
+  const goToInvoice = id  => {
+    props.history.replace('/guide/guide_invoice/'+id)
   }
 
   const printInvoice = original => {
     toast.info('Cargando documento, espere por favor')
-    axios.get(API_URL+'invoice_print/'+original.id+"/0").then(result => {
-      window.open(API_URL+'documents/invoice/files_pdf/'+result.data.name)
+    axios.get(API_URL+'guide_print/'+original.id+"/0").then(result => {
+      window.open(API_URL+'documents/guide/files_pdf/'+result.data.name)
     }).catch(err => {
       if(err.response){
         toast.error(err.response.data.message)
@@ -383,10 +353,6 @@ const InvoiceSearchPage = props => {
     handleModalDetail()
   }
 
-  const goToBond = datos => {
-    props.history.replace('/invoice/invoice_bond/'+datos.id)
-  }
-
   const anulateInvoice = datos => {
     confirmAlert({
       customUI: ({ onClose }) => {
@@ -411,8 +377,8 @@ const InvoiceSearchPage = props => {
 
   const confirmAnulateInvoice = id => {
     toast.info('Anulando factura, esto podría tardar unos segundos... espere por favor')
-    axios.put(API_URL+'invoice_status/'+id).then(result => {
-        toast.success('Factura anulada con éxito')
+    axios.put(API_URL+'guide_status/'+id).then(result => {
+        toast.success('Guía anulada con éxito')
         fetchData()
      }).catch(err => {
        if(err.response){
@@ -423,16 +389,21 @@ const InvoiceSearchPage = props => {
        }
     })
   }
+
+  const goToForm = () => {
+    props.history.replace('/guide/guide_create')
+  }
+
   return (
 
     <Container fluid>
       <Row>
         <Col sm={6} md={6} lg={6} className="text-center">
-          <h4 className="title_principal">Tabla de Facturas</h4>
-          <Button block={true} variant="success" onClick={goToForm} size="sm">Nueva Factura <FaPlusCircle /></Button>
+          <h4 className="title_principal">Tabla de Guías</h4>
+          <Button block={true} variant="success" onClick={goToForm} size="sm">Nueva Guía <FaPlusCircle /></Button>
         </Col>
         <Col sm={6} md={6} lg={6} className="text-center title_principal">
-          <h4>Total Facturas Realizadas</h4>
+          <h4>Total Guías Realizadas</h4>
           <Badge variant="danger">{invoiceData.length}</Badge>
         </Col>
       </Row>
@@ -718,7 +689,7 @@ const InvoiceSearchPage = props => {
             </Col>
             <Col sm={6} md={6} lg={6} className="text-center">
               {Object.keys(cotizationDetail).length > 0 ? (
-                <h5>Método de Pago: <Badge variant="primary" className="font-badge">{cotizationDetail.way_of_payment}</Badge></h5>
+                <h5>Método de Traslado: <Badge variant="primary" className="font-badge">{cotizationDetail.type_transfer}</Badge></h5>
               ) : ''}
             </Col>
           </Row>
@@ -740,11 +711,11 @@ function mapStateToProps(state){
   }
 }
 
-InvoiceSearchPage.propTypes ={
+GuideDispatchSearchPage.propTypes ={
   id_branch_office: PropTypes.string.isRequired,
   id_enterprise : PropTypes.string.isRequired,
   configGeneral: PropTypes.object,
   configStore : PropTypes.object,
 }
 
-export default connect(mapStateToProps,{})(InvoiceSearchPage)
+export default connect(mapStateToProps,{})(GuideDispatchSearchPage)

@@ -212,4 +212,24 @@ export const routes = [
     path: '/quotitation/bill_create/:id',
     component: lazy(() => import('./pages/CotizationBillPage'))
   },
+  {
+    path: '/guide/guide_create',
+    component: lazy(() => import('./pages/GuideDispatchPage'))
+  },
+  {
+    path: '/guide/guide_search',
+    component: lazy(() => import('./pages/GuideDispatchSearchPage'))
+  },
+  {
+    path: '/guide/guide_bond/:id',
+    component: lazy(() => import('./pages/GuideDispatchBondPage'))
+  },
+  {
+    path: '/quotitation/guide/:id',
+    component: lazy(() => import('./pages/CotizationGuidePage'))
+  },
+  {
+    path: '/guide/guide_invoice/:id',
+    component: lazy(() => import('./pages/GuideInvoicePage'))
+  },
 ]

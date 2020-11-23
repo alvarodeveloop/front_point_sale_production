@@ -40,6 +40,8 @@ import ClientInvoiceComponent from 'components/invoice/ClientInvoiceComponent'
 import TableTotalComponent from 'components/invoice/TableTotalComponent'
 import RefComponent from 'components/invoice/RefComponent'
 import TableBondsBillComponent from 'components/invoice/TableBondsBillComponent'
+import {OBJECT_COTIZATION} from 'utils/constants'
+import GastosComponent from 'components/invoice/GastosComponent'
 
 const Styles = styled.div`
 
@@ -83,7 +85,6 @@ const Styles = styled.div`
   }
 `
 let count = 0
-let GastosCotizacion = []
 
 const BillPage = (props) => {
 
@@ -102,7 +103,7 @@ const BillPage = (props) => {
   const [displayDataInvoice, setDisplayDataInvoice] = useState(1)
   const [requireInvoice, setRequireInvoice] = useState(false)
   const [detailBonds, setDetailBonds] = useState([])
-  const [cotizationData, setCotizationData] = useState({
+  const [cotizationData, setCotizationData] = useState(Object.assign({},OBJECT_COTIZATION,{
     business_name_transmitter: props.configStore ? props.configStore.name_store : '',
     rut_transmitter: props.configStore ? props.configStore.rut : '',
     address_transmitter: props.configStore ? props.configStore.address : '',
@@ -110,52 +111,15 @@ const BillPage = (props) => {
     city_transmitter:  props.configStore ? props.configStore.city : '',
     email_transmitter: props.configStore ? props.configStore.email : '',
     phone_transmitter: props.configStore ? props.configStore.phone : '',
-    comment: '',
     date_issue: moment().tz('America/Santiago').format('YYYY-MM-DD'),
     date_expiration: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-    type_api: true,
-    rut_client: '',
-    business_name_client: '',
-    address_client: '',
-    actividad_economica_client: '',
-    city_client: '',
-    name_contact: '',
-    phone_contact: '',
-    email_contact: '',
-    name_seller: '',
-    phone_seller: '',
-    email_seller: '',
-    total_with_iva : false , // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
-    price_list: "",
-    type_effect: true,
-    status: 1,
-    ref: '',
-    days_expiration: '',
-    way_of_payment: '',
-    discount_global: '',
     date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-    type_invoicing: true,
-    type : 3,
-    comuna_client: '',
-    city_client: '',
-    spin_client: '',
-    actividad_economica_client: '',
     actividad_economica_transmitter: props.configGeneral ? props.configGeneral.actividad_economica : '',
     comuna_transmitter: props.configStore ? props.configStore.comuna : '',
-    address_client_array: [],
-    address_transmitter_array : [],
-    actividad_economica_transmitter_array: [],
-    actividad_economica_client_array: [],
-    spin_client_array : [],
-    spin_transmitter_array: [],
-    type_sale_transmitter_array: [],
-    type_sale_transmitter: '',
-    type_buy_client_array: [],
-    type_buy_client : '',
-    facturaId: '',
-    token : '',
-    fetchTransmitter: false,
-  })
+    actividad_economica_transmitter: props.configGeneral ? props.configGeneral.actividad_economica : '',
+    type: 3
+  }))
+
   const [displayModals,setDisplayModals] = useState(false)
   const [isOpenModalInvoice, setIsOpenModalInvoice] = useState(false)
   const [refCotizacion, setRefCotizacion] = useState([])
@@ -199,37 +163,9 @@ const BillPage = (props) => {
     return () => {
       layoutHelpers.toggleCollapsed()
       count = 0
-      GastosCotizacion = []
+
     }
   },[])
-
-  useMemo(() => {
-
-    GastosCotizacion = [
-      {
-        Header: 'Descripción',
-        accessor: 'description'
-      },
-      {
-        Header: 'Monto',
-        accessor: 'amount',
-        Cell: props1 => {
-          return showPriceWithDecimals(props.configGeneral,props1.cell.row.original.amount)
-        }
-      },
-      {
-        Header: 'Acciones',
-        Cell: props => {
-          const id = props.cell.row.original.id
-          return(
-            <Button size="sm" size="sm" variant="primary" block={true} onClick={() => removeGastoDetail(props.cell.row.original) }>Remover</Button>
-          )
-        }
-      }
-    ]
-
-  },[])
-
 
   const fetchEmisor = () => {
     let rut = props.configStore.rut.split('-')[0]
@@ -301,6 +237,73 @@ const BillPage = (props) => {
       props.history.replace('/bill/bill_search')
   }
 
+  const displayTotalProduct = () => {
+    let total = 0
+
+    props.detailProducts.forEach((item, i) => {
+
+      let item1 = Object.assign({},item)
+
+      if(item1.is_neto){
+        item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+        item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price
+      }else{
+        if(props.cotizationData.total_with_iva){
+          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price
+        }else{
+          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price
+          item1.price = parseFloat( (item1.price * props.configStore.tax) / 100) + parseFloat(item1.price) // linea para sumar el iva
+        }
+      }
+      total+= parseFloat(item1.price) * item1.quantity
+    })
+    return total
+  }
+
+  const displayTotalIva = () => {
+    let total = 0
+
+    props.detailProducts.forEach((item, i) => {
+      let item1 = Object.assign({},item)
+      if(!item1.is_neto){
+        if(props.cotizationData.total_with_iva){
+          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price
+          total+= parseFloat(((item1.price * props.configStore.tax) / 100))
+        }else{
+          total+= 0
+        }
+      }
+    })
+    return total
+  }
+
+  const displayTotalGastos = () => {
+    let total = 0
+    gastosDetail.forEach((item, i) => {
+      total += parseFloat(item.amount)
+    });
+
+    return total
+  }
+
+
+  const displayTotalTotal = (sin_gastos = false) => {
+    let total_product = displayTotalProduct()
+    let total_gastos  = displayTotalGastos()
+    let total_iva = 0
+    if(props.cotizationData.total_with_iva){
+      total_iva = displayTotalIva()
+    }
+    if(!sin_gastos){
+      return (parseFloat(total_product) + parseFloat(total_iva)) - parseFloat(total_gastos)
+    }else{
+      return (parseFloat(total_product) + parseFloat(total_iva))
+    }
+  }
+
   const submitData = () => {
 
     const form = inputRef.current;
@@ -353,73 +356,6 @@ const BillPage = (props) => {
         toast.error('Error, contacte con soporte')
       }
     })
-  }
-
-  const displayTotalProduct = () => {
-    let total = 0
-
-    detailProducts.forEach((item, i) => {
-
-      let item1 = Object.assign({},item)
-
-      if(item1.is_neto){
-        item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-        item1.price = cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * cotizationData.discount_global) / 100) : item1.price
-      }else{
-        if(cotizationData.total_with_iva){
-          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-          item1.price = cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * cotizationData.discount_global) / 100) : item1.price
-        }else{
-          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-          item1.price = cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * cotizationData.discount_global) / 100) : item1.price
-          item1.price = parseFloat( (item1.price * props.configStore.tax) / 100) + parseFloat(item1.price) // linea para sumar el iva
-        }
-      }
-      total+= parseFloat(item1.price) * item1.quantity
-    })
-    return total
-  }
-
-  const displayTotalIva = () => {
-    let total = 0
-
-    detailProducts.forEach((item, i) => {
-      let item1 = Object.assign({},item)
-      if(!item1.is_neto){
-        if(cotizationData.total_with_iva){
-          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-          item1.price = cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * cotizationData.discount_global) / 100) : item1.price
-          total+= parseFloat(((item1.price * props.configStore.tax) / 100))
-        }else{
-          total+= 0
-        }
-      }
-    })
-    return total
-  }
-
-  const displayTotalGastos = () => {
-    let total = 0
-    gastosDetail.forEach((item, i) => {
-      total += parseFloat(item.amount)
-    });
-
-    return total
-  }
-
-
-  const displayTotalTotal = (sin_gastos = false) => {
-    let total_product = displayTotalProduct()
-    let total_gastos  = displayTotalGastos()
-    let total_iva = 0
-    if(cotizationData.total_with_iva){
-      total_iva = displayTotalIva()
-    }
-    if(!sin_gastos){
-      return (parseFloat(total_product) + parseFloat(total_iva)) - parseFloat(total_gastos)
-    }else{
-      return (parseFloat(total_product) + parseFloat(total_iva))
-    }
   }
 
   const fetchClients = () => {
@@ -674,44 +610,12 @@ const BillPage = (props) => {
               </Accordion.Toggle>
               <Accordion.Collapse eventKey="4">
                 <Card.Body>
-                  <Row className="">
-                    <Col sm={12} md={12} lg={12} xs={12}>
-                      <h4 className="title_principal text-center">Tabla de Gastos</h4>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col sm={12} md={12} lg={12}>
-                      <Table data={gastosDetail} columns={[
-                          {
-                            Header: 'Descripción',
-                            accessor: 'description'
-                          },
-                          {
-                            Header: 'Monto',
-                            accessor: 'amount',
-                            Cell: props1 => {
-                              return showPriceWithDecimals(props.configGeneral,props1.cell.row.original.amount)
-                            }
-                          },
-                          {
-                            Header: 'Acciones',
-                            Cell: props1 => {
-                              const id = props1.cell.row.original.id
-                              return(
-                                <Button size="sm" size="sm" variant="primary" block={true} onClick={() => removeGastoDetail(props1.cell.row.original) }>Remover</Button>
-                              )
-                            }
-                          }
-                        ]} />
-                      </Col>
-                    </Row>
-                    <Row className="justify-content-center">
-                      <Col sm={1} md={1} lg={1}>
-                        <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Agregar Gastos a la Cotización</Tooltip>}>
-                          <Button className="button_product_base" size="sm" variant="danger" block={true} onClick={() => setIsShowModalGastos(true)}><FaPlusCircle /></Button>
-                        </OverlayTrigger>
-                      </Col>
-                    </Row>
+                  <GastosComponent
+                    gastosDetail={gastosDetail}
+                    setGastosDetail={setGastosDetail}
+                    configGeneral={props.configGeneral}
+                    setIsShowModalGastos={setIsShowModalGastos}
+                  />
                 </Card.Body>
               </Accordion.Collapse>
             </Card>
@@ -766,12 +670,10 @@ const BillPage = (props) => {
           </Row>
           <TableTotalComponent
             configGeneral={props.configGeneral}
-            displayTotalProduct={displayTotalProduct}
-            displayTotalIva={displayTotalIva}
-            displayTotalGastos={displayTotalGastos}
-            displayTotalDiscount={() => {}}
-            displayTotalTotal={displayTotalTotal}
+            configStore={props.configStore}
+            detailProducts={detailProducts}
             cotizationData={cotizationData}
+            gastosDetail={gastosDetail}
             isType={"cotizacion"}
           />
         <br/>

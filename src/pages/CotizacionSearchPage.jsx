@@ -19,7 +19,7 @@ import axios from 'axios'
 import { API_URL } from 'utils/constants'
 import { toast } from 'react-toastify'
 import { showPriceWithDecimals } from 'utils/functions'
-import { FaPlusCircle, FaChartLine } from "react-icons/fa";
+import { FaPlusCircle, FaChartLine, FaArrowCircleLeft} from "react-icons/fa";
 import FileSaver from 'file-saver'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
@@ -30,6 +30,7 @@ import 'styles/components/modalComponents.css'
 import { connect } from 'react-redux'
 import {Doughnut,Bar,Line} from 'react-chartjs-2';
 import { ARRAY_COLORS, ARRAY_MONTH } from 'utils/constants'
+import { CSSTransition } from 'react-transition-group';
 
 let optionsBar = {
   responsive: true,
@@ -273,18 +274,22 @@ const CotizacionSearchPage = props => {
           Header: 'Productos Pagados',
           Cell: props1 => {
             const original = props1.cell.row.original
-            if(original.is_products_paid){
-              return (
-                <Badge variant="success" className="font-badge">
-                  {original.total_quantity_products_paid}/{original.total_quantity_products}
-                </Badge>
-              )
+            if(original.status < 6){
+              if(original.is_products_paid){
+                return (
+                  <Badge variant="success" className="font-badge">
+                    {original.total_quantity_products_paid}/{original.total_quantity_products}
+                  </Badge>
+                )
+              }else{
+                return (
+                  <Badge variant="danger" className="font-badge">
+                    {original.total_quantity_products_paid}/{original.total_quantity_products}
+                  </Badge>
+                )
+              }
             }else{
-              return (
-                <Badge variant="danger" className="font-badge">
-                  {original.total_quantity_products_paid}/{original.total_quantity_products}
-                </Badge>
-              )
+              return ''
             }
           }
         },
@@ -308,21 +313,10 @@ const CotizacionSearchPage = props => {
                 <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
                   <Dropdown.Item onClick={() => updateCotizacion(original.id)}>Modificar</Dropdown.Item>
                   <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver Detalle</Dropdown.Item>
-                  {
-                    !original.is_done_invoice ? (
-                      <Dropdown.Item onClick={() => goToFacturation(original.id)}>Facturar</Dropdown.Item>
-                    ) : ''
-                  }
-                  {
-                    !original.is_done_note_sale ? (
-                      <Dropdown.Item onClick={() => goToNoteSale(original.id)}>Nota de Venta</Dropdown.Item>
-                    ) : ''
-                  }
-                  {
-                    !original.is_done_bill_sale ? (
-                      <Dropdown.Item onClick={() => goToBillOfSale(original.id)}>Boleta de Venta</Dropdown.Item>
-                    ) : ''
-                  }
+                  <Dropdown.Item onClick={() => goToFacturation(original.id)}>Facturar</Dropdown.Item>
+                  <Dropdown.Item onClick={() => goToNoteSale(original.id)}>Nota de Venta</Dropdown.Item>
+                  <Dropdown.Item onClick={() => goToBillOfSale(original.id)}>Boleta de Venta</Dropdown.Item>
+                  <Dropdown.Item onClick={() => goToGuideDispatch(original.id)}>Guía despacho</Dropdown.Item>
                   <Dropdown.Item onClick={() => changeStatus(original.id,1)}>Pendiente</Dropdown.Item>
                   <Dropdown.Item onClick={() => printCotizacion(original.id)}>Imprimir</Dropdown.Item>
                   <Dropdown.Item onClick={() => printCotizacionNew(original.id)}>Imprimir Nuevo Pdf</Dropdown.Item>
@@ -487,6 +481,10 @@ const CotizacionSearchPage = props => {
          toast.error('Error, contacte con soporte')
        }
      })
+  }
+
+  const goToGuideDispatch = id => {
+    props.history.replace('/quotitation/guide/'+id)
   }
 
   const handleDisplayFilter = filter => {
@@ -711,7 +709,7 @@ const CotizacionSearchPage = props => {
                   </Row>
                   <br/>
                   <Row>
-                    <Col sm={6} md={6} lg={6} style={{height: "150px"}}>
+                    <Col sm={6} md={6} lg={6} style={{height: "230px"}}>
                       <Doughnut data={data_donut_ss_status} redraw={redraw} options={optionsBar} />
                     </Col>
                     <Col sm={6} md={6} lg={6}>
@@ -784,7 +782,7 @@ const CotizacionSearchPage = props => {
                         </tbody>
                       </table>
                     </Col>
-                    <Col sm={6} md={6} lg={6} style={{height: "150px"}} className="text-center">
+                    <Col sm={6} md={6} lg={6} style={{height: "230px"}} className="text-center">
                       <Doughnut data={data_donut_total_status} redraw={redraw} options={optionsBar} />
                     </Col>
                   </Row>

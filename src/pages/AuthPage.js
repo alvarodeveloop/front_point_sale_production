@@ -17,7 +17,6 @@ import {
   Container
 } from 'react-bootstrap'
 import InputField from 'components/input/InputComponent'
-import CarrouselComponent from 'components/carrousel/CarrouselComponent'
 import { setAuthorizationToken } from 'utils/functions'
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
@@ -77,8 +76,6 @@ const AuthPage = props => {
         caption: 'Restaurant Chile'
       }
     })
-
-    imgLogin = <CarrouselComponent items={itemsCarrousel} imgClass={'img-login'} />
   }
 
   const responseFacebook = responseFace => {

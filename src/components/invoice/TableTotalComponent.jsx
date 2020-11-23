@@ -8,6 +8,99 @@ import {
 
 
 const TableTotalComponent = (props) => {
+
+  const displayTotalProduct = () => {
+    let total = 0
+
+    props.detailProducts.forEach((item, i) => {
+
+      let item1 = Object.assign({},item)
+
+      if(item1.is_neto){
+        item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+        item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price
+      }else{
+        if(props.cotizationData.total_with_iva){
+          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price
+        }else{
+          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price
+          item1.price = parseFloat( (item1.price * props.configStore.tax) / 100) + parseFloat(item1.price) // linea para sumar el iva
+        }
+      }
+      total+= parseFloat(item1.price) * item1.quantity
+    })
+    return total
+  }
+
+  const displayTotalIva = () => {
+    let total = 0
+
+    props.detailProducts.forEach((item, i) => {
+      let item1 = Object.assign({},item)
+      if(!item1.is_neto){
+        if(props.cotizationData.total_with_iva){
+          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price
+          total+= parseFloat(((item1.price * props.configStore.tax) / 100))
+        }else{
+          total+= 0
+        }
+      }
+    })
+    return total
+  }
+
+  const displayTotalGastos = () => {
+    let total = 0
+    props.gastosDetail.forEach((item, i) => {
+      total += parseFloat(item.amount)
+    });
+
+    return total
+  }
+
+
+  const displayTotalTotal = (sin_gastos = false) => {
+    let total_product = displayTotalProduct()
+    let total_gastos  = displayTotalGastos()
+    let total_iva = 0
+    if(props.cotizationData.total_with_iva){
+      total_iva = displayTotalIva()
+    }
+    if(!sin_gastos){
+      return (parseFloat(total_product) + parseFloat(total_iva)) - parseFloat(total_gastos)
+    }else{
+      return (parseFloat(total_product) + parseFloat(total_iva))
+    }
+  }
+
+  const displayTotalDiscount = () => {
+    let total = 0
+
+    props.detailProducts.forEach((item, i) => {
+
+      let item1 = Object.assign({},item)
+      let value = 0
+      if(item1.is_neto){
+        item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+        value  = props.cotizationData.discount_global ? ((item1.price * props.cotizationData.discount_global) / 100) : 0
+      }else{
+        if(props.cotizationData.total_with_iva){
+
+          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          value = props.cotizationData.discount_global ?  ((item1.price * props.cotizationData.discount_global) / 100) : 0
+        }else{
+          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+          value = props.cotizationData.discount_global ? ((item1.price * props.cotizationData.discount_global) / 100) : 0
+        }
+      }
+      total+= value * item1.quantity
+    })
+    return total
+  }
+
   return (
     <Row>
       {props.isType === "cotizacion" ? (
@@ -37,16 +130,16 @@ const TableTotalComponent = (props) => {
               {
                 props.cotizationData.total_with_iva ? (
                   <tr>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalProduct())}</td>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalIva())}</td>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalGastos())}</td>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalTotal())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalProduct())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalIva())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalGastos())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalTotal())}</td>
                   </tr>
                 ) : (
                   <tr>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalProduct())}</td>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalGastos())}</td>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalTotal())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalProduct())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalGastos())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalTotal())}</td>
                   </tr>
                 )
               }
@@ -82,18 +175,18 @@ const TableTotalComponent = (props) => {
               {
                 props.cotizationData.total_with_iva ? (
                   <tr>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalProduct())}</td>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalIva())}</td>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalGastos())}</td>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalDiscount())}</td>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalTotal())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalProduct())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalIva())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalGastos())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalDiscount())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalTotal())}</td>
                   </tr>
                 ) : (
                   <tr>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalProduct())}</td>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalGastos())}</td>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalDiscount())}</td>
-                    <td>{showPriceWithDecimals(props.configGeneral,props.displayTotalTotal())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalProduct())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalGastos())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalDiscount())}</td>
+                    <td>{showPriceWithDecimals(props.configGeneral,displayTotalTotal())}</td>
                   </tr>
                 )
               }
@@ -107,12 +200,9 @@ const TableTotalComponent = (props) => {
 
 TableTotalComponent.propTypes = {
   configGeneral: PropTypes.object.isRequired,
-  displayTotalProduct: PropTypes.func.isRequired,
-  displayTotalIva: PropTypes.func.isRequired,
-  displayTotalGastos: PropTypes.func.isRequired,
-  displayTotalDiscount: PropTypes.func.isRequired,
-  displayTotalTotal: PropTypes.func.isRequired,
+  configStore : PropTypes.object.isRequired,
   cotizationData: PropTypes.object.isRequired,
+  gastosDetail: PropTypes.array.isRequired,
   isType: PropTypes.string.isRequired
 }
 
