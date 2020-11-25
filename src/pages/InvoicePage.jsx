@@ -8,7 +8,9 @@ import {
   Dropdown,
   DropdownButton,
   Badge,
-  Modal
+  Modal,
+  Tab,
+  Tabs
 } from 'react-bootstrap'
 import Table from 'components/Table'
 import axios from 'axios'
@@ -27,11 +29,14 @@ import { connect } from 'react-redux'
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import StadisticsInvoiceComponent from 'components/StadisticsInvoiceComponent'
+import ModalCreditNoteComponent from 'components/modals/ModalCreditNoteComponent'
 let cotizacionColumns = null
+let noteCreditColumns = null
 
 const InvoiceSearchPage = props => {
 
   const [invoiceData, setInvoiceData] = useState([])
+  const [invoiceNotes, setInvoiceNotes] = useState([])
   const [cotizationDetail, setCotizationDetail] = useState({})
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false)
   const [redraw, setRedraw] = useState(false)
@@ -42,6 +47,8 @@ const InvoiceSearchPage = props => {
     date_hasta: '',
     type : 1
   })
+  const [isOpenModalCreditNote, setIsOpenModalCreditNote] = useState(false)
+  const [invoiceObject,setInvoiceObject] = useState({})
 
   useMemo(() => {
     cotizacionColumns = [
@@ -143,13 +150,13 @@ const InvoiceSearchPage = props => {
                     {props1.cell.row.original.products.map((v,i) => (
                       <li className="list-group-item" key={i}>
                         <b>Producto</b>: {v.name_product}<br/>
-                        <b>Precio</b> : {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,v.price)}<br/>
+                        <b>Precio</b> : {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,v.price)}<br/>
                         <b>Cantidad</b>: {v.quantity}</li>
                     ))}
                   </ul>
                 </Tooltip>}>
                   <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                    {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_product)}
+                    {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_product)}
                   </Badge>
               </OverlayTrigger>
             )
@@ -161,7 +168,7 @@ const InvoiceSearchPage = props => {
           Cell: props1 => {
             return (
               <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                {props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_gastos)}
+                {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_gastos)}
               </Badge>
             )
           }
@@ -172,7 +179,7 @@ const InvoiceSearchPage = props => {
           Cell: props1 => {
             return (
               <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                {props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_iva)}
+                {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_iva)}
               </Badge>
             )
           }
@@ -187,7 +194,7 @@ const InvoiceSearchPage = props => {
                   {props1.cell.row.original.discount_global}%
                 </Tooltip>}>
                   <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                    {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.discount_global_amount)}
+                    {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.discount_global_amount)}
                   </Badge>
               </OverlayTrigger>
             )
@@ -199,7 +206,7 @@ const InvoiceSearchPage = props => {
           Cell: props1 => {
             return (
               <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                {props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_balance)}
+                {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_balance)}
               </Badge>
             )
           }
@@ -210,7 +217,7 @@ const InvoiceSearchPage = props => {
           Cell: props1 => {
             return (
               <Badge variant="danger" className="font-badge">
-                {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_bond)}
+                {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_bond)}
               </Badge>
 
             )
@@ -222,7 +229,7 @@ const InvoiceSearchPage = props => {
           Cell: props1 => {
             return (
               <Badge variant="danger" className="font-badge">
-                {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.debit_balance)}
+                {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.debit_balance)}
               </Badge>
 
             )
@@ -231,31 +238,17 @@ const InvoiceSearchPage = props => {
         {
           Header: 'Acciones',
           Cell: props1 => {
-            const { original } = props1.cell.row
-            if(original.status == 1){
+            let  original = Object.assign({},props1.cell.row.original)
+            if(original.status >= 1 && original.status <= 3){
               return (
                 <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
                   <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
                   <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
                   <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
-                  <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
-                </DropdownButton>
-              )
-            }else if(original.status == 2){
-              return (
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                </DropdownButton>
-              )
-            }else if(original.status == 3){
-              return(
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                  <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
-                  <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
+                  <Dropdown.Item onClick={() => noteCredit(original)}>Nota de Crédito</Dropdown.Item>
+                  {original.status != 2  ? (
+                    <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
+                  ) : ''}
                 </DropdownButton>
               )
             }else{
@@ -270,18 +263,190 @@ const InvoiceSearchPage = props => {
           }
         }
     ]
+
+    noteCreditColumns = [
+      {
+        Header: 'Referencia',
+        accessor: 'ref',
+      },
+      {
+        Header: 'Ref Factura',
+        accessor: 'ref_invoice',
+      },
+      {
+        Header: 'Rut Cliente',
+        accessor: 'rut_client',
+      },
+      {
+        Header: 'Razón Social',
+        accessor: 'business_name_client',
+        Cell: props1 => {
+          const {original} = props1.cell.row
+          return(
+            <OverlayTrigger placement={'right'} overlay={
+            <Tooltip id="tooltip-disabled2">
+              <ul className="list-group">
+                <li className="list-group-item"><b>Vendedor: </b> {original.name_seller}</li>
+                <li className="list-group-item"><b>Fono del Vendedor: </b> {original.phone_seller ? original.phone_seller : 'No posee'}</li>
+                <li className="list-group-item"><b>Contacto</b> {original.name_contact ? original.name_contact : 'No posee'}</li>
+                <li className="list-group-item"><b>Fono del Contacto: </b> {original.phone_contact}</li>
+                <li className="list-group-item"><b>Comentario: </b> {original.comment}</li>
+              </ul>
+            </Tooltip>}>
+              <Button variant="link" size="sm" block={true} type="button">{original.business_name_client}</Button>
+            </OverlayTrigger>
+          )
+        }
+      },
+      {
+        Header: 'Tipo',
+        accessor: props1 => props1.type_invoicing == 1 ? ['Afecta'] : ['Excento'],
+      },
+      {
+        Header: 'Fecha-Emisión',
+        accessor: props1 => [moment(props1.date_issue_invoice).tz('America/Santiago').format('DD-MM-YYYY')],
+      },
+      {
+        Header: 'Días de Vencimiento',
+        accessor: 'days_expiration'
+      },
+      {
+        Header: 'Status',
+        accessor: props1 => ['Facturada'],
+        Cell: props1 => {
+          const original = props1.cell.row.original
+          if(original.status == 1){
+            return (<Badge variant="secondary" className="font-badge">Facturada</Badge>)
+          }
+        }
+      },
+      {
+        Header: 'Total Productos',
+        accessor: 'total_product',
+        Cell: props1 => {
+          return (
+            <OverlayTrigger placement={'left'} overlay={
+              <Tooltip id={"tooltip-total_pagar"+props1.cell.row.original.id}>
+                <ul className="list-group">
+                  {props1.cell.row.original.products.map((v,i) => (
+                    <li className="list-group-item" key={i}>
+                      <b>Producto</b>: {v.name_product}<br/>
+                      <b>Precio</b> : {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,v.price)}<br/>
+                      <b>Cantidad</b>: {v.quantity}</li>
+                  ))}
+                </ul>
+              </Tooltip>}>
+                <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
+                  {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_product)}
+                </Badge>
+            </OverlayTrigger>
+          )
+        }
+      },
+      {
+        Header: 'Total Iva',
+        accessor: 'total_iva',
+        Cell: props1 => {
+          return (
+            <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
+              {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_iva)}
+            </Badge>
+          )
+        }
+      },
+      {
+        Header: 'Descuento Global',
+        accessor: 'discount_global_total',
+        Cell: props1 => {
+          return (
+            <OverlayTrigger placement={'left'} overlay={
+              <Tooltip id={"tooltip-total_pagar"+props1.cell.row.original.id}>
+                {props1.cell.row.original.discount_global}%
+              </Tooltip>}>
+                <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
+                  {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.discount_global_amount)}
+                </Badge>
+            </OverlayTrigger>
+          )
+        }
+      },
+      {
+        Header: 'Total Balance',
+        accessor: 'total_balance',
+        Cell: props1 => {
+          return (
+            <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
+              {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_balance)}
+            </Badge>
+          )
+        }
+      },
+      /*{
+        Header: 'Abonado',
+        accessor: 'total_bond',
+        Cell: props1 => {
+          return (
+            <Badge variant="danger" className="font-badge">
+              {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_bond)}
+            </Badge>
+
+          )
+        }
+      },
+      {
+        Header: 'Saldo Deudor',
+        accessor: 'debit_balance',
+        Cell: props1 => {
+          return (
+            <Badge variant="danger" className="font-badge">
+              {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.debit_balance)}
+            </Badge>
+
+          )
+        }
+      },
+      {
+        Header: 'Acciones',
+        Cell: props1 => {
+          const { original } = props1.cell.row
+          if(original.status >= 1 && original.status <= 3){
+            return (
+              <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
+                <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
+                <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
+                <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
+                <Dropdown.Item onClick={() => noteCredit(original)}>Nota de Crédito</Dropdown.Item>
+                {original.status != 2  ? (
+                  <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
+                ) : ''}
+              </DropdownButton>
+            )
+          }else{
+            return(
+              <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
+                <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
+                <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
+              </DropdownButton>
+            )
+          }
+
+        }
+      }*/
+    ]
   },[])
 
   useEffect(() => {
     layoutHelpers.toggleCollapsed()
     return () =>{
       cotizacionColumns = null
+      noteCreditColumns = null
       layoutHelpers.toggleCollapsed()
     }
   },[])
 
   useEffect(() => {
     fetchData()
+    fetchNoteCredit()
   },[props.id_branch_office])
 
   useEffect(() => {
@@ -294,6 +459,18 @@ const InvoiceSearchPage = props => {
     setTimeout(function () {
       setRedraw(false)
     }, 2000);
+  }
+
+  const noteCredit = (datos = false) => {
+    if(datos){
+      let datos1 = Object.assign({},datos)
+      setInvoiceObject(datos1)
+      setTimeout(function () {
+        setIsOpenModalCreditNote(!isOpenModalCreditNote)
+      }, 1000);
+    }else{
+      setIsOpenModalCreditNote(!isOpenModalCreditNote)
+    }
   }
 
   const handleStadistics = () => {
@@ -336,6 +513,22 @@ const InvoiceSearchPage = props => {
       setTimeout(function () {
         setRedraw(true)
       }, 1000);
+    }).catch(err => {
+      console.log(err);
+      if(err.response){
+        toast.error(err.response.data.message)
+      }else{
+        toast.error('Error, contacte con soporte')
+      }
+    })
+  }
+
+  const fetchNoteCredit = () => {
+    let promises = [
+      axios.get(API_URL+'invoice/0/4'),
+    ]
+    Promise.all(promises).then(result => {
+      setInvoiceNotes(result[0].data)
     }).catch(err => {
       console.log(err);
       if(err.response){
@@ -427,13 +620,17 @@ const InvoiceSearchPage = props => {
 
     <Container fluid>
       <Row>
-        <Col sm={6} md={6} lg={6} className="text-center">
+        <Col sm={4} md={4} lg={4} className="text-center">
           <h4 className="title_principal">Tabla de Facturas</h4>
           <Button block={true} variant="success" onClick={goToForm} size="sm">Nueva Factura <FaPlusCircle /></Button>
         </Col>
-        <Col sm={6} md={6} lg={6} className="text-center title_principal">
+        <Col sm={4} md={4} lg={4} className="text-center title_principal">
           <h4>Total Facturas Realizadas</h4>
           <Badge variant="danger">{invoiceData.length}</Badge>
+        </Col>
+        <Col sm={4} md={4} lg={4} className="text-center title_principal">
+          <h4>Total Notas Crédito</h4>
+          <Badge variant="danger">{invoiceNotes.length}</Badge>
         </Col>
       </Row>
       <hr/>
@@ -447,11 +644,23 @@ const InvoiceSearchPage = props => {
           displayFilter={displayFilter}
           configGeneral={props.configGeneral}
         />
-      <Row>
-        <Col sm={12} md={12} lg={12} xs={12}>
-          <Table columns={cotizacionColumns} data={invoiceData}/>
-        </Col>
-      </Row>
+      <br/>
+      <Tabs defaultActiveKey="invoice" id="uncontrolled-tab-example">
+        <Tab eventKey="invoice" title="Facturas">
+          <Row>
+            <Col sm={12} md={12} lg={12} xs={12}>
+              <Table columns={cotizacionColumns} data={invoiceData}/>
+            </Col>
+          </Row>
+        </Tab>
+        <Tab eventKey="product" title="Notas">
+          <Row>
+            <Col sm={12} md={12} lg={12} xs={12}>
+              <Table columns={noteCreditColumns} data={invoiceNotes}/>
+            </Col>
+          </Row>
+        </Tab>
+      </Tabs>
       <Modal
         show={isOpenModalDetail}
         onHide={handleModalDetail}
@@ -727,6 +936,13 @@ const InvoiceSearchPage = props => {
           <Button size="md" variant="secondary" onClick={handleModalDetail}>cerrar</Button>
         </Modal.Footer>
       </Modal>
+      <ModalCreditNoteComponent
+        isShow={isOpenModalCreditNote}
+        onHide={noteCredit}
+        invoiceObject={invoiceObject}
+        fetchData={fetchNoteCredit}
+        configGeneral={props.configGeneral}
+      />
     </Container>
   )
 }

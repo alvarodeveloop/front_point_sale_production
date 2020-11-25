@@ -1,4 +1,4 @@
-import React, { useMemo, useState,useEffect } from 'react'
+import React, { useMemo, useState,useEffect,useRef } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
 import 'styles/pages/productStyle.css'
@@ -68,6 +68,8 @@ const FormProductSale = (props) => {
       id="img_show" style={{ width: '80px' }} roundedCircle />
   )
 
+  const inputRef = useRef(null)
+
   useEffect(() => {
     fetchData()
     return () => {
@@ -129,12 +131,10 @@ const FormProductSale = (props) => {
     })
   }
 
-  const onSubmit = async e => {
+  const onSubmit = async () => {
 
-    const form = e.currentTarget;
-    e.preventDefault();
+    const form = inputRef.current;
     if (form.checkValidity() === false) {
-      e.stopPropagation();
       setValidate(true);
       return
     }
@@ -380,7 +380,7 @@ const FormProductSale = (props) => {
 
   return (
     <Container>
-      <Form onSubmit={onSubmit} noValidate validated={validate}>
+      <Form onSubmit={() => {}} noValidate validated={validate} ref={inputRef}>
         <Row className="justify-content-center align-items-center">
           <Col sm={7} md={7} lg={7} xs={12} className="">
             <Row className="align-items-center">
@@ -512,7 +512,7 @@ const FormProductSale = (props) => {
             </Row>
             <Row className="justify-content-center">
               <Col md={6} sm={6} lg={6}>
-                <Button size="sm" type="submit" disabled={isSubmit} variant="primary" block={true}>{ textButton }</Button>
+                <Button size="sm" type="button" onClick={onSubmit} disabled={isSubmit} variant="primary" block={true}>{ textButton }</Button>
               </Col>
             </Row>
           </Col>

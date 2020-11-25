@@ -658,6 +658,41 @@ const CotizationGuidePage = (props) => {
                   <Row>
                     <Col sm={6} md={6} lg={6}>
                       <Row>
+                        <Col sm={12} md={12} lg={12} className="text-center">
+                          <b>Configuración para los productos</b>
+                        </Col>
+                      </Row>
+                      <Row className="justify-content-center">
+                        <Col sm={4} md={4} lg={4}>
+                          <Form.Group>
+                            <Form.Check
+                              name="total_with_iva"
+                              type={'radio'}
+                              id={`radio-3`}
+                              label={`Con Iva`}
+                              value={true}
+                              checked={cotizationData.total_with_iva}
+                              onChange={onChange}
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col sm={4} md={4} lg={4} className="text-right">
+                          <Form.Group>
+                            <Form.Check
+                              name="total_with_iva"
+                              type={'radio'}
+                              id={`radio-4`}
+                              label={`Solo totales`}
+                              value={false}
+                              checked={!cotizationData.total_with_iva}
+                              onChange={onChange}
+                            />
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col sm={6} md={6} lg={6}>
+                      <Row>
                         <InputField
                           type='select'
                           label='Listado de Productos'
@@ -669,7 +704,7 @@ const CotizationGuidePage = (props) => {
                           cols='col-md-12 col-lg-12 col-sm-12'
                           value={cotizationData.price_list}
                           handleChange={onChange}
-                          >
+                        >
                           <option value="">--Seleccione--</option>
                         </InputField>
                       </Row>

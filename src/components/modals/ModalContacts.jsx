@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 import {
   Modal,
@@ -35,6 +35,7 @@ const ModalContacts = (props) => {
     picture: '',
     id: ''
   })
+  const inputRef = useRef(null)
 
   useMemo(() => {
       contactColumns = [
@@ -124,12 +125,10 @@ const ModalContacts = (props) => {
     }
   }
 
-  const onSubmit = e => {
+  const onSubmit = () => {
 
-    const form = e.currentTarget;
-    e.preventDefault();
+    const form =  inputRef.current;
     if (form.checkValidity() === false) {
-      e.stopPropagation();
       setValidate(true);
       return
     }
@@ -218,7 +217,7 @@ const ModalContacts = (props) => {
           Formulario de Contactos <FaUserCircle/>
         </Modal.Title>
       </Modal.Header>
-      <Form onSubmit={onSubmit} noValidate validated={validate}>
+      <Form onSubmit={() => {}} noValidate validated={validate} ref={inputRef}>
       <Modal.Body>
         <Row>
           <InputField
@@ -268,7 +267,7 @@ const ModalContacts = (props) => {
         </Row>
         <Row className="justify-content-center">
           <Col sm={6} md={6} lg={6}>
-            <Button size="sm" variant="success" type="submit" block={true}>Guardar <FaPlusCircle /></Button>
+            <Button size="sm" variant="success" type="button" onClick={onSubmit} block={true}>Guardar <FaPlusCircle /></Button>
           </Col>
         </Row>
         <Row>
