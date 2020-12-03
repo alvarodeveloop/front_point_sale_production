@@ -173,10 +173,11 @@ const PlanPage = (props) => {
           <Button onClick={handleModal} variant="secondary" block={true} size="sm" type="button">Agregar Plan <FaPlusCircle /></Button>
         </Col>
       </Row>
+      <br/><br/>
       {planes.length > 0 ? (
-        <Row className="snip1404 justify-content-center" style={{backgroundColor: 'rgb(192, 119, 204)', padding: '10px', margin: '50px 10px'}}>
+        <Row className="snip1404 justify-content-center">
           {planes.map((v,i) => (
-            <Col sm={4} md={4} lg={4}>
+            <Col sm={5} md={5} lg={5}>
               <TablePlansComponent plan={v} update={true} handleUpdate={handleUpdate}/>
             </Col>
           ))}

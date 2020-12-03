@@ -1,0 +1,16 @@
+li {
+  position: relative;
+  list-style: none;
+}
+
+li.str:before {
+  content: "*";
+  color: rgb(203, 14, 31);
+  position: relative;
+  left: -15px;
+  bottom: -3px;
+}
+
+.dropdown > button{
+  width: 100%;
+}

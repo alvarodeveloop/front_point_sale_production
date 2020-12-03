@@ -8,18 +8,21 @@ import {
   Col
 } from 'react-bootstrap'
 import InputField from 'components/input/InputComponent'
+import {FaPaperPlane,FaCartPlus} from 'react-icons/fa'
 import 'styles/components/modalComponents.css'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import axios from 'axios'
+import Select from 'react-select';
 
 const ModalStockInventary = (props) => {
 
   const [inventary, setInventary] = useState({
-    minimun_stock: 0,
-    stock: 0,
-    id_product: 0,
-    id_provider: '',
+    detail: '',
+    cost: '',
+    quantity: '',
+    id_inventary: '',
+    id_provider: [],
   })
   const [validate, setValidate] = useState(false)
   const [provider, setProvider] = useState([])
@@ -30,10 +33,7 @@ const ModalStockInventary = (props) => {
 
   useEffect(() => {
     setInventary({
-      minimun_stock: props.product.minimun_stock,
-      stock: props.product.stock,
-      id_product: props.product.id,
-      id_provider: props.product.id_provider,
+      id_inventary: props.product.id,
     })
   },[props.product])
 
@@ -45,7 +45,7 @@ const ModalStockInventary = (props) => {
     e.preventDefault();
 
     const form = e.currentTarget;
-    const objectUpdate = Object.assign({},inventary)
+    const objectPost = Object.assign({},inventary)
 
     if (form.checkValidity() === false) {
       e.stopPropagation();
@@ -53,21 +53,14 @@ const ModalStockInventary = (props) => {
       return
     }
 
-    if(objectUpdate.minimun_stock < 0 || objectUpdate.stock < 0){
-      toast.error('Los campos de stock no pueden ser menor a 0')
-      e.stopPropagation();
-      return
-    }
-
-    axios.put(API_URL+'inventary/'+inventary.id_product,objectUpdate).then(result => {
-
+    axios.post(API_URL+'inventary',objectPost).then(result => {
       toast.success('Stock Modificado')
       props.handleSubmitStock()
-
     }).catch(err => {
       if(err.response){
         toast.error(err.response.data.message)
       }else{
+        console.log(err);
         toast.error('Error, contacte con soporte')
       }
     })
@@ -85,6 +78,10 @@ const ModalStockInventary = (props) => {
     })
   }
 
+  const onChangeSelect = val => {
+    setInventary({...inventary, id_provider : val})
+  }
+
   return (
     <Modal
       show={props.isShow}
@@ -95,7 +92,7 @@ const ModalStockInventary = (props) => {
     >
       <Modal.Header closeButton className="header_dark">
         <Modal.Title id="contained-modal-title-vcenter">
-          Stock del Producto { props.product.name_product }
+          Ingreso de stock del producto { Object.keys(props.product).length > 0 ? props.product.products.name_product : '' } <FaCartPlus />
         </Modal.Title>
       </Modal.Header>
       <Form id="formSubmit" onSubmit={handleSubmit} noValidate validated={validate}>
@@ -104,34 +101,68 @@ const ModalStockInventary = (props) => {
           <Col sm={12} md={12} lg={12} xs={12}>
             <Row>
               <InputField
-                {...props.inputMinimun}
+                type={'number'}
+                required={true}
+                name={'quantity'}
+                label ={'Cantidad'}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                messageErrors={[
+                  'Requerido*'
+                ]}
                 handleChange={handleChange}
-                value={inventary.minimun_stock}
+                value={inventary.quantity}
               />
               <InputField
-                {...props.inputStock}
-                handleChange={handleChange}
-                value={inventary.stock}
+               type='text'
+               label='Detalle de Costo'
+               name='detail'
+               required={false}
+               messageErrors={[
+               'Requerido*'
+               ]}
+               cols='col-md-4 col-lg-4 col-sm-4'
+               value={inventary.detail}
+               handleChange={handleChange}
+              />
+              <InputField
+               type='number'
+               step="any"
+               label='Costo'
+               name='cost'
+               required={true}
+               messageErrors={[
+               'Requerido*'
+               ]}
+               cols='col-md-4 col-lg-4 col-sm-4'
+               value={inventary.cost}
+               handleChange={handleChange}
               />
             </Row>
             <Row>
-              <InputField
-                {...props.inputProvider}
-                handleChange={handleChange}
-                value={inventary.id_provider}
-              >
-                <option>--Seleccione--</option>
-                {provider.map((v,i) => (
-                  <option value={v.id} key={i}>{v.name_fantasy}</option>
-                ))}
-              </InputField>
+              <Form.Group className={'col-md-4 col-sm-4 col-lg-4'}>
+                 <Form.Label className="fontBold">Proveedores</Form.Label>
+                 <Select
+                   value={inventary.id_provider}
+                   onChange={onChangeSelect}
+                   isMulti={true}
+                   options={provider.map((v,i) => {
+                     return {value: v.id, label: v.social_razon}
+                   })}
+                 />
+             </Form.Group>
             </Row>
+          </Col>
+        </Row>
+        <Row className="justify-content-center">
+          <Col sm={4} md={4} lg={4}>
+            <Button size="sm" type="submit" variant="danger" block={true}>Modificar <FaPaperPlane /></Button>
+          </Col>
+          <Col sm={4} md={4} lg={4}>
+            <Button variant="secondary" size="sm" onClick={props.onHide} block={true}>Cerrar</Button>
           </Col>
         </Row>
       </Modal.Body>
       <Modal.Footer>
-        <Button size="sm" type="submit" variant="success">Modificar</Button>
-        <Button size="sm" onClick={props.onHide}>Cerrar</Button>
       </Modal.Footer>
       </Form>
     </Modal>
@@ -156,25 +187,7 @@ ModalStockInventary.defaultProps = {
       'Requerido*'
     ],
   },
-  inputStock: {
-    type: 'number',
-    required: true,
-    name: 'stock',
-    label : 'Stock Actual',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
-    messageErrors: [
-      'Requerido*'
-    ],
-  },
   inputProvider: {
-    type: 'select',
-    required: true,
-    name: 'id_provider',
-    label : 'Proveedor',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
-    messageErrors: [
-      'Requerido*'
-    ],
   },
 }
 

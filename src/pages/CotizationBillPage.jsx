@@ -774,12 +774,13 @@ const CotizationBillPage = (props) => {
                 isShow={isShowModalClient}
                 onHide={handleHideModalClient}
                 />
-              <ModalCotizacionProduct
-                isShow={isShowModalProduct}
-                onHide={handleHideModalProduct}
-                products={products}
-                handleSelectProduct={handleSelectProduct}
-                handleSelectProductNotRegistered={() => {}}
+                <ModalCotizacionProduct
+                  isShow={isShowModalProduct}
+                  onHide={handleHideModalProduct}
+                  products={products}
+                  handleSelectProduct={handleSelectProduct}
+                  handleSelectProductNotRegistered={() => {}}
+                  {...props}
                 />
               <ModalGastosCotizacion
                 isShow={isShowModalGastos}

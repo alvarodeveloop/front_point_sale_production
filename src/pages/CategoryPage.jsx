@@ -18,7 +18,7 @@ import { categoryColumns } from 'utils/columns/category'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import { connect } from 'react-redux'
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 
 
 const CategoryPage = (props) => {

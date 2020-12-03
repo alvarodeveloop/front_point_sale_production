@@ -1,11 +1,14 @@
-import React from 'react'
+import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import {formatNumber} from 'utils/functions'
 import {FaCheck} from 'react-icons/fa'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import 'styles/components/tabla_plans.css'
 
 const TablePlansComponent = ({plan,...props}) => {
+
+  const [displayDescription,setDisplayDescription] = useState(false)
 
   const handleSubmit = () => {
 
@@ -25,6 +28,10 @@ const TablePlansComponent = ({plan,...props}) => {
   const handleSelect = e => {
     e.preventDefault()
     props.handleSelect(plan)
+  }
+
+  const displayDescriptionParagraph = () => {
+    setDisplayDescription(!displayDescription)
   }
 
   return (
@@ -53,12 +60,23 @@ const TablePlansComponent = ({plan,...props}) => {
           </header>
           <ul className="plan-features">
             <li><FaCheck /> Descripcion:{plan.description.length > 9 ? (
-              <OverlayTrigger placement={'bottom'} overlay={
-                  <Tooltip id={"tooltip-plan"+plan.id}>
-                    <b>Descripción: </b><br/>{plan.description}
-                  </Tooltip>}>
-                <span style={{color: "rgb(228, 90, 59)"}}> Ver detalle</span>
-              </OverlayTrigger>
+              <React.Fragment>
+                {!props.isModal ? (
+                  <OverlayTrigger placement={'bottom'} overlay={
+                    <Tooltip id={"tooltip-plan"+plan.id}>
+                      <b>Descripción: </b><br/>{plan.description}
+                    </Tooltip>}>
+                    <span style={{color: "rgb(228, 90, 59)"}}> Ver detalle</span>
+                  </OverlayTrigger>
+                ) : (
+                  <React.Fragment>
+                    <span style={{color: "rgb(228, 90, 59)"}} onMouseOver={displayDescriptionParagraph} onMouseLeave={displayDescriptionParagraph}> Ver detalle</span>
+                    {displayDescription ? (
+                      <p style={{color: "white"}}>{plan.description}</p>
+                    ) : ''}
+                  </React.Fragment>
+                )}
+              </React.Fragment>
             ) : (
               <span> {plan.description}</span>
             )}</li>
@@ -68,7 +86,7 @@ const TablePlansComponent = ({plan,...props}) => {
           {props.update ? (
             <div className="plan-select"><a href="" onClick={handleUpdate}>Modificar <br/> O <br/> Eliminar</a></div>
           ) : props.disabled ? (
-            <div className="plan-select"><a href="">Seleccionar</a></div>
+            <span></span>
           ) : (
             <div className="plan-select" onClick={handleSelect}><a href="">Seleccionar</a></div>
           )}
@@ -97,12 +115,23 @@ const TablePlansComponent = ({plan,...props}) => {
           </header>
           <ul className="plan-features">
             <li><FaCheck /> Descripcion:{plan.description.length > 9 ? (
-              <OverlayTrigger placement={'bottom'} overlay={
-                  <Tooltip id={"tooltip-plan"+plan.id}>
-                    <b>Descripción: </b><br/>{plan.description}
-                  </Tooltip>}>
-                <span style={{color: "rgb(228, 90, 59)"}}> Ver detalle</span>
-              </OverlayTrigger>
+              <React.Fragment>
+                {!props.isModal ? (
+                  <OverlayTrigger placement={'bottom'} overlay={
+                    <Tooltip id={"tooltip-plan"+plan.id}>
+                      <b>Descripción: </b><br/>{plan.description}
+                    </Tooltip>}>
+                    <span style={{color: "rgb(228, 90, 59)"}}> Ver detalle</span>
+                  </OverlayTrigger>
+                ) : (
+                  <React.Fragment>
+                    <span style={{color: "rgb(228, 90, 59)"}} onMouseOver={displayDescriptionParagraph} onMouseLeave={displayDescriptionParagraph}> Ver detalle</span>
+                    {displayDescription ? (
+                      <p style={{color: "white"}}>{plan.description}</p>
+                    ) : ''}
+                  </React.Fragment>
+                )}
+              </React.Fragment>
             ) : (
               <span> {plan.description}</span>
             )}</li>
@@ -112,7 +141,7 @@ const TablePlansComponent = ({plan,...props}) => {
           {props.update ? (
             <div className="plan-select"><a href="" onClick={handleUpdate}>Modificar <br/> O <br/> Eliminar</a></div>
           ) : props.disabled ? (
-            <div className="plan-select"><a href="">Seleccionar</a></div>
+            <span></span>
           ) : (
             <div className="plan-select" onClick={handleSelect}><a href="">Seleccionar</a></div>
           )}
@@ -133,6 +162,7 @@ TablePlansComponent.propTypes = {
   update: PropTypes.bool,
   handleUpdate: PropTypes.func,
   handleSelect: PropTypes.func,
+  isModal: PropTypes.bool,
 }
 
 export default TablePlansComponent

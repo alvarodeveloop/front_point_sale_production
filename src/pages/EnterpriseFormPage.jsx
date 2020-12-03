@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
 import {
   Row,
@@ -15,10 +15,9 @@ import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import axios from 'axios'
 import { FaSearch,FaPlusCircle, FaBuilding } from "react-icons/fa";
-import 'styles/components/tabla_plans.css'
 import TablePlansComponent from 'components/TablePlansComponent'
 import {formatRut} from 'utils/functions'
-import { setEnterprises, setBranchOffices, setIdEnterprise} from 'actions/enterpriseSucursal'
+import { setEnterprises, setBranchOffices,setIdBranchOffice,setIdEnterprise} from 'actions/enterpriseSucursal'
 import { setMenu } from 'actions/menu'
 import { setDisplayMessage } from 'actions/menu'
 import { setConfig } from 'actions/configs'
@@ -26,11 +25,14 @@ import { connect } from 'react-redux'
 import layoutHelpers from 'shared/layouts/helpers'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import BranchOfficeFormModal from 'components/modals/BranchOfficeFormModal'
+import { setConfigStore } from 'actions/configs'
 
 const EnterpriseFormPage = (props) => {
 
   const [validated, setValidated] = useState(false)
   const [planes, setPlanes] = useState([])
+  const [requiredInput,setRequiredInput] = useState(false)
   const [dataForm, setDataForm] = useState({
     rut: '',
     name: '',
@@ -45,7 +47,25 @@ const EnterpriseFormPage = (props) => {
     actividad_economica: '',
     giro : '',
   })
-  const accordionRef = useRef(null)
+
+  /*========================= sección de las sucursales =====================*/
+
+  const [branchOfficeForm, setBranchOfficeForm] = useState({
+    name: '',
+    is_open: true,
+    id: '',
+  })
+  const [userForm, setUserForm] = useState({
+    email: '',
+    password: '',
+    password_repeat: '',
+    rut: '',
+    name: '',
+    phone: '',
+    id: '',
+    id_rol: 3,
+  })
+  const [isOpenModalAdd, setIsOpenModalAdd] = useState(false)
 
   useEffect(() => {
     layoutHelpers.toggleCollapsed()
@@ -154,7 +174,6 @@ const EnterpriseFormPage = (props) => {
           props.setDisplayMessage(true)
           let branch = await axios.get(API_URL+'enterprises_branch_office/'+result.data.enterprises[0].id)
           props.setEnterprises(result.data.enterprises)
-          props.setBranchOffices([])
           if(branch.data.menu){
             props.setMenu(branch.data.menu)
           }
@@ -165,7 +184,8 @@ const EnterpriseFormPage = (props) => {
 
           setTimeout(function () {
             props.setDisplayMessage(false)
-            goToTable()
+            handleOpenModalAdd()
+            toast.info('Cree la sucursal con la que va a trabajar para empezar en aidy')
           }, 1500);
 
         }else{
@@ -186,6 +206,10 @@ const EnterpriseFormPage = (props) => {
     }
   }
 
+  const handleModalSucursal = () => {
+
+  }
+
   const onChange = e => {
     if(e.target.name === "rut"){
       setDataForm({...dataForm,[e.target.name] : formatRut(e.target.value)})
@@ -200,7 +224,6 @@ const EnterpriseFormPage = (props) => {
 
   const handleSelectPlan = plan => {
     setDataForm({...dataForm, plan : Object.assign({},plan)})
-    accordionRef.current.click()
     toast.info('Plan Seleccionado')
   }
 
@@ -231,6 +254,42 @@ const EnterpriseFormPage = (props) => {
      }else{
        toast.info('Debe ingresar un rut para buscar los datos de la empresa')
      }
+  }
+
+  /* ==================== sección de las sucursales  ================================== */
+
+  const handleOpenModalAdd = () => {
+    setIsOpenModalAdd(!isOpenModalAdd)
+  }
+
+  const fetchDataBranch = (type = false, update = false) => {
+    let promises = [axios.get(API_URL+'branch_office')]
+
+    Promise.all(promises).then(async result => {
+      if(type){
+        props.setBranchOffices(result[0].data)
+        if(!update){
+          if(result[0].data.length === 1){
+            let branch = await axios.get(API_URL+'enterprises_branch_office/'+null+'/'+result[0].data[0].id+'/'+1)
+            localStorage.setItem('id_branch_office',result[0].data[0].id)
+            localStorage.setItem('configStore',JSON.stringify(branch.data.config))
+            props.setConfigStore(branch.data.config)
+            props.setIdBranchOffice(result[0].data[0].id)
+            toast.info('Sucursal seleccionada para trabajar')
+            setTimeout(function () {
+              goToTable()
+            }, 1000);
+          }
+        }
+      }
+    }).catch(err => {
+      if(err.response){
+        toast.error(err.response.data.message)
+      }else{
+        console.log(err);
+        toast.error('Error, contacte con soporte')
+      }
+    })
   }
 
   return (
@@ -360,38 +419,41 @@ const EnterpriseFormPage = (props) => {
             </Row>
             <Row className="justify-content-center">
               <Col sm={12} md={12} lg={12}>
-                <Accordion>
-                  <Card>
-                    <Accordion.Toggle as={Card.Header} eventKey="0" className="header_card" ref={accordionRef}>
-                      <b>Planes para la empresa</b> <FaBuilding />
-                    </Accordion.Toggle>
-                    <Accordion.Collapse eventKey="0">
-                      <Card.Body style={{backgroundColor: 'rgb(129, 195, 237)'}}>
-                        <Row className="snip1404 justify-content-center">
-                          {planes.map((v,i) => (
-                            <Col sm={4} md={4} lg={4} key={i}>
-                              <TablePlansComponent plan={v} handleSelect={handleSelectPlan}/>
-                            </Col>
-                          ))}
-                        </Row>
-                      </Card.Body>
-                    </Accordion.Collapse>
-                  </Card>
-                </Accordion>
+                <h4 className="title_principal">Planes para la empresa</h4>
+                <Row className="snip1404 justify-content-center">
+                  {planes.map((v,i) => (
+                    <Col sm={4} md={4} lg={4} key={i}>
+                      <TablePlansComponent plan={v} handleSelect={handleSelectPlan}/>
+                    </Col>
+                  ))}
+                </Row>
               </Col>
             </Row>
             <br/>
             <Row className="justify-content-center">
               <Col sm={4} md={4} lg={4}>
-                <Button variant="success" block={true} size="sm" type="submit">Enviar <FaPlusCircle /></Button>
+                <Button variant="primary" block={true} size="sm" type="submit">Enviar <FaPlusCircle /></Button>
               </Col>
               <Col sm={4} md={4} lg={4}>
-                <Button variant="danger" block={true} size="sm" type="button" onClick={goToTable}>Volver</Button>
+                <Button variant="secondary" block={true} size="sm" type="button" onClick={goToTable}>Volver</Button>
               </Col>
             </Row>
           </Form>
         </Col>
       </Row>
+      <BranchOfficeFormModal
+        branchOfficeForm={branchOfficeForm}
+        userForm={userForm}
+        setUserForm={setUserForm}
+        setBranchOfficeForm={setBranchOfficeForm}
+        handleOpenModalAdd={handleOpenModalAdd}
+        isOpenModalAdd={isOpenModalAdd}
+        titleModal={"Crear Sucursal"}
+        requiredInput={requiredInput}
+        setRequiredInput={setRequiredInput}
+        fetchData={fetchDataBranch}
+        menu={props.modules}
+      />
     </Container>
   )
 }
@@ -403,6 +465,7 @@ EnterpriseFormPage.propTypes = {
   setIdEnterprise : PropTypes.func.isRequired,
   setMenu: PropTypes.func.isRequired,
   id_enterprise_redux: PropTypes.any,
+  modules: PropTypes.array,
 }
 
 function mapDispatchToProps(){
@@ -412,13 +475,17 @@ function mapDispatchToProps(){
       setBranchOffices,
       setIdEnterprise,
       setMenu,
-      setConfig
+      setConfig,
+      setBranchOffices,
+      setIdBranchOffice,
+      setConfigStore
     }
 }
 
 function mapStateToProps(state){
   return {
-    id_enterprise_redux: state.enterpriseSucursal.id_enterprise
+    id_enterprise_redux: state.enterpriseSucursal.id_enterprise,
+    modules: state.menu.modules
   }
 }
 

@@ -15,7 +15,7 @@ import { toast } from 'react-toastify'
 import Table from 'components/Table'
 import FormClientModal from 'components/modals/FormClientModal'
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 import { connect } from 'react-redux'
 
 let columns_client = []

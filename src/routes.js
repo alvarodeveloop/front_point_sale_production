@@ -232,4 +232,12 @@ export const routes = [
     path: '/guide/guide_invoice/:id',
     component: lazy(() => import('./pages/GuideInvoicePage'))
   },
+  {
+    path: '/formDataPage',
+    component: lazy(() => import('./pages/FormDataPage'))
+  },
+  {
+    path: '/config_aidy',
+    component: lazy(() => import('./pages/ConfigAidyPage'))
+  },
 ]

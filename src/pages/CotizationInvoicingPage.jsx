@@ -205,6 +205,7 @@ const CotizationInvoicingPage = (props) => {
           comuna_transmitter: result.data.comuna_transmitter,
           type_buy_client: result.data.type_buy_client,
           type_sale_transmitter: result.data.type_sale_transmitter,
+          type_invoicing : result.data.type_effect
         })
       })
 
@@ -632,6 +633,7 @@ const CotizationInvoicingPage = (props) => {
               refCotizacion={refCotizacion}
               removeProductRef={removeProductRef}
               addRef={addRef}
+              goToDashboard={goToDashboard}
             />
           ) : cotizationData.type_invoicing === false ? (
             <InvoiceExcentasComponent
@@ -655,6 +657,7 @@ const CotizationInvoicingPage = (props) => {
               refCotizacion={refCotizacion}
               removeProductRef={removeProductRef}
               addRef={addRef}
+              goToDashboard={goToDashboard}
             />
           ) : (
             <Row className="justify-content-center">
@@ -676,7 +679,8 @@ const CotizationInvoicingPage = (props) => {
                 products={products}
                 handleSelectProduct={handleSelectProduct}
                 handleSelectProductNotRegistered={() => {}}
-                />
+                {...props}
+              />
               <ModalGastosCotizacion
                 isShow={isShowModalGastos}
                 onHide={() => setIsShowModalGastos(false)}

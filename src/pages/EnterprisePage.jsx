@@ -9,129 +9,36 @@ import {
   DropdownButton,
   Badge,
   Modal,
-  Form
+  Form,
+  Accordion,
+  Card
 } from 'react-bootstrap'
 import 'styles/components/modalComponents.css'
 import axios from 'axios'
 import { FaPlusCircle } from "react-icons/fa";
 import { API_URL } from 'utils/constants'
 import { toast } from 'react-toastify'
-import Table from 'components/Table'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 import { connect } from 'react-redux'
 import {formatNumber} from 'utils/functions'
 import layoutHelpers from 'shared/layouts/helpers'
-
-let columns_enterprise = []
+import EnterpriseCardComponent from 'components/EnterpriseCardComponent'
+import 'styles/pages/enterprisePage.css'
+import TablePlansComponent from 'components/TablePlansComponent'
 
 const EnterprisePage = (props) => {
 
   const [enterprises, setEnterprises] = useState([])
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [modulesPlan, setModulesPlan] = useState([])
+  const [enterpriseDetail,setEnterpriseDetail] = useState({})
 
   useEffect(() => {
     fetchData()
-    layoutHelpers.toggleCollapsed()
-    return() => {
-      layoutHelpers.toggleCollapsed()
-      columns_enterprise = []
-    }
-  },[])
-
-  useMemo(() => {
-    columns_enterprise = [
-      {
-        Header:'Rut',
-        accessor: 'rut',
-        Cell: props1 => {
-          return (
-            <OverlayTrigger placement={'bottom'} overlay={<Tooltip id={"tooltip-disabled"+props1.cell.row.original.id}>Hacer click para modificar</Tooltip>}>
-              <Button size="sm" variant="link" block={true} onClick={() => modifyRegister(props1.cell.row.original)}>{props1.cell.row.original.rut}</Button>
-            </OverlayTrigger>
-          )
-        }
-      },
-      {
-        Header:'Razon Social',
-        accessor: 'bussines_name'
-      },
-      {
-        Header:'Nombre',
-        accessor: 'name'
-      },
-      {
-        Header:'Dirección',
-        accessor: 'address'
-      },
-      {
-        Header:'Actidad Económica',
-        accessor: 'actividad_economica'
-      },
-      {
-        Header:'Plan',
-        accessor: props1 => [props1.plan.name],
-        Cell: props1 => {
-          const {plan} = props1.cell.row.original
-          return (
-            <OverlayTrigger placement={'right'} delay={{ show: 250, hide: 400 }} overlay={
-              <Tooltip id={"tooltip-button"+props1.cell.row.original.id}>
-                Hacer click para ver los detalles
-              </Tooltip>
-            }>
-            <div>
-              <OverlayTrigger placement={'left'} trigger="click" overlay={
-                  <Popover id={"tooltip-plan"+props1.cell.row.original.id}>
-                    <Popover.Title as="h5">Datos del Plan</Popover.Title>
-                    <Popover.Content>
-                      <ul className="list-group">
-                        <li className="list-group-item"><b>Precio:</b><br/>{displayPricePlan(plan)}</li>
-                        <li className="list-group-item"><b>Descripción:</b><br/>{plan.description}</li>
-                        <li className="list-group-item"><b>Día de Cobro:</b><br/>{plan.day_payment}</li>
-                        <li className="list-group-item"><b>Días de aviso con anticipación a la fecha de cobro:</b><br/>{plan.days_to_advice_before_expire}</li>
-                        <li className="list-group-item"><b>Días de Prueba:</b><br/>{plan.day_test}</li>
-                        <li className="list-group-item"><b>Días de plazo extra:</b><br/>{plan.day_before_day_cut}</li>
-                        <li className="list-group-item"><b>Modulos:</b><br/><Button variant="link" block={true} onClick={() => displayModules(plan.modules)}>hacer click para ver los módulos</Button></li>
-                      </ul>
-                    </Popover.Content>
-                  </Popover>
-                }>
-                <Button variant="link" size="sm" block={true} type="button">{plan.name}</Button>
-              </OverlayTrigger>
-            </div>
-            </OverlayTrigger>
-          )
-        }
-      },
-      {
-        Header:'Estado',
-        accessor: props1 => props1.is_open ? ['Operativa'] : ['Desactivada'],
-        Cell: props1 => {
-          const {original} = props1.cell.row
-          if(original.is_open){
-            return (<Badge style={{backgroundColor: "rgb(13, 9, 60)", color: "white"}} className="font-badge">Operativa</Badge>)
-          }else{
-            return (<Badge variant="danger" className="font-badge">Desactivada</Badge>)
-          }
-        }
-      },
-      {
-        Header: 'Acciones',
-        Cell: props1 => {
-          const id = props1.cell.row.original.id
-          return(
-            <DropdownButton size="sm" id={'drop'+id} title="Seleccione"  block="true">
-              <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
-              <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
-            </DropdownButton>
-          )
-        }
-      }
-    ]
   },[])
 
   const displayPricePlan = plan => {
@@ -209,6 +116,14 @@ const EnterprisePage = (props) => {
     handleModal()
   }
 
+  const displayDetails = enterpriseData => {
+    setEnterpriseDetail(enterpriseData)
+    console.log(enterpriseData,'aqui');
+    setTimeout(function () {
+      handleModal()
+    }, 200);
+  }
+
   return (
     <Container fluid={true}>
       <Row className="">
@@ -224,9 +139,21 @@ const EnterprisePage = (props) => {
       <Row className="justify-content-center">
         <Col sm={6} md={6} lg={6}>
           <Button size="sm" variant="success" block={true} type="button" onClick={goToForm}>Crear Empresa <FaPlusCircle /></Button>
+          <br/>
         </Col>
         <Col sm={12} md={12} lg={12}>
-          <Table data={enterprises} columns={columns_enterprise} />
+          <Row className="justify-content-center">
+            {enterprises.map((v,i) => (
+              <Col sm={4} md={4} lg={4} key={i} className="text-center">
+                <EnterpriseCardComponent
+                  enterprise={v}
+                  modifyRegister={modifyRegister}
+                  deleteRegister={deleteRegister}
+                  displayDetails={displayDetails}
+                />
+              </Col>
+            ))}
+          </Row>
         </Col>
       </Row>
       <Modal
@@ -239,25 +166,69 @@ const EnterprisePage = (props) => {
       >
         <Modal.Header closeButton className="header_dark">
           <Modal.Title id="contained-modal-title-vcenter">
-            Total módulos del plan ({modulesPlan.length})
+            Detalles de la empresa {Object.keys(enterpriseDetail).length > 0 ? enterpriseDetail.bussines_name : ''}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Row className="">
-            {modulesPlan.map((v,i) => (
-              <Col sm={4} md={4} lg={4} xs={6} key={i}>
-                <Form.Group>
-                  <Form.Check type="checkbox"
-                    custom
-                    id={v.name_item+v.id}
-                    label={(<span className="title_principal">{v.name_item}</span>)}
-                    value={v.id}
-                    checked={true}
-                    readOnly={true}
-                  />
-                </Form.Group>
-              </Col>
-            ))}
+          <Row className=" justify-content-center">
+            <Col sm={5} md={5} lg={5} style={{textAligment: "justify"}}>
+              <h4 className="title_principal">Datos de la Empresa</h4>
+              <ul>
+                <li className="str"><b>Rut</b>: {Object.keys(enterpriseDetail).length > 0 ? enterpriseDetail.rut : ''}</li>
+                <li className="str"><b>Nombre</b>: {Object.keys(enterpriseDetail).length > 0 ? enterpriseDetail.name : ''}</li>
+                <li className="str"><b>Fono</b>: {Object.keys(enterpriseDetail).length > 0 ? enterpriseDetail.phone : ''}</li>
+                <li className="str"><b>Ciudad</b>: {Object.keys(enterpriseDetail).length > 0 ? enterpriseDetail.city : ''}</li>
+                <li className="str"><b>Comuna</b>: {Object.keys(enterpriseDetail).length > 0 ? enterpriseDetail.comuna : ''}</li>
+                <li className="str"><b>Dirección</b>: {Object.keys(enterpriseDetail).length > 0 ? enterpriseDetail.address : ''}</li>
+              </ul>
+            </Col>
+            <Col sm={4} md={4} lg={4}>
+              <h4 className="title_principal">Plan de la Empresa</h4>
+              <Row className="snip1404">
+                <Col sm={12} md={12} lg={12}>
+                  {Object.keys(enterpriseDetail).length > 0 ? (
+                    <TablePlansComponent
+                      plan={enterpriseDetail.plan}
+                      disabled={true}
+                      update={false}
+                      isModal={true}
+                    />
+                  ) : ''}
+                </Col>
+              </Row>
+            </Col>
+            <Col sm={12} md={12} lg={12}>
+              <br/><br/>
+              {Object.keys(enterpriseDetail).length > 0 ? (
+                <Accordion>
+                  <Card>
+                    <Accordion.Toggle as={Card.Header} eventKey="0" className="header_card">
+                      Modulos del plan ( hacer click para desplegar )
+                    </Accordion.Toggle>
+                    <Accordion.Collapse eventKey="0">
+                      <Card.Body>
+                        <Row>
+                          {enterpriseDetail.plan.modules.map((v,i) => (
+                            <Col sm={4} md={4} lg={4} xs={6} key={i}>
+                              <Form.Group>
+                                <Form.Check type="checkbox"
+                                  custom
+                                  id={v.name_item+v.id}
+                                  label={(<span className="">{v.name_item}</span>)}
+                                  value={v.id}
+                                  checked={true}
+                                  readOnly={true}
+                                  />
+                              </Form.Group>
+                            </Col>
+                          ))}
+                        </Row>
+                      </Card.Body>
+                    </Accordion.Collapse>
+                  </Card>
+                </Accordion>
+              ): ''}
+            </Col>
           </Row>
         </Modal.Body>
         <Modal.Footer>

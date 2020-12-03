@@ -16,7 +16,7 @@ import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 import ModalStockInventary from 'components/modals/ModalStockInventary'
 import ModalHistoryInventary from 'components/modals/ModalHistoryInventary'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
@@ -31,6 +31,7 @@ const InventaryTab = (props) => {
   const [isOpenHistory, setIsOpenHistory] = useState(false)
   const [idInventaryHistory, setIdInventaryHistory] = useState(false)
   const [product, setProduct] = useState({})
+  const [costs, setCosts] = useState([])
   const [nameProductHistory, setNameProductHistory] = useState('')
 
 
@@ -44,10 +45,6 @@ const InventaryTab = (props) => {
           {
             Header: 'Nombre Producto',
             accessor: props1 => props1.products.name_product
-          },
-          {
-            Header: 'Proveedor',
-            accessor: props1 => props1.products.providers ? props1.products.providers.name_fantasy : 'Sin Proveedor'
           },
           {
             Header: 'Categoría',
@@ -119,7 +116,7 @@ const InventaryTab = (props) => {
               const id = props1.cell.row.original.id
               return(
                 <DropdownButton size="sm" id={'drop'+props1.cell.row.original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => handleUpdateStock(props1.cell.row.original) }>Modificar Stock</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleUpdateStock(props1.cell.row.original) }>Agregar Stock</Dropdown.Item>
                   <Dropdown.Item onClick={() => showHistoryModal(props1.cell.row.original) }>Ver Historial</Dropdown.Item>
                 </DropdownButton>
               )
@@ -131,7 +128,9 @@ const InventaryTab = (props) => {
 
   const handleUpdateStock = productData => {
     setProduct(productData)
-    setIsOpenStock(true)
+    setTimeout(function () {
+      setIsOpenStock(true)
+    }, 300);
   }
 
   const fetchData = () => {
@@ -151,14 +150,12 @@ const InventaryTab = (props) => {
   }
 
   const showHistoryModal = data => {
-    setIdInventaryHistory(data.id)
-    setIsOpenHistory(true)
-    setNameProductHistory(data.name_product)
+    setCosts(data)
+    handleOnHideModalHistory()
   }
 
   const handleOnHideModalHistory = () => {
-    setIsOpenHistory(false)
-    setIdInventaryHistory(null)
+    setIsOpenHistory(!isOpenHistory)
   }
 
   const handleSubmit = () => {
@@ -192,8 +189,8 @@ const InventaryTab = (props) => {
     <ModalHistoryInventary
       isShow={isOpenHistory}
       onHide={handleOnHideModalHistory}
-      id_inventary={idInventaryHistory}
-      name_product={nameProductHistory}
+      costs={costs}
+      fetchData={fetchData}
     />
     </Container>
   )

@@ -693,6 +693,13 @@ const CotizationPage = (props) => {
           return oldData
         }
       })
+
+      if(cotizationData.type_effect === true){
+        setCotizationData({...cotizationData, type_invoicing : true})
+      }else if(cotizationData.type_effect === false){
+        setCotizationData({...cotizationData, type_invoicing : false})
+      }
+
       setTimeout(function () {
         window.scrollTo(0, 0);
       }, 500);
@@ -1046,6 +1053,7 @@ const CotizationPage = (props) => {
                     removeProductRef={removeProductRef}
                     addRef={addRef}
                     submitData={handleModalInvoice}
+                    goToDashboard={goToDashboard}
                   />
                 ) : cotizationData.type_invoicing === false ? (
                   <React.Fragment>
@@ -1076,6 +1084,7 @@ const CotizationPage = (props) => {
                       removeProductRef={removeProductRef}
                       addRef={addRef}
                       submitData={handleModalInvoice}
+                      goToDashboard={goToDashboard}
                     />
                   </React.Fragment>
                 ) : ''}
@@ -1106,7 +1115,7 @@ const CotizationPage = (props) => {
                           onChange={onChange}
                           setIsShowModalClient={setIsShowModalClient}
                           handleModalSeller={handleModalSeller}
-                          />
+                        />
                       </Accordion>
                     </Col>
                   </Row>
@@ -1145,7 +1154,8 @@ const CotizationPage = (props) => {
                 products={products}
                 handleSelectProduct={handleSelectProduct}
                 handleSelectProductNotRegistered={() => {}}
-                />
+                {...props}
+              />
               <ModalGastosCotizacion
                 isShow={isShowModalGastos}
                 onHide={() => setIsShowModalGastos(false)}

@@ -523,6 +523,7 @@ const GuideInvoicePage = (props) => {
               removeProductRef={removeProductRef}
               addRef={addRef}
               submitData={handleSubmitInvoice}
+              goToDashboard={goToDashboard}
             />
           ) : cotizationData.type_invoicing === false ? (
             <InvoiceExcentasComponent
@@ -547,6 +548,7 @@ const GuideInvoicePage = (props) => {
               removeProductRef={removeProductRef}
               addRef={addRef}
               submitData={handleSubmitInvoice}
+              goToDashboard={goToDashboard}
             />
           ) : (
             <Row className="justify-content-center">
@@ -562,12 +564,13 @@ const GuideInvoicePage = (props) => {
                 isShow={isShowModalClient}
                 onHide={handleHideModalClient}
                 />
-              <ModalCotizacionProduct
-                isShow={isShowModalProduct}
-                onHide={handleHideModalProduct}
-                products={products}
-                handleSelectProduct={handleSelectProduct}
-                handleSelectProductNotRegistered={() => {}}
+                <ModalCotizacionProduct
+                  isShow={isShowModalProduct}
+                  onHide={handleHideModalProduct}
+                  products={products}
+                  handleSelectProduct={handleSelectProduct}
+                  handleSelectProductNotRegistered={() => {}}
+                  {...props}
                 />
               <ModalGastosCotizacion
                 isShow={isShowModalGastos}

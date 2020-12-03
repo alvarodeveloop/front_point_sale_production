@@ -12,19 +12,21 @@ import {
   Dropdown,
   Modal,
   Image,
-  Badge
+  Badge,
+  Carousel
 } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 import 'styles/components/modalComponents.css'
 import 'styles/pages/productStyle.css'
 import CategoyPage from 'pages/CategoryPage'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import {formatNumber} from 'utils/functions'
+import layoutHelpers from 'shared/layouts/helpers'
 let productColumns = []
 
 const ProductPage = (props) => {
@@ -38,7 +40,9 @@ const ProductPage = (props) => {
   },[props.id_branch_office])
 
   useEffect(() => {
+    layoutHelpers.toggleCollapsed()
     return () => {
+      layoutHelpers.toggleCollapsed()
       productColumns = []
     }
   },[])
@@ -48,7 +52,15 @@ const ProductPage = (props) => {
       productColumns = [
           {
             Header: 'Nombre Producto',
-            accessor: 'name_product'
+            accessor: 'name_product',
+            Cell: props1 => {
+              const {original} = props1.cell.row
+              return (
+                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id={"tooltip-disabled2"+original.id}>Hacer click para modificar el producto</Tooltip>}>
+                  <Button size="sm" variant="link" block={true} onClick={() => modifyRegister(original.id)}>{ original.name_product } </Button>
+                </OverlayTrigger>
+              )
+            }
           },
           {
             Header: 'P.Venta',
@@ -56,14 +68,6 @@ const ProductPage = (props) => {
             Cell: props1 => {
               const price = props1.cell.row.original.price
               return ( <Badge variant="danger">{formatNumber(price,2,',','.')}</Badge>)
-            }
-          },
-          {
-            Header: 'P.Compra',
-            accessor: 'cost',
-            Cell: props1 => {
-              const cost = props1.cell.row.original.cost
-              return ( <Badge variant="danger">{formatNumber(cost,2,',','.')}</Badge>)
             }
           },
           {
@@ -237,67 +241,67 @@ const ProductPage = (props) => {
       >
       <Modal.Header closeButton className="header_dark">
         <Modal.Title id="contained-modal-title-vcenter">
-          <h3 className="font-title">Detalles del Producto</h3>
+          <h4 className="font-title">Detalles del Producto</h4>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-          {Object.keys(productDetail).length > 0 ? (
-            <ul className="list-group text-center">
-              <li className="list-group-item"><b>Codigo EAN:&nbsp;&nbsp;</b> {productDetail.code_ean}</li>
-              <li className="list-group-item"><b>Descripción:&nbsp;&nbsp;</b> {productDetail.description}</li>
-              <li className="list-group-item"><b>¿Es Neto?:&nbsp;&nbsp;</b> {productDetail.is_neto}</li>
-              <li className="list-group-item"><b>¿Es auto venta?:&nbsp;&nbsp;</b> {productDetail.is_auto_sale}</li>
-              {productDetail.pack ? (
-                <li className="list-group-item"><b>Pack de Venta:&nbsp;&nbsp;</b> {productDetail.pack}</li>
-              ) : ''}
-              {productDetail.img_product ? (
-                <li className="list-group-item"><b>Imagen del Producto:</b><br/> <Image src={API_URL+'images/product/principal/'+productDetail.img_product} thumbnail style={{width: '30%'}} /></li>
-              ) : (
-                <li className="list-group-item"><b>Sin imagen de Presentación</b></li>
-              )}
-              <li className="list-group-item"><b>Qr Imagen:</b>
-                <br/>
-                <Row className="justify-content-center">
-                  <Col sm={6} md={6} lg={6} className="text-center">
-                    <Image src={API_URL+'images/product/qr/'+productDetail.qr_image} thumbnail style={{width: '80%'}}/>
-                  </Col>
-                </Row>
+        <Row className="align-items-center">
+          <Col sm={6} md={6} lg={6}>
+            {Object.keys(productDetail).length > 0 ? (
+              <ul className="">
+                <li className="str"><b>Codigo EAN:&nbsp;&nbsp;</b> {productDetail.code_ean}</li>
+                <li className="str"><b>Descripción:&nbsp;&nbsp;</b> {productDetail.description}</li>
+                <li className="str"><b>¿Es Neto?:&nbsp;&nbsp;</b> {productDetail.is_neto === "Desactivado" ? "No" : "Si"}</li>
+                <li className="str"><b>¿Es auto venta?:&nbsp;&nbsp;</b> {productDetail.is_auto_sale === "Desactivado" ? "No" : "Si"}</li>
+                {productDetail.pack ? (
+                  <li className="str"><b>Pack de Venta:&nbsp;&nbsp;</b> {productDetail.pack}</li>
+                ) : ''}
+                {productDetail.img_product ? (
+                  <li className="str"><b>Imagen del Producto:</b><br/> <Image src={API_URL+'images/product/principal/'+productDetail.img_product} thumbnail style={{width: '50%'}} /></li>
+                ) : (
+                  <li className="str"><b>Sin imagen de Presentación</b></li>
+                )}
+                <li className="str"><b>Qr Imagen:</b><br/> <Image src={API_URL+'images/product/qr/'+productDetail.qr_image} thumbnail style={{width: '50%'}}/>
               </li>
             </ul>
           ) : ''}
-          <br/>
-            {Object.keys(productDetail).length > 0 && productDetail.detailCost.length > 0 ? (
-              <React.Fragment>
-                <h4 className="text-center">Detalle de Costos</h4>
-                <ul className="list-group text-center">
-                  {productDetail.detailCost.map((v,i) => (
-                    <li className="list-group-item" key={i}><b>Detalle:</b>&nbsp;&nbsp;{v.detail},&nbsp;&nbsp;<b>Costo:</b>&nbsp;&nbsp;{v.cost} </li>
-                  ))}
-                </ul>
-              </React.Fragment>
-            ) : ''}
-          <br/>
-          {productDetail.gallery && productDetail.gallery.length > 0 ? (
-            <Row>
-              <Col sm={12} md={12} lg={12} xs={12}>
-                <h1 className="text-center font-title">Galería de Imagénes</h1>
-              </Col>
-              <div className="clearfix"></div>
-              <br/><br/>
-              {
-                productDetail.gallery.map((v,i) => (
-                  <Col sm={4} md={4} lg={4} xs={4} key={i} className="paddingColGallery">
-                    <a href={API_URL+'images/product/gallery/'+v.filename} target="_blank">
-                      <Image src={API_URL+'images/product/gallery/'+v.filename}
-                        id={'imagen_logo'+v.filename} style={{ width: '85%', height: '230px' }} rounded  />
-                    </a>
-                  </Col>
-                ))
-              }
-            </Row>
-          ): ''}
+          </Col>
+          <Col sm={6} md={6} lg={6}>
+            {productDetail.gallery && productDetail.gallery.length > 0 ? (
+              <Row>
+                <Col sm={12} md={12} lg={12} xs={12}>
+                  <h4 className="text-center title_principal">Galería de Imagénes</h4>
+                </Col>
+                <div className="clearfix"></div>
+                <br/><br/>
+                <Carousel>
+                  {
+                    productDetail.gallery.map((v,i) => (
+                      <Carousel.Item key={i}>
+                        <img
+                          className="d-block"
+                          src={API_URL+'images/product/gallery/'+v.filename}
+                          alt="First slide"
+                          style={{height: "300px", width: "100%" }}
+                        />
+                      </Carousel.Item>
+                    ))
+                  }
+                </Carousel>
+              </Row>
+            ): (
+              <div style={{width: "100%"}} className="text-center">
+                <Image src={require('../assets/img/denied.png')} style={{width: '30%'}}/>
+                <br/>
+                El producto no posee galeria
+              </div>
+            )}
+          </Col>
+        </Row>
       </Modal.Body>
-      <Modal.Footer></Modal.Footer>
+      <Modal.Footer>
+        <Button variant="danger" onClick={onHide}>Cerrar</Button>
+      </Modal.Footer>
       </Modal>
     </Container>
   )

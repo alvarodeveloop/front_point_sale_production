@@ -14,6 +14,24 @@ const AuthPageRecovery = props => {
     rememberMe: false
   })
   const [validated, setValidated] = useState(false);
+  const [imgLogin,setImgLogin] = useState(null)
+
+  useEffect(() => {
+    fetchAidyConfig()
+  },[])
+
+  const fetchAidyConfig = () => {
+     axios.get(API_URL+'config_aidy_login').then(result => {
+      setImgLogin(result.data.img_login)
+     }).catch(err => {
+       if(err.response){
+         toast.error(err.response.data.message)
+       }else{
+         console.log(err);
+         toast.error('Error, contacte con soporte')
+       }
+     })
+  }
 
   const onValueChange = (field, e) => {
     setCredentials({...credentials,[field] : field === 'rememberMe' ? e.target.checked : e.target.value})
@@ -54,18 +72,35 @@ const AuthPageRecovery = props => {
         <div className="authentication-inner">
           {/* Side container */}
           {/* Do not display the container on extra small, small and medium screens */}
-          <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/background_1920-16.jpg')` }}>
-            <div className="ui-bg-overlay bg-dark opacity-50"></div>
 
-            {/* Text */}
-            <div className="w-100 text-white px-5">
-              <h1 className="display-2 font-weight-bolder mb-4"></h1>
-              <div className="text-large font-weight-light">
-                Te enviaremos un correo con un link para reestablecer tu contraseña
+          {!imgLogin ? (
+            <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/background_1920-16.jpg')` }}>
+              <div className="ui-bg-overlay bg-dark opacity-50"></div>
+
+              {/* Text */}
+              <div className="w-100 text-white px-5">
+                <h1 className="display-2 font-weight-bolder mb-4">BIENVENIDO A AIDY</h1>
+                <div className="text-large font-weight-light">
+                  Te enviaremos un correo con un link para reestablecer tu contraseña
+                </div>
               </div>
+              {/* /.Text */}
             </div>
-            {/* /.Text */}
-          </div>
+          ) : (
+            <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: `url('${API_URL}images/aidy/${imgLogin}')` }}>
+              <div className="ui-bg-overlay bg-dark opacity-50"></div>
+
+              {/* Text */}
+              <div className="w-100 text-white px-5">
+                <h1 className="display-2 font-weight-bolder mb-4">BIENVENIDO A AIDY</h1>
+                <div className="text-large font-weight-light">
+                  Te enviaremos un correo con un link para reestablecer tu contraseña
+                </div>
+              </div>
+              {/* /.Text */}
+            </div>
+          )}
+
           {/* / Side container */}
 
           {/* Form container */}

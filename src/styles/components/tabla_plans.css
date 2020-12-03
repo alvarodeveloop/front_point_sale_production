@@ -22,7 +22,7 @@
   overflow: hidden;
   border: 3px solid #442232;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-  background-color: #5f3047;
+  background-color: rgb(24, 12, 78);
 }
 .snip1404 .plan:hover i,
 .snip1404 .plan.hover i {
@@ -42,7 +42,7 @@
   transition: all 0.25s ease-out;
 }
 .snip1404 header {
-  background-color: #5f3047;
+  background-color: rgb(24, 12, 78);
   color: #ffffff;
 }
 .snip1404 .plan-title {
@@ -103,8 +103,8 @@
   text-align: center;
 }
 .snip1404 .plan-select a {
-  background-color: #442232;
-  color: #ffffff;
+  background-color: rgb(251, 250, 249);
+  color: rgb(24, 12, 78);
   text-decoration: none;
   padding: 12px 20px;
   font-size: 0.75em;
@@ -115,11 +115,11 @@
   display: inline-block;
 }
 .snip1404 .plan-select a:hover {
-  background-color: #552a3f;
+  background-color: rgb(188, 188, 194);
 }
 .snip1404 .featured {
-  border-color: #331926;
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  border-color: rgb(194, 19, 40);
+  box-shadow: 0 0 25px rgba(240, 45, 45, 0.86);
   z-index: 1;
   border-radius: 8px;
 }

@@ -15,35 +15,73 @@ import {
 import { FaGoogle, FaSignOutAlt } from "react-icons/fa";
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
+import {FaPaperPlane} from 'react-icons/fa'
 import 'styles/pages/AuthPage.css'
 import 'styles/animate.css'
 import { formatRut } from 'utils/functions'
+import * as moment from 'moment-timezone'
 
 const AuthPageTemplate = props => {
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
-    is_email: true
+    is_email: true,
+    email_recover: ''
   })
+  const [displaySectionEmail, setDisplaySectionEmail] = useState(false)
   const [validated, setValidated] = useState(false);
   const [enterprises, setEnterprises] = useState([])
   const [branchOffices, setBranchOffices] = useState([])
-  const [typeVisibleDiv, setTypeVisibleDiv] = useState(false)
+  const [typeVisibleDiv, setTypeVisibleDiv] = useState(1)
   const [showGif, setShowGif] = useState(false)
   const [disabledButton, setDisabledButton] = useState(false)
+  const [imgLogin,setImgLogin] = useState(null)
   const [storage,setStorage] = useState({
     token: "",
     user: "",
     token_facturacion: "",
   })
 
+  useEffect(() => {
+    fetchAidyConfig()
+  },[])
+
+  useEffect(() => {
+    displayImgSection()
+  },[imgLogin])
+
+  let hr_tz = moment().tz('America/Santiago').format('HH')
+  let array_morning = ['06','07','08','09','10','11']
+  let array_afternoon = ['12','13','14','15','16','17','18']
+  let array_evening = ['19','20','21','22','23','00','01','02','03','04','05']
+
+  const fetchAidyConfig = () => {
+     axios.get(API_URL+'config_aidy_login').then(result => {
+      if(result.data && result.data.img_login){
+        setImgLogin(result.data.img_login)
+      }
+     }).catch(err => {
+       if(err.response){
+         toast.error(err.response.data.message)
+       }else{
+         console.log(err);
+         toast.error('Error, contacte con soporte')
+       }
+     })
+  }
+
   const onValueChange = (field, e) => {
-    if(field === "email" && credentials.is_email === false){
-      let val = formatRut(e.target.value)
+    if(field === "email"){
+      let val =  credentials.is_email === false ? formatRut(e.target.value) : e.target.value
       setCredentials({...credentials,[field] : val})
     }else{
-      setCredentials({...credentials,[field] : field === 'is_email' ? e.target.checked : e.target.value})
-
+      if(field === "is_email"){
+        let val = e.target.value === "true" ? true : false
+        let email_value = val ? credentials.email.replace(/-/g,'') : formatRut(credentials.email)
+        setCredentials({...credentials,[field] : val, email: email_value})
+      }else{
+        setCredentials({...credentials,[field] : e.target.value})
+      }
     }
   }
 
@@ -76,7 +114,7 @@ const AuthPageTemplate = props => {
           localStorage.setItem('token',data.token)
           localStorage.setItem('id_enterprise',data.user.enterprises[0].id)
           localStorage.setItem('id_branch_office',data.user.branch_offices[0].id)
-          props.loginDispatch(data.user)
+          authFinish(data.user)
         }else{
           // si solo hay una empresa y más de una sucursal
           setStorage({user: data.user,toke: data.token,token_facturacion: data.token_facturacion,id_enterprise: data.user.enterprises[0].id})
@@ -90,7 +128,7 @@ const AuthPageTemplate = props => {
             localStorage.setItem('token',data.token)
             localStorage.setItem('id_enterprise',data.user.enterprises[0].id)
             await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: '', id_enterprise: data.user.enterprises[0].id, id_parent : data.user.id_parent, email: data.user.email})
-            props.loginDispatch(data.user)
+            authFinish(data.user)
           }else{
             setEnterprises(data.user.enterprises)
             setTypeVisibleDiv(2)
@@ -148,7 +186,7 @@ const AuthPageTemplate = props => {
         localStorage.setItem('user',JSON.stringify(data.user))
         localStorage.setItem('token',data.token)
         setAuthorizationToken(data.token)
-        props.loginDispatch(data.user)
+        authFinish(data.user)
       }else{
         registerUserBySocialMedia(profile)
       }
@@ -201,10 +239,7 @@ const AuthPageTemplate = props => {
     localStorage.setItem('id_enterprise',id_enterprise)
     localStorage.setItem('id_branch_office',idBranch)
     await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: idBranch, id_enterprise: id_enterprise,  id_parent: userLocal.id_parent, email: userLocal.email})
-
-    setTimeout(() => {
-      props.loginDispatch(userLocal)
-    },1500)
+    authFinish(userLocal)
   }
 
   const handleChoiceEnterprise = async idEnteprise => {
@@ -215,9 +250,7 @@ const AuthPageTemplate = props => {
       localStorage.setItem('user',JSON.stringify(userLocal))
       localStorage.setItem('token',storage.token)
       localStorage.setItem('id_enterprise',idEnteprise)
-      setTimeout(function () {
-        props.loginDispatch(userLocal)
-      }, 1500);
+      authFinish(userLocal)
     }else{
       axios.get(API_URL+'branch_office_by_enterprise_and_user/'+idEnteprise+'/'+userLocal.email).then(result => {
         setShowGif(false)
@@ -240,8 +273,100 @@ const AuthPageTemplate = props => {
     await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: null, id_enterprise: null, id_parent: userLocal.id_parent, email: userLocal.email})
     setAuthorizationToken(null)
     setBranchOffices([])
-    setTypeVisibleDiv(false)
+    setTypeVisibleDiv(1)
     setShowGif(false)
+    setCredentials({
+      email: '',
+      password: '',
+      is_email: true,
+      email_recover: ''
+    })
+  }
+
+  const showRecoverSection = () => {
+    setDisabledButton(true)
+    setTypeVisibleDiv(1)
+    setTimeout(function () {
+      setDisabledButton(false)
+    }, 100);
+
+  }
+
+  const recoverPassword = () => {
+    if(!credentials.email_recover){
+      toast.error('Debe ingregar el email de su cuenta')
+    }else{
+      setDisabledButton(true)
+       axios.post(API_URL+'user_recover_password',Object.assign({},credentials)).then(result => {
+        toast.success('Correo enviado con éxito')
+        setTypeVisibleDiv(1)
+        setDisabledButton(false)
+       }).catch(err => {
+         setDisabledButton(false)
+         if(err.response){
+           toast.error(err.response.data.message)
+         }else{
+           console.log(err);
+           toast.error('Error, contacte con soporte')
+         }
+       })
+    }
+  }
+
+  const authFinish = userDatos => {
+    toast.info('Terminando de configurar aidy para una mejor experiencia, espere un momento por favor...')
+    axios.get(API_URL+'auth_nuxo').then(result => {
+      if(result.data.token){
+        localStorage.setItem('token',result.data.token)
+        setAuthorizationToken(result.data.token)
+        props.loginDispatch(userDatos)
+      }else{
+        setTimeout(function () {
+          props.loginDispatch(userDatos)
+        }, 1000);
+      }
+     }).catch(err => {
+       if(err.response){
+         toast.error(err.response.data.message)
+       }else{
+         console.log(err);
+         toast.error('Error, contacte con soporte')
+       }
+    })
+  }
+
+  const displayImgSection = () => {
+    return (
+      <React.Fragment>
+        {!imgLogin ? (
+          <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/background_1920-16.jpg')` }}>
+            <div className="ui-bg-overlay bg-dark opacity-50"></div>
+
+            {/* Text */}
+            <div className="w-100 text-white px-5">
+              <h1 className="display-2 font-weight-bolder mb-4">BIENVENIDO A AIDY</h1>
+              <div className="text-large font-weight-light">
+                Sistema de administración, gestión de ventas e inventario
+              </div>
+            </div>
+            {/* /.Text */}
+          </div>
+        ) : (
+          <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: `url('${API_URL}images/aidy/${imgLogin}')` }}>
+            <div className="ui-bg-overlay bg-dark opacity-50"></div>
+
+            {/* Text */}
+            <div className="w-100 text-white px-5">
+              <h1 className="display-2 font-weight-bolder mb-4">BIENVENIDO A AIDY</h1>
+              <div className="text-large font-weight-light">
+                Sistema de administración, gestión de ventas e inventario
+              </div>
+            </div>
+            {/* /.Text */}
+          </div>
+        )}
+      </React.Fragment>
+    )
   }
 
   return (
@@ -307,7 +432,7 @@ const AuthPageTemplate = props => {
               <Row className="justify-content-center alto_sucursal">
                 {enterprises.map((v,i) => (
                   <Col sm={3} lg={3} md={3} className="text-center" key={i}>
-                    <h4 style={{color: 'rgb(180, 55, 33)', textTransform: 'uppercase'}}>{v.name}</h4>
+                    <h4 style={{color: 'rgb(180, 55, 33)', textTransform: 'uppercase'}}>{v.bussines_name}</h4>
                     <Image src={require('../assets/img/enterprises.jpg')} style={{width: '100%'}}/>
                     <span className="letras_negras">Estado :</span> {v.is_open ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
                     <br/><br/>
@@ -318,22 +443,11 @@ const AuthPageTemplate = props => {
             </Col>
           </Row>
 
-        ) : (
+        ) : typeVisibleDiv == 1 ? (
             <div className="authentication-inner">
               {/* Side container */}
               {/* Do not display the container on extra small, small and medium screens */}
-              <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/background_1920-16.jpg')` }}>
-                <div className="ui-bg-overlay bg-dark opacity-50"></div>
-
-                {/* Text */}
-                <div className="w-100 text-white px-5">
-                  <h1 className="display-2 font-weight-bolder mb-4">BIENVENIDO A AIDY</h1>
-                  <div className="text-large font-weight-light">
-                    Sistema de administración, gestión de ventas e inventario
-                  </div>
-                </div>
-                {/* /.Text */}
-              </div>
+              {displayImgSection()}
               {/* / Side container */}
 
               {/* Form container */}
@@ -351,12 +465,41 @@ const AuthPageTemplate = props => {
                     </div>
                     {/* / Logo */}
 
-                    <h4 className="text-center text-lighter font-weight-normal mt-5 mb-0">Accede a tu Cuenta</h4>
+                    <h4 className="text-center text-lighter font-weight-normal mt-2 mb-0">{array_morning.includes(hr_tz) ? 'Buenos Días' : array_afternoon.includes(hr_tz) ? "Buenas tardes" : array_evening.includes(hr_tz) ? "Buenas noches" : ''}, accede a tu cuenta</h4>
 
                     {/* Form */}
                     <Form className="my-5" onSubmit={prevent} noValidate validated={validated}>
                       <Form.Group>
-                        <Form.Label>Email o Rut</Form.Label>
+                        <Row>
+                          <Col sm={12} md={12} lg={12} className="text-center">
+                            <b>Entrar con:</b>
+                          </Col>
+                          <Col sm={6} md={6} lg={6} className="text-center">
+                            <Form.Check
+                              name="is_email"
+                              type={'radio'}
+                              id={`checkbox-1`}
+                              label={"Email"}
+                              checked={credentials.is_email}
+                              onChange={e => onValueChange('is_email', e)}
+                              value={true}
+                              />
+                          </Col>
+                          <Col sm={6} md={6} lg={6} className="text-center">
+                            <Form.Check
+                              name="is_email"
+                              type={'radio'}
+                              id={`checkbox-2`}
+                              label={"Rut"}
+                              checked={!credentials.is_email}
+                              onChange={e => onValueChange('is_email', e)}
+                              value={false}
+                              />
+                          </Col>
+                        </Row>
+                      </Form.Group>
+                      <Form.Group>
+                        <Form.Label>{credentials.is_email ? 'Entrar con email' : "Entrar con rut"}</Form.Label>
                         <Form.Control type={credentials.is_email ? "email" : "text"} value={credentials.email} onChange={e => onValueChange('email', e)} />
                       </Form.Group>
                       <Form.Group>
@@ -365,16 +508,6 @@ const AuthPageTemplate = props => {
                           {/*<a href="#d" onClick={prevent} className="d-block small">Forgot password?</a>*/}
                         </Form.Label>
                         <Form.Control type="password" value={credentials.password} onChange={e => onValueChange('password', e)} />
-                      </Form.Group>
-                      <Form.Group>
-                        <Form.Check
-                          name="is_email"
-                          type={'checkbox'}
-                          id={`checkbox-1`}
-                          label={`Entrar con Email`}
-                          checked={credentials.is_email}
-                          onChange={e => onValueChange('is_email', e)}
-                        />
                       </Form.Group>
 
                       <div className="d-flex justify-content-center align-items-center m-0">
@@ -409,17 +542,64 @@ const AuthPageTemplate = props => {
                       </Row>
                     </Form>
                     {/* / Form */}
-
                     <div className="text-center text-muted">
                       Aún no tienes Cuenta? <Button variant="link" size="sm" onClick={goToSignUp}>Registrate</Button>
-                  </div>
-
+                    </div>
+                    <div className="text-muted">
+                      Contraseña olvidada? <Button variant="link" size="sm" onClick={() => setTypeVisibleDiv(4)}>Recuperala</Button>
+                    </div>
                 </div>
               </div>
             </div>
             {/* / Form container */}
           </div>
-        )}
+        ) : typeVisibleDiv == 4 ? (
+          <div className="authentication-inner">
+              {/* Side container */}
+              {/* Do not display the container on extra small, small and medium screens */}
+              {displayImgSection()}
+              {/* / Side container */}
+
+              {/* Form container */}
+              <div className="d-flex col-lg-4 align-items-center theme-bg-white p-5">
+                {/* Inner container */}
+                {/* Have to add `.d-flex` to control width via `.col-*` classes */}
+                <div className="d-flex col-sm-7 col-md-5 col-lg-12 px-0 px-xl-4 mx-auto">
+                  <div className="w-100">
+
+                    {/* Logo */}
+                    <div className="d-flex justify-content-center align-items-center">
+                      <div className="position-relative text-center">
+                        <Image src={require('../assets/img/logo/AIDY_01.jpg')} width="55%" />
+                      </div>
+                    </div>
+                    {/* / Logo */}
+
+                    <h4 className="text-center text-lighter font-weight-normal mt-5 mb-0">{array_morning.includes(hr_tz) ? 'Buenos Días' : array_afternoon.includes(hr_tz) ? "Buenas tardes" : array_evening.includes(hr_tz) ? "Buenas noches" : ''}, accede a tu cuenta</h4>
+
+                    {/* Form */}
+                    <Form className="my-5" onSubmit={() => {}} noValidate validated={false}>
+                      <Form.Group>
+                        <Form.Label className="d-flex justify-content-between align-items-end">
+                          <div>Email</div>
+                          {/*<a href="#d" onClick={prevent} className="d-block small">Forgot password?</a>*/}
+                        </Form.Label>
+                        <Form.Control type="email" value={credentials.email_recover} onChange={e => onValueChange('email_recover', e)} />
+                      </Form.Group>
+                      <div className="d-flex justify-content-center align-items-center m-0">
+                        <Button block={true} size="sm" variant="danger" type="button" onClick={recoverPassword} disabled={disabledButton}>{disabledButton ? "Enviando datos, espere por favor..." : (<span>Enviar <FaPaperPlane /></span>)}</Button>
+                      </div>
+                      <br/>
+                      <div className="d-flex justify-content-center align-items-center m-0">
+                        <Button type="button" block={true} size="sm" variant="secondary" disabled={disabledButton} onClick={() =>  showRecoverSection()}>Mostrar Formulario</Button>
+                      </div>
+                    </Form>
+                </div>
+              </div>
+            </div>
+            {/* / Form container */}
+          </div>
+        ) : ''}
         <ToastContainer />
       </div>
   )

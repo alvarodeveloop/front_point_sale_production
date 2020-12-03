@@ -14,7 +14,7 @@ import {
 import { API_URL } from 'utils/constants'
 import { toast } from 'react-toastify'
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 import styled from 'styled-components'
 
 const Styles = styled.div`

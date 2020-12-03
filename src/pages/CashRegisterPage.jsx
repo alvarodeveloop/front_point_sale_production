@@ -20,7 +20,7 @@ import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
 import 'styles/components/modalComponents.css'
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 import { connect } from 'react-redux'
 
 const CashRegisterPage = (props) => {

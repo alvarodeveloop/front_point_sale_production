@@ -18,7 +18,7 @@ import Table from 'components/Table'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 import 'styles/components/modalComponents.css'
 import { FaUser } from 'react-icons/fa'
 import { connect } from 'react-redux'

@@ -20,7 +20,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 import FileSaver from 'file-saver';
 import 'styles/components/modalComponents.css'
 import {

@@ -18,7 +18,7 @@ import { API_URL } from 'utils/constants'
 import { providerRepresentColumns } from 'utils/columns/provider'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 
 
 const ProviderRepresentPage = (props) => {

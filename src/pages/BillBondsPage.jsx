@@ -22,7 +22,7 @@ import {FaPlusCircle, FaRegFileCode , FaRegFilePdf} from 'react-icons/fa'
 import InputField from 'components/input/InputComponent'
 import * as moment from 'moment-timezone'
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 import {showPriceWithDecimals, s2ab} from 'utils/functions'
 import * as xlsx from 'xlsx'
 import Table from 'components/Table'
