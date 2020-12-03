@@ -13,12 +13,15 @@ import {FaRegPaperPlane} from 'react-icons/fa'
 import axios from 'axios'
 import {API_URL} from 'utils/constants'
 import {toast} from 'react-toastify'
+import {formatRut} from 'utils/functions'
 
 const ConfigAidyPage = (props) => {
 
   const [formData,setFormData] = useState({
     img_login: '',
     api_key_nuxo : '',
+    rut_nuxo : '',
+    password_nuxo: '',
     file_img_login : '',
     base64LoginImg: '',
   })
@@ -36,7 +39,9 @@ const ConfigAidyPage = (props) => {
     axios.get(API_URL+'config_aidy').then(result => {
       setFormData({
         img_login : result.data.img_login,
-        api_key_nuxo : result.data.api_key_nuxo
+        api_key_nuxo : result.data.api_key_nuxo,
+        rut_nuxo : result.data.rut_nuxo+"-"+result.data.dv_nuxo,
+        password_nuxo : result.data.password_nuxo,
       })
     }).catch(err => {
        if(err.response){
@@ -73,7 +78,7 @@ const ConfigAidyPage = (props) => {
   }
 
   const onChange = e => {
-    setFormData({...formData, [e.target.name] : e.target.value})
+    setFormData({...formData, [e.target.name] : e.target.name === "rut_nuxo" ? formatRut(e.target.value) : e.target.value})
   }
 
   const openFileInput = () => {
@@ -146,6 +151,16 @@ const ConfigAidyPage = (props) => {
             </Row>
             <hr/>
             <Row>
+              <Col sm={4} md={4} lg={4}>
+                <br/>
+                <Button variant="primary" block={true} onClick={openFileInput} type="button" size="sm">Escoger imagen login</Button>
+                <input type="file" onChange={onChangeInputFile} style={{display: "none"}} id="input_file_img_login" />
+              </Col>
+              <Col sm={4} md={4} lg={4} className="text-center">
+                {displayImgLogin()}
+              </Col>
+            </Row>
+            <Row>
               <InputField
                type='text'
                label='Api Key Nuxo'
@@ -158,14 +173,30 @@ const ConfigAidyPage = (props) => {
                value={formData.api_key_nuxo}
                handleChange={onChange}
               />
-              <Col sm={4} md={4} lg={4}>
-                <br/>
-                <Button variant="primary" block={true} onClick={openFileInput} type="button" size="sm">Escoger imagen login</Button>
-                <input type="file" onChange={onChangeInputFile} style={{display: "none"}} id="input_file_img_login" />
-              </Col>
-              <Col sm={4} md={4} lg={4} className="text-center">
-                {displayImgLogin()}
-              </Col>
+              <InputField
+               type='text'
+               label='Rut Nuxo'
+               name='rut_nuxo'
+               required={true}
+               messageErrors={[
+               'Requerido*'
+               ]}
+               cols='col-md-4 col-lg-4 col-sm-4'
+               value={formData.rut_nuxo}
+               handleChange={onChange}
+              />
+              <InputField
+               type='password'
+               label='Password Nuxo'
+               name='password_nuxo'
+               required={true}
+               messageErrors={[
+               'Requerido*'
+               ]}
+               cols='col-md-4 col-lg-4 col-sm-4'
+               value={formData.password_nuxo}
+               handleChange={onChange}
+              />
             </Row>
           </Form>
         </Col>
