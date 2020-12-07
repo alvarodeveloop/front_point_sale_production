@@ -240,4 +240,8 @@ export const routes = [
     path: '/config_aidy',
     component: lazy(() => import('./pages/ConfigAidyPage'))
   },
+  {
+    path: '/profile',
+    component: lazy(() => import('./pages/ProfilePage'))
+  },
 ]

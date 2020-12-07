@@ -39,6 +39,9 @@ const TableProductsCotization = (props) => {
 
   const removeProduct = i => {
     let array_copy = [...props.detailProducts]
+    props.setGastosDetail(oldData => {
+      return oldData.filter(v => v.id_product !== array_copy[i].id_product)
+    })
     array_copy.splice(i,1)
     props.setDetailProducts(array_copy)
   }
@@ -253,6 +256,7 @@ TableProductsCotization.propTypes = {
   detailProducts : PropTypes.array.isRequired,
   setDetailProducts: PropTypes.func.isRequired,
   isShowIva: PropTypes.bool,
+  setGastosDetail: PropTypes.func.isRequired,
 }
 
 TableProductsCotization.defaultProps = {

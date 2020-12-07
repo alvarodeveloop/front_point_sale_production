@@ -396,9 +396,14 @@ const GuideDispatchPage = (props) => {
         });
       }
     }
-    product.discount_stock = true
     product.id_product = product.id
-    setDetailProducts([...detailProducts, product])
+    product.discount_stock = true
+    if(product.inventary[0].inventary_cost.length){
+      setGastosDetail([...gastosDetail, {description: product.inventary[0].inventary_cost[0].detail, amount: product.inventary[0].inventary_cost[0].cost, id_product: product.id}])
+      setDetailProducts([...detailProducts, product])
+    }else{
+      setDetailProducts([...detailProducts, product])
+    }
     setIsShowModalProduct(false)
   }
 

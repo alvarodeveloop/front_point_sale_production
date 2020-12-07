@@ -114,12 +114,27 @@ const GuideInvoicePage = (props) => {
   const inputRef = useRef(null)
 
   useEffect(() => {
-    if(localStorage.getItem('configStore') === "null"){
-      toast.error('Debe hacer su configuración de tienda primero')
-      setTimeout(function () {
-        props.history.replace('/config/config_store')
-      }, 1500);
+    if(!props.configStore || !props.configGeneral){
+      if(!props.configStore){
+        toast.error('Debe hacer su configuración de tienda o seleccionar una sucursal para usar este módulo')
+        setTimeout(function () {
+          props.history.replace('/dashboard')
+        }, 3000);
+      }else if(!props.configGeneral){
+        toast.error('Debe hacer su configuración general para usar este módulo')
+        setTimeout(function () {
+          props.history.replace('/dashboard')
+        }, 3000);
+      }
     }else{
+      let config_general = props.configGeneral
+      if(!config_general.is_syncronized){
+        toast.error('Su cuenta no esta sincronizada con el SII, complete su configuración general para usar este módulo')
+        setTimeout(function () {
+          props.history.replace('/dashboard')
+        }, 3000);
+        return
+      }
       count++
       if(count > 1 && props.id_branch_office !== cotizationData.id_branch_office){
         toast.error('Esta cotización no pertenece a esta sucursal')
@@ -127,7 +142,6 @@ const GuideInvoicePage = (props) => {
           props.history.replace('/guide/guide_search')
         }, 1500);
       }else{
-        let config = JSON.parse(localStorage.getItem('configStore'))
         fetchClients()
         fetchProducts()
         fetchDataUpdate()

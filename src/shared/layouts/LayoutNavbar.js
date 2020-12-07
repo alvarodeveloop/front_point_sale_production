@@ -12,6 +12,7 @@ import {API_URL} from 'utils/constants'
 import {toast} from 'react-toastify'
 import styled from 'styled-components'
 import { setConfigStore, setConfig } from 'actions/configs'
+import {FaUser} from 'react-icons/fa'
 
 const Styles = styled.div`
   .border_success{
@@ -183,6 +184,8 @@ const LayoutNavbar = (props) => {
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
+
+                <Dropdown.Item hred="#" onClick={() => props.history.replace('/profile')}><FaUser className="text-primary" /> &nbsp; Perfil</Dropdown.Item>
                 <Dropdown.Item hred="#" onClick={props.logoutUser} ><i className="ion ion-ios-log-out text-danger"></i> &nbsp; Salir</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

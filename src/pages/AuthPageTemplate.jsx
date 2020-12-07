@@ -8,13 +8,12 @@ import { setAuthorizationToken } from 'utils/functions'
 import {
   Row,
   Col,
-  Container,
   Badge,
   Image
 } from 'react-bootstrap'
 import { FaGoogle, FaSignOutAlt } from "react-icons/fa";
 import GoogleLogin from 'react-google-login';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
+//import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import {FaPaperPlane} from 'react-icons/fa'
 import 'styles/pages/AuthPage.css'
 import 'styles/animate.css'
@@ -28,7 +27,7 @@ const AuthPageTemplate = props => {
     is_email: true,
     email_recover: ''
   })
-  const [displaySectionEmail, setDisplaySectionEmail] = useState(false)
+
   const [validated, setValidated] = useState(false);
   const [enterprises, setEnterprises] = useState([])
   const [branchOffices, setBranchOffices] = useState([])

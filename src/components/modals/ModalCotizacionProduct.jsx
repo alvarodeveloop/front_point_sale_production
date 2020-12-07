@@ -147,7 +147,7 @@ const ModalCotizacionProduct = (props) => {
                 <br/>
                 <Row>
                   <Col sm={12} md={12} lg={12}>
-                    <FormProductSale {...props} handleSubmitProduct={handleSubmit} />
+                    <FormProductSale {...props} handleSubmitProduct={handleSubmit} isInventary={false} />
                   </Col>
                 </Row>
               </Tab>

@@ -124,14 +124,27 @@ const CotizationBillPage = (props) => {
 
   useEffect(() => {
     count++
-    if(localStorage.getItem('configStore') === "null"){
-      toast.error('Debe hacer su configuración de tienda primero')
-      setTimeout(function () {
-        props.history.replace('/config/config_store')
-      }, 1500);
+    if(!props.configStore || !props.configGeneral){
+      if(!props.configStore){
+        toast.error('Debe hacer su configuración de tienda o seleccionar una sucursal para usar este módulo')
+        setTimeout(function () {
+          props.history.replace('/dashboard')
+        }, 3000);
+      }else if(!props.configGeneral){
+        toast.error('Debe hacer su configuración general para usar este módulo')
+        setTimeout(function () {
+          props.history.replace('/dashboard')
+        }, 3000);
+      }
     }else{
-      let config = props.configStore
       let config_general = props.configGeneral
+      if(!config_general.is_syncronized){
+        toast.error('Su cuenta no esta sincronizada con el SII, complete su configuración general para usar este módulo')
+        setTimeout(function () {
+          props.history.replace('/dashboard')
+        }, 3000);
+        return
+      }
       if(props.match.params.id){
         if(count > 1 && props.id_branch_office !== cotizationData.id_branch_office){
           toast.error('Esta cotización no pertenece a esta sucursal')
@@ -522,7 +535,12 @@ const CotizationBillPage = (props) => {
     }
     product.discount_stock = true
     product.id_product = product.id
-    setDetailProducts([...detailProducts, product])
+    if(product.inventary[0].inventary_cost.length){
+      setGastosDetail([...gastosDetail, {description: product.inventary[0].inventary_cost[0].detail, amount: product.inventary[0].inventary_cost[0].cost, id_product: product.id}])
+      setDetailProducts([...detailProducts, product])
+    }else{
+      setDetailProducts([...detailProducts, product])
+    }
     setIsShowModalProduct(false)
   }
 

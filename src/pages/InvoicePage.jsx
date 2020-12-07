@@ -616,6 +616,21 @@ const InvoiceSearchPage = props => {
        }
     })
   }
+
+  const get_invoice_emitet = () => {
+
+    axios.get(API_URL+'get_invoice_emitet').then(result => {
+      toast.success('All its done')
+    }).catch(err => {
+      if(err.response){
+        toast.error(err.response.data.message)
+      }else{
+        console.log(err);
+        toast.error('Error, contacte con soporte')
+      }
+    })
+  }
+
   return (
 
     <Container fluid>
@@ -623,6 +638,8 @@ const InvoiceSearchPage = props => {
         <Col sm={4} md={4} lg={4} className="text-center">
           <h4 className="title_principal">Tabla de Facturas</h4>
           <Button block={true} variant="success" onClick={goToForm} size="sm">Nueva Factura <FaPlusCircle /></Button>
+          <br/>
+          <Button block={true} variant="secondary" onClick={get_invoice_emitet} size="sm">Importar Facturas <FaPlusCircle /></Button>
         </Col>
         <Col sm={4} md={4} lg={4} className="text-center title_principal">
           <h4>Total Facturas Realizadas</h4>

@@ -8,7 +8,7 @@ import {
   Button,
   Form
 } from 'react-bootstrap'
-import { FaBook, FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt, FaUser, FaUsers } from 'react-icons/fa'
+import {FaSearch, FaPlusCircle, FaTrashAlt, FaUser, FaUsers } from 'react-icons/fa'
 import InputField from 'components/input/InputComponent'
 import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
 import {toast} from 'react-toastify'
@@ -77,7 +77,7 @@ const ClientInvoiceComponet = (props) => {
     // para buscar receptores a la factura o la nota de venta
     let val = !rut ? rutFacturacionClientSearch : rut
     if(val){
-      
+
       if(props.isType === "facturacion"){
         toast.info('Buscando Receptor, espere por favor')
 
@@ -170,7 +170,7 @@ const ClientInvoiceComponet = (props) => {
         <b>Datos para la Emisión</b> <FaUser /> (hacer click para desplegar campos)
       </Accordion.Toggle>
       <Accordion.Collapse eventKey="1">
-        {props.isType == "cotizacion" || props.isType == "boleta" || props.isType == "guide" ? (
+        {props.isType === "cotizacion" || props.isType === "boleta" || props.isType === "guide" ? (
           <Card.Body>
             <Row>
               <Col sm={4} md={4} lg={4}>
@@ -515,7 +515,7 @@ const ClientInvoiceComponet = (props) => {
               </React.Fragment>
             ) : ''}
           </Card.Body>
-        ) : props.isType == "facturacion" || props.isType == "sale_note" ? (
+        ) : props.isType === "facturacion" || props.isType === "sale_note" ? (
           <Card.Body>
             <Row>
               <Col sm={4} md={4} lg={4}>
@@ -909,8 +909,6 @@ ClientInvoiceComponet.propTypes = {
   handleModalContacts: PropTypes.func.isRequired,
   clients: PropTypes.array.isRequired,
   onChange : PropTypes.func.isRequired,
-  setIsShowModalClient: PropTypes.func.isRequired,
-  handleModalSeller: PropTypes.func.isRequired,
 }
 
 export default ClientInvoiceComponet

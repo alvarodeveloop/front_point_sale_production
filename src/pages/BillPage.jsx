@@ -31,7 +31,6 @@ import styled from 'styled-components'
 import layoutHelpers from 'shared/layouts/helpers'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import TableProductsCotization from 'components/TableProductsCotization'
 import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
 import {formatRut} from 'utils/functions'
 import { connect } from 'react-redux'
@@ -42,6 +41,7 @@ import RefComponent from 'components/invoice/RefComponent'
 import TableBondsBillComponent from 'components/invoice/TableBondsBillComponent'
 import {OBJECT_COTIZATION} from 'utils/constants'
 import GastosComponent from 'components/invoice/GastosComponent'
+import ProductTableComponent from 'components/invoice/ProductTableComponent'
 
 const Styles = styled.div`
 
@@ -129,14 +129,28 @@ const BillPage = (props) => {
 
   useEffect(() => {
     count++
-    if(localStorage.getItem('configStore') === "null"){
-      toast.error('Debe hacer su configuración de tienda primero')
-      setTimeout(function () {
-        props.history.replace('/config/config_store')
-      }, 1500);
+    if(!props.configStore || !props.configGeneral){
+      if(!props.configStore){
+        toast.error('Debe hacer su configuración de tienda o seleccionar una sucursal para usar este módulo')
+        setTimeout(function () {
+          props.history.replace('/dashboard')
+        }, 3000);
+      }else if(!props.configGeneral){
+        toast.error('Debe hacer su configuración general para usar este módulo')
+        setTimeout(function () {
+          props.history.replace('/dashboard')
+        }, 3000);
+      }
     }else{
-      let config = props.configStore
       let config_general = props.configGeneral
+      if(!config_general.is_syncronized){
+        toast.error('Su cuenta no esta sincronizada con el SII, complete su configuración general para usar este módulo')
+        setTimeout(function () {
+          props.history.replace('/dashboard')
+        }, 3000);
+        return
+      }
+
       if(props.match.params.id){
         if(count > 1 && props.id_branch_office !== cotizationData.id_branch_office){
           toast.error('Esta cotización no pertenece a esta sucursal')
@@ -446,7 +460,12 @@ const BillPage = (props) => {
     }
     product.discount_stock = true
     product.id_product = product.id
-    setDetailProducts([...detailProducts, product])
+    if(product.inventary[0].inventary_cost.length){
+      setGastosDetail([...gastosDetail, {description: product.inventary[0].inventary_cost[0].detail, amount: product.inventary[0].inventary_cost[0].cost, id_product: product.id}])
+      setDetailProducts([...detailProducts, product])
+    }else{
+      setDetailProducts([...detailProducts, product])
+    }
     setIsShowModalProduct(false)
   }
 
@@ -559,48 +578,15 @@ const BillPage = (props) => {
             </Col>
           </Row>
           <br/>
-          <Row className="">
-            <Col sm={12} md={12} lg={12}>
-              <Row className="">
-                <Col sm={12} md={12} lg={12} xs={12}>
-                  <h4 className="title_principal text-center">Tabla de Productos</h4>
-                </Col>
-              </Row>
-              <br/>
-              <Row>
-                <Col sm={6} md={6} lg={6}>
-                  <Row>
-                    <InputField
-                      type='select'
-                      label='Listado de Productos'
-                      name='price_list'
-                      required={false}
-                      messageErrors={[
-                        'Requerido*'
-                      ]}
-                      cols='col-md-12 col-lg-12 col-sm-12'
-                      value={cotizationData.price_list}
-                      handleChange={onChange}
-                    >
-                      <option value="">--Seleccione--</option>
-                    </InputField>
-                  </Row>
-                </Col>
-              </Row>
-              <TableProductsCotization setDetailProducts={setDetailProducts} detailProducts={detailProducts} isShowIva={cotizationData.total_with_iva}/>
-              <Row className="justify-content-center">
-                <Col sm={1} md={1} lg={1}>
-                  <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Producto a la Cotización</Tooltip>}>
-                    <DropdownButton size="sm" variant="danger" id={'dropdown_product'} title={(<FaPlusCircle />)} className="button_product">
-                      <Dropdown.Item onClick={() => setIsShowModalProduct(true) }>Agregar Producto desde Inventario</Dropdown.Item>
-                      <Dropdown.Item onClick={() => addNewProductIrregular(true)}>Agregar producto irregular con precio neto </Dropdown.Item>
-                      <Dropdown.Item onClick={() => addNewProductIrregular(false)}>Agregar producto irregular con iva</Dropdown.Item>
-                    </DropdownButton>
-                  </OverlayTrigger>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
+          <ProductTableComponent
+            setDetailProducts={setDetailProducts}
+            detailProducts={detailProducts}
+            cotizationData={cotizationData}
+            setIsShowModalProduct={setIsShowModalProduct}
+            addNewProductIrregular={addNewProductIrregular}
+            setGastosDetail={setGastosDetail}
+            onChange={onChange}
+          />
           {/* ======================================================= */}
           <hr/>
           <Accordion>

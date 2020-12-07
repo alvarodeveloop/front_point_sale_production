@@ -108,9 +108,15 @@ const FormProductSale = (props) => {
     ]
 
     if(props.match.params.id){
-      promise.push(
-        axios.get(API_URL+'product/'+ atob(props.match.params.id) )
-      )
+      if(props.isInventary){
+        promise.push(
+          axios.get(API_URL+'product/'+atob(props.match.params.id))
+        )
+      }else{
+        promise.push(
+          axios.get(API_URL+'product/'+props.match.params.id)
+        )
+      }
     }
     Promise.all(promise).then(result => {
 
@@ -206,7 +212,8 @@ const FormProductSale = (props) => {
       setTextButton('Guardando Datos, Espere por favor...')
       setIsSubmit(true)
       if(isUpdate){
-        let result = await axios.put(API_URL+'product/'+atob(props.match.params.id),formData)
+        let route_param = props.isInventary ? atob(props.match.params.id) : props.match.params.id
+        let result = await axios.put(API_URL+'product/'+route_param,formData)
 
         setTextButton('Trabajando en galeria de imagénes...')
 
@@ -217,7 +224,7 @@ const FormProductSale = (props) => {
         Object.keys(galleryImgUpdate).forEach((v,i) => {
           formDataGallery.append('galleryUpdate',galleryImgUpdate[v].filename)
         })
-        await axios.put(API_URL+'update_gallery/'+atob(props.match.params.id),formDataGallery)
+        await axios.put(API_URL+'update_gallery/'+route_param,formDataGallery)
         toast.success('Producto Modificado')
 
         setTimeout(() => {

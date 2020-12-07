@@ -7,16 +7,12 @@ import {
   Button,
   DropdownButton,
   Dropdown,
-  Modal,
-  Form,
   Badge
 } from 'react-bootstrap'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
-import { confirmAlert } from 'react-confirm-alert'; // Import
-
 import ModalStockInventary from 'components/modals/ModalStockInventary'
 import ModalHistoryInventary from 'components/modals/ModalHistoryInventary'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
@@ -29,11 +25,8 @@ const InventaryTab = (props) => {
   const [inventary, setInventary] = useState([])
   const [isOpenStock, setIsOpenStock] = useState(false)
   const [isOpenHistory, setIsOpenHistory] = useState(false)
-  const [idInventaryHistory, setIdInventaryHistory] = useState(false)
   const [product, setProduct] = useState({})
   const [costs, setCosts] = useState([])
-  const [nameProductHistory, setNameProductHistory] = useState('')
-
 
   useEffect(() => {
     fetchData()
@@ -115,7 +108,7 @@ const InventaryTab = (props) => {
             Cell: props1 => {
               const id = props1.cell.row.original.id
               return(
-                <DropdownButton size="sm" id={'drop'+props1.cell.row.original.id} title="Seleccione"  block="true">
+                <DropdownButton size="sm" id={'drop'+id} title="Seleccione"  block="true">
                   <Dropdown.Item onClick={() => handleUpdateStock(props1.cell.row.original) }>Agregar Stock</Dropdown.Item>
                   <Dropdown.Item onClick={() => showHistoryModal(props1.cell.row.original) }>Ver Historial</Dropdown.Item>
                 </DropdownButton>
