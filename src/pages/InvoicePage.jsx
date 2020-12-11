@@ -16,7 +16,7 @@ import Table from 'components/Table'
 import axios from 'axios'
 import { API_URL } from 'utils/constants'
 import { toast } from 'react-toastify'
-import { showPriceWithDecimals } from 'utils/functions'
+import { showPriceWithDecimals, base64ToArrayBuffer } from 'utils/functions'
 import { FaPlusCircle, FaChartLine } from "react-icons/fa";
 import FileSaver from 'file-saver'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
@@ -26,7 +26,7 @@ import * as moment from 'moment-timezone'
 import { formatNumber } from 'utils/functions'
 import 'styles/components/modalComponents.css'
 import { connect } from 'react-redux'
-
+import ModalInvoiceActions from 'components/modals/ModalInvoiceActions'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import StadisticsInvoiceComponent from 'components/StadisticsInvoiceComponent'
 import ModalCreditNoteComponent from 'components/modals/ModalCreditNoteComponent'
@@ -49,6 +49,8 @@ const InvoiceSearchPage = props => {
   })
   const [isOpenModalCreditNote, setIsOpenModalCreditNote] = useState(false)
   const [invoiceObject,setInvoiceObject] = useState({})
+  const [invoiceAction,setInvoiceAction] = useState({})
+  const [isOpenModalAction,setIsOpenModalAction] = useState(false)
 
   useMemo(() => {
     cotizacionColumns = [
@@ -57,15 +59,11 @@ const InvoiceSearchPage = props => {
           accessor: 'ref',
           Cell: props1 => {
             const {original} = props1.cell.row
-            if(original.status == 1){
-              return (
-                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para acceder a los pagos</Tooltip>}>
-                  <Button size="sm" variant="link" block={true} onClick={() => goToBond(original)}>{ original.ref } </Button>
-                </OverlayTrigger>
-              )
-            }else{
-              return original.ref
-            }
+            return (
+              <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para acceder a las acciones de la factura</Tooltip>}>
+                <Button variant="link" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>{ original.ref }</Button>
+              </OverlayTrigger>
+            )
           }
         },
         {
@@ -239,27 +237,9 @@ const InvoiceSearchPage = props => {
           Header: 'Acciones',
           Cell: props1 => {
             let  original = Object.assign({},props1.cell.row.original)
-            if(original.status >= 1 && original.status <= 3){
-              return (
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                  <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
-                  <Dropdown.Item onClick={() => noteCredit(original)}>Nota de Crédito</Dropdown.Item>
-                  {original.status != 2  ? (
-                    <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
-                  ) : ''}
-                </DropdownButton>
-              )
-            }else{
-              return(
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                </DropdownButton>
-              )
-            }
-
+            return (
+              <Button variant="primary" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>Acciones</Button>
+            )
           }
         }
     ]
@@ -455,6 +435,13 @@ const InvoiceSearchPage = props => {
     }
   },[redraw])
 
+  const onHideModalAction = (originalCoti = false) => {
+    if(!isOpenModalAction && originalCoti){
+      setInvoiceAction(originalCoti)
+    }
+    setIsOpenModalAction(!isOpenModalAction)
+  }
+
   const handleDataDonutSsStatus = () => {
     setTimeout(function () {
       setRedraw(false)
@@ -465,6 +452,7 @@ const InvoiceSearchPage = props => {
     if(datos){
       let datos1 = Object.assign({},datos)
       setInvoiceObject(datos1)
+      onHideModalAction()
       setTimeout(function () {
         setIsOpenModalCreditNote(!isOpenModalCreditNote)
       }, 1000);
@@ -545,12 +533,16 @@ const InvoiceSearchPage = props => {
 
   const printInvoice = original => {
     toast.info('Cargando documento, espere por favor')
-    axios.get(API_URL+'invoice_print/'+original.id+"/0").then(result => {
-      window.open(API_URL+'documents/invoice/files_pdf/'+result.data.name)
+    let route = API_URL+'get_invoice_pdf/'+original.ref_api
+    axios.get(route,{responseType: "arraybuffer"}).then(result => {
+      const blob = new Blob([result.data],{type : 'application/pdf'})
+      const url  = window.URL.createObjectURL(blob);
+      window.open(url,"_target")
     }).catch(err => {
       if(err.response){
         toast.error(err.response.data.message)
       }else{
+        console.log(err,'aqui');
         toast.error('Error, contacte con soporte')
       }
     })
@@ -606,6 +598,7 @@ const InvoiceSearchPage = props => {
     toast.info('Anulando factura, esto podría tardar unos segundos... espere por favor')
     axios.put(API_URL+'invoice_status/'+id).then(result => {
         toast.success('Factura anulada con éxito')
+        setInvoiceAction({...invoiceAction,status: 4})
         fetchData()
      }).catch(err => {
        if(err.response){
@@ -959,6 +952,17 @@ const InvoiceSearchPage = props => {
         invoiceObject={invoiceObject}
         fetchData={fetchNoteCredit}
         configGeneral={props.configGeneral}
+      />
+      <ModalInvoiceActions
+        isShow={isOpenModalAction}
+        onHide={onHideModalAction}
+        cotization={invoiceAction}
+        printInvoice={printInvoice}
+        goToBond={goToBond}
+        noteCredit={noteCredit}
+        anulateInvoice={anulateInvoice}
+        seeDetailCotization={seeDetailCotization}
+        isInvoice={true}
       />
     </Container>
   )

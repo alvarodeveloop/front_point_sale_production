@@ -14,6 +14,7 @@ import {
   Image
 } from 'react-bootstrap'
 import InputField from 'components/input/InputComponent'
+import { confirmAlert } from 'react-confirm-alert'; // Import
 import Table from 'components/Table'
 import axios from 'axios'
 import { API_URL } from 'utils/constants'
@@ -31,6 +32,7 @@ import { connect } from 'react-redux'
 import {Doughnut,Bar,Line} from 'react-chartjs-2';
 import { ARRAY_COLORS, ARRAY_MONTH } from 'utils/constants'
 import { CSSTransition } from 'react-transition-group';
+import ModalActionsCotization from 'components/modals/ModalActionsCotization'
 
 let optionsBar = {
   responsive: true,
@@ -116,6 +118,8 @@ const CotizacionSearchPage = props => {
     date_desde : '',
     date_hasta: '',
   })
+  const [cotizationAction,setCotizationAction] = useState({})
+  const [isOpenModalAction,setIsOpenModalAction] = useState(false)
 
   useMemo(() => {
     cotizacionColumns = [
@@ -124,15 +128,11 @@ const CotizacionSearchPage = props => {
           accessor: 'ref',
           Cell: props1 => {
             const {original} = props1.cell.row
-            if(original.status < 3){
-              return (
-                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para modificar</Tooltip>}>
-                  <Button size="sm" variant="link" block={true} onClick={() => updateCotizacion(original.id)}>{ original.ref } </Button>
-                </OverlayTrigger>
-              )
-            }else{
-              return original.ref
-            }
+            return (
+              <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para ver las acciones</Tooltip>}>
+                <Button variant="link" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>{original.ref}</Button>
+              </OverlayTrigger>
+            )
           }
         },
         {
@@ -297,50 +297,9 @@ const CotizacionSearchPage = props => {
           Header: 'Acciones',
           Cell: props1 => {
             const { original } = props1.cell.row
-            if(original.status === 1){
-              return (
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => updateCotizacion(original.id)}>Modificar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printCotizacion(original.id)}>Imprimir</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printCotizacionNew(original.id)}>Imprimir Nuevo Pdf</Dropdown.Item>
-                  <Dropdown.Item onClick={() => changeStatus(original.id,2)}>Aprobar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => anulateCotization(original.id,original.status)}>Anular</Dropdown.Item>
-                </DropdownButton>
-              )
-            }else if(original.status === 2){
-              return (
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => updateCotizacion(original.id)}>Modificar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver Detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => goToFacturation(original.id)}>Facturar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => goToNoteSale(original.id)}>Nota de Venta</Dropdown.Item>
-                  <Dropdown.Item onClick={() => goToBillOfSale(original.id)}>Boleta de Venta</Dropdown.Item>
-                  <Dropdown.Item onClick={() => goToGuideDispatch(original.id)}>Guía despacho</Dropdown.Item>
-                  <Dropdown.Item onClick={() => changeStatus(original.id,1)}>Pendiente</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printCotizacion(original.id)}>Imprimir</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printCotizacionNew(original.id)}>Imprimir Nuevo Pdf</Dropdown.Item>
-                  <Dropdown.Item onClick={() => changeStatus(original.id,1)}>Pendiente</Dropdown.Item>
-                  <Dropdown.Item onClick={() => anulateCotization(original.id,original.status)}>Anular</Dropdown.Item>
-                </DropdownButton>
-              )
-            }else if(original.status >= 3 && original.status < 7){
-              return (
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printCotizacion(original.id)}>Imprimir</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printCotizacionNew(original.id)}>Imprimir Nuevo Pdf</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printCotizacionNew(original.id)}>Imprimir Nuevo Pdf</Dropdown.Item>
-                  <Dropdown.Item onClick={() => anulateCotization(original.id,original.status)}>Anular</Dropdown.Item>
-                </DropdownButton>
-              )
-            }else{
-              return (
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                </DropdownButton>
-              )
-            }
+            return (
+              <Button variant="primary" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>Acciones</Button>
+            )
           }
         }
     ]
@@ -571,8 +530,12 @@ const CotizacionSearchPage = props => {
    let objectStatus = {
      status
    }
+   toast.info('Cambiando estado, espere por favor...')
    axios.put(API_URL+'cotizacion_status/'+id,objectStatus).then(result => {
     toast.success('Status Cambiado')
+    if(Object.keys(cotizationAction).length){
+      setCotizationAction({...cotizationAction, status})
+    }
     fetchData()
    }).catch(err => {
      if(err.response){
@@ -585,21 +548,52 @@ const CotizacionSearchPage = props => {
   }
 
   const anulateCotization = (id,status) => {
-   axios.delete(API_URL+'cotizacion/'+id).then(result => {
-    if(status >= 1 && status <= 2){
-      toast.success('Cotización Anulada con éxito')
-    }else if(status >= 3 && status <= 6){
-      toast.success('Documento anulado con éxito')
-    }
-    fetchData()
-   }).catch(err => {
-     if(err.response){
-       toast.error(err.response.data.message)
-     }else{
-       console.log(err);
-       toast.error('Error, contacte con soporte')
-     }
-   })
+
+    confirmAlert({
+      customUI: ({ onClose }) => {
+        return (
+          <div className='custom-ui-edit'>
+            <h1>¿Esta seguro?</h1>
+            <p className="font-alert">¿Desea realmente realizar esta acción?</p>
+            <button className="button-alert"
+              onClick={() => {
+                confirmAnulateCotization(id,status);
+                onClose();
+              }}
+            >
+              Si, Aceptar
+            </button>
+            <button className="button-alert" onClick={onClose}>No</button>
+          </div>
+        );
+      }
+    });
+
+
+  }
+
+  const confirmAnulateCotization = (id,status) => {
+    axios.delete(API_URL+'cotizacion/'+id).then(result => {
+      if(status >= 1 && status <= 2){
+        toast.success('Cotización Anulada con éxito')
+        if(Object.keys(cotizationAction).length){
+          setCotizationAction({...cotizationAction, status: 7})
+        }
+      }else if(status >= 3 && status <= 6){
+        if(Object.keys(cotizationAction).length){
+          setCotizationAction({...cotizationAction, status: 2})
+        }
+        toast.success('Documento anulado con éxito')
+      }
+      fetchData()
+     }).catch(err => {
+       if(err.response){
+         toast.error(err.response.data.message)
+       }else{
+         console.log(err);
+         toast.error('Error, contacte con soporte')
+       }
+     })
   }
 
   const handleModalDetail = () => {
@@ -632,6 +626,13 @@ const CotizacionSearchPage = props => {
 
   const goToBillOfSale = id => {
     props.history.replace('/quotitation/bill_create/'+id)
+  }
+
+  const onHideModalAction = (originalCoti = false) => {
+    if(!isOpenModalAction && originalCoti){
+      setCotizationAction(originalCoti)
+    }
+    setIsOpenModalAction(!isOpenModalAction)
   }
 
   return (
@@ -1075,6 +1076,21 @@ const CotizacionSearchPage = props => {
           <Button size="md" variant="info" onClick={handleModalDetail}>cerrar</Button>
         </Modal.Footer>
       </Modal>
+      <ModalActionsCotization
+        isShow={isOpenModalAction}
+        onHide={onHideModalAction}
+        cotization={cotizationAction}
+        updateCotizacion={updateCotizacion}
+        seeDetailCotization={seeDetailCotization}
+        printCotizacion={printCotizacion}
+        printCotizacionNew={printCotizacionNew}
+        changeStatus={changeStatus}
+        anulateCotization={anulateCotization}
+        goToFacturation={goToFacturation}
+        goToNoteSale={goToNoteSale}
+        goToBillOfSale={goToBillOfSale}
+        goToGuideDispatch={goToGuideDispatch}
+      />
     </Container>
   )
 }

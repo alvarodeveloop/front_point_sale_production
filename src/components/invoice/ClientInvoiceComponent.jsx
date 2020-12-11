@@ -101,7 +101,7 @@ const ClientInvoiceComponet = (props) => {
                 spin_client_array : giroReceptor,
                 spin_client: giroReceptor.length > 0 ? giroReceptor[0].giroReceptor1 :  '',
               })
-
+              console.log(object_return,'aqui menor');
               return object_return
             })
             setReadonlyRut(true)

@@ -31,7 +31,7 @@ import styled from 'styled-components'
 import layoutHelpers from 'shared/layouts/helpers'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import TableProductsCotization from 'components/TableProductsCotization'
+
 import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
 import {formatRut} from 'utils/functions'
 import { connect } from 'react-redux'
@@ -41,6 +41,8 @@ import TableTotalComponent from 'components/invoice/TableTotalComponent'
 import RefComponent from 'components/invoice/RefComponent'
 import TableBondsBillComponent from 'components/invoice/TableBondsBillComponent'
 import GastosComponent from 'components/invoice/GastosComponent'
+import ProductTableComponent from 'components/invoice/ProductTableComponent'
+
 import {OBJECT_COTIZATION} from 'utils/constants'
 
 const Styles = styled.div`
@@ -579,20 +581,6 @@ const CotizationBillPage = (props) => {
     setIsShowModalSeller(false)
   }
 
-  const addNewProductIrregular = type => {
-    setDetailProducts([...detailProducts, {
-      category: '',
-      name_product: '',
-      description: '',
-      quantity: '',
-      price: '',
-      discount: '',
-      method_sale: '',
-      total: '',
-      is_neto: type
-    }])
-  }
-
   const handleModalInvoice = () => {
     setIsOpenModalInvoice(!isOpenModalInvoice)
   }
@@ -630,7 +618,8 @@ const CotizationBillPage = (props) => {
                   cotizationData={cotizationData}
                   setCotizationData={setCotizationData}
                   onChange={onChange}
-                  />
+                  configGeneral={props.configGeneral}
+                />
                 <ClientInvoiceComponent
                   isType="boleta"
                   cotizationData={cotizationData}
@@ -653,67 +642,22 @@ const CotizationBillPage = (props) => {
             </Col>
           </Row>
           <br/>
-          <Row className="">
-            <Col sm={12} md={12} lg={12}>
-              <Row className="">
-                <Col sm={12} md={12} lg={12} xs={12}>
-                  <h4 className="title_principal text-center">Tabla de Productos</h4>
-                </Col>
-              </Row>
-              <br/>
-              <Row>
-                <Col sm={6} md={6} lg={6}>
-                  <Row>
-                    <InputField
-                      type='select'
-                      label='Listado de Productos'
-                      name='price_list'
-                      required={false}
-                      messageErrors={[
-                        'Requerido*'
-                      ]}
-                      cols='col-md-12 col-lg-12 col-sm-12'
-                      value={cotizationData.price_list}
-                      handleChange={onChange}
-                    >
-                      <option value="">--Seleccione--</option>
-                    </InputField>
-                  </Row>
-                </Col>
-              </Row>
-              <TableProductsCotization setDetailProducts={setDetailProducts} detailProducts={detailProducts} isShowIva={cotizationData.total_with_iva}/>
-              <Row className="justify-content-center">
-                <Col sm={1} md={1} lg={1}>
-                  <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Producto a la Cotización</Tooltip>}>
-                    <DropdownButton size="sm" variant="danger" id={'dropdown_product'} title={(<FaPlusCircle />)} className="button_product">
-                      <Dropdown.Item onClick={() => setIsShowModalProduct(true) }>Agregar Producto desde Inventario</Dropdown.Item>
-                      <Dropdown.Item onClick={() => addNewProductIrregular(true)}>Agregar producto irregular con precio neto </Dropdown.Item>
-                      <Dropdown.Item onClick={() => addNewProductIrregular(false)}>Agregar producto irregular con iva</Dropdown.Item>
-                    </DropdownButton>
-                  </OverlayTrigger>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
+          <ProductTableComponent
+            setDetailProducts={setDetailProducts}
+            detailProducts={detailProducts}
+            cotizationData={cotizationData}
+            setIsShowModalProduct={setIsShowModalProduct}
+            setGastosDetail={setGastosDetail}
+            onChange={onChange}
+          />
           {/* ======================================================= */}
           <hr/>
-          <Accordion>
-            <Card>
-              <Accordion.Toggle as={Card.Header} eventKey="4" className="header_card">
-                <b>Gastos</b> <FaMoneyBill /> ( hacer click para desplegar campos )
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey="4">
-                <Card.Body>
-                  <GastosComponent
-                    gastosDetail={gastosDetail}
-                    setGastosDetail={setGastosDetail}
-                    configGeneral={props.configGeneral}
-                    setIsShowModalGastos={setIsShowModalGastos}
-                  />
-                </Card.Body>
-              </Accordion.Collapse>
-            </Card>
-          </Accordion>
+          <GastosComponent
+            gastosDetail={gastosDetail}
+            setGastosDetail={setGastosDetail}
+            configGeneral={props.configGeneral}
+            setIsShowModalGastos={setIsShowModalGastos}
+          />
           <br/>
           <Row>
             <InputField

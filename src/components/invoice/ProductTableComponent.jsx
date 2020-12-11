@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import PropTypes from 'prop-types'
 import {
   Row,
@@ -14,6 +14,25 @@ import InputField from 'components/input/InputComponent'
 import {FaPlusCircle} from 'react-icons/fa'
 
 const ProductTableComponent = (props) => {
+
+  useEffect(() => {
+    document.querySelector(".button_product > button").className = document.querySelector(".button_product > button").className.replace('dropdown-toggle','')
+  },[])
+
+  const addNewProductIrregular = type => {
+    props.setDetailProducts([...props.detailProducts, {
+      category: '',
+      name_product: '',
+      description: '',
+      quantity: '',
+      price: '',
+      discount: '',
+      method_sale: "1",
+      total: '',
+      is_neto: type
+    }])
+  }
+
   return (
     <Row className="">
       <Col sm={12} md={12} lg={12}>
@@ -44,7 +63,9 @@ const ProductTableComponent = (props) => {
                   />
                 </Form.Group>
               </Col>
-              <Col sm={4} md={4} lg={4} className="text-right">
+            </Row>
+            <Row className="justify-content-center">
+              <Col sm={4} md={4} lg={4}>
                 <Form.Group>
                   <Form.Check
                     name="total_with_iva"
@@ -59,6 +80,7 @@ const ProductTableComponent = (props) => {
               </Col>
             </Row>
           </Col>
+          {/*
           <Col sm={6} md={6} lg={6}>
             <Row>
               <InputField
@@ -77,6 +99,7 @@ const ProductTableComponent = (props) => {
               </InputField>
             </Row>
           </Col>
+          */}
         </Row>
         <TableProductsCotization
           setDetailProducts={props.setDetailProducts}
@@ -89,8 +112,8 @@ const ProductTableComponent = (props) => {
             <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Producto a la Cotización</Tooltip>}>
               <DropdownButton size="sm" variant="danger" id={'dropdown_product'} title={(<FaPlusCircle />)} className="button_product">
                 <Dropdown.Item onClick={() => props.setIsShowModalProduct(true) }>Agregar Producto desde Inventario</Dropdown.Item>
-                <Dropdown.Item onClick={() => props.addNewProductIrregular(true)}>Agregar producto irregular con precio neto </Dropdown.Item>
-                <Dropdown.Item onClick={() => props.addNewProductIrregular(false)}>Agregar producto irregular con iva</Dropdown.Item>
+                <Dropdown.Item onClick={() => addNewProductIrregular(true)}>Agregar producto (valor neto) </Dropdown.Item>
+                <Dropdown.Item onClick={() => addNewProductIrregular(false)}>Agregar producto (valor con iva)</Dropdown.Item>
               </DropdownButton>
             </OverlayTrigger>
           </Col>
@@ -105,7 +128,6 @@ ProductTableComponent.propTypes = {
   detailProducts: PropTypes.array.isRequired,
   cotizationData: PropTypes.object.isRequired,
   setIsShowModalProduct: PropTypes.func.isRequired,
-  addNewProductIrregular: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   setGastosDetail: PropTypes.func.isRequired,
 }

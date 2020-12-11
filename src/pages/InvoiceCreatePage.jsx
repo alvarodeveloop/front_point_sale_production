@@ -284,21 +284,6 @@ const InvoiceCreatePage = (props) => {
     setIsShowModalSeller(false)
   }
 
-  const addNewProductIrregular = type => {
-    setDetailProducts([...detailProducts, {
-      category: '',
-      name_product: '',
-      description: '',
-      quantity: '',
-      price: '',
-      discount: '',
-      method_sale: '',
-      total: '',
-      is_neto: type,
-      discount_stock: false
-    }])
-  }
-
   const onChangeTableRef = (e,i) => {
     e.persist()
     setRefCotizacion( oldData => {
@@ -454,7 +439,6 @@ const InvoiceCreatePage = (props) => {
               setGastosDetail={setGastosDetail}
               setIsShowModalGastos={setIsShowModalGastos}
               setIsShowModalProduct={setIsShowModalProduct}
-              addNewProductIrregular={addNewProductIrregular}
               onChange={onChange}
               setIsShowModalClient={setIsShowModalClient}
               handleModalSeller={handleModalSeller}
@@ -478,7 +462,6 @@ const InvoiceCreatePage = (props) => {
               setGastosDetail={setGastosDetail}
               setIsShowModalGastos={setIsShowModalGastos}
               setIsShowModalProduct={setIsShowModalProduct}
-              addNewProductIrregular={addNewProductIrregular}
               onChange={onChange}
               setIsShowModalClient={setIsShowModalClient}
               handleModalSeller={handleModalSeller}

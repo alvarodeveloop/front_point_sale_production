@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import {
@@ -7,7 +8,7 @@ import {
   Row,
   Col
 } from 'react-bootstrap'
-import { FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle, FaSave } from 'react-icons/fa';
 import { API_URL } from 'utils/constants'
 import 'styles/components/modalComponents.css'
 import axios from 'axios'
@@ -28,6 +29,9 @@ const FormClientModal = (props) => {
     address: '',
     observation: '',
     picture: '',
+    city: '',
+    comunda: '',
+    spin: '',
     actividad_economica: ''
   })
 
@@ -40,12 +44,16 @@ const FormClientModal = (props) => {
         name_client : updateClient.name_client,
         email: updateClient.email,
         type_document: updateClient.type_document,
-        data_document: updateClient.data_document,
+        data_document: updateClient.data_document+"-"+updateClient.dv,
         phone: updateClient.phone,
         address: updateClient.address,
         observation: updateClient.observation,
         picture: updateClient.picture,
+        city: updateClient.city,
+        comuna: updateClient.comuna,
+        spin: updateClient.spin,
         actividad_economica: updateClient.actividad_economica,
+
         id: updateClient.id
       })
     }
@@ -87,7 +95,7 @@ const FormClientModal = (props) => {
     }else{
       axios.post(API_URL+'client',client).then(result => {
         toast.success('Cliente Registrado')
-        handleOnHide()
+        handleOnHide(true)
       }).catch(err => {
         if(err.response){
           toast.error(err.response.data.message)
@@ -99,7 +107,7 @@ const FormClientModal = (props) => {
 
   }
 
-  const handleOnHide = () => {
+  const handleOnHide = (create = false) => {
     setClient({
       name_client: '',
       email: '',
@@ -111,10 +119,10 @@ const FormClientModal = (props) => {
       picture: '',
       city: '',
       comuna: '',
-      giro: '',
+      spin: '',
       actividad_economica: ''
     })
-    props.onHide()
+    props.onHide(create)
   }
 
   return (
@@ -241,7 +249,7 @@ const FormClientModal = (props) => {
         </Row>
       </Modal.Body>
       <Modal.Footer>
-        <Button size="md" variant="success" type="button" onClick={onSubmit}>Guardar</Button>
+        <Button size="md" variant="success" type="button" onClick={onSubmit}>Guardar <FaSave /></Button>
         <Button size="md" onClick={handleOnHide}>Cerrar</Button>
       </Modal.Footer>
       </Form>

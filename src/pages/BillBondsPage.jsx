@@ -334,7 +334,15 @@ const BillBondsPage = (props) => {
   const printInvoice = () => {
     setDisplayLoading(true)
     axios.get(API_URL+'invoice_print/'+props.match.params.id+"/0/3",).then(result => {
-      window.open(API_URL+'documents/bills/files_pdf/'+result.data.name)
+      toast.info('Cargando documento, espere por favor')
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = result.data.pdf_public_url_bill_64_encode;
+      //a.target = "_blank"
+      a.download = `bill_pdf_${result.data.ref}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)

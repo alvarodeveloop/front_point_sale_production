@@ -15,6 +15,10 @@ import { toast } from 'react-toastify'
 import Table from 'components/Table'
 import FormClientModal from 'components/modals/FormClientModal'
 import { confirmAlert } from 'react-confirm-alert'; // Import
+import {FaPlusCircle} from 'react-icons/fa'
+import layoutHelpers from 'shared/layouts/helpers'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 import { connect } from 'react-redux'
 
@@ -27,11 +31,13 @@ const ClientPage = (props) => {
   const [isOpenModal, setIsOpenModal] = useState(false)
 
   useEffect(() => {
-    fetchData()  
+    fetchData()
   },[props.id_branch_office])
 
   useEffect(() => {
+    layoutHelpers.toggleCollapsed()
     return() => {
+      layoutHelpers.toggleCollapsed()
       columns_client = []
     }
   },[])
@@ -40,7 +46,15 @@ const ClientPage = (props) => {
     columns_client = [
         {
           Header:'Nombre',
-          accessor: 'name_client'
+          accessor: 'name_client',
+          Cell: props1 => {
+            const {original} = props1.cell.row
+            return(
+              <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para modificar al cliente</Tooltip>}>
+                <Button variant="link" block={true} type="button" size="sm" onClick={() => modifyRegister(original)}>{ original.name_client }</Button>
+              </OverlayTrigger>
+            )
+          }
         },
         {
           Header:'Email',
@@ -89,10 +103,12 @@ const ClientPage = (props) => {
     })
   }
 
-  const handleModalHide = () => {
+  const handleModalHide = (create = false) => {
     setIsOpenModal(!isOpenModal)
     if(clientUpdate){
       setClientUpdate(null)
+      fetchData()
+    }else if(create){
       fetchData()
     }
   }
@@ -148,6 +164,11 @@ const ClientPage = (props) => {
         <Col sm={6} md={6} lg={6} className="text-center">
           <h4 className="title_principal">Total Clientes</h4>
           <Badge variant="danger">{clients.length}</Badge>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={6} md={6} lg={6}>
+          <Button variant="success" block={true} size="sm" onClick={handleModalHide} type="button">Crear Cliente <FaPlusCircle /></Button>
         </Col>
       </Row>
       <hr/>

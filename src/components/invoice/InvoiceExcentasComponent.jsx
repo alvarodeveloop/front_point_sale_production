@@ -148,7 +148,8 @@ const InvoiceExcentasComponent = (props) => {
                   cotizationData={props.cotizationData}
                   setCotizationData={props.setCotizationData}
                   onChange={props.onChange}
-                  />
+                  configGeneral={props.onChange}
+                />
                 <ClientInvoiceComponent
                   isType="facturacion"
                   cotizationData={props.cotizationData}
@@ -174,7 +175,6 @@ const InvoiceExcentasComponent = (props) => {
             detailProducts={props.detailProducts}
             cotizationData={props.cotizationData}
             setIsShowModalProduct={props.setIsShowModalProduct}
-            addNewProductIrregular={props.addNewProductIrregular}
             setGastosDetail={props.setGastosDetail}
             onChange={props.onChange}
           />
@@ -282,7 +282,6 @@ InvoiceExcentasComponent.propTypes = {
   setGastosDetail: PropTypes.func.isRequired,
   setIsShowModalGastos: PropTypes.func.isRequired,
   setIsShowModalProduct: PropTypes.func.isRequired,
-  addNewProductIrregular: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   setIsShowModalClient: PropTypes.func.isRequired,
   handleModalSeller: PropTypes.func.isRequired,

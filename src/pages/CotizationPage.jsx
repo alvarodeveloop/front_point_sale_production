@@ -105,7 +105,7 @@ const CotizationPage = (props) => {
       date_expiration: moment().tz('America/Santiago').format('YYYY-MM-DD'),
       date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
       type_invoicing: 3,
-      searchReceptorDefault : false
+      searchReceptorDefault : false,
   }))
   const [displayModals,setDisplayModals] = useState(false)
   const [isOpenModalInvoice, setIsOpenModalInvoice] = useState(false)
@@ -416,58 +416,6 @@ const CotizationPage = (props) => {
 
   }
 
-  const displayTotalProduct = () => {
-    let total = 0
-
-    detailProducts.forEach((item, i) => {
-
-      let item1 = Object.assign({},item)
-
-      if(item1.is_neto){
-        item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-        item1.price = cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * cotizationData.discount_global) / 100) : item1.price
-      }else{
-        if(cotizationData.total_with_iva){
-          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-          item1.price = cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * cotizationData.discount_global) / 100) : item1.price
-        }else{
-          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-          item1.price = cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * cotizationData.discount_global) / 100) : item1.price
-          item1.price = parseFloat( (item1.price * props.configStore.tax) / 100) + parseFloat(item1.price) // linea para sumar el iva
-        }
-      }
-      total+= parseFloat(item1.price) * item1.quantity
-    })
-    return total
-  }
-
-  const displayTotalIva = () => {
-    let total = 0
-
-    detailProducts.forEach((item, i) => {
-      let item1 = Object.assign({},item)
-      if(!item1.is_neto){
-        if(cotizationData.total_with_iva){
-          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-          item1.price = cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * cotizationData.discount_global) / 100) : item1.price
-          total+= parseFloat(((item1.price * props.configStore.tax) / 100))
-        }else{
-          total+= 0
-        }
-      }
-    })
-    return total
-  }
-
-  const displayTotalGastos = () => {
-    let total = 0
-    gastosDetail.forEach((item, i) => {
-      total += parseFloat(item.amount)
-    });
-
-    return total
-  }
-
   const fetchClients = () => {
     axios.get(API_URL+'client').then(result => {
       setClients(result.data)
@@ -654,20 +602,6 @@ const CotizationPage = (props) => {
     setIsShowModalSeller(false)
   }
 
-  const addNewProductIrregular = type => {
-    setDetailProducts([...detailProducts, {
-      category: '',
-      name_product: '',
-      description: '',
-      quantity: '',
-      price: '',
-      discount: '',
-      method_sale: '',
-      total: '',
-      is_neto: type
-    }])
-  }
-
   const handleDisplayCotizacionField = field => {
     setDisplayDataInvoice(field)
   }
@@ -724,7 +658,6 @@ const CotizationPage = (props) => {
                   detailProducts={detailProducts}
                   cotizationData={cotizationData}
                   setIsShowModalProduct={setIsShowModalProduct}
-                  addNewProductIrregular={addNewProductIrregular}
                   setGastosDetail={setGastosDetail}
                   onChange={onChange}
                 />
@@ -883,7 +816,6 @@ const CotizationPage = (props) => {
                     setGastosDetail={setGastosDetail}
                     setIsShowModalGastos={setIsShowModalGastos}
                     setIsShowModalProduct={setIsShowModalProduct}
-                    addNewProductIrregular={addNewProductIrregular}
                     onChange={onChange}
                     setIsShowModalClient={setIsShowModalClient}
                     handleModalSeller={handleModalSeller}
@@ -914,7 +846,6 @@ const CotizationPage = (props) => {
                       setGastosDetail={setGastosDetail}
                       setIsShowModalGastos={setIsShowModalGastos}
                       setIsShowModalProduct={setIsShowModalProduct}
-                      addNewProductIrregular={addNewProductIrregular}
                       onChange={onChange}
                       setIsShowModalClient={setIsShowModalClient}
                       handleModalSeller={handleModalSeller}
@@ -944,7 +875,8 @@ const CotizationPage = (props) => {
                           cotizationData={cotizationData}
                           setCotizationData={setCotizationData}
                           onChange={onChange}
-                          />
+                          configGeneral={props.configGeneral}
+                        />
                         <ClientInvoiceComponent
                           isType="cotizacion"
                           cotizationData={cotizationData}
@@ -988,7 +920,7 @@ const CotizationPage = (props) => {
               <FormClientModal
                 isShow={isShowModalClient}
                 onHide={handleHideModalClient}
-                />
+              />
               <ModalCotizacionProduct
                 isShow={isShowModalProduct}
                 onHide={handleHideModalProduct}

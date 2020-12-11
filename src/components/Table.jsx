@@ -146,7 +146,7 @@ function DataTable({ columns, data, menuTop }) {
   // Render the UI for your table
 
   return (
-    <div className="table_responsive_eddit">
+    <div className="table-responsive">
       {menuTop ? (
         <div className="pagination">
           <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>

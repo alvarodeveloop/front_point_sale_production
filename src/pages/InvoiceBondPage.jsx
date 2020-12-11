@@ -87,8 +87,9 @@ const InvoiceBondPage = (props) => {
           props.history.replace('/dashboard')
         }, 3000);
         return
+      }else{
+        fetchTypeBond()
       }
-      fetchTypeBond()
     }
   },[])
 
@@ -332,15 +333,19 @@ const InvoiceBondPage = (props) => {
 
   const printInvoice = () => {
     setDisplayLoading(true)
-    axios.get(API_URL+'invoice_print/'+props.match.params.id+"/0",).then(result => {
-      window.open(API_URL+'documents/invoice/files_pdf/'+result.data.name)
+
+    toast.info('Cargando documento, espere por favor')
+    let route = API_URL+'get_invoice_pdf/'+invoice.ref_api
+    axios.get(route,{responseType: "arraybuffer"}).then(result => {
+      const blob = new Blob([result.data],{type : 'application/pdf'})
+      const url  = window.URL.createObjectURL(blob);
+      window.open(url,"_target")
       setDisplayLoading(false)
     }).catch(err => {
-      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
-        console.log(err);
+        console.log(err,'aqui');
         toast.error('Error, contacte con soporte')
       }
     })

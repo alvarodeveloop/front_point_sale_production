@@ -94,12 +94,11 @@ const LayoutNavbar = (props) => {
 
   return (
     <Styles>
-      <Navbar bg={props.navbarBg} expand="lg" className={!border_success ? "layout-navbar align-items-lg-center container-p-x" : "layout-navbar align-items-lg-center container-p-x border_success"}>
-
+      <Navbar bg={props.navbarBg} expand="md" className={!border_success ? "layout-navbar align-items-lg-center container-p-x" : "layout-navbar align-items-lg-center container-p-x border_success"} style={{height: "80px"}}>
         {/* Brand */}
         <Navbar.Brand as={NavLink} to="/">
           <Image src={require('../../assets/img/logo/AIDY_01.jpg')}
-            width="100"
+            width="80"
             className="d-inline-block align-top"
             alt="React Bootstrap logo"
           />
@@ -172,9 +171,7 @@ const LayoutNavbar = (props) => {
                 </React.Fragment>
               ) : ''
             }
-            <Nav.Item as="a" className="nav-item nav-link px-0 ml-2 ml-lg-0" href="#toggle" onClick={toggleSidenav}>
-              <i className="ion ion-md-menu text-large align-middle"></i>
-            </Nav.Item>
+
             <Dropdown as={Nav.Item} className="demo-navbar-user" alignRight={isRTL}>
               <Dropdown.Toggle as={Nav.Link}>
                 <span className="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
@@ -184,7 +181,6 @@ const LayoutNavbar = (props) => {
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
-
                 <Dropdown.Item hred="#" onClick={() => props.history.replace('/profile')}><FaUser className="text-primary" /> &nbsp; Perfil</Dropdown.Item>
                 <Dropdown.Item hred="#" onClick={props.logoutUser} ><i className="ion ion-ios-log-out text-danger"></i> &nbsp; Salir</Dropdown.Item>
               </Dropdown.Menu>

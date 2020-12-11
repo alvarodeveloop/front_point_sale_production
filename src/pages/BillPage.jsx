@@ -254,20 +254,20 @@ const BillPage = (props) => {
   const displayTotalProduct = () => {
     let total = 0
 
-    props.detailProducts.forEach((item, i) => {
+    detailProducts.forEach((item, i) => {
 
       let item1 = Object.assign({},item)
 
       if(item1.is_neto){
         item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-        item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price
+        item1.price = cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * cotizationData.discount_global) / 100) : item1.price
       }else{
-        if(props.cotizationData.total_with_iva){
+        if(cotizationData.total_with_iva){
           item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-          item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price
+          item1.price = cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * cotizationData.discount_global) / 100) : item1.price
         }else{
           item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-          item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price
+          item1.price = cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * cotizationData.discount_global) / 100) : item1.price
           item1.price = parseFloat( (item1.price * props.configStore.tax) / 100) + parseFloat(item1.price) // linea para sumar el iva
         }
       }
@@ -279,12 +279,12 @@ const BillPage = (props) => {
   const displayTotalIva = () => {
     let total = 0
 
-    props.detailProducts.forEach((item, i) => {
+    detailProducts.forEach((item, i) => {
       let item1 = Object.assign({},item)
       if(!item1.is_neto){
-        if(props.cotizationData.total_with_iva){
+        if(cotizationData.total_with_iva){
           item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-          item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price
+          item1.price = cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * cotizationData.discount_global) / 100) : item1.price
           total+= parseFloat(((item1.price * props.configStore.tax) / 100))
         }else{
           total+= 0
@@ -308,7 +308,7 @@ const BillPage = (props) => {
     let total_product = displayTotalProduct()
     let total_gastos  = displayTotalGastos()
     let total_iva = 0
-    if(props.cotizationData.total_with_iva){
+    if(cotizationData.total_with_iva){
       total_iva = displayTotalIva()
     }
     if(!sin_gastos){
@@ -504,20 +504,6 @@ const BillPage = (props) => {
     setIsShowModalSeller(false)
   }
 
-  const addNewProductIrregular = type => {
-    setDetailProducts([...detailProducts, {
-      category: '',
-      name_product: '',
-      description: '',
-      quantity: '',
-      price: '',
-      discount: '',
-      method_sale: '',
-      total: '',
-      is_neto: type
-    }])
-  }
-
   const handleModalInvoice = () => {
     setIsOpenModalInvoice(!isOpenModalInvoice)
   }
@@ -555,7 +541,8 @@ const BillPage = (props) => {
                   cotizationData={cotizationData}
                   setCotizationData={setCotizationData}
                   onChange={onChange}
-                  />
+                  configGeneral={props.configGeneral}
+                />
                 <ClientInvoiceComponent
                   isType="boleta"
                   cotizationData={cotizationData}
@@ -583,29 +570,17 @@ const BillPage = (props) => {
             detailProducts={detailProducts}
             cotizationData={cotizationData}
             setIsShowModalProduct={setIsShowModalProduct}
-            addNewProductIrregular={addNewProductIrregular}
             setGastosDetail={setGastosDetail}
             onChange={onChange}
           />
           {/* ======================================================= */}
           <hr/>
-          <Accordion>
-            <Card>
-              <Accordion.Toggle as={Card.Header} eventKey="4" className="header_card">
-                <b>Gastos</b> <FaMoneyBill /> ( hacer click para desplegar campos )
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey="4">
-                <Card.Body>
-                  <GastosComponent
-                    gastosDetail={gastosDetail}
-                    setGastosDetail={setGastosDetail}
-                    configGeneral={props.configGeneral}
-                    setIsShowModalGastos={setIsShowModalGastos}
-                  />
-                </Card.Body>
-              </Accordion.Collapse>
-            </Card>
-          </Accordion>
+          <GastosComponent
+            gastosDetail={gastosDetail}
+            setGastosDetail={setGastosDetail}
+            configGeneral={props.configGeneral}
+            setIsShowModalGastos={setIsShowModalGastos}
+          />
           <br/>
           <Row>
             <InputField

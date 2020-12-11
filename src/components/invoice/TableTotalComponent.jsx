@@ -112,14 +112,14 @@ const TableTotalComponent = (props) => {
               {
                 props.cotizationData.total_with_iva ? (
                   <tr>
-                    <th className="text-center">Neto(Productos)</th>
+                    <th className="text-center">Total Neto</th>
                     <th className="text-center">Iva</th>
                     <th className="text-center">Gastos</th>
                     <th className="text-center">Balance Total</th>
                   </tr>
                 ) : (
                   <tr>
-                    <th className="text-center">Neto(Productos)</th>
+                    <th className="text-center">Total</th>
                     <th className="text-center">Gastos</th>
                     <th className="text-center">Balance Total</th>
                   </tr>

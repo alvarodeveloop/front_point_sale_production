@@ -11,7 +11,8 @@ import {
   DropdownButton,
   Accordion,
   Card,
-  Form
+  Form,
+  Image
 } from 'react-bootstrap'
 import { API_URL, FRONT_URL } from 'utils/constants'
 import { FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt, FaUser, FaUsers, FaBook } from 'react-icons/fa'
@@ -115,6 +116,7 @@ const CotizationSaleNotePage = (props) => {
   const [displayModals,setDisplayModals] = useState(false)
   const [refCotizacion, setRefCotizacion] = useState([])
   const inputRef = useRef(null)
+  const [displayLoading,setDisplayLoading] = useState(false)
 
   useEffect(() => {
     if(!props.configStore || !props.configGeneral){
@@ -211,6 +213,7 @@ const CotizationSaleNotePage = (props) => {
           total_with_iva : result.data.total_with_iva, // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
           price_list: "",
           status: result.data.status,
+          type_invoicing: result.data.type_effect,
           ref: result.data.ref,
           way_of_payment: result.data.way_of_payment ? result.data.way_of_payment : 1,
           discount_global: result.data.discount_global,
@@ -222,9 +225,10 @@ const CotizationSaleNotePage = (props) => {
           comuna_transmitter: result.data.comuna_transmitter,
           type_buy_client: result.data.type_buy_client,
           type_sale_transmitter: result.data.type_sale_transmitter,
+          way_of_payment: "Crédito"
         })
       })
-
+      setDisplayLoading(true)
     }).catch(err => {
       if(err.response){
         toast.error(err.response.data.message)
@@ -453,21 +457,6 @@ const CotizationSaleNotePage = (props) => {
     setIsShowModalSeller(false)
   }
 
-  const addNewProductIrregular = type => {
-    setDetailProducts([...detailProducts, {
-      category: '',
-      name_product: '',
-      description: '',
-      quantity: '',
-      price: '',
-      discount: '',
-      method_sale: '',
-      total: '',
-      is_neto: type,
-      discount_stock: false
-    }])
-  }
-
   const onChangeTableRef = (e,i) => {
     e.persist()
     setRefCotizacion( oldData => {
@@ -602,178 +591,192 @@ const CotizationSaleNotePage = (props) => {
             </Col>
           </Row>
           <hr/>
-          <Row className="justify-content-center">
-            <Col sm={4} md={4} lg={4}>
-              <Row>
-                <Col sm={12} md={12} lg={12} className="text-center">
-                  <b>Tipo de nota de venta</b>
-                </Col>
-              </Row>
-               <Row>
-                 <Col sm={6} md={6} lg={6}>
-                   <Form.Group>
-                     <Form.Check
-                       name="type_invoicing"
-                       type={'radio'}
-                       id={`radio-5`}
-                       label={`Afecta`}
-                       value={true}
-                       checked={cotizationData.type_invoicing === true}
-                       required={true}
-                       onChange={onChange}
-                       />
-                   </Form.Group>
-                 </Col>
-                 <Col sm={6} md={6} lg={6} className="text-right">
-                   <Form.Group>
-                     <Form.Check
-                       name="type_invoicing"
-                       type={'radio'}
-                       id={`radio-6`}
-                       label={`Excento`}
-                       value={false}
-                       required={true}
-                       checked={cotizationData.type_invoicing === false}
-                       onChange={onChange}
-                       />
-                   </Form.Group>
-                 </Col>
-               </Row>
-            </Col>
-          </Row>
-          {cotizationData.type_invoicing === true || cotizationData.type_invoicing === false ? (
+          {displayLoading ? (
             <React.Fragment>
-              <Row>
-                <Col sm={12} md={12} lg={12}>
-                  <Accordion defaultActiveKey="2">
-                    <TransmitterInvoiceComponent
-                      isType="sale_note"
-                      cotizationData={cotizationData}
-                      setCotizationData={setCotizationData}
-                      onChange={onChange}
-                      />
-                    <ClientInvoiceComponent
-                      isType="sale_note"
-                      cotizationData={cotizationData}
-                      setCotizationData={setCotizationData}
-                      setIsShowModalClient={setIsShowModalClient}
-                      handleModalSeller={handleModalSeller}
-                      handleModalContacts={handleModalContacts}
-                      clients={clients}
-                      onChange={onChange}
-                      setIsShowModalClient={setIsShowModalClient}
-                      handleModalSeller={handleModalSeller}
-                      />
-                    <RefComponent
-                      onChangeTableRef={onChangeTableRef}
-                      refCotizacion={refCotizacion}
-                      removeProductRef={removeProductRef}
-                      addRef={addRef}
-                      />
-                  </Accordion>
+              <Row className="justify-content-center">
+                <Col sm={4} md={4} lg={4}>
+                  <Row>
+                    <Col sm={12} md={12} lg={12} className="text-center">
+                      <b>Tipo de nota de venta</b>
+                    </Col>
+                  </Row>
+                   <Row>
+                     <Col sm={6} md={6} lg={6}>
+                       <Form.Group>
+                         <Form.Check
+                           name="type_invoicing"
+                           type={'radio'}
+                           id={`radio-5`}
+                           label={`Afecta`}
+                           value={true}
+                           checked={cotizationData.type_invoicing === true}
+                           required={true}
+                           onChange={onChange}
+                           />
+                       </Form.Group>
+                     </Col>
+                     <Col sm={6} md={6} lg={6} className="text-right">
+                       <Form.Group>
+                         <Form.Check
+                           name="type_invoicing"
+                           type={'radio'}
+                           id={`radio-6`}
+                           label={`Excento`}
+                           value={false}
+                           required={true}
+                           checked={cotizationData.type_invoicing === false}
+                           onChange={onChange}
+                           />
+                       </Form.Group>
+                     </Col>
+                   </Row>
                 </Col>
               </Row>
-              <br/>
-              <ProductTableComponent
-                setDetailProducts={setDetailProducts}
-                detailProducts={detailProducts}
-                cotizationData={cotizationData}
-                setIsShowModalProduct={setIsShowModalProduct}
-                addNewProductIrregular={addNewProductIrregular}
-                setGastosDetail={setGastosDetail}
-                onChange={onChange}
-              />
-              {/* ======================================================= */}
-              <hr/>
-                <GastosComponent
-                  gastosDetail={gastosDetail}
-                  setGastosDetail={setGastosDetail}
-                  configGeneral={props.configGeneral}
-                  setIsShowModalGastos={setIsShowModalGastos}
-                />
-                <br/>
-                <Row>
-                  <InputField
-                    type='date'
-                    label='Fecha emisión de la factura'
-                    name='date_issue_invoice'
-                    required={true}
-                    messageErrors={[
-                      'Requerido*'
-                    ]}
-                    cols='col-md-4 col-lg-4 col-sm-4'
-                    value={cotizationData.date_issue_invoice}
-                    handleChange={onChange}
+              {cotizationData.type_invoicing === true || cotizationData.type_invoicing === false ? (
+                <React.Fragment>
+                  <Row>
+                    <Col sm={12} md={12} lg={12}>
+                      <Accordion defaultActiveKey="2">
+                        <TransmitterInvoiceComponent
+                          isType="sale_note"
+                          cotizationData={cotizationData}
+                          setCotizationData={setCotizationData}
+                          onChange={onChange}
+                          configGeneral={props.configGeneral}
+                        />
+                        <ClientInvoiceComponent
+                          isType="sale_note"
+                          cotizationData={cotizationData}
+                          setCotizationData={setCotizationData}
+                          setIsShowModalClient={setIsShowModalClient}
+                          handleModalSeller={handleModalSeller}
+                          handleModalContacts={handleModalContacts}
+                          clients={clients}
+                          onChange={onChange}
+                          setIsShowModalClient={setIsShowModalClient}
+                          handleModalSeller={handleModalSeller}
+                          />
+                        <RefComponent
+                          onChangeTableRef={onChangeTableRef}
+                          refCotizacion={refCotizacion}
+                          removeProductRef={removeProductRef}
+                          addRef={addRef}
+                          />
+                      </Accordion>
+                    </Col>
+                  </Row>
+                  <br/>
+                  <ProductTableComponent
+                    setDetailProducts={setDetailProducts}
+                    detailProducts={detailProducts}
+                    cotizationData={cotizationData}
+                    setIsShowModalProduct={setIsShowModalProduct}
+                    setGastosDetail={setGastosDetail}
+                    onChange={onChange}
+                  />
+                  {/* ======================================================= */}
+                  <hr/>
+                    <GastosComponent
+                      gastosDetail={gastosDetail}
+                      setGastosDetail={setGastosDetail}
+                      configGeneral={props.configGeneral}
+                      setIsShowModalGastos={setIsShowModalGastos}
                     />
-                  <InputField
-                    type='number'
-                    label='Dias de Expiración'
-                    name='days_expiration'
-                    required={false}
-                    messageErrors={[
-                      'Requerido*'
-                    ]}
-                    cols='col-md-4 col-lg-4 col-sm-4'
-                    value={cotizationData.days_expiration}
-                    handleChange={onChange}
-                    />
-                  <InputField
-                    type='select'
-                    label='Forma de Pago'
-                    name='way_of_payment'
-                    required={true}
-                    messageErrors={[
-                      'Requerido*'
-                    ]}
-                    cols='col-md-4 col-lg-4 col-sm-4'
-                    value={cotizationData.way_of_payment}
-                    handleChange={onChange}
-                    >
-                    <option value="">--Seleccione--</option>
-                    <option value={"Contado"}>Contado</option>
-                    <option value={"Crédito"}>Crédito</option>
-                    <option value={"Sin Costo"}>Sin Costo</option>
-                  </InputField>
-                </Row>
-                <Row>
-                  <InputField
-                    type='number'
-                    label='Descuento Global'
-                    name='discount_global'
-                    required={false}
-                    messageErrors={[
+                    <br/>
+                    <Row>
+                      <InputField
+                        type='date'
+                        label='Fecha emisión de la factura'
+                        name='date_issue_invoice'
+                        required={true}
+                        messageErrors={[
+                          'Requerido*'
+                        ]}
+                        cols='col-md-4 col-lg-4 col-sm-4'
+                        value={cotizationData.date_issue_invoice}
+                        handleChange={onChange}
+                        />
+                      <InputField
+                        type='number'
+                        label='Dias de Expiración'
+                        name='days_expiration'
+                        required={false}
+                        messageErrors={[
+                          'Requerido*'
+                        ]}
+                        cols='col-md-4 col-lg-4 col-sm-4'
+                        value={cotizationData.days_expiration}
+                        handleChange={onChange}
+                        />
+                      <InputField
+                        type='select'
+                        label='Forma de Pago'
+                        name='way_of_payment'
+                        required={true}
+                        messageErrors={[
+                          'Requerido*'
+                        ]}
+                        cols='col-md-4 col-lg-4 col-sm-4'
+                        value={cotizationData.way_of_payment}
+                        handleChange={onChange}
+                        >
+                        <option value="">--Seleccione--</option>
+                        <option value={"Contado"}>Contado</option>
+                        <option value={"Crédito"}>Crédito</option>
+                        <option value={"Sin Costo"}>Sin Costo</option>
+                      </InputField>
+                    </Row>
+                    <Row>
+                      <InputField
+                        type='number'
+                        label='Descuento Global'
+                        name='discount_global'
+                        required={false}
+                        messageErrors={[
 
-                    ]}
-                    cols='col-md-4 col-lg-4 col-sm-4'
-                    value={cotizationData.discount_global}
-                    handleChange={onChange}
+                        ]}
+                        cols='col-md-4 col-lg-4 col-sm-4'
+                        value={cotizationData.discount_global}
+                        handleChange={onChange}
+                        />
+                    </Row>
+                    <TableTotalComponent
+                      configGeneral={props.configGeneral}
+                      configStore={props.configStore}
+                      detailProducts={detailProducts}
+                      cotizationData={cotizationData}
+                      gastosDetail={gastosDetail}
+                      isType={"facturacion"}
                     />
-                </Row>
-                <TableTotalComponent
-                  configGeneral={props.configGeneral}
-                  configStore={props.configStore}
-                  detailProducts={detailProducts}
-                  cotizationData={cotizationData}
-                  gastosDetail={gastosDetail}
-                  isType={"facturacion"}
-                />
-                <br/>
+                    <br/>
+                    <Row className="justify-content-center">
+                      <Col sm={3} md={3} lg={3}>
+                        <Button variant="secondary" size="sm" block={true} type="submit">Emitir y Facturar</Button>
+                      </Col>
+                      <Col sm={3} md={3} lg={3}>
+                        <Button variant="danger" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
+                      </Col>
+                    </Row>
+                  </React.Fragment>
+              ) : (
                 <Row className="justify-content-center">
-                  <Col sm={3} md={3} lg={3}>
-                    <Button variant="secondary" size="sm" block={true} type="submit">Emitir y Facturar</Button>
-                  </Col>
-                  <Col sm={3} md={3} lg={3}>
-                    <Button variant="danger" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
+                  <Col sm={4} md={4} lg={4}>
+                    <Button variant="secondary" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
                   </Col>
                 </Row>
-              </React.Fragment>
+              )}
+            </React.Fragment>
           ) : (
-            <Row className="justify-content-center">
-              <Col sm={4} md={4} lg={4}>
-                <Button variant="secondary" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
+            <Row>
+              <Col sm={12} md={12} lg={12} className="text-center">
+                <br/>
+                <Image src={require('../assets/img/loading.gif')} width="30" />
+                <br/>
+                Cargando Documento...
               </Col>
             </Row>
           )}
+
 
           {displayModals ? (
             <React.Fragment>

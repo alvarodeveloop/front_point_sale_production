@@ -24,6 +24,7 @@ import * as moment from 'moment-timezone'
 import { formatNumber } from 'utils/functions'
 import 'styles/components/modalComponents.css'
 import { connect } from 'react-redux'
+import ModalInvoiceActions from 'components/modals/ModalInvoiceActions'
 
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import StadisticsInvoiceComponent from 'components/StadisticsInvoiceComponent'
@@ -42,6 +43,8 @@ const GuideDispatchSearchPage = props => {
     date_hasta: '',
     type : 1
   })
+  const [invoiceAction,setInvoiceAction] = useState({})
+  const [isOpenModalAction,setIsOpenModalAction] = useState(false)
 
   useMemo(() => {
     cotizacionColumns = [
@@ -50,15 +53,11 @@ const GuideDispatchSearchPage = props => {
           accessor: 'ref',
           Cell: props1 => {
             const {original} = props1.cell.row
-            if(original.status == 1){
-              return (
-                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para facturar</Tooltip>}>
-                  <Button size="sm" variant="link" block={true} onClick={() => goToInvoice(original.id)}>{ original.ref } </Button>
-                </OverlayTrigger>
-              )
-            }else{
-              return original.ref
-            }
+            return (
+              <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para acceder a las acciones de la guía</Tooltip>}>
+                <Button variant="link" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>{ original.ref }</Button>
+              </OverlayTrigger>
+            )
           }
         },
         {
@@ -170,7 +169,7 @@ const GuideDispatchSearchPage = props => {
           Cell: props1 => {
             return (
               <Badge variant="danger" className="font-badge">
-                {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_bond)}
+                {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_bond)}
               </Badge>
 
             )
@@ -182,7 +181,7 @@ const GuideDispatchSearchPage = props => {
           Cell: props1 => {
             return (
               <Badge variant="danger" className="font-badge">
-                {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.debit_balance)}
+                {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.debit_balance)}
               </Badge>
 
             )
@@ -211,32 +210,9 @@ const GuideDispatchSearchPage = props => {
           Header: 'Acciones',
           Cell: props1 => {
             const { original } = props1.cell.row
-            if(original.status == 1 || original.status == 3){
-              return (
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                  <Dropdown.Item onClick={() => goToInvoice(original.id)}>Facturar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
-                </DropdownButton>
-              )
-            }else if(original.status == 2){
-              return (
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                  <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
-                </DropdownButton>
-              )
-            }else{
-              return(
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                </DropdownButton>
-              )
-            }
-
+            return (
+              <Button variant="primary" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>Acciones</Button>
+            )
           }
         }
     ]
@@ -259,6 +235,13 @@ const GuideDispatchSearchPage = props => {
       handleDataDonutSsStatus()
     }
   },[redraw])
+
+  const onHideModalAction = (originalCoti = false) => {
+    if(!isOpenModalAction && originalCoti){
+      setInvoiceAction(originalCoti)
+    }
+    setIsOpenModalAction(!isOpenModalAction)
+  }
 
   const handleDataDonutSsStatus = () => {
     setTimeout(function () {
@@ -379,6 +362,7 @@ const GuideDispatchSearchPage = props => {
     toast.info('Anulando factura, esto podría tardar unos segundos... espere por favor')
     axios.put(API_URL+'guide_status/'+id).then(result => {
         toast.success('Guía anulada con éxito')
+        setInvoiceAction({...invoiceAction,status: 4})
         fetchData()
      }).catch(err => {
        if(err.response){
@@ -698,6 +682,16 @@ const GuideDispatchSearchPage = props => {
           <Button size="md" variant="secondary" onClick={handleModalDetail}>cerrar</Button>
         </Modal.Footer>
       </Modal>
+      <ModalInvoiceActions
+        isShow={isOpenModalAction}
+        onHide={onHideModalAction}
+        cotization={invoiceAction}
+        printInvoice={printInvoice}
+        goToInvoice={goToInvoice}
+        anulateInvoice={anulateInvoice}
+        seeDetailCotization={seeDetailCotization}
+        isGuide={true}
+      />
     </Container>
   )
 }

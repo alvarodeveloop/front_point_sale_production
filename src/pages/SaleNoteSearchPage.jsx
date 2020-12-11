@@ -24,7 +24,7 @@ import * as moment from 'moment-timezone'
 import { formatNumber } from 'utils/functions'
 import 'styles/components/modalComponents.css'
 import { connect } from 'react-redux'
-
+import ModalInvoiceActions from 'components/modals/ModalInvoiceActions'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import StadisticsInvoiceComponent from 'components/StadisticsInvoiceComponent'
 let cotizacionColumns = null
@@ -42,6 +42,8 @@ const SaleNoteSearchPage = props => {
     date_hasta: '',
     type : 2
   })
+  const [invoiceAction,setInvoiceAction] = useState({})
+  const [isOpenModalAction,setIsOpenModalAction] = useState(false)
 
   useMemo(() => {
     cotizacionColumns = [
@@ -50,15 +52,11 @@ const SaleNoteSearchPage = props => {
           accessor: 'ref',
           Cell: props1 => {
             const {original} = props1.cell.row
-            if(original.status == 1){
-              return (
-                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para acceder a los pagos</Tooltip>}>
-                  <Button size="sm" variant="link" block={true} onClick={() => goToBond(original)}>{ original.ref } </Button>
-                </OverlayTrigger>
-              )
-            }else{
-              return original.ref
-            }
+            return (
+              <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para acceder a las acciones de la Nota</Tooltip>}>
+                <Button variant="link" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>{ original.ref }</Button>
+              </OverlayTrigger>
+            )
           }
         },
         {
@@ -171,7 +169,7 @@ const SaleNoteSearchPage = props => {
                   {props1.cell.row.original.discount_global}%
                 </Tooltip>}>
                   <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                    {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.discount_global_amount)}
+                    {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.discount_global_amount)}
                   </Badge>
               </OverlayTrigger>
             )
@@ -183,7 +181,7 @@ const SaleNoteSearchPage = props => {
           Cell: props1 => {
             return (
               <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                {props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_balance)}
+                {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_balance)}
               </Badge>
             )
           }
@@ -206,7 +204,7 @@ const SaleNoteSearchPage = props => {
           Cell: props1 => {
             return (
               <Badge variant="danger" className="font-badge">
-                {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.debit_balance)}
+                {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.debit_balance)}
               </Badge>
 
             )
@@ -215,41 +213,10 @@ const SaleNoteSearchPage = props => {
         {
           Header: 'Acciones',
           Cell: props1 => {
-            const { original } = props1.cell.row
-            if(original.status == 1){
-              return (
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                  <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
-                  <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
-                </DropdownButton>
-              )
-            }else if(original.status == 2){
-              return (
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                </DropdownButton>
-              )
-            }else if(original.status == 3){
-              return(
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                  <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
-                  <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
-                </DropdownButton>
-              )
-            }else{
-              return(
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                  <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                </DropdownButton>
-              )
-            }
+            let  original = Object.assign({},props1.cell.row.original)
+            return (
+              <Button variant="primary" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>Acciones</Button>
+            )
           }
         }
     ]
@@ -272,6 +239,13 @@ const SaleNoteSearchPage = props => {
       handleDataDonutSsStatus()
     }
   },[redraw])
+
+  const onHideModalAction = (originalCoti = false) => {
+    if(!isOpenModalAction && originalCoti){
+      setInvoiceAction(originalCoti)
+    }
+    setIsOpenModalAction(!isOpenModalAction)
+  }
 
   const handleDataDonutSsStatus = () => {
     setTimeout(function () {
@@ -334,7 +308,7 @@ const SaleNoteSearchPage = props => {
   }
 
   const printInvoice = original => {
-    toast.inf('Cargando documento, espere por favor')
+    toast.info('Cargando documento, espere por favor')
     axios.get(API_URL+'invoice_print/'+original.id+"/0/2").then(result => {
       window.open(API_URL+'documents/sale_note/files_pdf/'+result.data.name)
     }).catch(err => {
@@ -396,6 +370,7 @@ const SaleNoteSearchPage = props => {
     toast.info('Anulando nota, esto podría tardar algunos segundos... espere por favor')
     axios.put(API_URL+'invoice_status/'+id).then(result => {
         toast.success('Nota de venta anulada con éxito')
+        setInvoiceAction({...invoiceAction,status: 4})
         fetchData()
      }).catch(err => {
        if(err.response){
@@ -710,6 +685,15 @@ const SaleNoteSearchPage = props => {
           <Button size="md" variant="secondary" onClick={handleModalDetail}>cerrar</Button>
         </Modal.Footer>
       </Modal>
+      <ModalInvoiceActions
+        isShow={isOpenModalAction}
+        onHide={onHideModalAction}
+        cotization={invoiceAction}
+        printInvoice={printInvoice}
+        goToBond={goToBond}
+        anulateInvoice={anulateInvoice}
+        seeDetailCotization={seeDetailCotization}
+      />
     </Container>
   )
 }

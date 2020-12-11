@@ -390,21 +390,6 @@ const SaleNotePage = (props) => {
     setIsShowModalSeller(false)
   }
 
-  const addNewProductIrregular = type => {
-    setDetailProducts([...detailProducts, {
-      category: '',
-      name_product: '',
-      description: '',
-      quantity: '',
-      price: '',
-      discount: '',
-      method_sale: '',
-      total: '',
-      is_neto: type,
-      discount_stock: false
-    }])
-  }
-
   const onChangeTableRef = (e,i) => {
     e.persist()
     setRefCotizacion( oldData => {
@@ -556,7 +541,8 @@ const SaleNotePage = (props) => {
                     cotizationData={cotizationData}
                     setCotizationData={setCotizationData}
                     onChange={onChange}
-                    />
+                    configGeneral={props.configGeneral}
+                  />
                   <ClientInvoiceComponent
                     isType="sale_note"
                     cotizationData={cotizationData}
@@ -584,7 +570,6 @@ const SaleNotePage = (props) => {
               detailProducts={detailProducts}
               cotizationData={cotizationData}
               setIsShowModalProduct={setIsShowModalProduct}
-              addNewProductIrregular={addNewProductIrregular}
               setGastosDetail={setGastosDetail}
               onChange={onChange}
             />

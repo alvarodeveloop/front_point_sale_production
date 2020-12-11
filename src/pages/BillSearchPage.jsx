@@ -24,7 +24,7 @@ import * as moment from 'moment-timezone'
 import { formatNumber } from 'utils/functions'
 import 'styles/components/modalComponents.css'
 import { connect } from 'react-redux'
-
+import ModalInvoiceActions from 'components/modals/ModalInvoiceActions'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import StadisticsInvoiceComponent from 'components/StadisticsInvoiceComponent'
 
@@ -43,6 +43,8 @@ const BillSearchPage = props => {
     date_hasta: '',
     type : 3
   })
+  const [invoiceAction,setInvoiceAction] = useState({})
+  const [isOpenModalAction,setIsOpenModalAction] = useState(false)
 
   useMemo(() => {
     cotizacionColumns = [
@@ -51,15 +53,11 @@ const BillSearchPage = props => {
         accessor: 'ref',
         Cell: props1 => {
           const {original} = props1.cell.row
-          if(original.status == 1){
-            return (
-              <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para acceder a los pagos</Tooltip>}>
-                <Button size="sm" variant="link" block={true} onClick={() => goToBond(original)}>{ original.ref } </Button>
-              </OverlayTrigger>
-            )
-          }else{
-            return original.ref
-          }
+          return (
+            <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para acceder a las acciones de la Boleta</Tooltip>}>
+              <Button variant="link" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>{ original.ref }</Button>
+            </OverlayTrigger>
+          )
         }
       },
       {
@@ -217,23 +215,9 @@ const BillSearchPage = props => {
         Header: 'Acciones',
         Cell: props1 => {
           const { original } = props1.cell.row
-          if(original.status == 1){
-            return (
-              <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
-                <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
-              </DropdownButton>
-            )
-          }else{
-            return (
-              <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-              </DropdownButton>
-            )
-          }
+          return (
+            <Button variant="primary" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>Acciones</Button>
+          )
         }
       }
     ]
@@ -256,6 +240,13 @@ const BillSearchPage = props => {
       handleDataDonutSsStatus()
     }
   },[redraw])
+
+  const onHideModalAction = (originalCoti = false) => {
+    if(!isOpenModalAction && originalCoti){
+      setInvoiceAction(originalCoti)
+    }
+    setIsOpenModalAction(!isOpenModalAction)
+  }
 
   const handleDataDonutSsStatus = () => {
     setTimeout(function () {
@@ -318,16 +309,15 @@ const BillSearchPage = props => {
   }
 
   const printInvoice = original => {
-    toast.inf('Cargando documento, espere por favor')
-    axios.get(API_URL+'invoice_print/'+original.id+"/0/3").then(result => {
-      window.open(API_URL+'documents/bills/files_pdf/'+result.data.name)
-    }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-    })
+    toast.info('Cargando documento, espere por favor')
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = original.pdf_public_url_bill_64_encode;
+    //a.target = "_blank"
+    a.download = `bill_pdf_${original.ref}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   }
 
   const handleModalDetail = () => {
@@ -379,6 +369,7 @@ const BillSearchPage = props => {
   const confirmAnulateInvoice = id => {
     axios.put(API_URL+'invoice_status/'+id).then(result => {
         toast.success('Boleta anulada con éxito')
+        setInvoiceAction({...invoiceAction,status: 4})
         fetchData()
      }).catch(err => {
        if(err.response){
@@ -641,6 +632,15 @@ const BillSearchPage = props => {
           <Button size="md" variant="secondary" onClick={handleModalDetail}>cerrar</Button>
         </Modal.Footer>
       </Modal>
+      <ModalInvoiceActions
+        isShow={isOpenModalAction}
+        onHide={onHideModalAction}
+        cotization={invoiceAction}
+        printInvoice={printInvoice}
+        goToBond={goToBond}
+        anulateInvoice={anulateInvoice}
+        seeDetailCotization={seeDetailCotization}
+      />
     </Container>
   )
 }

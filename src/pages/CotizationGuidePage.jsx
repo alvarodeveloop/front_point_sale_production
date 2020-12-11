@@ -521,20 +521,6 @@ const CotizationGuidePage = (props) => {
     setIsShowModalSeller(false)
   }
 
-  const addNewProductIrregular = type => {
-    setDetailProducts([...detailProducts, {
-      category: '',
-      name_product: '',
-      description: '',
-      quantity: '',
-      price: '',
-      discount: '',
-      method_sale: '',
-      total: '',
-      is_neto: type
-    }])
-  }
-
   const handleModalInvoice = () => {
     setIsOpenModalInvoice(!isOpenModalInvoice)
   }
@@ -600,7 +586,8 @@ const CotizationGuidePage = (props) => {
                       cotizationData={cotizationData}
                       setCotizationData={setCotizationData}
                       onChange={onChange}
-                      />
+                      configGeneral={props.configGeneral}
+                    />
                     <ClientInvoiceComponent
                       isType="guide"
                       cotizationData={cotizationData}
@@ -673,29 +660,17 @@ const CotizationGuidePage = (props) => {
                 detailProducts={detailProducts}
                 cotizationData={cotizationData}
                 setIsShowModalProduct={setIsShowModalProduct}
-                addNewProductIrregular={addNewProductIrregular}
                 setGastosDetail={setGastosDetail}
                 onChange={onChange}
               />
               {/* ======================================================= */}
               <hr/>
-              <Accordion>
-                <Card>
-                  <Accordion.Toggle as={Card.Header} eventKey="4" className="header_card">
-                    <b>Gastos</b> <FaMoneyBill /> ( hacer click para desplegar campos )
-                    </Accordion.Toggle>
-                    <Accordion.Collapse eventKey="4">
-                      <Card.Body>
-                        <GastosComponent
-                          gastosDetail={gastosDetail}
-                          setGastosDetail={setGastosDetail}
-                          configGeneral={props.configGeneral}
-                          setIsShowModalGastos={setIsShowModalGastos}
-                        />
-                      </Card.Body>
-                    </Accordion.Collapse>
-                  </Card>
-                </Accordion>
+              <GastosComponent
+                gastosDetail={gastosDetail}
+                setGastosDetail={setGastosDetail}
+                configGeneral={props.configGeneral}
+                setIsShowModalGastos={setIsShowModalGastos}
+              />
                 <br/>
                 <Row>
                   <InputField

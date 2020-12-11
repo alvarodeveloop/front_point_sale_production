@@ -26,7 +26,7 @@ const InvoiceBondComponent = ({invoice,...props}) => {
         <Accordion defaultActiveKey="0">
           <Card>
             <Accordion.Toggle as={Card.Header} eventKey="0" className="header_card">
-              <b>Datos del Documento</b> <FaFileAlt />
+              <b>Datos del Documento</b> <FaFileAlt /> ( hacer click para ocultar la información )
             </Accordion.Toggle>
             <Accordion.Collapse eventKey="0">
               <Card.Body>
