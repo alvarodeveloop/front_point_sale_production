@@ -16,7 +16,6 @@ import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import
 import { formatNumber } from 'utils/functions'
 import ModalSolvedSale from 'components/modals/ModalSolvedSale'
 import ModalDetailSale from 'components/modals/ModalDetailSale'
@@ -27,6 +26,9 @@ import 'styles/components/modalComponents.css'
 import {Doughnut} from 'react-chartjs-2';
 import { ARRAY_COLORS } from 'utils/constants'
 import { connect } from 'react-redux'
+import layoutHelpers from 'shared/layouts/helpers'
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
 let saleColumns = []
 
@@ -68,7 +70,7 @@ const SaleDispatchPage = (props) => {
   const [stadistics,setStadistics] = useState([])
 
   useEffect(() =>{
-    if(!props.config || !props.configStore){
+    /*if(!props.config || !props.configStore){
       if(!props.config){
         toast.error('Error, debe hacer su configuración general')
         setTimeout(function () {
@@ -81,10 +83,11 @@ const SaleDispatchPage = (props) => {
         }, 2000);
       }
     }else{
-      fetchData()
-    }
-
+    }*/
+    fetchData()
+    layoutHelpers.toggleCollapsed()
     return () =>{
+      layoutHelpers.toggleCollapsed()
       saleColumns = []
       resetChartData()
     }
@@ -105,7 +108,9 @@ const SaleDispatchPage = (props) => {
           Cell: props1 => {
             const original = props1.cell.row.original
             return (
-              <Button variant="link" size="sm" onClick={() => openModalStatusDispatch(original) }>{original.ref}</Button>
+              <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para cambiar el status</Tooltip>}>
+                <Button variant="link" size="sm" onClick={() => openModalStatusDispatch(original) }>{original.ref}</Button>
+              </OverlayTrigger>
             )
           }
         },
@@ -137,6 +142,7 @@ const SaleDispatchPage = (props) => {
             }else{
               return ['Otro']
             }
+
           },
           Cell: props1 => {
 
@@ -199,10 +205,7 @@ const SaleDispatchPage = (props) => {
         },
         {
           Header: 'Fecha',
-          accessor: props1 => [props.createdAt],
-          Cell: props1 =>{
-            return moment(props1.cell.row.original.createdAt).format('DD-MM-YYYY HH:II:SS')
-          }
+          accessor: props1 => [moment(props.createdAt).format('DD-MM-YYYY')],
         },
         {
           Header: 'Acciones',

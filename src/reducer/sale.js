@@ -7,7 +7,7 @@ const initialState = {
         carts: { registered:[], not_registered:[] },
         product_discount_recharge: [],
         client: {},
-        total_recharge_discount: {amount: 0, idCart: 0, type: null},
+        total_recharge_discount: {amount: 0, idCart: 0, type: null,percentajeFixed : null, amount_calculate: 0},
         totales: {neto: 0, tax: 0, total: 0,total_backup: 0},
       },
     ],
@@ -21,7 +21,8 @@ function calculateTax(products,config){
     let total = 0
     let result = 0
     let total_each = 0
-    products.registered.forEach((v,i) => {
+    let array_merge = products.registered.concat(products.not_registered)
+    array_merge.forEach((v,i) => {
       if(v.is_neto !== undefined && v.is_neto !== true ){
         total_each = parseFloat(v.cantidad) * parseFloat(v.price)
         result = (total_each * parseFloat(config.tax)) / 100
@@ -31,26 +32,16 @@ function calculateTax(products,config){
       }
     })
 
-    products.not_registered.forEach((v,i) => {
-      total_each = parseFloat(v.cantidad) * parseFloat(v.price)
-      result = 0
-      total = result + total
-    })
-
     return total
 }
 
-function calculateNeto(products,discountRecharge = null){
+function calculateNeto(products,discountRecharge = null,descuentos_totales = null,return_recharge_discount_total = false){
   let total = 0
   let total_each = 0
+  let total_r_d_amount = 0 // total_recharge_discount_amount
 
-  products.registered.forEach((v,i) => {
-    total_each = parseFloat(v.cantidad) * parseFloat(v.price)
-    total = total_each + total
-  })
-
-  products.not_registered.forEach((v,i) => {
-
+  let array_merge = [...products.registered,...products.not_registered]
+  array_merge.forEach((v,i) => {
     total_each = parseFloat(v.cantidad) * parseFloat(v.price)
     total = total_each + total
   })
@@ -58,29 +49,52 @@ function calculateNeto(products,discountRecharge = null){
   if(discountRecharge && discountRecharge.type){
     let data = discountRecharge
     if(data.type === "suma"){
-
       if(data.percentajeFixed === "fijo"){
-
         total = total + parseFloat(data.amount)
+        total_r_d_amount = parseFloat(data.amount)
       }else{
 
         let totalPercentaje = ( total * parseFloat(data.amount) ) / 100
+        total_r_d_amount = parseFloat(totalPercentaje)
         total = total + totalPercentaje
       }
     }else{
       if(data.percentajeFixed === "fijo"){
-
         total = total - parseFloat(data.amount)
+        total_r_d_amount = parseFloat(data.amount)
       }else{
 
         let totalPercentaje = ( total * parseFloat(data.amount) ) / 100
+        total_r_d_amount = parseFloat(totalPercentaje)
         total = total - totalPercentaje
       }
     }
   }
 
+  if(descuentos_totales && descuentos_totales.type){
+    if(descuentos_totales.type === "suma"){
+      if(descuentos_totales.percentajeFixed === "fijo"){
+        total = total + parseFloat(descuentos_totales.amount)
+      }else{
+        let totalPercentaje = ( total * parseFloat(descuentos_totales.amount) ) / 100
+        total = total + totalPercentaje
+      }
+    }else{
+      if(descuentos_totales.percentajeFixed === "fijo"){
+        total = total - parseFloat(descuentos_totales.amount)
+      }else{
+        let totalPercentaje = ( total * parseFloat(descuentos_totales.amount) ) / 100
+        total = total - totalPercentaje
+      }
+    }
+  }
 
-  return total
+  if(return_recharge_discount_total){
+    // esto es para obtener el monto del descuento o recargo total y guardarlo
+    return [total,total_r_d_amount]
+  }else{
+    return total
+  }
 }
 
 function calculateTotal(netoTotal, taxTotal){
@@ -292,7 +306,7 @@ export default (state = initialState, action = {}) => {
         let cartStoreRemove = stateRemove.rooms[idCartRemove].carts
         cartStoreRemove[action.typeProduct] =  cartStoreRemove[action.typeProduct].filter(v => v.id !== action.product.id)
 
-        let netoRemove = calculateNeto(cartStoreRemove)
+        let netoRemove = calculateNeto(cartStoreRemove,null,stateRemove.rooms[idCartRemove].total_recharge_discount)
         let taxRemove  = calculateTax(cartStoreRemove,action.configStore)
         let totalRemove = calculateTotal(netoRemove,taxRemove)
 
@@ -435,8 +449,7 @@ export default (state = initialState, action = {}) => {
         }
       })
 
-
-      let netoRecharge = calculateNeto(cartRecharge)
+      let netoRecharge = calculateNeto(cartRecharge,null,stateRecharge.rooms[stateRecharge.idCartSelected].total_recharge_discount)
       let taxRecharge  = calculateTax(cartRecharge,action.configStore)
       let totalRecharge = calculateTotal(netoRecharge,taxRecharge)
 
@@ -503,7 +516,7 @@ export default (state = initialState, action = {}) => {
         }
       })
 
-      let netoDiscount = calculateNeto(cartDiscount, null)
+      let netoDiscount = calculateNeto(cartDiscount, null,stateDiscount.rooms[stateDiscount.idCartSelected].total_recharge_discount)
       let taxDiscount  = calculateTax(cartDiscount,action.configStore)
       let totalDiscount = calculateTotal(netoDiscount,taxDiscount)
 
@@ -555,7 +568,7 @@ export default (state = initialState, action = {}) => {
         }
       })
 
-      let netoDiscountReset = calculateNeto(cartDiscountReset, null)
+      let netoDiscountReset = calculateNeto(cartDiscountReset, null,stateDiscountReset.rooms[stateDiscountReset.idCartSelected].total_recharge_discount)
       let taxDiscountReset  = calculateTax(cartDiscountReset,action.configStore)
       let totalDiscountReset = calculateTotal(netoDiscountReset,taxDiscountReset)
 
@@ -592,10 +605,13 @@ export default (state = initialState, action = {}) => {
       discountTotal.amount = parseFloat(action.discount.amount)
       discountTotal.type = 'resta'
       discountTotal.percentajeFixed = action.discount.type
+      discountTotal.idCart = stateDiscountTotal.idCartSelected
 
-      let netoDiscountTotal = calculateNeto(stateDiscountTotal.rooms[stateDiscountTotal.idCartSelected].carts,discountTotal)
+      let netoDiscountTotalArray = calculateNeto(stateDiscountTotal.rooms[stateDiscountTotal.idCartSelected].carts,discountTotal,null,true)
+      let netoDiscountTotal = netoDiscountTotalArray[0]
       let taxDiscountTotal  = calculateTax(stateDiscountTotal.rooms[stateDiscountTotal.idCartSelected].carts,action.configStore)
       let totalDiscountTotal = netoDiscountTotal + taxDiscountTotal
+      discountTotal.amount_calculate = netoDiscountTotalArray[1]
 
       let totalesDiscountTotal = Object.assign({},stateDiscountTotal.rooms[stateDiscountTotal.idCartSelected].totales,{
         total: totalDiscountTotal,
@@ -629,10 +645,11 @@ export default (state = initialState, action = {}) => {
         percentajeFixed: action.recharge.type,
         type: 'suma',
       })
-
-      let netoRechargeTotal = calculateNeto(stateRechargeTotal.rooms[stateRechargeTotal.idCartSelected].carts,rechargeTotal)
+      let netoRechargeTotalArray = calculateNeto(stateRechargeTotal.rooms[stateRechargeTotal.idCartSelected].carts,rechargeTotal,null,true)
+      let netoRechargeTotal = netoRechargeTotalArray[0]
       let taxRechargeTotal  = calculateTax(stateRechargeTotal.rooms[stateRechargeTotal.idCartSelected].carts,action.configStore)
       let totalRechargeTotal = netoRechargeTotal + taxRechargeTotal
+      rechargeTotal.amount_calculate = netoRechargeTotalArray[1]
 
       let totalesRechargeTotal = Object.assign({},stateRechargeTotal.rooms[stateRechargeTotal.idCartSelected].totales,{
         total: totalRechargeTotal,
@@ -659,7 +676,7 @@ export default (state = initialState, action = {}) => {
 
     case 'resetTotal' :
       let stateResetTotal = Object.assign({},state.sale)
-      stateResetTotal.rooms[stateResetTotal.idCartSelected].total_recharge_discount = {amount: 0, idCart: 0, type: null}
+      stateResetTotal.rooms[stateResetTotal.idCartSelected].total_recharge_discount = {amount: 0, idCart: 0, type: null, amount_calculate: 0}
 
       let netoResetTotal = calculateNeto(stateResetTotal.rooms[stateResetTotal.idCartSelected].carts)
       let taxResetTotal  = calculateTax(stateResetTotal.rooms[stateResetTotal.idCartSelected].carts,action.configStore)
@@ -669,7 +686,7 @@ export default (state = initialState, action = {}) => {
         total: totalResetTotal,
         neto: netoResetTotal,
         tax: taxResetTotal,
-        total_backup: stateResetTotal.rooms[stateResetTotal.idCartSelected].totales.total_backup
+        total_backup: totalResetTotal
       })
 
       stateResetTotal.rooms[stateResetTotal.idCartSelected].totales = totalesResetTotal

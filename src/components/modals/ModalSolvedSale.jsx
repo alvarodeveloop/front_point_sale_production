@@ -169,7 +169,7 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
           <React.Fragment>
             <div className="containerDiv" style={{ marginLeft: '-8px'}}>
               <Col sm={12} md={12} lg={12} xs={12}>
-                <h3 className="text-center font-title">Factura N° {dataToPay.ref}</h3>
+                <h4 className="text-center">Factura N° {dataToPay.ref}</h4>
                 <Row>
                   <Col sm={4} md={4} lg={4} xs={12} className="text-center">
                     <h4>Sub Total: <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,dataToPay.sub_total) } </Badge></h4>
@@ -201,7 +201,7 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
                   />
               </Row>
             </div>
-            <Row>
+            <Row className="justify-content-center">
               <Col sm={4} md={4} lg={4}>
                 <Form.Group>
                   <Form.Check type="checkbox"
@@ -213,18 +213,28 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
                     onChange={onChange} />
                 </Form.Group>
               </Col>
+              <Col sm={4} md={4} lg={4}>
+                <b>Metodo de Pago: </b>{payment.type === 1 ? (
+                    <Badge variant="danger" className="font-badge">Efectivo</Badge>
+                  ) : payment.type === 2 ? (
+                    <Badge variant="danger" className="font-badge">Débito</Badge>
+                  ) : (
+                    <Badge variant="danger" className="font-badge">Crédito</Badge>
+                  )}
+              </Col>
             </Row>
             <Row className="containerDiv justify-content-center" style={{ marginLeft: '-8px'}}>
               <Col sm={4} md={4} lg={4} xs={12}>
                 <Button size="sm" onClick={() => setTypePayment(1)} variant="dark" block="true">Efectivo</Button>
               </Col>
               <Col sm={4} md={4} lg={4} xs={12}>
-                <Button size="sm" onClick={() => setTypePayment(2)} variant="dark" block="true">Tarjeta</Button>
+                <Button size="sm" onClick={() => setTypePayment(2)} variant="dark" block="true">Tarjeta Debito</Button>
               </Col>
               <Col sm={4} md={4} lg={4} xs={12}>
-                <Button size="sm" onClick={() => setTypePayment(3)} variant="dark" block="true">Sumup</Button>
+                <Button size="sm" onClick={() => setTypePayment(3)} variant="dark" block="true">Tarjeta Crédito</Button>
               </Col>
               <br/><br/>
+              {/*
               <Col sm={4} md={4} lg={4} xs={12}>
                 <Button size="sm" onClick={() => setTypePayment(4)} variant="dark" block="true">Cheque</Button>
               </Col>
@@ -235,6 +245,7 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
                 <Button size="sm" onClick={() => setTypePayment(6)} variant="dark" block="true">Pago multiple</Button>
               </Col>
               <div className="clearfix"></div>
+              */}
               <br/><br/>
               <Col sm={6} md={6} lg={6} xs={12}>
                 <Button size="sm" variant="secondary" block="true" onClick={handleFinishPayment}>Finalizar</Button>

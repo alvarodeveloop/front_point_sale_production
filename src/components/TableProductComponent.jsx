@@ -70,7 +70,16 @@ const TableProductComponent = (props) => {
           return (<Badge variant="danger" className="font_badge"> {propsTable.cell.row.original.inventary[0].stock} </Badge>)
         }
       },
-      
+      {
+        Header: '.',
+        Cell: props1 => {
+          const {original} = props1.cell.row
+          return (
+            <Button variant="primary" type="button" size="sm" block={true} onClick={() => props.addToCart(original)}>Agregar</Button>
+          )
+        }
+      }
+
     )
 
   },[])

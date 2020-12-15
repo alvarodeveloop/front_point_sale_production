@@ -26,7 +26,7 @@ let status = 1
 const SaleThirdPartPage = (props) => {
 
   const [payment, setPayment] = useState({
-    payment: '',
+    payment: 0,
     turned: '',
     type: 1,
     multiple_payment: {
@@ -74,7 +74,8 @@ const SaleThirdPartPage = (props) => {
 
       let total_to_pay = parseFloat(props.sale.rooms[props.sale.idCartSelected].totales.total)
       let paymentTotal = parseFloat(payment.payment)
-      if(paymentTotal < total_to_pay){
+
+      if(paymentTotal < total_to_pay && status === 1){
         toast.error('El monto pagado es inferior al total por pagar')
       }else{
 
@@ -256,25 +257,13 @@ const SaleThirdPartPage = (props) => {
   }
 
   const onSubmitDispatch = e => {
-
+    
     const form = e.currentTarget;
     e.preventDefault();
     if (form.checkValidity() === false) {
       e.stopPropagation();
       setValidatedDispatch(true);
       return
-    }
-
-    if(!payment.type){
-      toast.error('Debe escoger un método de pago')
-      return
-    }
-
-    let total_to_pay = parseFloat(props.sale.rooms[props.sale.idCartSelected].totales.total)
-    let paymentTotal = parseFloat(payment.payment)
-    if((paymentTotal !== '' || paymentTotal !== null) && (paymentTotal < total_to_pay)){
-      toast.error('El monto pagado es inferior al total por pagar')
-      return false
     }
 
     let cartSale = Object.assign({},props.sale.rooms[props.sale.idCartSelected],{
@@ -318,25 +307,27 @@ const SaleThirdPartPage = (props) => {
       <br/><br/>
       <Row>
         <Col sm={4} md={4} lg={4} style={{borderRadius:'15px',boxShadow:'5px 5px 5px lightgray'}}>
-          <br/><br/>
+          <h4 className="text-center">Métodos de Pago</h4>
+          <br/>
           <Row>
             <Col sm={6} md={6} lg={6} xs={6}>
               <Button size="sm" onClick={() => setTypePayment(1)} variant={payment.type === 1 ? 'secondary' : 'dark'} block="true">Efectivo</Button>
             </Col>
             <Col sm={6} md={6} lg={6} xs={6}>
-              <Button size="sm" onClick={() => setTypePayment(2)} variant={payment.type === 2 ? 'secondary' : 'dark'} block="true">Tarjeta</Button>
+              <Button size="sm" onClick={() => setTypePayment(2)} variant={payment.type === 2 ? 'secondary' : 'dark'} block="true">Tarjeta Debito</Button>
             </Col>
           </Row>
           <br></br>
           <br></br>
           <Row>
             <Col sm={6} md={6} lg={6} xs={6}>
-              <Button size="sm" onClick={() => setTypePayment(3)} variant={payment.type === 3 ? 'secondary' : 'dark'} block="true">Sumup</Button>
+              <Button size="sm" onClick={() => setTypePayment(3)} variant={payment.type === 3 ? 'secondary' : 'dark'} block="true">Tarjeta Crédito</Button>
             </Col>
-            <Col sm={6} md={6} lg={6} xs={6}>
+            {/*<Col sm={6} md={6} lg={6} xs={6}>
               <Button size="sm" onClick={() => setTypePayment(4)} variant={payment.type === 4 ? 'secondary' : 'dark'} block="true">Cheque</Button>
-            </Col>
+            </Col>*/}
           </Row>
+          {/*
           <br/><br/>
           <Row>
             <Col sm={6} md={6} lg={6} xs={6}>
@@ -345,7 +336,7 @@ const SaleThirdPartPage = (props) => {
             <Col sm={6} md={6} lg={6} xs={6}>
               <Button size="sm" onClick={() => setTypePayment(6)} variant={payment.type === 6 ? 'secondary' : 'dark'} block="true">Pago multiple</Button>
             </Col>
-          </Row>
+          </Row>*/}
           <br></br>
           <hr/>
           <Row>
@@ -395,13 +386,16 @@ const SaleThirdPartPage = (props) => {
           <br/>
           <Row>
             <Col sm={4} md={4} lg={4} xs={12} className="text-center">
-              <h4>Sub Total: <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.neto) } </Badge></h4>
+              <h4>Sub Total:</h4>
+              <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.neto) } </Badge>
             </Col>
             <Col sm={4} md={4} lg={4} xs={12} className="text-center">
-              <h4>Tax: <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.tax) }</Badge></h4>
+              <h4>Tax:</h4>
+              <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.tax) }</Badge>
             </Col>
             <Col sm={4} md={4} lg={4} xs={12} className="text-center">
-              <h4>Total: <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.total) }</Badge></h4>
+              <h4>Total:</h4>
+              <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.total) }</Badge>
             </Col>
           </Row>
           <Row className="justify-content-center">
@@ -540,11 +534,16 @@ const SaleThirdPartPage = (props) => {
                 <br/>
               </Col>
             </Row>
+            <br/>
+            <Row className="justify-content-center">
+              <Col sm={4} md={4} lg={4}>
+                <Button variant="primary" size="md" type="submit">Enviar para Guardar</Button>
+              </Col>
+              <Col sm={4} md={4} lg={4}>
+                <Button variant="danger" size="md" onClick={handleOnHideModalDispatch} type="button">Cerrar</Button>
+              </Col>
+            </Row>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" size="sm" type="submit">Enviar para Guardar</Button>
-          <Button variant="danger" size="sm" onClick={handleOnHideModalDispatch} type="button">Cerrar</Button>
-        </Modal.Footer>
         </Form>
       </Modal>
     </Container>

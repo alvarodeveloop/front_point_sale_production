@@ -19,11 +19,13 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import
 import { formatNumber } from 'utils/functions'
 import ModalSolvedSale from 'components/modals/ModalSolvedSale'
 import ModalDetailSale from 'components/modals/ModalDetailSale'
+import 'styles/components/modalComponents.css'
 import * as moment from 'moment-timezone'
 import { showPriceWithDecimals } from 'utils/functions'
 import {Doughnut} from 'react-chartjs-2';
 import { ARRAY_COLORS } from 'utils/constants'
 import { connect } from 'react-redux'
+import layoutHelpers from 'shared/layouts/helpers'
 let saleColumns = []
 
 let optionsBar = {
@@ -70,7 +72,9 @@ const HistorySalePage = (props) => {
         }, 2000);
       }
     }
+    layoutHelpers.toggleCollapsed()
     return () =>{
+      layoutHelpers.toggleCollapsed()
       saleColumns = []
       resetChartData()
     }
@@ -96,53 +100,55 @@ const HistorySalePage = (props) => {
         },
         {
           Header: 'Cliente',
-          accessor: props => props.client ? [props.client.name_client+' '+props.client.data_document] : [],
+          accessor: props1 => props1.client ? [props1.client.name_client+' '+props1.client.data_document] : [],
 
         },
         {
           Header: 'Total',
           accessor: 'total',
-          Cell: props => {
-            return showPriceWithDecimals(props.config,props.cell.row.original.total)
+          Cell: props1 => {
+            return showPriceWithDecimals(props1.config,props1.cell.row.original.total)
           }
         },
         {
           Header: 'Pago',
           accessor: 'payment',
-          Cell: props => {
-            return showPriceWithDecimals(props.config,props.cell.row.original.payment)
+          Cell: props1 => {
+            return showPriceWithDecimals(props1.config,props1.cell.row.original.payment)
           }
         },
         {
           Header: 'Status',
-          accessor: props => [props.status === 2 ? 'En Espera' : 'Pagado'],
-          Cell: props =>{
-            return props.cell.row.original.status === 2 ? 'En Espera' : 'Pagado'
+          accessor: props1 => [props1.status === 2 ? 'En Espera' : 'Pagado'],
+          Cell : props1 => {
+            const {original} = props1.cell.row
+            if(original.status === 2){
+              return (<Badge variant="danger" className="font-badge">En espera</Badge>)
+            }else{
+              return (<Badge variant="success" className="font-badge">Pagado</Badge>)
+            }
           }
         },
         {
           Header: 'Fecha',
-          accessor: props => [props.createdAt],
-          Cell: props =>{
-            return moment(props.cell.row.original.createdAt).format('DD-MM-YYYY HH:II:SS')
-          }
+          accessor: props1 => [moment(props1.createdAt).format('DD-MM-YYYY')],
         },
         {
           Header: 'Acciones',
-          Cell: props =>{
+          Cell: props1 =>{
             return(
-              <DropdownButton size="sm" id={'drop'+props.cell.row.original.id} title="Seleccione"  block="true">
-                {props.cell.row.original.status === 2 ? (
+              <DropdownButton size="sm" id={'drop'+props1.cell.row.original.id} title="Seleccione"  block="true">
+                {props1.cell.row.original.status === 2 ? (
                   <React.Fragment>
-                    <Dropdown.Item onClick={() => solvedSale(props.cell.row.original)}>Pagar Pedido</Dropdown.Item>
-                      <Dropdown.Item onClick={() => seeDetails(props.cell.row.original)}>Ver Detalle</Dropdown.Item>
-                      <Dropdown.Item onClick={() => anulateSale(props.cell.row.original)}>Anular Venta</Dropdown.Item>
+                    <Dropdown.Item onClick={() => solvedSale(props1.cell.row.original)}>Pagar Pedido</Dropdown.Item>
+                      <Dropdown.Item onClick={() => seeDetails(props1.cell.row.original)}>Ver Detalle</Dropdown.Item>
+                      <Dropdown.Item onClick={() => anulateSale(props1.cell.row.original)}>Anular Venta</Dropdown.Item>
                   </React.Fragment>
                 ) : (
                   <React.Fragment>
-                    <Dropdown.Item onClick={() => printInvoice(props.cell.row.original)}>Imprimir Factura</Dropdown.Item>
-                      <Dropdown.Item onClick={() => seeDetails(props.cell.row.original)}>Ver Detalle</Dropdown.Item>
-                      <Dropdown.Item onClick={() => anulateSale(props.cell.row.original)}>Anular Venta</Dropdown.Item>
+                    <Dropdown.Item onClick={() => printInvoice(props1.cell.row.original)}>Imprimir Factura</Dropdown.Item>
+                      <Dropdown.Item onClick={() => seeDetails(props1.cell.row.original)}>Ver Detalle</Dropdown.Item>
+                      <Dropdown.Item onClick={() => anulateSale(props1.cell.row.original)}>Anular Venta</Dropdown.Item>
                   </React.Fragment>
                 )}
 
@@ -224,17 +230,11 @@ const HistorySalePage = (props) => {
   return (
     <Container>
       <Row>
-        <Col sm={6} md={6} lg={6}></Col>
-        <Col sm={6} md={6} lg={6} className="text-center">
-          <h5>Totales de Ventas</h5>
-        </Col>
-      </Row>
-      <Row>
         <Col sm={6} md={6} lg={6}>
           <h4 className="title_principal">Tabla de Ventas</h4>
         </Col>
-        <Col sm={6} md={6} lg={6}>
-          <Doughnut data={data_donut_ss_status} redraw={redraw} options={optionsBar}/>
+        <Col sm={6} md={6} lg={6} className="text-center">
+          <h4 className="title_principal">Total ventas <Badge variant="danger" className="font-badge">{sales.length}</Badge></h4>
         </Col>
       </Row>
       <hr/>

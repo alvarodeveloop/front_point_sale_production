@@ -334,7 +334,7 @@ const SalePageParent = (props) => {
               removeCart={props.removeCart}
               removeProduct={props.removeProduct}
               setBuyer={props.setBuyer}
-              deleteBuyer={props.daleteBuyer}
+              deleteBuyer={props.deleteBuyer}
               sale={props.sale}
               showIndexCart={showIndexCart}
               showProductAndTotal={showProductAndTotal}

@@ -61,8 +61,12 @@ const BillSearchPage = props => {
         }
       },
       {
-        Header: 'Ref Cotización',
+        Header: 'Ref-Cotización',
         accessor: 'ref_cotizacion',
+      },
+      {
+        Header: 'Referencia-Venta',
+        accessor: 'ref_sale',
       },
       {
         Header: 'Rut Cliente',
@@ -126,13 +130,13 @@ const BillSearchPage = props => {
                   {props1.cell.row.original.products.map((v,i) => (
                     <li className="list-group-item" key={i}>
                       <b>Producto</b>: {v.name_product}<br/>
-                      <b>Precio</b> : {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,v.price)}<br/>
+                      <b>Precio</b> : {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,v.price)}<br/>
                       <b>Cantidad</b>: {v.quantity}</li>
                   ))}
                 </ul>
               </Tooltip>}>
                 <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                  {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_product)}
+                  {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_product)}
                 </Badge>
             </OverlayTrigger>
           )
@@ -144,7 +148,7 @@ const BillSearchPage = props => {
         Cell: props1 => {
           return (
             <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-              {props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_gastos)}
+              {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_gastos)}
             </Badge>
           )
         }
@@ -155,22 +159,37 @@ const BillSearchPage = props => {
         Cell: props1 => {
           return (
             <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-              {props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_iva)}
+              {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_iva)}
             </Badge>
           )
         }
       },
       {
-        Header: 'Descuento Global',
+        Header: 'Descuento o Recargo Global',
         accessor: 'discount_global_total',
         Cell: props1 => {
+          const {original} = props1.cell.row
           return (
             <OverlayTrigger placement={'left'} overlay={
               <Tooltip id={"tooltip-total_pagar"+props1.cell.row.original.id}>
-                {props1.cell.row.original.discount_global}%
+                {original.ref_sale ? (
+                  <React.Fragment>
+                    Monto: { original.type_discount_global ? original.discount_global+"%" : showPriceWithDecimals(props.configGeneral,original.discount_global_amount)}
+                    <br/>
+                    {original.discount_global_amount > 0 ? (
+                      <React.Fragment>
+                        <b>Tipo:</b> { original.type_discount_global ? "Porcentaje" : "Fijo"} - {original.discount_or_recharge_discount_global ? "Descuento" : "Recarga"}
+                      </React.Fragment>
+                    ) : ''}
+                  </React.Fragment>
+                ) : (
+                  <React.Fragment>
+                    {original.discount_global}%
+                  </React.Fragment>
+                )}
               </Tooltip>}>
                 <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                  {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.discount_global_amount)}
+                  {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.discount_global_amount)}
                 </Badge>
             </OverlayTrigger>
           )
@@ -193,7 +212,7 @@ const BillSearchPage = props => {
         Cell: props1 => {
           return (
             <Badge variant="danger" className="font-badge">
-              {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_bond)}
+              {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_bond)}
             </Badge>
 
           )
@@ -205,7 +224,7 @@ const BillSearchPage = props => {
         Cell: props1 => {
           return (
             <Badge variant="danger" className="font-badge">
-              {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.debit_balance)}
+              {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.debit_balance)}
             </Badge>
 
           )

@@ -61,19 +61,20 @@ const ModalDiscountProduct = (props) => {
     if(props.product && e.target.name === "amount"){
       if(discount.type !== "fijo"){
         let total = parseFloat(props.product.price) * parseFloat(props.product.cantidad)
-        let resTotal = ((total * e.target.value) / 100) * parseFloat(props.product.cantidad)
+        let resTotal = ((total * e.target.value) / 100)
         total = total - resTotal
         total = total ? total : 0
         setTotalCalculado(total)
       }else{
         let total = parseFloat(props.product.price) * parseFloat(props.product.cantidad)
         let resTotal = parseFloat(e.target.value) * parseFloat(props.product.cantidad)
+        //let resTotal = parseFloat(e.target.value)
         total = total - resTotal
         total = total ? total : 0
         setTotalCalculado(total)
       }
     }else if(!props.product && e.target.name === "amount"){
-
+      // descuento global
       if(discount.type !== "fijo"){
         let total = (parseFloat(props.totales.total_backup) * parseFloat(e.target.value)) / 100
         total = parseFloat(props.totales.total_backup) - total
@@ -175,8 +176,8 @@ const ModalDiscountProduct = (props) => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button size="sm" variant="secondary" type="submit">Enviar</Button>
-          <Button size="sm" onClick={handleOnHide}>Cerrar</Button>
+          <Button size="md" variant="secondary" type="submit">Enviar</Button>
+          <Button size="md" onClick={handleOnHide}>Cerrar</Button>
         </Modal.Footer>
       </Form>
     </Modal>

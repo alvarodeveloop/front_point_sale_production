@@ -126,7 +126,7 @@ const CardProductSale = (props) => {
             )}
           </Col>
           <Col sm={2} md={2} lg={2}>
-            <h6 className="text-center">Nombre Producto</h6>
+            <h6 className="text-center">Nombre</h6>
             <br/>
             <h6 className="text-center">{props.product.name_product}</h6>
           </Col>
