@@ -18,6 +18,7 @@ import ModalFactura from 'components/modals/ModalFactura'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import axios from 'axios'
+import {FaUser,FaPencilAlt} from 'react-icons/fa'
 
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
@@ -257,7 +258,7 @@ const SaleThirdPartPage = (props) => {
   }
 
   const onSubmitDispatch = e => {
-    
+
     const form = e.currentTarget;
     e.preventDefault();
     if (form.checkValidity() === false) {
@@ -465,13 +466,13 @@ const SaleThirdPartPage = (props) => {
             <Col sm={12} md={12} lg={12}>
               <Row>
                 <Col sm={4} md={4} lg={4}>
-                  <Button variant="danger" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(1)}>Usar Datos del Cliente</Button>
+                  <Button variant="dark" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(1)}>Usar Datos del Cliente <FaUser /></Button>
                 </Col>
                 <Col sm={4} md={4} lg={4}>
-                  <Button variant="danger" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(2)}>Usar datos del cliente pero con otra dirección</Button>
+                  <Button variant="dark" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(2)}>Usar datos del cliente pero con otra dirección <FaUser /></Button>
                 </Col>
                 <Col sm={4} md={4} lg={4}>
-                  <Button variant="danger" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(3)}>Ingresar Datos</Button>
+                  <Button variant="dark" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(3)}>Ingresar Datos <FaPencilAlt /></Button>
                 </Col>
               </Row>
               <hr/>
@@ -537,10 +538,10 @@ const SaleThirdPartPage = (props) => {
             <br/>
             <Row className="justify-content-center">
               <Col sm={4} md={4} lg={4}>
-                <Button variant="primary" size="md" type="submit">Enviar para Guardar</Button>
+                <Button variant="danger" size="sm" type="submit" block={true}>Enviar para Guardar</Button>
               </Col>
               <Col sm={4} md={4} lg={4}>
-                <Button variant="danger" size="md" onClick={handleOnHideModalDispatch} type="button">Cerrar</Button>
+                <Button variant="secondary" size="sm" onClick={handleOnHideModalDispatch} block={true} type="button">Cerrar</Button>
               </Col>
             </Row>
         </Modal.Body>

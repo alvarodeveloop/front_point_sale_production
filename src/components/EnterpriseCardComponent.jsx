@@ -12,7 +12,7 @@ const EnterpriseCardComponent = ({enterprise,...props}) => {
   return (
     <React.Fragment>
       <h4 style={{color: 'rgb(180, 55, 33)', textTransform: 'uppercase', fontSize: "12px"}}>{enterprise.bussines_name}</h4>
-      <Image src={require('../assets/img/logo/AIDY_01.jpg')} style={{width: '100%'}}/>
+      <Image src={require('../assets/img/logo/AIDY_01.jpg')} style={{width: '200px'}}/>
       <br/>
       <span className="letras_negras">Estado :</span> {enterprise.is_open ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
       <br/><br/>

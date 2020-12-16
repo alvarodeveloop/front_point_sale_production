@@ -459,7 +459,7 @@ const AuthPageTemplate = props => {
                     {/* Logo */}
                     <div className="d-flex justify-content-center align-items-center">
                       <div className="position-relative text-center">
-                        <Image src={require('../assets/img/logo/AIDY_01.jpg')} width="55%" />
+                        <Image src={require('../assets/img/logo/AIDY_01.jpg')} width="150px" />
                       </div>
                     </div>
                     {/* / Logo */}
@@ -544,7 +544,7 @@ const AuthPageTemplate = props => {
                     <div className="text-center text-muted">
                       Aún no tienes Cuenta? <Button variant="link" size="sm" onClick={goToSignUp}>Registrate</Button>
                     </div>
-                    <div className="text-muted">
+                    <div className="text-center text-muted">
                       Contraseña olvidada? <Button variant="link" size="sm" onClick={() => setTypeVisibleDiv(4)}>Recuperala</Button>
                     </div>
                 </div>

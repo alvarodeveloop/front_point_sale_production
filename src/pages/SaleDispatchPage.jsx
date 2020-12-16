@@ -404,6 +404,7 @@ const SaleDispatchPage = (props) => {
         config={props.config}
         configStore={props.configStore}
         dataToPay={saleDataOption}
+        isDispatch={true}
       />
     {props.config && props.configStore ? (
       <ModalDetailSale

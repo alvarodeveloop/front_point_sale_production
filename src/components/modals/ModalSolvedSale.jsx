@@ -161,7 +161,7 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
     >
       <Modal.Header closeButton className="header_dark">
         <Modal.Title id="contained-modal-title-vcenter">
-          Cancelar Factura
+          Pagar Factura
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -289,10 +289,10 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
               </Row>
               <Row className="justify-content-center">
                 <Col sm={4} md={4} lg={4}>
-                  <Button size="sm" variant="secondary" block={true} onClick={handlePaymentMultiple}>Procesar</Button>
+                  <Button size="md" variant="secondary" block={true} onClick={handlePaymentMultiple}>Procesar</Button>
                 </Col>
                 <Col sm={4} md={4} lg={4}>
-                  <Button size="sm" variant="danger" block={true} onClick={()=> setIsOpenMultiple(false)}>Mostrar Sección de Pagos</Button>
+                  <Button size="md" variant="danger" block={true} onClick={()=> setIsOpenMultiple(false)}>Mostrar Sección de Pagos</Button>
                 </Col>
               </Row>
             </Col>
@@ -302,7 +302,7 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
 
       </Modal.Body>
       <Modal.Footer>
-          <Button size="sm" onClick={handleOnHide}>Cerrar</Button>
+          <Button size="md" onClick={handleOnHide}>Cerrar</Button>
       </Modal.Footer>
     </Modal>
   )
