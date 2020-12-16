@@ -95,7 +95,6 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
         payment
       })
       let route = props.isDispatch ? 'sale_dispatch_payment' : 'sale_fiao'
-
       axios.post(API_URL+route,cartSale).then(result => {
 
         toast.success('Proceso Completado')
