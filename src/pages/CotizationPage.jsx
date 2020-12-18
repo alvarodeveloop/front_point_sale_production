@@ -129,13 +129,13 @@ const CotizationPage = (props) => {
       }
     }else{
       let config_general = props.configGeneral
-      if(!config_general.is_syncronized){
+      /*if(!config_general.is_syncronized){
         toast.error('Su cuenta no esta sincronizada con el SII, complete su configuración general para usar este módulo')
         setTimeout(function () {
           props.history.replace('/dashboard')
         }, 3000);
         return
-      }
+      }*/
 
       if(props.match.params.id){
         if(count > 1 && props.id_branch_office !== cotizationData.id_branch_office){
@@ -508,7 +508,7 @@ const CotizationPage = (props) => {
       product.category = ""
       if(Array.isArray(product.categories)){
         product.categories.forEach((item, i) => {
-          product.category+= item.name_category
+          product.category+= item.categories.name_category
         });
       }
     }
@@ -561,19 +561,6 @@ const CotizationPage = (props) => {
         window.scrollTo(0, 0);
       }, 500);
     }else{
-      setCotizationData(oldData => {
-        return Object.assign({},oldData,{
-          business_name_transmitter: props.configStore.name_store,
-          rut_transmitter: props.configStore.rut,
-          address_transmitter: props.configStore.address,
-          spin_transmitter: props.configGeneral.sping,
-          email_transmitter: props.configStore.email,
-          phone_transmitter: props.configStore.phone,
-          actividad_economica_transmitter: props.configGeneral.actividad_economica,
-          city_transmitter:  props.configStore.city,
-          comuna_transmitter: props.configStore.comuna
-        })
-      })
       handleDisplayCotizacionField(3)
     }
   }

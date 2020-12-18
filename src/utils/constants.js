@@ -152,7 +152,7 @@ export const ARRAY_COLORS = [
   "rgb(213, 235, 39)"
 ]
 
-export const OBJECT_COTIZATION = {
+export let OBJECT_COTIZATION = {
   business_name_transmitter: '',
   rut_transmitter: '',
   address_transmitter: '',

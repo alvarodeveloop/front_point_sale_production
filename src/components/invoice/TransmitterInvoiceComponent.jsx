@@ -14,7 +14,19 @@ import InputField from 'components/input/InputComponent'
 const TransmitterInvoiceComponent = (props) => {
   const [clientSearched, setClientSearched] = useState(props.cotizationData.type_invoicing ? true : false)
   useEffect(() => {
-    console.log(props.configGeneral,'aqui');
+    props.setCotizationData(oldData => {
+      return Object.assign({},oldData,{
+        business_name_transmitter : props.configGeneral && !oldData.bussines_name ? props.configGeneral.enterprise.bussines_name : oldData.bussines_name,
+        rut_transmitter : props.configGeneral && !oldData.rut_transmitter ? props.configGeneral.enterprise.rut : oldData.rut_transmitter,
+        address_transmitter : props.configGeneral && !oldData.address_transmitter ? props.configGeneral.enterprise.address : oldData.address_transmitter,
+        city_transmitter : props.configGeneral && !oldData.city_transmitter ? props.configGeneral.enterprise.city : oldData.city_transmitter,
+        comuna_transmitter : props.configGeneral && !oldData.comuna_transmitter ? props.configGeneral.enterprise.comuna : oldData.comuna_transmitter,
+        spin_transmitter : props.configGeneral && !oldData.spin_transmitter ? props.configGeneral.enterprise.spin : oldData.spin_transmitter,
+        email_transmitter : props.configGeneral && !oldData.email_transmitter ? props.configGeneral.enterprise.email_enterprise : oldData.email_transmitter,
+        actividad_economica_transmitter : props.configGeneral && !oldData.actividad_economica_transmitter ? props.configGeneral.enterprise.actividad_economica : oldData.actividad_economica_transmitter,
+        phone_transmitter : props.configGeneral && !oldData.phone_transmitter ? props.configGeneral.enterprise.phone : oldData.phone_transmitter,
+      })
+    })
   },[])
 
   return (
@@ -45,7 +57,7 @@ const TransmitterInvoiceComponent = (props) => {
                   'Requerido*'
                 ]}
                 cols='col-md-4 col-lg-4 col-sm-4'
-                value={props.cotizationData.business_name_transmitter ? props.cotizationData.business_name_transmitter : props.configGeneral.enterprise.business_name}
+                value={props.cotizationData.business_name_transmitter}
                 handleChange={props.onChange}
                 />
               <InputField
@@ -57,7 +69,7 @@ const TransmitterInvoiceComponent = (props) => {
                   'Requerido*'
                 ]}
                 cols='col-md-4 col-lg-4 col-sm-4'
-                value={props.cotizationData.rut_transmitter ? props.cotizationData.rut_transmitter : props.configGeneral.enterprise.rut}
+                value={props.cotizationData.rut_transmitter}
                 handleChange={props.onChange}
                 />
               {props.cotizationData.address_transmitter_array.length > 0 ? (
@@ -87,7 +99,7 @@ const TransmitterInvoiceComponent = (props) => {
                     'Requerido*'
                   ]}
                   cols='col-md-4 col-lg-4 col-sm-4'
-                  value={props.cotizationData.address_transmitter ? props.cotizationData.address_transmitter : props.configGeneral.enterprise.address}
+                  value={props.cotizationData.address_transmitter}
                   handleChange={props.onChange}
                 />
               )}
@@ -102,7 +114,7 @@ const TransmitterInvoiceComponent = (props) => {
                   'Requerido*'
                 ]}
                 cols='col-md-4 col-lg-4 col-sm-4'
-                value={props.cotizationData.city_transmitter ? props.cotizationData.city_transmitter : props.configGeneral.enterprise.city}
+                value={props.cotizationData.city_transmitter}
                 handleChange={props.onChange}
               />
               {props.isType === "boleta" ? (
@@ -115,7 +127,7 @@ const TransmitterInvoiceComponent = (props) => {
                     'Requerido*'
                   ]}
                   cols='col-md-4 col-lg-4 col-sm-4'
-                  value={props.cotizationData.comuna_transmitter ? props.cotizationData.comuna_transmitter : props.configGeneral.enterprise.comuna}
+                  value={props.cotizationData.comuna_transmitter}
                   handleChange={props.onChange}
                 />
               ) : (
@@ -128,7 +140,7 @@ const TransmitterInvoiceComponent = (props) => {
                     'Requerido*'
                   ]}
                   cols='col-md-4 col-lg-4 col-sm-4'
-                  value={props.cotizationData.spin_transmitter ? props.cotizationData.spin_transmitter : props.configGeneral.enterprise.spin}
+                  value={props.cotizationData.spin_transmitter}
                   handleChange={props.onChange}
                 />
               )}
@@ -141,7 +153,7 @@ const TransmitterInvoiceComponent = (props) => {
                   'Requerido*','Formato tipo email*'
                 ]}
                 cols='col-md-4 col-lg-4 col-sm-4'
-                value={props.cotizationData.email_transmitter ? props.cotizationData.email_transmitter : props.configGeneral.enterprise.email_enterprise}
+                value={props.cotizationData.email_transmitter}
                 handleChange={props.onChange}
                 />
             </Row>
@@ -156,7 +168,7 @@ const TransmitterInvoiceComponent = (props) => {
                     'Requerido*'
                   ]}
                   cols='col-md-4 col-lg-4 col-sm-4'
-                  value={props.cotizationData.actividad_economica_transmitter ? props.cotizationData.actividad_economica_transmitter : props.configGeneral.enterprise.actividad_economica}
+                  value={props.cotizationData.actividad_economica_transmitter}
                   handleChange={props.onChange}
                   />
               </Row>
@@ -171,7 +183,7 @@ const TransmitterInvoiceComponent = (props) => {
                     'Requerido*'
                   ]}
                   cols='col-md-4 col-lg-4 col-sm-4'
-                  value={props.cotizationData.phone_transmitter && props.cotizationData.phone_transmitter !== "0" ? props.cotizationData.phone_transmitter : props.configGeneral.enterprise.phone}
+                  value={props.cotizationData.phone_transmitter}
                   handleChange={props.onChange}
                   />
               </Row>
@@ -189,7 +201,7 @@ const TransmitterInvoiceComponent = (props) => {
                'Requerido*'
                ]}
                cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.business_name_transmitter ? props.cotizationData.business_name_transmitter : props.configGeneral.enterprise.business_name}
+               value={props.cotizationData.business_name_transmitter}
                handleChange={props.onChange}
               />
               <InputField
@@ -201,7 +213,7 @@ const TransmitterInvoiceComponent = (props) => {
                'Requerido*'
                ]}
                cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.rut_transmitter ? props.cotizationData.rut_transmitter : props.configGeneral.enterprise.rut}
+               value={props.cotizationData.rut_transmitter}
                handleChange={props.onChange}
               />
               {props.cotizationData.address_transmitter_array.length > 0 ? (
@@ -231,7 +243,7 @@ const TransmitterInvoiceComponent = (props) => {
                     'Requerido*'
                   ]}
                   cols='col-md-4 col-lg-4 col-sm-4'
-                  value={props.cotizationData.address_transmitter ? props.cotizationData.address_transmitter : props.configGeneral.enterprise.address}
+                  value={props.cotizationData.address_transmitter}
                   handleChange={props.onChange}
                 />
               )}
@@ -246,7 +258,7 @@ const TransmitterInvoiceComponent = (props) => {
                'Requerido*'
                ]}
                cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.city_transmitter ? props.cotizationData.city_transmitter : props.configGeneral.enterprise.city}
+               value={props.cotizationData.city_transmitter}
                handleChange={props.onChange}
               />
               <InputField
@@ -258,7 +270,7 @@ const TransmitterInvoiceComponent = (props) => {
                'Requerido*'
                ]}
                cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.comuna_transmitter ? props.cotizationData.comuna_transmitter : props.configGeneral.enterprise.comuna}
+               value={props.cotizationData.comuna_transmitter}
                handleChange={props.onChange}
               />
               {props.cotizationData.actividad_economica_transmitter_array.length > 0 ? (
@@ -288,7 +300,7 @@ const TransmitterInvoiceComponent = (props) => {
                     'Requerido*'
                   ]}
                   cols='col-md-4 col-lg-4 col-sm-4'
-                  value={props.cotizationData.actividad_economica_transmitter ? props.cotizationData.actividad_economica_transmitter : props.configGeneral.enterprise.actividad_economica}
+                  value={props.cotizationData.actividad_economica_transmitter}
                   handleChange={props.onChange}
                 />
               )}
@@ -380,7 +392,7 @@ const TransmitterInvoiceComponent = (props) => {
                'Requerido*'
                ]}
                cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.business_name_transmitter ? props.cotizationData.business_name_transmitter : props.configGeneral.enterprise.business_name}
+               value={props.cotizationData.business_name_transmitter}
                handleChange={props.onChange}
               />
               <InputField
@@ -392,7 +404,7 @@ const TransmitterInvoiceComponent = (props) => {
                'Requerido*'
                ]}
                cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.rut_transmitter ? props.cotizationData.rut_transmitter : props.configGeneral.enterprise.rut}
+               value={props.cotizationData.rut_transmitter}
                handleChange={props.onChange}
               />
               {props.cotizationData.address_transmitter_array.length > 0 ? (
@@ -422,7 +434,7 @@ const TransmitterInvoiceComponent = (props) => {
                     'Requerido*'
                   ]}
                   cols='col-md-4 col-lg-4 col-sm-4'
-                  value={props.cotizationData.address_transmitter ? props.cotizationData.address_transmitter : props.configGeneral.enterprise.address}
+                  value={props.cotizationData.address_transmitter}
                   handleChange={props.onChange}
                 />
               )}
@@ -437,7 +449,7 @@ const TransmitterInvoiceComponent = (props) => {
                'Requerido*'
                ]}
                cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.city_transmitter ? props.cotizationData.city_transmitter : props.configGeneral.enterprise.city}
+               value={props.cotizationData.city_transmitter}
                handleChange={props.onChange}
               />
               <InputField
@@ -449,7 +461,7 @@ const TransmitterInvoiceComponent = (props) => {
                'Requerido*'
                ]}
                cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.comuna_transmitter ? props.cotizationData.comuna_transmitter : props.configGeneral.enterprise.comuna}
+               value={props.cotizationData.comuna_transmitter}
                handleChange={props.onChange}
               />
               {props.cotizationData.actividad_economica_transmitter_array.length > 0 ? (
@@ -479,7 +491,7 @@ const TransmitterInvoiceComponent = (props) => {
                     'Requerido*'
                   ]}
                   cols='col-md-4 col-lg-4 col-sm-4'
-                  value={props.cotizationData.actividad_economica_transmitter ? props.cotizationData.actividad_economica_transmitter : props.configGeneral.enterprise.actividad_economica}
+                  value={props.cotizationData.actividad_economica_transmitter}
                   handleChange={props.onChange}
                 />
               )}

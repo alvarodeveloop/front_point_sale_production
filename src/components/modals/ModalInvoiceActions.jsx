@@ -52,15 +52,20 @@ const ModalInvoiceActions = (props) => {
               </Row>
             ) : (
               <Row className="justify-content-center">
-                <Col sm={4} md={4} lg={4}>
+                <Col sm={3} md={3} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
                 </Col>
-                <Col sm={4} md={4} lg={4}>
+                <Col sm={3} md={3} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToBond(props.cotization)} block={true}>Pagos <FaFilePdf /></Button>
                 </Col>
-                <Col sm={4} md={4} lg={4}>
+                <Col sm={3} md={3} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printInvoice(props.cotization)} block={true}>Ver factura pdf <FaFilePdf /></Button>
                 </Col>
+                {props.cotization.type == 2 ? (
+                  <Col sm={3} md={3} lg={3}>
+                    <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printInvoice(props.cotization,3)} block={true}>Generar nueva factura pdf <FaFilePdf /></Button>
+                  </Col>
+                ) : ''}
               </Row>
             )}
             <br/>

@@ -86,19 +86,18 @@ const SaleThirdPartPage = (props) => {
           id_cash_register: JSON.parse(localStorage.getItem('cash_register')).id_cash_register
         })
 
-        axios.post(API_URL+'sale',cartSale).then(result => {
+        axios.post(API_URL+'sale',cartSale).then(async result => {
 
-          toast.success('Proceso Completado')
           if(status === 2){
-            clearForm()
-            props.removeCart()
-            setTimeout(() => {
-              props.handleChangeView(1)
-            },1000)
+            toast.success('Proceso Completado')
+            returnToBegginig()
           }else{
-            clearForm()
-            setLastSale(result.data)
-            setIsOpenInvoice(true)
+            toast.success('Proceso completado, espere mientras se genera el documento de factura')
+            let invoice_response = await axios.get(API_URL+'invoice_print_by_sale/'+result.data.id)
+            window.open(API_URL+'documents/sales/files_pdf/'+invoice_response.data.name)
+            setTimeout(function () {
+              returnToBegginig()
+            }, 1000);
           }
 
         }).catch(err => {
@@ -111,6 +110,14 @@ const SaleThirdPartPage = (props) => {
         })
       }
     }
+  }
+
+  const returnToBegginig = () => {
+    clearForm()
+    props.removeCart()
+    setTimeout(() => {
+      props.handleChangeView(1)
+    },1000)
   }
 
   const handlePaymentMultiple = data => {
@@ -196,14 +203,6 @@ const SaleThirdPartPage = (props) => {
       })
       return object
     })
-  }
-
-  const handleHideModalFactura = () => {
-    setIsOpenInvoice(false)
-    props.removeCart()
-    setTimeout(() => {
-      props.handleChangeView(1)
-    },1000)
   }
 
   const clearForm = () => {
@@ -439,14 +438,6 @@ const SaleThirdPartPage = (props) => {
         isShow={isOpenMultiple}
         onHide={handleHideModal}
         handlePaymentMultiple={handlePaymentMultiple}
-        />
-      <ModalFactura
-        isShow={isOpenInvoice}
-        onHide={handleHideModalFactura}
-        lastSale={lastSale}
-        configStore={props.configStore}
-        config={props.config}
-        sale={props.sale.rooms[props.sale.idCartSelected]}
         />
       <Modal
         show={isOpenModalDispatch}

@@ -326,9 +326,9 @@ const SaleNoteSearchPage = props => {
     props.history.replace('/sale_note/sale_note_create')
   }
 
-  const printInvoice = original => {
+  const printInvoice = (original,type = 0) => {
     toast.info('Cargando documento, espere por favor')
-    axios.get(API_URL+'invoice_print/'+original.id+"/0/2").then(result => {
+    axios.get(API_URL+'invoice_print/'+original.id+"/"+type+"/2").then(result => {
       window.open(API_URL+'documents/sale_note/files_pdf/'+result.data.name)
     }).catch(err => {
       if(err.response){
