@@ -118,16 +118,20 @@ const InvoiceBondPage = (props) => {
         Header: 'Acciones',
         Cell: props1 => {
           const original = props1.cell.row.original
-          return(
-            <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-              <Dropdown.Item onClick={() => modifyRegisterBond(original)}>Modificar</Dropdown.Item>
-              <Dropdown.Item onClick={() => deleteRegisterBond(original)}>Eliminar</Dropdown.Item>
-            </DropdownButton>
-          )
+          if(invoice && invoice.status === 2){
+            return ''
+          }else{
+            return(
+              <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
+                <Dropdown.Item onClick={() => modifyRegisterBond(original)}>Modificar</Dropdown.Item>
+                <Dropdown.Item onClick={() => deleteRegisterBond(original)}>Eliminar</Dropdown.Item>
+              </DropdownButton>
+            )
+          }
         }
       }
     ]
-  },[])
+  },[invoice])
 
   const fetchData = () => {
     const id = props.match.params.id
@@ -372,7 +376,7 @@ const InvoiceBondPage = (props) => {
           <Button variant="success" block={true} type="button" onClick={exportToExcel} size="sm">Exportar a Excel <FaRegFileCode /></Button>
         </Col>
         <Col sm={3} md={3} lg={3}>
-          <Button variant="success" block={true} type="button" onClick={handleModalBond} size="sm">Agregar Abono <FaPlusCircle /></Button>
+          <Button variant="success" block={true} type="button" onClick={handleModalBond} size="sm" disabled={invoice && invoice.status === 2 ? true : false}>Agregar Abono <FaPlusCircle /></Button>
         </Col>
         <Col sm={3} md={3} lg={3}>
           <Button variant="success" block={true} type="button" onClick={exportToPdf} size="sm">Exportar a Pdf <FaRegFilePdf /></Button>
@@ -461,7 +465,7 @@ const InvoiceBondPage = (props) => {
                type='text'
                label='Detalle'
                name='detail'
-               required={true}
+               required={false}
                messageErrors={[
                'Requerido*'
                ]}
@@ -469,6 +473,7 @@ const InvoiceBondPage = (props) => {
                value={formBond.detail}
                handleChange={onChange}
                />
+             {/*
               <Col sm={4} md={4} lg={4}>
                 <br/>
                 <Form.Group>
@@ -481,7 +486,7 @@ const InvoiceBondPage = (props) => {
                     onChange={onChange}
                     />
                 </Form.Group>
-              </Col>
+              </Col>*/}
             </Row>
           </Modal.Body>
           <Modal.Footer>

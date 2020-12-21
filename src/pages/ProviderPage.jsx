@@ -116,8 +116,8 @@ const ProviderPage = (props) => {
         <Col sm={12} md={12} lg={12} xs={12}>
           <Table columns={[
             {
-              Header: 'Nombre',
-              accessor: 'name_fantasy',
+              Header: 'Razón Social',
+              accessor: 'social_razon',
               Cell: props1 => {
                 return (
                   <OverlayTrigger placement={'right'} overlay={
@@ -130,7 +130,7 @@ const ProviderPage = (props) => {
                       </ul>
                     </Tooltip>
                   }>
-                    <Button size="sm" type="button" block={true} variant="link" onClick={() => modifyRegister(props1.cell.row.original.id)}>{props1.cell.row.original.name_fantasy}</Button>
+                    <Button size="sm" type="button" block={true} variant="link" onClick={() => modifyRegister(props1.cell.row.original.id)}>{props1.cell.row.original.social_razon}</Button>
                   </OverlayTrigger>
                 )
               }

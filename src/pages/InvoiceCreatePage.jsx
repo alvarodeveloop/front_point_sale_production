@@ -18,7 +18,6 @@ import { FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt
 import Table from 'components/Table'
 import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
 import FormClientModal from 'components/modals/FormClientModal'
-import ModalCotizacionProduct from 'components/modals/ModalCotizacionProduct'
 import ModalGastosCotizacion from 'components/modals/ModalGastosCotizacion'
 import { showPriceWithDecimals } from 'utils/functions'
 import * as moment from 'moment-timezone'
@@ -449,6 +448,8 @@ const InvoiceCreatePage = (props) => {
               removeProductRef={removeProductRef}
               addRef={addRef}
               goToDashboard={goToDashboard}
+              products={products}
+              {...props}
             />
           ) : cotizationData.type_invoicing === false ? (
             <InvoiceExcentasComponent
@@ -472,6 +473,8 @@ const InvoiceCreatePage = (props) => {
               removeProductRef={removeProductRef}
               addRef={addRef}
               goToDashboard={goToDashboard}
+              products={products}
+              {...props}
             />
           ) : (
             <Row className="justify-content-center">
@@ -486,14 +489,6 @@ const InvoiceCreatePage = (props) => {
               <FormClientModal
                 isShow={isShowModalClient}
                 onHide={handleHideModalClient}
-                />
-                <ModalCotizacionProduct
-                  isShow={isShowModalProduct}
-                  onHide={handleHideModalProduct}
-                  products={products}
-                  handleSelectProduct={handleSelectProduct}
-                  handleSelectProductNotRegistered={() => {}}
-                  {...props}
                 />
               <ModalGastosCotizacion
                 isShow={isShowModalGastos}

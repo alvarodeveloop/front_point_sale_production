@@ -128,40 +128,42 @@ const FormProductSale = (props) => {
 
       setConfig(result[1].data)
       if(result.length > 2){
-        console.log(result[2].data,'aqui ==============');
-        setDataStore({
-          name_product: result[2].data.name_product,
-          cost: result[2].data.cost,
-          code_ean: result[2].data.code_ean,
-          description: result[2].data.description,
-          is_neto: result[2].data.is_neto,
-          id_category: result[2].data.categories.map(v => { return {value: v.categories.id, label : v.categories.name_category} }),
-          is_auto_sale: result[2].data.is_auto_sale,
-          img_product: result[2].data.img_product,
-          method_sale: result[2].data.method_sale,
-          price:result[2].data.price,
-          qr_image:result[2].data.qr_image,
-          sticker_color: result[2].data.sticker_color,
-          detailCost: result[2].data.cost_details,
-          pack: result[2].data.pack,
-          minimun_stock: result[2].data.inventary[0].minimun_stock,
-        })
+        if(props.isInventary){
+          setDataStore({
+            name_product: result[2].data.name_product,
+            cost: result[2].data.cost,
+            code_ean: result[2].data.code_ean,
+            description: result[2].data.description,
+            is_neto: result[2].data.is_neto,
+            id_category: result[2].data.categories.map(v => { return {value: v.categories.id, label : v.categories.name_category} }),
+            is_auto_sale: result[2].data.is_auto_sale,
+            img_product: result[2].data.img_product,
+            method_sale: result[2].data.method_sale,
+            price:result[2].data.price,
+            qr_image:result[2].data.qr_image,
+            sticker_color: result[2].data.sticker_color,
+            detailCost: result[2].data.cost_details,
+            pack: result[2].data.pack,
+            minimun_stock: result[2].data.inventary[0].minimun_stock,
+          })
+          
+          if(result[2].data.method_sale == 2){
+            setIsShowPackField(true)
+          }
+          setIsUpdate(true)
 
-        if(result[2].data.method_sale == 2){
-          setIsShowPackField(true)
-        }
-        setIsUpdate(true)
+          if(result[2].data.img_product){
+            setImgComponent(
+              <Image src={  API_URL+'images/product/principal/'+ result[2].data.img_product}
+                id="imagen_logo" style={{ width: '150px' }} thumbnail />
+            )
+          }
 
-        if(result[2].data.img_product){
-          setImgComponent(
-            <Image src={  API_URL+'images/product/principal/'+ result[2].data.img_product}
-              id="imagen_logo" style={{ width: '150px' }} thumbnail />
-          )
+          if(result[2].data.gallery.length > 0){
+            setGalleryImgUpdate(result[2].data.gallery)
+          }
         }
 
-        if(result[2].data.gallery.length > 0){
-          setGalleryImgUpdate(result[2].data.gallery)
-        }
       }
 
     }).catch(err => {

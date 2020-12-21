@@ -134,6 +134,8 @@ const InvoiceAfectaComponent = (props) => {
             setIsShowModalProduct={props.setIsShowModalProduct}
             setGastosDetail={props.setGastosDetail}
             onChange={props.onChange}
+            products={props.products}
+            {...props}
           />
           {/* ======================================================= */}
           <hr/>
@@ -259,6 +261,7 @@ InvoiceAfectaComponent.propTypes = {
   removeProductRef: PropTypes.func.isRequired,
   addRef: PropTypes.func.isRequired,
   submitData : PropTypes.func,
+  products: PropTypes.array.isRequired,
 }
 
 export default InvoiceAfectaComponent

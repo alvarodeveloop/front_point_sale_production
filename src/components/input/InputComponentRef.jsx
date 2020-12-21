@@ -25,6 +25,7 @@ const InputFieldRef = React.forwardRef( (props,ref) => {
           onKeyUp={ props.handleKeyUp ? props.handleKeyUp : () => {} }
           className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
           style={props.style ? props.style : {}}
+          autoComplete={props.autoComplete ? props.autoComplete : 'xxx'}
           />
         <Form.Control.Feedback type="invalid">
           (
@@ -54,6 +55,7 @@ const InputFieldRef = React.forwardRef( (props,ref) => {
           ref={ref ? ref : null}
           className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
           style={props.style ? props.style : {}}
+          autoComplete={props.autoComplete ? props.autoComplete : 'xxx'}
         >
           {props.children}
         </Form.Control>
@@ -86,6 +88,7 @@ const InputFieldRef = React.forwardRef( (props,ref) => {
           ref={ref ? ref : null}
           className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
           style={props.style ? props.style : {}}
+          autoComplete={props.autoComplete ? props.autoComplete : 'xxx'}
         />
         <Form.Control.Feedback type="invalid">
           (
@@ -119,6 +122,7 @@ InputFieldRef.propTypes = {
   multiple: PropTypes.bool,
   className: PropTypes.string,
   steps: PropTypes.string,
+  autoComplete: PropTypes.bool,
 }
 
 export default InputFieldRef

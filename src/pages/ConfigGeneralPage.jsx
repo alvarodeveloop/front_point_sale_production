@@ -11,6 +11,7 @@ import {
   Col,
   Button,
   Badge,
+  Image
 } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import 'styles/pages/config_general.css'
@@ -29,6 +30,7 @@ const ConfigGeneralPage = (props) => {
     rut_legal_representative : '',
     clave_login_sii: '', // clave para hacer login en el  sii
     clave_sii: '', // firma del sii
+    logo: '',
   })
   const [nuxoConfig,setNuxoConfig] = useState(null)
 
@@ -54,6 +56,7 @@ const ConfigGeneralPage = (props) => {
           rut_legal_representative : result[0].data.rut_legal_representative,
           clave_login_sii: result[0].data.clave_login_sii, // clave para hacer login en el  sii
           clave_sii: result[0].data.clave_sii, // firma del sii
+          logo : result[0].data.logo,
         })
       }
       setNuxoConfig(result[1].data)
@@ -150,6 +153,9 @@ const ConfigGeneralPage = (props) => {
             <li className="str d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Rut del representante legal: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">{config.rut_legal_representative}</Badge></li>
             <li className="str d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Clave del representante legal: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">***********</Badge></li>
             <li className="str d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Firma: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">***************</Badge></li>
+            <li className="str d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Logo: </b>{config.logo ? (
+              <Image src={API_URL+"images/enterprise/logo/"+config.logo} width="100px" />
+            ) : "No ha cargado el logo de su empresa"}</li>
           </ul>
         </Col>
         <Col sm={5} md={5} lg={5}>

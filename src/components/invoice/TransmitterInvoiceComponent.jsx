@@ -14,19 +14,21 @@ import InputField from 'components/input/InputComponent'
 const TransmitterInvoiceComponent = (props) => {
   const [clientSearched, setClientSearched] = useState(props.cotizationData.type_invoicing ? true : false)
   useEffect(() => {
-    props.setCotizationData(oldData => {
-      return Object.assign({},oldData,{
-        business_name_transmitter : props.configGeneral && !oldData.bussines_name ? props.configGeneral.enterprise.bussines_name : oldData.bussines_name,
-        rut_transmitter : props.configGeneral && !oldData.rut_transmitter ? props.configGeneral.enterprise.rut : oldData.rut_transmitter,
-        address_transmitter : props.configGeneral && !oldData.address_transmitter ? props.configGeneral.enterprise.address : oldData.address_transmitter,
-        city_transmitter : props.configGeneral && !oldData.city_transmitter ? props.configGeneral.enterprise.city : oldData.city_transmitter,
-        comuna_transmitter : props.configGeneral && !oldData.comuna_transmitter ? props.configGeneral.enterprise.comuna : oldData.comuna_transmitter,
-        spin_transmitter : props.configGeneral && !oldData.spin_transmitter ? props.configGeneral.enterprise.spin : oldData.spin_transmitter,
-        email_transmitter : props.configGeneral && !oldData.email_transmitter ? props.configGeneral.enterprise.email_enterprise : oldData.email_transmitter,
-        actividad_economica_transmitter : props.configGeneral && !oldData.actividad_economica_transmitter ? props.configGeneral.enterprise.actividad_economica : oldData.actividad_economica_transmitter,
-        phone_transmitter : props.configGeneral && !oldData.phone_transmitter ? props.configGeneral.enterprise.phone : oldData.phone_transmitter,
+    setTimeout(function () {
+      props.setCotizationData(oldData => {
+        return Object.assign({},oldData,{
+          business_name_transmitter : props.configGeneral && !oldData.bussines_name ? props.configGeneral.enterprise.bussines_name : oldData.bussines_name,
+          rut_transmitter : props.configGeneral && !oldData.rut_transmitter ? props.configGeneral.enterprise.rut : oldData.rut_transmitter,
+          address_transmitter : props.configGeneral && !oldData.address_transmitter ? props.configGeneral.enterprise.address : oldData.address_transmitter,
+          city_transmitter : props.configGeneral && !oldData.city_transmitter ? props.configGeneral.enterprise.city : oldData.city_transmitter,
+          comuna_transmitter : props.configGeneral && !oldData.comuna_transmitter ? props.configGeneral.enterprise.comuna : oldData.comuna_transmitter,
+          spin_transmitter : props.configGeneral && !oldData.spin_transmitter ? props.configGeneral.enterprise.spin : oldData.spin_transmitter,
+          email_transmitter : props.configGeneral && !oldData.email_transmitter ? props.configGeneral.enterprise.email_enterprise : oldData.email_transmitter,
+          actividad_economica_transmitter : props.configGeneral && !oldData.actividad_economica_transmitter ? props.configGeneral.enterprise.actividad_economica : oldData.actividad_economica_transmitter,
+          phone_transmitter : props.configGeneral && !oldData.phone_transmitter ? props.configGeneral.enterprise.phone : oldData.phone_transmitter,
+        })
       })
-    })
+    }, 1500);
   },[])
 
   return (
@@ -196,7 +198,7 @@ const TransmitterInvoiceComponent = (props) => {
                type='text'
                label='Razón Social'
                name='business_name_transmitter'
-               required={true}
+               required={props.isType === "sale_note" ? false : true}
                messageErrors={[
                'Requerido*'
                ]}
@@ -221,7 +223,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='select'
                   label='Direccion'
                   name='address_transmitter'
-                  required={!props.cotizationData.type_invoicing ? true : false}
+                  required={!props.cotizationData.type_invoicing && props.isType !== "sale_note"  ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -238,7 +240,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='text'
                   label='Direccion'
                   name='address_transmitter'
-                  required={props.isType === "facturacion" ? !props.cotizationData.type_invoicing ? true : false : true}
+                  required={props.isType === "facturacion" ? !props.cotizationData.type_invoicing ? true : false : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -278,7 +280,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='select'
                   label='Actividad Económica'
                   name='actividad_economica_transmitter'
-                  required={true}
+                  required={props.isType !== "sale_note" ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -295,7 +297,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='text'
                   label='Actividad Económica'
                   name='actividad_economica_transmitter'
-                  required={true}
+                  required={props.isType !== "sale_note" ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -314,7 +316,7 @@ const TransmitterInvoiceComponent = (props) => {
                       type='select'
                       label='Tipo de Venta'
                       name='type_sale_transmitter'
-                      required={true}
+                      required={props.isType !== "sale_note" ? true : false}
                       messageErrors={[
                         'Requerido*'
                       ]}
@@ -331,7 +333,7 @@ const TransmitterInvoiceComponent = (props) => {
                       type='text'
                       label='Tipo de Venta'
                       name='type_sale_transmitter'
-                      required={true}
+                      required={props.isType !== "sale_note" ? true : false}
                       messageErrors={[
                         'Requerido*'
                       ]}
@@ -349,7 +351,7 @@ const TransmitterInvoiceComponent = (props) => {
                       type='select'
                       label='Tipo de Traslado'
                       name='type_transfer_trasmitter'
-                      required={true}
+                      required={props.isType !== "sale_note" ? true : false}
                       messageErrors={[
                         'Requerido*'
                       ]}
@@ -366,7 +368,7 @@ const TransmitterInvoiceComponent = (props) => {
                       type='text'
                       label='Tipo de Traslado'
                       name='type_transfer_trasmitter'
-                      required={true}
+                      required={props.isType !== "sale_note" ? true : false}
                       messageErrors={[
                         'Requerido*'
                       ]}
@@ -469,7 +471,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='select'
                   label='Actividad Económica'
                   name='actividad_economica_transmitter'
-                  required={true}
+                  required={props.isType === "sale_note" ? false : true}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -486,7 +488,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='text'
                   label='Actividad Económica'
                   name='actividad_economica_transmitter'
-                  required={true}
+                  required={props.isType === "sale_note" ? false : true}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -502,7 +504,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='select'
                   label='Tipo de Venta'
                   name='type_sale_transmitter'
-                  required={true}
+                  required={props.isType === "sale_note" ? false : true}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -519,7 +521,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='text'
                   label='Tipo de Venta'
                   name='type_sale_transmitter'
-                  required={true}
+                  required={props.isType === "sale_note" ? false : true}
                   messageErrors={[
                     'Requerido*'
                   ]}

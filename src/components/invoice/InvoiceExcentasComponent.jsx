@@ -177,6 +177,8 @@ const InvoiceExcentasComponent = (props) => {
             setIsShowModalProduct={props.setIsShowModalProduct}
             setGastosDetail={props.setGastosDetail}
             onChange={props.onChange}
+            products={props.products}
+            {...props}
           />
           {/* ======================================================= */}
           <hr/>
@@ -292,6 +294,7 @@ InvoiceExcentasComponent.propTypes = {
   removeProductRef: PropTypes.func.isRequired,
   addRef: PropTypes.func.isRequired,
   submitData : PropTypes.func,
+  products : PropTypes.array.isRequired,
 }
 
 export default InvoiceExcentasComponent

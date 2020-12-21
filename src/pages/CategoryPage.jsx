@@ -42,11 +42,11 @@ const CategoryPage = (props) => {
 
     categoryColumns.push({
       Header: 'Acciones',
-      Cell: props => {
-        const id = props.cell.row.original.id
+      Cell: props1 => {
+        const id = props1.cell.row.original.id
         return(
-          <DropdownButton size="sm" id={'drop'+props.cell.row.original.id} title="Seleccione"  block="true">
-            <Dropdown.Item onClick={() => modifyRegister(props.cell.row.original)}>Modificar</Dropdown.Item>
+          <DropdownButton size="sm" id={'drop'+props1.cell.row.original.id} title="Seleccione"  block="true">
+            <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
             <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
           </DropdownButton>
         )

@@ -18,7 +18,6 @@ import { FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt
 import Table from 'components/Table'
 import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
 import FormClientModal from 'components/modals/FormClientModal'
-import ModalCotizacionProduct from 'components/modals/ModalCotizacionProduct'
 import ModalGastosCotizacion from 'components/modals/ModalGastosCotizacion'
 import { showPriceWithDecimals } from 'utils/functions'
 import * as moment from 'moment-timezone'
@@ -107,18 +106,10 @@ const SaleNotePage = (props) => {
   const [isOpenModalInvoice, setIsOpenModalInvoice] = useState(false)
   const [cotizationData, setCotizationData] = useState(
     Object.assign({},OBJECT_COTIZATION,{
-      business_name_transmitter: props.configStore ? props.configStore.name_store : '',
-      rut_transmitter: props.configStore ? props.configStore.rut : '',
-      address_transmitter: props.configStore ? props.configStore.address : '',
-      country_transmitter: props.configStore ? props.configStore.pais.nombre : '',
-      email_transmitter: props.configStore ? props.configStore.email : '',
-      phone_transmitter: props.configStore ? props.configStore.phone : '',
-      actividad_economica_transmitter: props.configStore ? props.configGeneral.actividad_economica : '',
-      comuna_transmitter: props.configStore ? props.configStore.comuna : '',
-      city_transmitter: props.configStore ? props.configStore.city : '',
       date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
       type: 2,
       date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+      type_invoicing : true,
     }))
   const [displayModals,setDisplayModals] = useState(false)
   const [refCotizacion, setRefCotizacion] = useState([])
@@ -140,13 +131,6 @@ const SaleNotePage = (props) => {
       }
     }else{
       let config_general = props.configGeneral
-      if(!config_general.is_syncronized){
-        toast.error('Su cuenta no esta sincronizada con el SII, complete su configuración general para usar este módulo')
-        setTimeout(function () {
-          props.history.replace('/dashboard')
-        }, 3000);
-        return
-      }
       fetchClients()
       fetchProducts()
       get_ref()
@@ -326,28 +310,6 @@ const SaleNotePage = (props) => {
 
   const handleModalSeller = () => {
     setIsShowModalSeller(!isShowModalSeller)
-  }
-
-  const handleSelectProduct = product => {
-    // metodo para manejar la escogencia del producto en la modal de productos para el detalle de la cotizacion
-    if(!product.quantity) product.quantity = 1
-    if(!product.category){
-      product.category = ""
-      if(Array.isArray(product.categories)){
-        product.categories.forEach((item, i) => {
-          product.category+= item.name_category
-        });
-      }
-    }
-    product.id_product = product.id
-    product.discount_stock = true
-    if(product.inventary[0].inventary_cost.length){
-      setGastosDetail([...gastosDetail, {description: product.inventary[0].inventary_cost[0].detail, amount: product.inventary[0].inventary_cost[0].cost, id_product: product.id}])
-      setDetailProducts([...detailProducts, product])
-    }else{
-      setDetailProducts([...detailProducts, product])
-    }
-    setIsShowModalProduct(false)
   }
 
   const removeCLient = () => {
@@ -537,7 +499,7 @@ const SaleNotePage = (props) => {
               <Col sm={12} md={12} lg={12}>
                 <Accordion defaultActiveKey="2">
                   <TransmitterInvoiceComponent
-                    isType="facturacion"
+                    isType="sale_note"
                     cotizationData={cotizationData}
                     setCotizationData={setCotizationData}
                     onChange={onChange}
@@ -572,6 +534,8 @@ const SaleNotePage = (props) => {
               setIsShowModalProduct={setIsShowModalProduct}
               setGastosDetail={setGastosDetail}
               onChange={onChange}
+              products={products}
+              {...props}
             />
             {/* ======================================================= */}
             <hr/>
@@ -663,14 +627,6 @@ const SaleNotePage = (props) => {
               <FormClientModal
                 isShow={isShowModalClient}
                 onHide={handleHideModalClient}
-                />
-                <ModalCotizacionProduct
-                  isShow={isShowModalProduct}
-                  onHide={handleHideModalProduct}
-                  products={products}
-                  handleSelectProduct={handleSelectProduct}
-                  handleSelectProductNotRegistered={() => {}}
-                  {...props}
                 />
               <ModalGastosCotizacion
                 isShow={isShowModalGastos}

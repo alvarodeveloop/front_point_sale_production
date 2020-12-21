@@ -602,7 +602,7 @@ const ClientInvoiceComponet = (props) => {
                label='Rut'
                name='rut_client'
                readonly={readonlyRut}
-               required={true}
+               required={props.isType === "sale_note" ? false : true}
                messageErrors={[
                  'Requerido*'
                ]}
@@ -614,7 +614,7 @@ const ClientInvoiceComponet = (props) => {
                 type='text'
                 label='Razón Social'
                 name='business_name_client'
-                required={true}
+                required={props.isType === "sale_note" ? false : true}
                 messageErrors={[
                 'Requerido*'
                 ]}
@@ -627,7 +627,7 @@ const ClientInvoiceComponet = (props) => {
                 type='select'
                 label='Direccion'
                 name='address_client'
-                required={!props.cotizationData.type_invoicing ? true : false}
+                required={!props.cotizationData.type_invoicing && props.isType !== "sale_note" ? true : false}
                 messageErrors={[
                   'Requerido*'
                 ]}
@@ -644,7 +644,7 @@ const ClientInvoiceComponet = (props) => {
                 type='text'
                 label={'Direccion'}
                 name='address_client'
-                required={!props.cotizationData.type_invoicing ? true : false}
+                required={!props.cotizationData.type_invoicing && props.isType !== "sale_note" ? true : false}
                 messageErrors={[
                   'Requerido*'
                 ]}
@@ -659,7 +659,7 @@ const ClientInvoiceComponet = (props) => {
                type='text'
                label='Ciudad'
                name='city_client'
-               required={!props.cotizationData.type_invoicing ? true : false}
+               required={!props.cotizationData.type_invoicing && props.isType !== "sale_note" ? true : false}
                messageErrors={[
 
                ]}
@@ -671,7 +671,7 @@ const ClientInvoiceComponet = (props) => {
                 type='text'
                 label='Comuna'
                 name='comuna_client'
-                required={!props.cotizationData.type_invoicing ? true : false}
+                required={!props.cotizationData.type_invoicing && props.isType !== "sale_note" ? true : false}
                 messageErrors={[
                 'Requerido*'
                 ]}
@@ -722,7 +722,7 @@ const ClientInvoiceComponet = (props) => {
                   type='text'
                   label='Giro'
                   name='spin_client'
-                  required={!props.cotizationData.type_invoicing ? true : false}
+                  required={!props.cotizationData.type_invoicing && props.isType !== "sale_note" ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -772,7 +772,7 @@ const ClientInvoiceComponet = (props) => {
                     label='Tipo de Compra'
                     name='type_buy_client'
                     placeholder={props.cotizationData.type_invoicing ? "opcional" : ""}
-                    required={props.cotizationData.type_invoicing ? false : true}
+                    required={props.cotizationData.type_invoicing && props.isType === "sale_note" ? false : true}
                     messageErrors={[
                       'Requerido*'
                     ]}
@@ -790,7 +790,7 @@ const ClientInvoiceComponet = (props) => {
                     label='Tipo de Compra'
                     name='type_buy_client'
                     placeholder={props.cotizationData.type_invoicing ? "opcional" : ""}
-                    required={props.cotizationData.type_invoicing ? false : true}
+                    required={props.cotizationData.type_invoicing && props.isType === "sale_note" ? false : true}
                     messageErrors={[
                       'Requerido*'
                     ]}
@@ -814,7 +814,7 @@ const ClientInvoiceComponet = (props) => {
                type='text'
                label='Nombre Contacto'
                name='name_contact'
-               required={true}
+               required={props.isType === "sale_note" ? false : true}
                messageErrors={[
                  'Requerido*'
                ]}

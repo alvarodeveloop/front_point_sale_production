@@ -160,6 +160,7 @@ const ProviderFormPage = (props) => {
       address: '',
       type_id: '',
     })
+    setValidate(false)
   }
 
   const registerAnotherOne = () => {
@@ -179,9 +180,9 @@ const ProviderFormPage = (props) => {
             <br/>
             <Row>
               <InputField
-                {...props.inputNameFantasy}
+                {...props.inputSocialRazon}
                 handleChange={onChange}
-                value={dataProvider.name_fantasy}
+                value={dataProvider.social_razon}
               />
               <InputField
                 {...props.inputTypeId}
@@ -193,28 +194,31 @@ const ProviderFormPage = (props) => {
                 <option value={2}>Identificación Fiscal</option>
               </InputField>
             </Row>
-            {dataProvider.type_id && dataProvider.type_id == 1 ? (
-              <Row>
-                <Form.Group className="col-md-6 col-sm-6 col-lg-6 col-12">
-                  <Form.Label className="fontBold">Rut</Form.Label>
-                  {/*<InputMask onChange={onChange} value={dataProvider.rut_provider} {...props.maskInput} {...props.inputRut}>
-                    { (inputProps) => <Form.Control {...inputProps} /> }
-                  </InputMask> */}
-                  <Form.Control onChange={onChange} value={dataProvider.rut_provider} {...props.inputRut} />
-                  <Form.Control.Feedback type="invalid">
-                    <span className="error-input">Requerido*</span>
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Row>
-            ) : dataProvider.type_id && dataProvider.type_id == 2 ? (
-              <Row>
-                <InputField
-                  {...props.inputId}
-                  handleChange={onChange}
-                  value={dataProvider.rut_provider}
-                />
-              </Row>
-            ) : ''}
+            <Row>
+              {dataProvider.type_id && dataProvider.type_id == 1 ? (
+                  <Form.Group className="col-md-6 col-sm-6 col-lg-6 col-12">
+                    <Form.Label className="fontBold">Rut</Form.Label>
+                    {/*<InputMask onChange={onChange} value={dataProvider.rut_provider} {...props.maskInput} {...props.inputRut}>
+                      { (inputProps) => <Form.Control {...inputProps} /> }
+                    </InputMask> */}
+                    <Form.Control onChange={onChange} value={dataProvider.rut_provider} {...props.inputRut} />
+                    <Form.Control.Feedback type="invalid">
+                      <span className="error-input">Requerido*</span>
+                    </Form.Control.Feedback>
+                  </Form.Group>
+              ) : dataProvider.type_id && dataProvider.type_id == 2 ? (
+                  <InputField
+                    {...props.inputId}
+                    handleChange={onChange}
+                    value={dataProvider.rut_provider}
+                  />
+              ) : ''}
+              <InputField
+                {...props.inputNameFantasy}
+                handleChange={onChange}
+                value={dataProvider.name_fantasy}
+              />
+            </Row>
             <Row>
               <InputField
                 {...props.inputCountry}
@@ -250,11 +254,6 @@ const ProviderFormPage = (props) => {
                 handleChange={onChange}
                 value={dataProvider.spin}
               />
-              <InputField
-                {...props.inputSocialRazon}
-                handleChange={onChange}
-                value={dataProvider.social_razon}
-              />
             </Row>
             <Row>
               <InputField
@@ -266,7 +265,7 @@ const ProviderFormPage = (props) => {
           </Col>
           <Col sm={3} md={3} lg={3} xs={6} className="containerDivSeparated justify-content-center align-items-center">
             {isCreated ? (
-              <a onClick={registerAnotherOne} href="javascript:void(0)" className="btn btn-secondary btn-block">Crear Otro <FaPlusCircle /></a>
+              <Button size="sm" type="button" onClick={registerAnotherOne} variant="secondary" block={true}>Crear otro <FaPlusCircle /></Button>
             ) : (
               <Button size="sm" type="submit" variant="primary" block={true}>Guardar <FaPlusCircle /></Button>
             )}
@@ -284,7 +283,7 @@ const ProviderFormPage = (props) => {
 ProviderFormPage.defaultProps ={
   inputNameFantasy: {
     type: 'text',
-    required: true,
+    required: false,
     name: 'name_fantasy',
     label : 'Nombre Fantasia',
     cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
@@ -300,7 +299,7 @@ ProviderFormPage.defaultProps ={
   },
   inputCountry: {
     type: 'select',
-    required: true,
+    required: false,
     name: 'id_country',
     label : 'País',
     messageErrors: [
@@ -310,7 +309,7 @@ ProviderFormPage.defaultProps ={
   },
   inputComuna: {
     type: 'text',
-    required: true,
+    required: false,
     name: 'comuna',
     label : 'Comuna',
     messageErrors: [
@@ -320,7 +319,7 @@ ProviderFormPage.defaultProps ={
   },
   inputCity: {
     type: 'text',
-    required: true,
+    required: false,
     name: 'city',
     label : 'Ciudad',
     messageErrors: [
@@ -330,7 +329,7 @@ ProviderFormPage.defaultProps ={
   },
   inputSpin: {
     type: 'textarea',
-    required: true,
+    required: false,
     name: 'spin',
     label : 'Giro',
     rows: 2,
@@ -341,7 +340,7 @@ ProviderFormPage.defaultProps ={
   },
   inputPhone: {
     type: 'number',
-    required: true,
+    required: false,
     name: 'phone',
     label : 'Teléfono',
     messageErrors: [
@@ -361,7 +360,7 @@ ProviderFormPage.defaultProps ={
   },
   inputAddress: {
     type: 'textarea',
-    required: true,
+    required: false,
     name: 'address',
     label : 'Dirección',
     rows: 2,

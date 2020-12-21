@@ -19,7 +19,6 @@ import { FaBook, FaMoneyBill,FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, Fa
 import { MdPrint } from 'react-icons/md'
 import Table from 'components/Table'
 import FormClientModal from 'components/modals/FormClientModal'
-import ModalCotizacionProduct from 'components/modals/ModalCotizacionProduct'
 import ModalGastosCotizacion from 'components/modals/ModalGastosCotizacion'
 import { showPriceWithDecimals } from 'utils/functions'
 import * as moment from 'moment-timezone'
@@ -445,30 +444,6 @@ const BillPage = (props) => {
     setIsShowModalSeller(!isShowModalSeller)
   }
 
-
-
-  const handleSelectProduct = product => {
-    // metodo para manejar la escogencia del producto en la modal de productos para el detalle de la cotizacion
-    if(!product.quantity) product.quantity = 1
-    if(!product.category){
-      product.category = ""
-      if(Array.isArray(product.categories)){
-        product.categories.forEach((item, i) => {
-          product.category+= item.name_category
-        });
-      }
-    }
-    product.discount_stock = true
-    product.id_product = product.id
-    if(product.inventary[0].inventary_cost.length){
-      setGastosDetail([...gastosDetail, {description: product.inventary[0].inventary_cost[0].detail, amount: product.inventary[0].inventary_cost[0].cost, id_product: product.id}])
-      setDetailProducts([...detailProducts, product])
-    }else{
-      setDetailProducts([...detailProducts, product])
-    }
-    setIsShowModalProduct(false)
-  }
-
   const removeItemDetail = data => {
     setDetailProducts(detail => {
       return detail.filter(v => v.name_product !== data.name_product)
@@ -568,10 +543,12 @@ const BillPage = (props) => {
           <ProductTableComponent
             setDetailProducts={setDetailProducts}
             detailProducts={detailProducts}
+            products={products}
             cotizationData={cotizationData}
             setIsShowModalProduct={setIsShowModalProduct}
             setGastosDetail={setGastosDetail}
             onChange={onChange}
+            {...props}
           />
           {/* ======================================================= */}
           <hr/>
@@ -658,14 +635,6 @@ const BillPage = (props) => {
               <FormClientModal
                 isShow={isShowModalClient}
                 onHide={handleHideModalClient}
-                />
-                <ModalCotizacionProduct
-                  isShow={isShowModalProduct}
-                  onHide={handleHideModalProduct}
-                  products={products}
-                  handleSelectProduct={handleSelectProduct}
-                  handleSelectProductNotRegistered={() => {}}
-                  {...props}
                 />
               <ModalGastosCotizacion
                 isShow={isShowModalGastos}

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useState,useEffect} from 'react'
 import PropTypes from 'prop-types'
 import {
   Row,
@@ -12,9 +12,11 @@ import {
 import TableProductsCotization from 'components/TableProductsCotization'
 import InputField from 'components/input/InputComponent'
 import {FaPlusCircle} from 'react-icons/fa'
+import ModalCotizacionProduct from 'components/modals/ModalCotizacionProduct'
 
 const ProductTableComponent = (props) => {
 
+  const [isShowModalProduct,setIsShowModalProduct] = useState(false)
   useEffect(() => {
     document.querySelector(".button_product > button").className = document.querySelector(".button_product > button").className.replace('dropdown-toggle','')
   },[])
@@ -29,8 +31,37 @@ const ProductTableComponent = (props) => {
       discount: '',
       method_sale: "1",
       total: '',
-      is_neto: type
+      is_neto: type,
+      discount_stock: false
     }])
+  }
+
+  const handleHideModalProduct = () => {
+    setIsShowModalProduct(false)
+  }
+
+  const handleSelectProduct = product => {
+    // metodo para manejar la escogencia del producto en la modal de productos para el detalle de la cotizacion
+    if(!product.quantity) product.quantity = 1
+    if(!product.category){
+      product.category = ""
+      if(Array.isArray(product.categories)){
+        product.categories.forEach((item, i) => {
+          product.category+= item.name_category
+        });
+      }
+    }
+    product.discount_stock = true
+    product.id_product = product.id
+    if(product.inventary && Array.isArray(product.inventary) && product.inventary[0].inventary_cost.length){
+      props.setGastosDetail(oldData => {
+        return [...oldData, {description: product.name_product, amount: product.inventary[0].inventary_cost[0].cost, id_product: product.id}]
+      })
+      props.setDetailProducts([...props.detailProducts, product])
+    }else{
+      props.setDetailProducts([...props.detailProducts, product])
+    }
+    setIsShowModalProduct(false)
   }
 
   return (
@@ -111,13 +142,23 @@ const ProductTableComponent = (props) => {
           <Col sm={1} md={1} lg={1}>
             <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Producto a la Cotización</Tooltip>}>
               <DropdownButton size="sm" variant="danger" id={'dropdown_product'} title={(<FaPlusCircle />)} className="button_product">
-                <Dropdown.Item onClick={() => props.setIsShowModalProduct(true) }>Agregar Producto desde Inventario</Dropdown.Item>
+                <Dropdown.Item onClick={() => setIsShowModalProduct(true) }>Agregar Producto desde Inventario</Dropdown.Item>
                 <Dropdown.Item onClick={() => addNewProductIrregular(true)}>Agregar producto (valor neto) </Dropdown.Item>
                 <Dropdown.Item onClick={() => addNewProductIrregular(false)}>Agregar producto (valor con iva)</Dropdown.Item>
               </DropdownButton>
             </OverlayTrigger>
           </Col>
         </Row>
+      </Col>
+      <Col sm={12} md={12} lg={12}>
+        <ModalCotizacionProduct
+          isShow={isShowModalProduct}
+          onHide={handleHideModalProduct}
+          products={props.products}
+          handleSelectProduct={handleSelectProduct}
+          handleSelectProductNotRegistered={() => {}}
+          {...props}
+        />
       </Col>
     </Row>
   )
@@ -130,6 +171,7 @@ ProductTableComponent.propTypes = {
   setIsShowModalProduct: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   setGastosDetail: PropTypes.func.isRequired,
+  handleSelectProduct: PropTypes.func.isRequired
 }
 
 export default ProductTableComponent

@@ -28,7 +28,7 @@ const ModalStockInventary = (props) => {
   const [provider, setProvider] = useState([])
 
   useEffect(() => {
-    fetchProvider()
+
   },[])
 
   useEffect(() => {
@@ -61,18 +61,6 @@ const ModalStockInventary = (props) => {
         toast.error(err.response.data.message)
       }else{
         console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
-    })
-  }
-
-  const fetchProvider = () => {
-    axios.get(API_URL+'provider').then(result => {
-      setProvider(result.data)
-    }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
         toast.error('Error, contacte con soporte')
       }
     })
@@ -145,7 +133,7 @@ const ModalStockInventary = (props) => {
                    value={inventary.id_provider}
                    onChange={onChangeSelect}
                    isMulti={true}
-                   options={provider.map((v,i) => {
+                   options={props.providers.map((v,i) => {
                      return {value: v.id, label: v.social_razon}
                    })}
                  />
@@ -172,7 +160,8 @@ const ModalStockInventary = (props) => {
 ModalStockInventary.propTypes =  {
   onHide : PropTypes.func.isRequired,
   isShow : PropTypes.bool.isRequired,
-  product: PropTypes.object
+  product: PropTypes.object,
+  providers: PropTypes.array.isRequired,
 }
 
 ModalStockInventary.defaultProps = {

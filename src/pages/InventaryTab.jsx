@@ -27,6 +27,7 @@ const InventaryTab = (props) => {
   const [isOpenHistory, setIsOpenHistory] = useState(false)
   const [product, setProduct] = useState({})
   const [costs, setCosts] = useState([])
+  const [providers, setProviders] = useState([])
 
   useEffect(() => {
     fetchData()
@@ -127,8 +128,13 @@ const InventaryTab = (props) => {
   }
 
   const fetchData = () => {
-    axios.get(API_URL+'inventary').then(result => {
-      setInventary(result.data)
+    let promises = [
+      axios.get(API_URL+'provider'),
+      axios.get(API_URL+'inventary')
+    ]
+    Promise.all(promises).then(result => {
+      setInventary(result[1].data)
+      setProviders(result[0].data)
     }).catch(err => {
      	 if(err.response){
         toast.error(err.response.data.message)
@@ -153,6 +159,7 @@ const InventaryTab = (props) => {
 
   const handleSubmit = () => {
     setIsOpenStock(false)
+    setIsOpenHistory(false)
     setProduct({})
     fetchData()
   }
@@ -178,12 +185,15 @@ const InventaryTab = (props) => {
         onHide={handleOnHideModalStock}
         product={product}
         handleSubmitStock={handleSubmit}
+        providers={providers}
       />
     <ModalHistoryInventary
       isShow={isOpenHistory}
       onHide={handleOnHideModalHistory}
       costs={costs}
       fetchData={fetchData}
+      handleSubmitStock={handleSubmit}
+      providers={providers}
     />
     </Container>
   )

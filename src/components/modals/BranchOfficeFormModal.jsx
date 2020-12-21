@@ -284,131 +284,6 @@ const BranchOfficeFormModal = (props) => {
         <Modal.Body>
           <Row>
             <Col sm={12} md={12} lg={12}>
-              <h4 className="title_principal">Datos del Administrador de la Sucursal</h4>
-            </Col>
-          </Row>
-          <hr/>
-          <Row>
-            <InputField
-              type="text"
-              label="Nombre Completo"
-              name="name"
-              required={false}
-              messageErrors={[
-                'Requerido*'
-              ]}
-              cols="col-md-4 col-lg-4 col-sm-4"
-              value={props.userForm.name}
-              handleChange={onChangeUser}
-            />
-            <InputField
-              type="text"
-              label="Rut"
-              name="rut"
-              required={false}
-              messageErrors={[
-                'Requerido*'
-              ]}
-              cols="col-md-4 col-lg-4 col-sm-4"
-              value={props.userForm.rut}
-              handleChange={onChangeUser}
-            />
-            <InputField
-              type="email"
-              label="Email"
-              name="email"
-              required={false}
-              messageErrors={[
-                'Requerido* ','Formato Tipo Email*'
-              ]}
-              cols="col-md-4 col-lg-4 col-sm-4"
-              value={props.userForm.email}
-              handleChange={onChangeUser}
-            />
-          </Row>
-          <Row>
-            <InputField
-              type="number"
-              label="Fono"
-              name="phone"
-              required={false}
-              messageErrors={[]}
-              cols="col-md-4 col-lg-4 col-sm-4"
-              value={props.userForm.phone}
-              handleChange={onChangeUser}
-            />
-            <InputField
-              type="password"
-              label="Contraseña"
-              name="password"
-              required={props.requiredInput}
-              messageErrors={[
-                'Requerido*'
-              ]}
-              cols="col-md-4 col-lg-4 col-sm-4"
-              value={props.userForm.password}
-              handleChange={onChangeUser}
-            />
-            <InputField
-              type="password"
-              label="Repita Contraseña"
-              name="password_repeat"
-              required={props.requiredInput}
-              messageErrors={[
-                'Requerido*'
-              ]}
-              cols="col-md-4 col-lg-4 col-sm-4"
-              value={props.userForm.password_repeat}
-              handleChange={onChangeUser}
-            />
-          </Row>
-          {!props.branchOfficeForm.id ? (
-            <Row>
-              <Col sm={12} md={12} lg={12}>
-                <Accordion>
-                  <Card>
-                    <Accordion.Toggle as={Card.Header} eventKey="0" className="header_card">
-                      <b>Modulos para el administrador</b> ( hacer click para desplegar )
-                    </Accordion.Toggle>
-                    <Accordion.Collapse eventKey="0">
-                      <Card.Body>
-                        <Row>
-                          {props.menu.map((v,i) => (
-                            <Col sm={4} md={4} lg={4} xs={6} key={i}>
-                              <Form.Group>
-                                <Form.Check type="checkbox"
-                                  custom
-                                  id={v.name_item+v.id}
-                                  label={v.name_item}
-                                  value={v.id}
-                                  checked={!!modules.find(f => f == v.id)}
-                                  onChange={(e) => handleAccess(e,v.id) } />
-                              </Form.Group>
-                            </Col>
-                          ))}
-                        </Row>
-                        <Row className="">
-                          <Col sm={6} md={6} lg={6} xs={12}>
-                            <Button size="sm" variant="danger" block={true} onClick={addAllModules}>Seleccionar Todos <FaCheckCircle /></Button>
-                          </Col>
-                          <Col sm={6} md={6} lg={6} xs={12}>
-                            <Button size="sm" variant="danger" block={true} onClick={removeAllModules}>Deseleccionar Todos <FaTrash /></Button>
-                          </Col>
-                        </Row>
-                      </Card.Body>
-                    </Accordion.Collapse>
-                  </Card>
-                </Accordion>
-              </Col>
-            </Row>
-          ) : '' }
-          <Row>
-            <Col sm={12} md={12} lg={12}>
-              <p className="text-center" style={{color: "rgb(215, 71, 40)"}}>No requeridos*</p>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={12} md={12} lg={12}>
               <h4 className="title_principal">Datos de la Sucursal</h4>
             </Col>
           </Row>
@@ -440,6 +315,143 @@ const BranchOfficeFormModal = (props) => {
               </Form.Group>
             </Col>
           </Row>
+          {!props.branchOfficeForm.id ? (
+            <Row>
+              <Col sm={12} md={12} lg={12}>
+                <Accordion>
+                  <Card>
+                    <Accordion.Toggle as={Card.Header} eventKey="0" className="header_card">
+                      <b>Datos del administrador de la sucursal</b> ( No es requerido para crear la sucursal, hacer click para desplegar )
+                    </Accordion.Toggle>
+                    <Accordion.Collapse eventKey="0">
+                      <Card.Body>
+                        <Row>
+                          <Col sm={12} md={12} lg={12}>
+                            <h4 className="title_principal">Datos del Administrador de la Sucursal</h4>
+                          </Col>
+                        </Row>
+                        <hr/>
+                        <Row>
+                          <InputField
+                            type="text"
+                            label="Nombre Completo"
+                            name="name"
+                            required={false}
+                            messageErrors={[
+                              'Requerido*'
+                            ]}
+                            cols="col-md-4 col-lg-4 col-sm-4"
+                            value={props.userForm.name}
+                            handleChange={onChangeUser}
+                            />
+                          <InputField
+                            type="text"
+                            label="Rut"
+                            name="rut"
+                            required={false}
+                            messageErrors={[
+                              'Requerido*'
+                            ]}
+                            cols="col-md-4 col-lg-4 col-sm-4"
+                            value={props.userForm.rut}
+                            handleChange={onChangeUser}
+                            />
+                          <InputField
+                            type="email"
+                            label="Email"
+                            name="email"
+                            required={false}
+                            autoComplete={"new-password"}
+                            messageErrors={[
+                              'Requerido* ','Formato Tipo Email*'
+                            ]}
+                            cols="col-md-4 col-lg-4 col-sm-4"
+                            value={props.userForm.email}
+                            handleChange={onChangeUser}
+                            />
+                        </Row>
+                        <Row>
+                          <InputField
+                            type="number"
+                            label="Fono"
+                            name="phone"
+                            required={false}
+                            messageErrors={[]}
+                            cols="col-md-4 col-lg-4 col-sm-4"
+                            value={props.userForm.phone}
+                            handleChange={onChangeUser}
+                            />
+                          <InputField
+                            type="password"
+                            label="Contraseña"
+                            name="password"
+                            required={props.requiredInput}
+                            autoComplete={"new-password"}
+                            messageErrors={[
+                              'Requerido*'
+                            ]}
+                            cols="col-md-4 col-lg-4 col-sm-4"
+                            value={props.userForm.password}
+                            handleChange={onChangeUser}
+                            />
+                          <InputField
+                            type="password"
+                            label="Repita Contraseña"
+                            name="password_repeat"
+                            required={props.requiredInput}
+                            messageErrors={[
+                              'Requerido*'
+                            ]}
+                            cols="col-md-4 col-lg-4 col-sm-4"
+                            value={props.userForm.password_repeat}
+                            handleChange={onChangeUser}
+                            />
+                        </Row>
+                        <Row>
+                          <Col sm={12} md={12} lg={12}>
+                            <Accordion>
+                              <Card>
+                                <Accordion.Toggle as={Card.Header} eventKey="1" className="header_card">
+                                  <b>Modulos para el administrador</b> ( hacer click para desplegar )
+                                </Accordion.Toggle>
+                                <Accordion.Collapse eventKey="1">
+                                  <Card.Body>
+                                    <Row>
+                                      {props.menu.map((v,i) => (
+                                        <Col sm={4} md={4} lg={4} xs={6} key={i}>
+                                          <Form.Group>
+                                            <Form.Check type="checkbox"
+                                              custom
+                                              id={v.name_item+v.id}
+                                              label={v.name_item}
+                                              value={v.id}
+                                              checked={!!modules.find(f => f == v.id)}
+                                              onChange={(e) => handleAccess(e,v.id) } />
+                                          </Form.Group>
+                                        </Col>
+                                      ))}
+                                    </Row>
+                                    <Row className="">
+                                      <Col sm={6} md={6} lg={6} xs={12}>
+                                        <Button size="sm" variant="danger" block={true} onClick={addAllModules}>Seleccionar Todos <FaCheckCircle /></Button>
+                                      </Col>
+                                      <Col sm={6} md={6} lg={6} xs={12}>
+                                        <Button size="sm" variant="danger" block={true} onClick={removeAllModules}>Deseleccionar Todos <FaTrash /></Button>
+                                      </Col>
+                                    </Row>
+                                  </Card.Body>
+                                </Accordion.Collapse>
+                              </Card>
+                            </Accordion>
+                          </Col>
+                        </Row>
+                      </Card.Body>
+                    </Accordion.Collapse>
+                  </Card>
+                </Accordion>
+              </Col>
+            </Row>
+          ) : ''}
           <hr/>
           <Row className="justify-content-center">
             <Col sm={4} md={4} lg={4}>

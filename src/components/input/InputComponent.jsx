@@ -24,6 +24,7 @@ const InputField = props => {
           onKeyUp={ props.handleKeyUp ? props.handleKeyUp : () => {} }
           className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
           style={props.style ? props.style : {}}
+          autoComplete={props.autoComplete ? props.autoComplete : 'xxx'}
           />
         <Form.Control.Feedback type="invalid">
           (
@@ -52,6 +53,7 @@ const InputField = props => {
           multiple={props.multiple ? props.multiple : false}
           className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
           style={props.style ? props.style : {}}
+          autoComplete={props.autoComplete ? props.autoComplete : 'xxx'}
         >
           {props.children}
         </Form.Control>
@@ -83,6 +85,7 @@ const InputField = props => {
           onKeyUp={ props.handleKeyUp ? props.handleKeyUp : () => {} }
           className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
           style={props.style ? props.style : {}}
+          autoComplete={props.autoComplete ? props.autoComplete : 'xxx'}
         />
         <Form.Control.Feedback type="invalid">
           (
@@ -117,6 +120,7 @@ InputField.propTypes = {
   className: PropTypes.string,
   steps: PropTypes.string,
   style: PropTypes.object,
+  autoComplete: PropTypes.bool,
 }
 
 export default InputField
