@@ -229,49 +229,10 @@ const ConfigStoreFormPage = (props) => {
       <Form onSubmit={onSubmit} noValidate validated={validate}>
         <Row className="justify-content-center containerDiv">
           <Col sm={12} md={12} lg={12}>
-            <h3 className="text-center font-title">Datos de la Tienda</h3>
+            <h4 className="text-center title_principal">Datos de la Tienda</h4>
             <br/>
           </Col>
-          <Col sm={6} md={6} lg={6} xs={6} className="">
-            <br/>
-            <Row className="align-items-center">
-              <Col sm={6} md={6} lg={6} xs={6}>
-                <Button size="sm" size="sm" onClick={pickLogo} variant="secondary" block="true">
-                  Escoger Logo <FaImage />
-                </Button>
-                <input type="file" id="file_logo" style={{display: 'none'}} onChange={readLogoImg} />
-              </Col>
-              <Col sm={6} md={6} lg={6} xs={6} className="text-center">
-                {imgComponent}
-              </Col>
-            </Row>
-            <br/>
-            <Row>
-              <InputField
-               type='text'
-               label='Rut'
-               name='rut'
-               required={false}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-6 col-lg-6 col-sm-6'
-               value={dataStore.rut}
-               handleChange={onChange}
-              />
-            </Row>
-            <Row>
-              <InputField
-                {...props.inputNameStore}
-                handleChange={onChange}
-                value={dataStore.name_store}
-              />
-              <InputField
-                {...props.inputEmail}
-                handleChange={onChange}
-                value={dataStore.email}
-              />
-            </Row>
+          <Col sm={12} md={12} lg={12} xs={12} className="">
             <Row>
               <InputField
                 {...props.inputCountry}
@@ -284,48 +245,29 @@ const ConfigStoreFormPage = (props) => {
                 ))}
               </InputField>
               <InputField
-               type='text'
-               label='Ciudad'
-               name='city'
-               required={true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-6 col-lg-6 col-sm-6'
-               value={dataStore.city}
-               handleChange={onChange}
+                 type='text'
+                 label='Ciudad'
+                 name='city'
+                 required={false}
+                 messageErrors={[
+                 'Requerido*'
+                 ]}
+                 cols='col-md-4 col-lg-4 col-sm-4'
+                 value={dataStore.city}
+                 handleChange={onChange}
                />
-            </Row>
-            <Row>
-              <InputField
-               type='text'
-               label='Comuna'
-               name='comuna'
-               required={true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-6 col-lg-6 col-sm-6'
-               value={dataStore.comuna}
-               handleChange={onChange}
-              />
-              <InputField
-                {...props.inputPhone}
-                handleChange={onChange}
-                value={dataStore.phone}
-              />
-            </Row>
-            <Row>
-              <InputField
-                {...props.inputWhatssap}
-                handleChange={onChange}
-                value={dataStore.whatssap}
-              />
-              <InputField
-                {...props.inputAddress}
-                handleChange={onChange}
-                value={dataStore.address}
-              />
+               <InputField
+                  type='text'
+                  label='Comuna'
+                  name='comuna'
+                  required={false}
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={dataStore.comuna}
+                  handleChange={onChange}
+                />
             </Row>
             <OverlayTrigger placement={'top'} overlay={
                 <Tooltip id="tooltip-disabled1">
@@ -349,70 +291,72 @@ const ConfigStoreFormPage = (props) => {
                 </InputField>
               </Row>
             </OverlayTrigger>
+            <OverlayTrigger placement={'top'} overlay={
+                <Tooltip id="tooltip-disabled1">
+                  Campo para determinar desde que número empieza la facturación en las ventas
+                </Tooltip>
+              }
+            >
+              <Row>
+                <InputField
+                  {...props.inputRef}
+                  handleChange={onChange}
+                  value={dataStore.ref}
+                />
+              </Row>
+            </OverlayTrigger>
+            <Row className="justify-content-center">
+              <Col sm={4} md={4} lg={4} xs={4} className="">
+                <Button size="sm" type="submit" variant="danger" block={true}>Guardar <FaPlusCircle /></Button>
+              </Col>
+              <Col sm={4} md={4} lg={4} xs={4} className="">
+                <Button size="sm" type="button" onClick={goToConfig} variant="secondary" block={true}>Volver a la Configuracipon <FaCogs /></Button>
+              </Col>
+            </Row>
           </Col>
-          <Col sm={6} md={6} lg={6} xs={6} className="">
-            <h4 className="text-center font-title">Datos de la Factura</h4>
+          {/*
+
+            <Col sm={6} md={6} lg={6} xs={6} className="">
+              <h4 className="text-center font-title">Datos de la Factura</h4>
               <OverlayTrigger placement={'top'} overlay={
-                  <Tooltip id="tooltip-disabled1">
-                    Campos para especificar que texto saldrá en el encabezado de la factura y en el pie de página ( No es requerido )
-                  </Tooltip>
-                }
+              <Tooltip id="tooltip-disabled1">
+              Campos para especificar que texto saldrá en el encabezado de la factura y en el pie de página ( No es requerido )
+              </Tooltip>
+              }
               >
-                <Row>
-                  <InputField
-                    {...props.inputHeaderText}
-                    handleChange={onChange}
-                    value={dataStore.header_text}
-                  />
-                  <InputField
-                    {...props.inputFooterPageText}
-                    handleChange={onChange}
-                    value={dataStore.foot_page_text}
-                  />
-                </Row>
-              </OverlayTrigger>
-              <br/>
-              <OverlayTrigger placement={'top'} overlay={
-                  <Tooltip id="tooltip-disabled1">
-                    Campo para determinar desde que número empieza la facturación en las ventas
-                  </Tooltip>
-                }
-              >
-                <Row>
-                  <InputField
-                    {...props.inputRef}
-                    handleChange={onChange}
-                    value={dataStore.ref}
-                  />
-                </Row>
+              <Row>
+              <InputField
+              {...props.inputHeaderText}
+              handleChange={onChange}
+              value={dataStore.header_text}
+              />
+              <InputField
+              {...props.inputFooterPageText}
+              handleChange={onChange}
+              value={dataStore.foot_page_text}
+              />
+              </Row>
               </OverlayTrigger>
               <br/>
               <Row>
-                <Col sm={12} md={12} lg={12} xs={12}>
-                  <label htmlFor="" className="form-control-label">Datos del Cliente en el Pie de Página</label>
-                </Col>
-                <br/>
-                <Col sm={6} md={6} lg={6} xs={6}>
-                  <label htmlFor="check1" className="form-control-label">Activado</label>
-                  &nbsp;&nbsp;&nbsp;
-                  <input id="check1" name="client_data_foot_page" type="checkbox" checked={dataStore.client_data_foot_page === true} value={true} onChange={onChange} />
-                </Col>
-                <Col sm={6} md={6} lg={6} xs={6}>
-                  <label htmlFor="check2" className="form-control-label">Desactivado</label>
-                  &nbsp;&nbsp;&nbsp;
-                  <input id="check2" name="client_data_foot_page" type="checkbox" checked={dataStore.client_data_foot_page === false} value={false} onChange={onChange} />
-                </Col>
+              <Col sm={12} md={12} lg={12} xs={12}>
+              <label htmlFor="" className="form-control-label">Datos del Cliente en el Pie de Página</label>
+              </Col>
+              <br/>
+              <Col sm={6} md={6} lg={6} xs={6}>
+              <label htmlFor="check1" className="form-control-label">Activado</label>
+              &nbsp;&nbsp;&nbsp;
+              <input id="check1" name="client_data_foot_page" type="checkbox" checked={dataStore.client_data_foot_page === true} value={true} onChange={onChange} />
+              </Col>
+              <Col sm={6} md={6} lg={6} xs={6}>
+              <label htmlFor="check2" className="form-control-label">Desactivado</label>
+              &nbsp;&nbsp;&nbsp;
+              <input id="check2" name="client_data_foot_page" type="checkbox" checked={dataStore.client_data_foot_page === false} value={false} onChange={onChange} />
+              </Col>
               </Row>
-              <br/><br/>
-              <Row className="justify-content-center">
-                <Col sm={12} md={12} lg={12} xs={12} className="">
-                  <Button size="sm" size="sm" type="submit" variant="primary" block={true}>Guardar <FaPlusCircle /></Button>
-                  <br/>
-                  <p className="text-center">O</p>
-                  <Button size="sm" size="sm" type="button" onClick={goToConfig} variant="info" block={true}>Volver a la Configuracipon <FaCogs /></Button>
-                </Col>
-              </Row>
+            <br/><br/>
             </Col>
+          */}
           </Row>
       </Form>
     </Container>
@@ -449,7 +393,7 @@ ConfigStoreFormPage.defaultProps ={
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-4"
   },
   inputPhone: {
     type: 'number',

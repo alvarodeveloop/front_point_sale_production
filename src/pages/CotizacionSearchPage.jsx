@@ -710,7 +710,7 @@ const CotizacionSearchPage = props => {
                   </Row>
                   <br/>
                   <Row>
-                    <Col sm={6} md={6} lg={6} style={{height: "230px"}}>
+                    <Col sm={6} md={6} lg={6} style={{height: "200px"}}>
                       <Doughnut data={data_donut_ss_status} redraw={redraw} options={optionsBar} />
                     </Col>
                     <Col sm={6} md={6} lg={6}>
@@ -754,7 +754,7 @@ const CotizacionSearchPage = props => {
                   </Row>
                   <br/>
                   <Row>
-                    <Col sm={6} md={6} lg={6} style={{height: "200px"}}>
+                    <Col sm={6} md={6} lg={6} style={{height: "230px"}}>
                       <table className="table table-bordered">
                         <thead>
                           <tr>
@@ -783,7 +783,7 @@ const CotizacionSearchPage = props => {
                         </tbody>
                       </table>
                     </Col>
-                    <Col sm={6} md={6} lg={6} style={{height: "230px"}} className="text-center">
+                    <Col sm={6} md={6} lg={6} style={{height: "200px"}} className="text-center">
                       <Doughnut data={data_donut_total_status} redraw={redraw} options={optionsBar} />
                     </Col>
                   </Row>
