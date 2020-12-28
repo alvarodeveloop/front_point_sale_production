@@ -210,7 +210,7 @@ export let OBJECT_COTIZATION = {
   name_driver: '',
 }
 
-export const API_FACTURACION = false
+export const API_FACTURACION = true
 //export const API_URL = 'https://api-app.anclick.tech/'
 //export const FRONT_URL = 'https://app.anclick.tech/create_quotitation'
 export const API_URL = 'http://localhost:5000/'
