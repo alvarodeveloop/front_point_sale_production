@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types'
 import Page from 'components/Page';
-import DashboardEnterpriseComponent from 'components/dashboard/DashboardEnterpriseComponent'
+import EnterpriseDashboardComponent from 'components/dashboards/EnterpriseDashboardComponent'
 import {connect} from 'react-redux'
 
 const DashboardPage = props => {
@@ -16,8 +16,8 @@ const DashboardPage = props => {
         title="Dashboard"
         breadcrumbs={[{ name: 'Dashboard', active: true }]}
       >
-        {props.user.id_rol == 2 ? (
-        <DashboardEnterpriseComponent {...props} />
+        {props.user.id_rol >= 2 ? (
+          <EnterpriseDashboardComponent {...props} />
         ) : ''}
       </Page>
     );
@@ -26,11 +26,14 @@ const DashboardPage = props => {
 
 DashboardPage.propTypes = {
   user: PropTypes.object,
+  id_branch_office: PropTypes.string.isRequired,
 }
 
 function mapStateToProps(state){
   return {
-    user : state.auth.user
+    user : state.auth.user,
+    configGeneral : state.configs.config,
+    id_branch_office : state.enterpriseSucursal.id_branch_office,
   }
 }
 

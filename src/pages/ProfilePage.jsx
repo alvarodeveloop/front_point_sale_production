@@ -130,6 +130,10 @@ const ProfilePage = (props) => {
     reader.readAsDataURL(file);
   }
 
+  const goToDashboard = () => {
+    props.history.replace('/dashboard')
+  }
+
   return (
     <Container fluid={true}>
       <Row className="">
@@ -231,7 +235,7 @@ const ProfilePage = (props) => {
               <Button variant="danger" block={true} type="submit" size="sm">Guardar <FaPlusCircle /></Button>
             </Col>
             <Col sm={4} md={4} lg={4}>
-              <Button variant="secondary" block={true} type="button" size="sm">Ir al Dashboard</Button>
+              <Button variant="secondary" block={true} type="button" size="sm" onClick={goToDashboard}>Ir al Dashboard</Button>
             </Col>
           </Row>
         </Form>
