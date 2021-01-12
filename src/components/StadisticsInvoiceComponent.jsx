@@ -41,6 +41,7 @@ const options_line = {
       },
     ],
   },
+  maintainAspectRatio: false,
 }
 
 let data_donut_ss_status = {

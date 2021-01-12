@@ -14,6 +14,7 @@ import InputField from 'components/input/InputComponent'
 const TransmitterInvoiceComponent = (props) => {
   const [clientSearched, setClientSearched] = useState(props.cotizationData.type_invoicing ? true : false)
   useEffect(() => {
+    console.log();
     setTimeout(function () {
       props.setCotizationData(oldData => {
         return Object.assign({},oldData,{
@@ -88,7 +89,7 @@ const TransmitterInvoiceComponent = (props) => {
                   handleChange={props.onChange}
                 >
                   {props.cotizationData.address_transmitter_array.map((v,i) => (
-                    <option value={v['direccion'+(i+1)]} key={i}>{v['direccion'+(i+1)]}</option>
+                    <option value={v} key={i}>{v}</option>
                   ))}
                 </InputField>
               ) : (
@@ -232,7 +233,7 @@ const TransmitterInvoiceComponent = (props) => {
                   handleChange={props.onChange}
                   >
                   {props.cotizationData.address_transmitter_array.map((v,i) => (
-                    <option value={v['direccion'+(i+1)]} key={i}>{v['direccion'+(i+1)]}</option>
+                    <option value={v} key={i}>{v}</option>
                   ))}
                 </InputField>
               ): (
@@ -288,8 +289,9 @@ const TransmitterInvoiceComponent = (props) => {
                   value={props.cotizationData.actividad_economica_transmitter}
                   handleChange={props.onChange}
                   >
+                  <option>--Seleccione--</option>
                   {props.cotizationData.actividad_economica_transmitter_array.map((v,i) => (
-                    <option value={v['actvidad'+(i+1)]} key={i}>{v['actvidad'+(i+1)]}</option>
+                    <option value={v[0]} key={i}>{v[1]}</option>
                   ))}
                 </InputField>
               ) : (
@@ -325,7 +327,7 @@ const TransmitterInvoiceComponent = (props) => {
                       handleChange={props.onChange}
                       >
                       {props.cotizationData.type_sale_transmitter_array.map((v,i) => (
-                        <option value={v['tipo'+(i+1)]} key={i}>{v['tipo'+(i+1)]}</option>
+                        <option value={v[0]} key={i}>{v[1]}</option>
                       ))}
                     </InputField>
                   ) : (
@@ -423,7 +425,7 @@ const TransmitterInvoiceComponent = (props) => {
                   handleChange={props.onChange}
                   >
                   {props.cotizationData.address_transmitter_array.map((v,i) => (
-                    <option value={v['direccion'+(i+1)]} key={i}>{v['direccion'+(i+1)]}</option>
+                    <option value={v} key={i}>{v}</option>
                   ))}
                 </InputField>
               ): (
@@ -479,8 +481,9 @@ const TransmitterInvoiceComponent = (props) => {
                   value={props.cotizationData.actividad_economica_transmitter}
                   handleChange={props.onChange}
                   >
+                  <option>--Seleccione--</option>
                   {props.cotizationData.actividad_economica_transmitter_array.map((v,i) => (
-                    <option value={v['actvidad'+(i+1)]} key={i}>{v['actvidad'+(i+1)]}</option>
+                    <option value={v[0]} key={i}>{v[1]}</option>
                   ))}
                 </InputField>
               ) : (
@@ -512,8 +515,9 @@ const TransmitterInvoiceComponent = (props) => {
                   value={props.cotizationData.type_sale_transmitter}
                   handleChange={props.onChange}
                   >
+                  <option value="">--Seleccione--</option>
                   {props.cotizationData.type_sale_transmitter_array.map((v,i) => (
-                    <option value={v['tipo'+(i+1)]} key={i}>{v['tipo'+(i+1)]}</option>
+                    <option value={v[0]} key={i}>{v[1]}</option>
                   ))}
                 </InputField>
               ) : (

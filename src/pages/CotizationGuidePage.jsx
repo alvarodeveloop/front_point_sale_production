@@ -652,7 +652,7 @@ const CotizationGuidePage = (props) => {
                 <Row>
                   <InputField
                     type='date'
-                    label='Fecha de Emisión'
+                    label='Fecha de Emisión (MM-DD-YYYY)'
                     name='date_issue_invoice'
                     required={true}
                     messageErrors={[

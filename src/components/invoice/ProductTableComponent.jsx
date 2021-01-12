@@ -143,8 +143,8 @@ const ProductTableComponent = (props) => {
             <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Producto a la Cotización</Tooltip>}>
               <DropdownButton size="sm" variant="danger" id={'dropdown_product'} title={(<FaPlusCircle />)} className="button_product">
                 <Dropdown.Item onClick={() => setIsShowModalProduct(true) }>Agregar Producto desde Inventario</Dropdown.Item>
-                <Dropdown.Item onClick={() => addNewProductIrregular(true)}>Agregar producto (valor neto) </Dropdown.Item>
-                <Dropdown.Item onClick={() => addNewProductIrregular(false)}>Agregar producto (valor con iva)</Dropdown.Item>
+                {/*<Dropdown.Item onClick={() => addNewProductIrregular(true)}>Agregar producto (valor neto) </Dropdown.Item>*/}
+                <Dropdown.Item onClick={() => addNewProductIrregular(false)}>Agregar producto</Dropdown.Item>
               </DropdownButton>
             </OverlayTrigger>
           </Col>
@@ -171,7 +171,6 @@ ProductTableComponent.propTypes = {
   setIsShowModalProduct: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   setGastosDetail: PropTypes.func.isRequired,
-  handleSelectProduct: PropTypes.func.isRequired
 }
 
 export default ProductTableComponent

@@ -639,7 +639,7 @@ const CotizationBillPage = (props) => {
           <Row>
             <InputField
               type='date'
-              label='Fecha de Emisión'
+              label='Fecha de Emisión (MM-DD-YYYY)'
               name='date_issue'
               required={true}
               messageErrors={[

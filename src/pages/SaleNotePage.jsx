@@ -549,7 +549,7 @@ const SaleNotePage = (props) => {
             <Row>
               <InputField
                 type='date'
-                label='Fecha emisión de la factura'
+                label='Fecha emisión de la nota (MM-DD-YYYY)'
                 name='date_issue_invoice'
                 required={true}
                 messageErrors={[

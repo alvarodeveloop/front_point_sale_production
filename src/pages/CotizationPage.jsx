@@ -638,7 +638,7 @@ const CotizationPage = (props) => {
                 <Row>
                   <InputField
                     type='date'
-                    label='Fecha de Emisión'
+                    label='Fecha de Emisión (MM-DD-YYYY)'
                     name='date_issue'
                     required={true}
                     messageErrors={[
@@ -650,7 +650,7 @@ const CotizationPage = (props) => {
                     />
                   <InputField
                     type='date'
-                    label='Fecha de Vencimiento'
+                    label='Fecha de Vencimiento (MM-DD-YYYY)'
                     name='date_expiration'
                     required={true}
                     messageErrors={[

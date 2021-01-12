@@ -50,11 +50,6 @@ const Styles = styled.div`
     justify-content: center;
   }
 
-  .tr_cabecera{
-    background-color: rgb(218, 236, 242);
-    color: black;
-  }
-
   .table_responsive_eddit{
     overflow-x: auto;
   }
@@ -84,7 +79,7 @@ function fuzzyTextFilterFn(rows, id, filterValue) {
 // Let the table remove the filter if the string is empty
 fuzzyTextFilterFn.autoRemove = val => !val
 
-function DataTable({ columns, data, menuTop }) {
+function DataTable({ columns, data, menuTop, headerColor, headerFontColor }) {
   // Use the state and functions returned from useTable to build your UI
 
   const filterTypes = React.useMemo(
@@ -206,7 +201,7 @@ function DataTable({ columns, data, menuTop }) {
             <tr {...headerGroup.getHeaderGroupProps()} className="text-center">
               {headerGroup.headers.map(column => (
 
-                <th {...column.getHeaderProps(column.getSortByToggleProps())} className="tr_cabecera">
+                <th {...column.getHeaderProps(column.getSortByToggleProps())} style={{ backgroundColor: headerColor ? headerColor : "rgb(218, 236, 242)", color: headerFontColor ? headerFontColor : "black" }}>
                     {column.render('Header')}
                     <span>
                       {column.isSorted
@@ -289,11 +284,11 @@ function DataTable({ columns, data, menuTop }) {
   )
 }
 
-const Table = ({data,columns,menuTop}) => {
+const Table = ({data,columns,menuTop,headerColor,headerFontColor}) => {
 
   return (
     <Styles>
-      <DataTable data={data} columns={columns} menuTop={menuTop} />
+      <DataTable data={data} columns={columns} menuTop={menuTop} headerFontColor={headerFontColor} headerColor={headerColor}  />
     </Styles>
   )
 }
@@ -302,6 +297,8 @@ Table.propTypes = {
   data: PropTypes.array.isRequired,
   columns : PropTypes.array.isRequired,
   menuTop: PropTypes.bool,
+  headerColor: PropTypes.string,
+  headerFontColor: PropTypes.string,
 }
 
 export default Table

@@ -142,6 +142,7 @@ const CotizationInvoicingPage = (props) => {
           props.history.replace('/quotitation/search_quotitation')
         }, 1500);
       }else{
+        console.log(props.configGeneral,'aqui console1');
         fetchClients()
         fetchProducts()
         fetchDataUpdate()
@@ -493,18 +494,10 @@ const CotizationInvoicingPage = (props) => {
       clearData()
       toast.info('Generando pdf de la Factura, espere por favor...')
 
-      axios.get(API_URL+'cotizacion_print/'+props.match.params.id+'/0').then(result => {
-        window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
-        setTimeout( () => {
-          goToDashboard()
-        }, 1500);
-      }).catch(err => {
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
-      })
+      result.data.response.forEach((item, i) => {
+        window.open(item[0].data.pdf_public_url,'_blank')
+      });
+
 
     }).catch(err => {
       setDisableButton(false)

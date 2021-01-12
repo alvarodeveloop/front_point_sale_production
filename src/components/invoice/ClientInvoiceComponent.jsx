@@ -59,7 +59,7 @@ const ClientInvoiceComponet = (props) => {
              address_client: result.data.direccion_seleccionada,
              comuna_client : result.data.comuna_seleccionada,
              city_client : result.data.ciudad_seleccionada,
-             address_client_array: result.data.direcciones
+             address_client_array: result.data.direcciones[0]
            })
          })
          setReadonlyRut(true)
@@ -86,23 +86,23 @@ const ClientInvoiceComponet = (props) => {
 
           axios.get(API_URL+'get_client_invoice/'+props.cotizationData.facturaId+'/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
 
-            let giroReceptor = API_FACTURACION ? result.data.receptor.giroReceptor : [{giroReceptor1: 'giroReceptor1'},{giroReceptor2: 'giroReceptor2'}]
-            let tipo_compra = API_FACTURACION ? result.data.receptor.tipoDeCompra : [{tipoVenta1: 'tipoCompra1'},{tipoVenta2: 'tipoCompra2'}]
+            let giroReceptor = API_FACTURACION ? result.data.receptor.giroReceptor : {"id":1,"nombre":"ACTIVIDADES DE CONSULTORIA DE INFORMATIC"}
+            let tipo_compra = API_FACTURACION ? result.data.receptor.tipoDeCompra : {"id":1,"valor":"1","nombre":"Del Giro"}
 
             props.setCotizationData(oldData1 => {
               let object_return = Object.assign({},oldData1,{
                 rut_client : result.data.receptor.rut +"-"+result.data.receptor.dv,
                 business_name_client: result.data.receptor.razon_social,
                 address_client: result.data.receptor.direccion_seleccionada,
-                address_client_array : result.data.receptor.direcciones,
+                address_client_array : result.data.receptor.direcciones[0],
                 comuna_client : result.data.receptor.comuna_seleccionada,
                 city_client : result.data.receptor.ciudad_seleccionada,
-                type_buy_client: tipo_compra.length > 0 ? tipo_compra[0].tipoCompra1 : '',
-                type_buy_client_array: tipo_compra,
-                spin_client_array : giroReceptor,
-                spin_client: giroReceptor.length > 0 ? giroReceptor[0].giroReceptor1 :  '',
+                type_buy_client: Array.isArray(tipo_compra) ? tipo_compra[0].id.toString() : tipo_compra.id.toString(),
+                type_buy_client_array: Array.isArray(tipo_compra) ? tipo_compra : [tipo_compra],
+                spin_client_array : Array.isArray(giroReceptor) ? giroReceptor : [giroReceptor],
+                spin_client: Array.isArray(giroReceptor) ? giroReceptor[0].nombre : giroReceptor.nombre,
               })
-              console.log(object_return,'aqui menor');
+
               return object_return
             })
             setReadonlyRut(true)
@@ -291,7 +291,7 @@ const ClientInvoiceComponet = (props) => {
                   handleChange={onChange}
                   >
                   {props.cotizationData.address_client_array.map((v,i) => (
-                    <option value={v['direccion'+(i+1)]} key={i}>{v['direccion'+(i+1)]}</option>
+                    <option value={v} key={i}>{v}</option>
                   ))}
                 </InputField>
               ) : (
@@ -366,8 +366,9 @@ const ClientInvoiceComponet = (props) => {
                     value={props.cotizationData.spin_client}
                     handleChange={onChange}
                   >
+                    <option value="">--Seleccione--</option>
                     {props.cotizationData.spin_client_array.map((v,i) => (
-                      <option value={v['giro'+(i+1)]} key={i}>{v['giro'+(i+1)]}</option>
+                      <option value={v.nombre} key={i}>{v.nombre}</option>
                     ))}
                   </InputField>
                 ) : (
@@ -397,8 +398,9 @@ const ClientInvoiceComponet = (props) => {
                     value={props.cotizationData.type_buy_client}
                     handleChange={onChange}
                   >
+                    <option value="">--Seleccione--</option>
                     {props.cotizationData.type_buy_client_array.map((v,i) => (
-                      <option value={v['giro'+(i+1)]} key={i}>{v['giro'+(i+1)]}</option>
+                      <option value={v.id.toString()} key={i}>{v.nombre}</option>
                     ))}
                   </InputField>
                 ) : (
@@ -636,7 +638,7 @@ const ClientInvoiceComponet = (props) => {
                 handleChange={onChange}
               >
                 {props.cotizationData.address_client_array.map((v,i) => (
-                  <option value={v['direccion'+(i+1)]} key={i}>{v['direccion'+(i+1)]}</option>
+                  <option value={v} key={i}>{v}</option>
                 ))}
               </InputField>
             ) : (
@@ -694,8 +696,9 @@ const ClientInvoiceComponet = (props) => {
                       value={props.cotizationData.spin_client}
                       handleChange={onChange}
                       >
+                      <option value={""}>--Seleccione--</option>
                       {props.cotizationData.spin_client_array.map((v,i) => (
-                        <option value={v['giroReceptor'+(i+1)]} key={i}>{v['giroReceptor'+(i+1)]}</option>
+                        <option value={v.nombre} key={i}>{v.nombre}</option>
                       ))}
                     </InputField>
                   ) : (
@@ -711,8 +714,9 @@ const ClientInvoiceComponet = (props) => {
                       value={props.cotizationData.spin_client}
                       handleChange={onChange}
                       >
+                      <option value="">--Seleccione--</option>
                       {props.cotizationData.spin_client_array.map((v,i) => (
-                        <option value={v['giro'+(i+1)]} key={i}>{v['giro'+(i+1)]}</option>
+                        <option value={v.nombre} key={i}>{v.nombre}</option>
                       ))}
                     </InputField>
                   )}
@@ -780,8 +784,9 @@ const ClientInvoiceComponet = (props) => {
                     value={props.cotizationData.type_buy_client}
                     handleChange={onChange}
                   >
+                    <option value="">--Seleccione--</option>
                     {props.cotizationData.type_buy_client_array.map( (v,i) => (
-                      <option value={v['tipoVenta'+(i + 1)]} key={i}>{v['tipoVenta'+(i + 1)]}</option>
+                      <option value={v.id.toString()} key={i}>{v.nombre}</option>
                     ))}
                   </InputField>
                 ): (

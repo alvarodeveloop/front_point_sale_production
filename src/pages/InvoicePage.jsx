@@ -361,57 +361,6 @@ const InvoiceSearchPage = props => {
           )
         }
       },
-      /*{
-        Header: 'Abonado',
-        accessor: 'total_bond',
-        Cell: props1 => {
-          return (
-            <Badge variant="danger" className="font-badge">
-              {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_bond)}
-            </Badge>
-
-          )
-        }
-      },
-      {
-        Header: 'Saldo Deudor',
-        accessor: 'debit_balance',
-        Cell: props1 => {
-          return (
-            <Badge variant="danger" className="font-badge">
-              {props.configGeneral ? props.configGeneral.simbolo_moneda : '' }{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.debit_balance)}
-            </Badge>
-
-          )
-        }
-      },
-      {
-        Header: 'Acciones',
-        Cell: props1 => {
-          const { original } = props1.cell.row
-          if(original.status >= 1 && original.status <= 3){
-            return (
-              <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-                <Dropdown.Item onClick={() => goToBond(original)}>Pagos</Dropdown.Item>
-                <Dropdown.Item onClick={() => noteCredit(original)}>Nota de Crédito</Dropdown.Item>
-                {original.status != 2  ? (
-                  <Dropdown.Item onClick={() => anulateInvoice(original)}>Anular</Dropdown.Item>
-                ) : ''}
-              </DropdownButton>
-            )
-          }else{
-            return(
-              <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                <Dropdown.Item onClick={() => seeDetailCotization(original)}>Ver detalle</Dropdown.Item>
-                <Dropdown.Item onClick={() => printInvoice(original)}>Ver Factura Pdf</Dropdown.Item>
-              </DropdownButton>
-            )
-          }
-
-        }
-      }*/
     ]
   },[])
 

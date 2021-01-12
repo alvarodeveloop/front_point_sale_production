@@ -192,7 +192,7 @@ const InvoiceExcentasComponent = (props) => {
           <Row>
             <InputField
               type='date'
-              label='Fecha emisión de la factura'
+              label='Fecha emisión de la factura (MM-DD-YYYY)'
               name='date_issue_invoice'
               required={true}
               messageErrors={[

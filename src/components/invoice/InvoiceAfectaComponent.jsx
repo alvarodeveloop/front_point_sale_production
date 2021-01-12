@@ -47,6 +47,8 @@ const InvoiceAfectaComponent = (props) => {
     if(props.cotizationData.type_invoicing === true){
       searchReceptorEmisor()
     }
+
+    console.log(props.configGeneral,'aqui console2');
   },[props.cotizationData.type_invoicing])
 
 
@@ -63,16 +65,15 @@ const InvoiceAfectaComponent = (props) => {
       props.setCotizationData(oldData => {
         return Object.assign({},oldData,{
           actividad_economica_transmitter_array: transmitter.data.emisor.actvidades_economicas,
-          actividad_economica_transmitter : transmitter.data.emisor.actvidades_economicas.length > 0 ? transmitter.data.emisor.actvidades_economicas[0].actvidad1 : props.configGeneral.actividad_economica,
+          actividad_economica_transmitter : transmitter.data.emisor.actvidades_economicas.length > 0 ? transmitter.data.emisor.actvidades_economicas[0][0] : props.configGeneral.actividad_economica,
           city_transmitter : transmitter.data.emisor.ciudad_seleccionada,
           comuna_transmitter: transmitter.data.emisor.comuna_seleccionada,
           address_transmitter:  transmitter.data.emisor.direccion_seleccionada,
-          address_transmitter_array: transmitter.data.emisor.direcciones,
+          address_transmitter_array: transmitter.data.emisor.direcciones[0],
           business_name_transmitter : transmitter.data.emisor.razon_social,
-          rut_transmitter : transmitter.data.emisor.rut +"-"+transmitter.data.emisor.dv,
           type_sale_transmitter_array: transmitter.data.emisor.tipos_de_venta,
-          type_sale_transmitter: transmitter.data.emisor.tipos_de_venta.length > 0 ? transmitter.data.emisor.tipos_de_venta[0].tipo1 : '',
-          facturaId: transmitter.data.facturaId,
+          type_sale_transmitter: transmitter.data.emisor.tipos_de_venta.length > 0 ? transmitter.data.emisor.tipos_de_venta[0][0] : '',
+          facturaId: transmitter.data.id,
           token: transmitter.data.token,
           searchReceptorDefault : true
         })
@@ -105,7 +106,7 @@ const InvoiceAfectaComponent = (props) => {
                   cotizationData={props.cotizationData}
                   setCotizationData={props.setCotizationData}
                   onChange={props.onChange}
-                  configGeneral={props.onChange}
+                  configGeneral={props.configGeneral}
                 />
                 <ClientInvoiceComponent
                   isType="facturacion"
@@ -149,7 +150,7 @@ const InvoiceAfectaComponent = (props) => {
           <Row>
             <InputField
               type='date'
-              label='Fecha emisión de la factura'
+              label='Fecha emisión de la factura (MM-DD-YYYY)'
               name='date_issue_invoice'
               required={true}
               messageErrors={[
