@@ -482,7 +482,8 @@ const InvoiceSearchPage = props => {
 
   const printInvoice = original => {
     toast.info('Cargando documento, espere por favor')
-    let route = API_URL+'get_invoice_pdf/'+original.ref_api
+    window.open(original.name_pdf,"_target")
+    /*let route = API_URL+'get_invoice_pdf/'+original.ref_api
     axios.get(route,{responseType: "arraybuffer"}).then(result => {
       const blob = new Blob([result.data],{type : 'application/pdf'})
       const url  = window.URL.createObjectURL(blob);
@@ -494,7 +495,7 @@ const InvoiceSearchPage = props => {
         console.log(err,'aqui');
         toast.error('Error, contacte con soporte')
       }
-    })
+    })*/
   }
 
   const handleModalDetail = () => {

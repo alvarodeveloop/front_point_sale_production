@@ -23,15 +23,15 @@ const AutoCompleteClientComponent = (props) => {
         <div className="input-search">
           <FaSearch />
           <Autocomplete
-            getItemValue={(item) => item.name_client+'/'+item.data_document}
+            getItemValue={(item) => item.name_client+'/'+item.data_document+"-"+item.dv}
             items={props.items}
             shouldItemRender={(item, value) =>{
-              return !item.name_client.toLowerCase().indexOf(value.toString().toLowerCase()) || !item.data_document.toLowerCase().indexOf(value.toString().toLowerCase())
+              return !item.name_client.toLowerCase().indexOf(value.toString().toLowerCase()) || !item.data_document.toLowerCase().indexOf(value.toString().toLowerCase()) || !item.dv.toString().toLowerCase().indexOf(value.toString().toLowerCase())
             }}
 
             renderItem={ (item, isHighlighted) =>
               <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} key={item.name_client+"-"+item.data_document} >
-                { item.name_client+"/"+item.data_document } 
+                { item.name_client+"/"+item.data_document+"-"+item.dv }
               </div>
             }
             value={value}

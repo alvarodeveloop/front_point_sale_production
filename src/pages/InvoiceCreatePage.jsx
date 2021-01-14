@@ -333,11 +333,16 @@ const InvoiceCreatePage = (props) => {
     setDisableButton(true)
 
     axios.post(API_URL+'invoice',object_post).then(result => {
-      toast.success('Factura realizada con éxito')
+      let invoice_word = result.data.length > 1 ? "Facturas" : "Factura"
+      toast.success(invoice_word+' realizada con éxito')
 
-      setTimeout( () => {
-        goToDashboard()
-      }, 1500);
+      toast.info('Generando pdf de la '+invoice_word+', espere por favor...')
+
+      result.data.forEach((item, i) => {
+        window.open(item.pdf_public_url,'_blank')
+      });
+
+      goToDashboard()
 
     }).catch(err => {
       setDisableButton(false)

@@ -210,9 +210,9 @@ const CotizationInvoicingPage = (props) => {
           price_list: "",
           status: result.data.status,
           ref: result.data.ref,
-          way_of_payment: result.data.way_of_payment ? result.data.way_of_payment : 1,
+          way_of_payment: result.data.way_of_payment ? result.data.way_of_payment : "Crédito",
           discount_global: result.data.discount_global,
-          days_expiration: result.data.days_expiration,
+          days_expiration: result.data.days_expiration ? result.data.days_expiration : 30,
           id_branch_office : result.data.id_branch_office,
           comuna_client: result.data.comuna_client,
           city_client: result.data.city_client,
@@ -495,9 +495,9 @@ const CotizationInvoicingPage = (props) => {
       toast.info('Generando pdf de la Factura, espere por favor...')
 
       result.data.response.forEach((item, i) => {
-        window.open(item[0].data.pdf_public_url,'_blank')
+        window.open(item.pdf_public_url,'_blank')
       });
-
+       goToDashboard()
 
     }).catch(err => {
       setDisableButton(false)

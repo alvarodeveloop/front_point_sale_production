@@ -273,43 +273,6 @@ const CotizationPage = (props) => {
       clientMailArray,
     }
 
-    /*let validate = false
-
-    let array_validation_invoice = [
-      'business_name_transmitter','rut_transmitter',
-      'rut_client','business_name_client','spin_client'
-    ]
-
-    let array_validation_invoice_excenta = [
-      'actividad_economica_transmitter','comuna_transmitter','city_client','address_client',
-      'comuna_client','actividad_economica_transmitter']
-
-      if(requireInvoice || type === 3){
-      array_validation_invoice.forEach((item, i) => {
-      if(object_post.cotization[item] === '' || object_post.cotization[item] === null){
-      validate = true
-      }
-      });
-
-      if(object_post.cotization.type_invoicing === false){
-      array_validation_invoice_excenta.forEach((item, i) => {
-      if(object_post.cotization[item] === '' || object_post.cotization[item] === null){
-      validate = true
-      }
-      });
-      }
-      }
-      if(validate){
-      setValidated(true);
-      toast.error('Hay campos en el formulario que le falta por llenar')
-      if(type == 3 ){
-      handleModalInvoice()
-      }
-      return false
-      }
-    */
-
-
 
     if(type == 3){
       object_post.referencias = refCotizacion
@@ -333,20 +296,14 @@ const CotizationPage = (props) => {
           handleModalInvoice()
           setDisplayDataInvoice(1)
 
-          toast.info('Generando pdf de la Cotización, espere por favor...')
+          toast.info('Generando pdf de la factura, espere por favor...')
 
-          axios.get(API_URL+'cotizacion_print/'+props.match.params.id+"/0").then(result => {
-            window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
-            setTimeout( () => {
-              goToDashboard()
-            }, 1500);
-          }).catch(err => {
-            if(err.response){
-              toast.error(err.response.data.message)
-            }else{
-              toast.error('Error, contacte con soporte')
-            }
-          })
+          result.data.forEach((item, i) => {
+            window.open(item.pdf_public_url,'_blank')
+          });
+
+          goToDashboard()
+
         }else{
           toast.success('Cotización modificada con éxito')
           setTimeout(function () {
@@ -368,23 +325,16 @@ const CotizationPage = (props) => {
         toast.success(result.data.message ? result.data.message : 'Cotización guardada con éxito')
         clearData()
         if(type === 3){
+
           handleModalInvoice()
-          setDisplayDataInvoice(1)
 
-          toast.info('Generando pdf de la Cotización, espere por favor...')
+          toast.info('Generando pdf de la factura, espere por favor...')
 
-          axios.get(API_URL+'cotizacion_print/'+result.data.id+"/0").then(result => {
-            window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
-            setTimeout( () => {
-              goToDashboard()
-            }, 1500);
-          }).catch(err => {
-            if(err.response){
-              toast.error(err.response.data.message)
-            }else{
-              toast.error('Error, contacte con soporte')
-            }
-          })
+          result.data.forEach((item, i) => {
+            window.open(item.pdf_public_url,'_blank')
+          });
+
+          goToDashboard()
 
         }else{
           setTimeout(function () {
