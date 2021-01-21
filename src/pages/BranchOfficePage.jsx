@@ -25,6 +25,7 @@ import { setBranchOffices, setIdBranchOffice } from 'actions/enterpriseSucursal'
 import { setConfigStore } from 'actions/configs'
 import { formatRut } from 'utils/functions'
 import BranchOfficeFormModal from 'components/modals/BranchOfficeFormModal'
+import LoadingComponent from 'components/LoadingComponent'
 
 
 const BranchOfficePage = (props) => {
@@ -48,8 +49,8 @@ const BranchOfficePage = (props) => {
     id: '',
     id_rol: 3,
   })
-
   const [branchOffice, setBranchOffice] = useState([])
+  const [isLoading,setIsloading] = useState(false)
 
 
   useEffect(() => {
@@ -61,6 +62,7 @@ const BranchOfficePage = (props) => {
   },[props.id_enterprise])
 
   const fetchData = (type = false, update = false) => {
+    setIsloading(true)
     let promises = [axios.get(API_URL+'branch_office')]
 
     Promise.all(promises).then(async result => {
@@ -79,7 +81,9 @@ const BranchOfficePage = (props) => {
           }
         }
       }
+      setIsloading(false)
     }).catch(err => {
+      setIsloading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -101,7 +105,6 @@ const BranchOfficePage = (props) => {
     })
 
     if(values.user.length){
-      console.log(values.user,'aqui ========');
       setUserForm({
         email: values.user[0].email,
         password: '',
@@ -125,29 +128,35 @@ const BranchOfficePage = (props) => {
 
   return (
     <Container fluid>
-      <Row>
-        <Col sm={6} md={6} lg={6}>
-          <h4 className="title_principal">Sucursales</h4>
-        </Col>
-        <Col sm={6} md={6} lg={6}>
-          <Button variant="success" block={true} onClick={createRegister} size="sm">Agregar Sucursal <FaPlusCircle /></Button>
-        </Col>
-      </Row>
-      <hr/>
-      <Row className="justify-content-center">
-        {branchOffice.map((v,i) => (
-          <Col sm={3} lg={3} md={3} className="text-center" key={i}>
-            <h5 style={{color: 'rgb(180, 55, 33)'}}>{v.name}</h5>
-            <Image src={require('../assets/img/sucursal.png')} style={{width: '100%'}}/>
-            Estado : {v.is_open ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
-            <br/><br/>
-            <DropdownButton size="md" id={'fila'+i} title="Acciones" style={{width: '100%'}} variant="primary">
-              <Dropdown.Item onClick={() => updateRegister(v) }>Modificar</Dropdown.Item>
-              <Dropdown.Item onClick={() => {}}>Eliminar</Dropdown.Item>
-            </DropdownButton>
-          </Col>
-        ))}
-      </Row>
+      {isLoading ? (
+        <LoadingComponent />
+      ) : (
+        <>
+          <Row>
+            <Col sm={6} md={6} lg={6}>
+              <h4 className="title_principal">Sucursales</h4>
+            </Col>
+            <Col sm={6} md={6} lg={6}>
+              <Button variant="success" block={true} onClick={createRegister} size="sm">Agregar Sucursal <FaPlusCircle /></Button>
+            </Col>
+          </Row>
+          <hr/>
+          <Row className="justify-content-center">
+            {branchOffice.map((v,i) => (
+              <Col sm={3} lg={3} md={3} className="text-center" key={i}>
+                <h5 style={{color: 'rgb(180, 55, 33)'}}>{v.name}</h5>
+                <Image src={require('../assets/img/sucursal.png')} style={{width: '100%'}}/>
+                Estado : {v.is_open ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
+                <br/><br/>
+                <DropdownButton size="md" id={'fila'+i} title="Acciones" style={{width: '100%'}} variant="primary">
+                  <Dropdown.Item onClick={() => updateRegister(v) }>Modificar</Dropdown.Item>
+                  <Dropdown.Item onClick={() => {}}>Eliminar</Dropdown.Item>
+                </DropdownButton>
+              </Col>
+            ))}
+          </Row>
+        </>
+      )}
       <BranchOfficeFormModal
         branchOfficeForm={branchOfficeForm}
         userForm={userForm}

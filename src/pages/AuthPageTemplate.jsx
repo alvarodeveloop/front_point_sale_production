@@ -5,6 +5,8 @@ import { ToastContainer, toast } from 'react-toastify'
 import axios from 'axios'
 import { API_URL } from 'utils/constants'
 import { setAuthorizationToken } from 'utils/functions'
+import LoadingComponent from 'components/LoadingComponent'
+
 import {
   Row,
   Col,
@@ -149,31 +151,6 @@ const AuthPageTemplate = props => {
       }
     })
   }
-
-  /*const responseFacebook = responseFace => {
-    let profile = Object.assign({},responseFace)
-    axios.post(API_URL+'auth_by_social_media',profile).then(result => {
-      const { data } = result
-      if(data.user){
-        localStorage.setItem('user',JSON.stringify(data.user))
-        localStorage.setItem('token',data.token)
-        setAuthorizationToken(data.token)
-        props.loginDispatch(data.user)
-      }else{
-        registerUserBySocialMedia(profile)
-      }
-    }).catch(err => {
-      const { response } = err
-      if(response){
-        toast.error(response.data.message,'Error')
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-    })
-  }
-  const responseFacebookFail = responseFacebookFail => {
-    console.log(responseFacebookFail)
-  }*/
 
   const responseGoogle = responseGmail => {
 
@@ -371,76 +348,67 @@ const AuthPageTemplate = props => {
   return (
     <div className="authentication-wrapper authentication-3">
         {typeVisibleDiv == 3 ? (
-          <Row className="fondo">
-            <Col sm={12} md={12} lg={12} className="animate__animated animate__zoomIn">
-              <Row className="separated_top justify-content-center">
-                <Col sm={6} md={6} lg={6}>
-                  <h3 className="title_principal text-center">Escoja la Sucursal con la que trabajara</h3>
-                </Col>
-                <Col sm={3} md={3} lg={3}>
-                  <Button variant="danger" block={true} size="sm" onClick={resetLogin}>Volver al Login <FaSignOutAlt/></Button>
-                </Col>
-              </Row>
-              {
-                showGif ? (
-                  <Row className="justify-content-center" >
-                    <Col sm={4} lg={4} md={4} className="text-center">
-                      <Image src={require('../assets/img/loading.gif')} />
-                      <p className="title_principal">Cargando...</p>
+          <>
+            {!showGif ? (
+              <Row className="fondo">
+                <Col sm={12} md={12} lg={12} className="animate__animated animate__zoomIn">
+                  <Row className="separated_top justify-content-center">
+                    <Col sm={6} md={6} lg={6}>
+                      <h3 className="title_principal text-center">Escoja la Sucursal con la que trabajara</h3>
+                    </Col>
+                    <Col sm={3} md={3} lg={3}>
+                      <Button variant="danger" block={true} size="sm" onClick={resetLogin}>Volver al Login <FaSignOutAlt/></Button>
                     </Col>
                   </Row>
-                ) : ''
-              }
-              <br/><br/>
-              <Row className="justify-content-center alto_sucursal">
-                {branchOffices.map((v,i) => (
-                  <Col sm={3} lg={3} md={3} className="text-center" key={i}>
-                    <h4 style={{color: 'rgb(180, 55, 33)', textTransform: 'uppercase'}}>{v.name}</h4>
-                    <Image src={require('../assets/img/sucursal.png')} style={{width: '100%'}}/>
-                    <span className="letras_negras">Estado :</span> {v.is_open ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
-                    <br/><br/>
-                    <Button size="sm" variant="primary" block={true} onClick={() => handleChoiceBranchOffice(v.id) }>Acceder</Button>
-                  </Col>
-                ))}
+                  <br/><br/>
+                  <Row className="justify-content-center alto_sucursal">
+                    {branchOffices.map((v,i) => (
+                      <Col sm={3} lg={3} md={3} className="text-center" key={i}>
+                        <h4 style={{color: 'rgb(180, 55, 33)', textTransform: 'uppercase'}}>{v.name}</h4>
+                        <Image src={require('../assets/img/sucursal.png')} style={{width: '100%'}}/>
+                        <span className="letras_negras">Estado :</span> {v.is_open ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
+                        <br/><br/>
+                        <Button size="sm" variant="primary" block={true} onClick={() => handleChoiceBranchOffice(v.id) }>Acceder</Button>
+                      </Col>
+                    ))}
+                  </Row>
+                </Col>
               </Row>
-            </Col>
-          </Row>
+            ) : (
+              <LoadingComponent />
+            )}
+          </>
         ) : typeVisibleDiv == 2 ? (
-
-          <Row className="fondo">
-            <Col sm={12} md={12} lg={12} className="animate__animated animate__zoomIn">
-              <Row className="separated_top justify-content-center">
-                <Col sm={6} md={6} lg={6}>
-                  <h3 className="title_principal text-center">Escoja la Empresa con la que trabajara</h3>
-                </Col>
-                <Col sm={3} md={3} lg={3}>
-                  <Button variant="danger" block={true} size="sm" onClick={resetLogin}>Volver al Login <FaSignOutAlt/></Button>
-                </Col>
-              </Row>
-              {
-                showGif ? (
-                  <Row className="justify-content-center" >
-                    <Col sm={4} lg={4} md={4} className="text-center">
-                      <Image src={require('../assets/img/loading.gif')} />
-                      <p className="title_principal">Cargando...</p>
-                    </Col>
-                  </Row>
-                ) : ''
-              }
-              <br/><br/>
-              <Row className="justify-content-center alto_sucursal">
-                {enterprises.map((v,i) => (
-                  <Col sm={3} lg={3} md={3} className="text-center" key={i}>
-                    <h4 style={{color: 'rgb(180, 55, 33)', textTransform: 'uppercase'}}>{v.bussines_name}</h4>
-                    <Image src={require('../assets/img/enterprises.jpg')} style={{width: '100%'}}/>
-                    <span className="letras_negras">Estado :</span> {v.is_open ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
-                    <br/><br/>
-                    <Button size="sm" variant="primary" block={true} onClick={() => handleChoiceEnterprise(v.id) }>Acceder</Button>
-                  </Col>
-                ))}
-              </Row>
-            </Col>
-          </Row>
+          <>
+           {!showGif ? (
+               <Row className="fondo">
+               <Col sm={12} md={12} lg={12} className="animate__animated animate__zoomIn">
+                 <Row className="separated_top justify-content-center">
+                   <Col sm={6} md={6} lg={6}>
+                     <h3 className="title_principal text-center">Escoja la Empresa con la que trabajara</h3>
+                   </Col>
+                   <Col sm={3} md={3} lg={3}>
+                     <Button variant="danger" block={true} size="sm" onClick={resetLogin}>Volver al Login <FaSignOutAlt/></Button>
+                   </Col>
+                 </Row>
+                 <br/><br/>
+                 <Row className="justify-content-center alto_sucursal">
+                   {enterprises.map((v,i) => (
+                     <Col sm={3} lg={3} md={3} className="text-center" key={i}>
+                       <h4 style={{color: 'rgb(180, 55, 33)', textTransform: 'uppercase'}}>{v.bussines_name}</h4>
+                       <Image src={require('../assets/img/enterprises.jpg')} style={{width: '100%'}}/>
+                       <span className="letras_negras">Estado :</span> {v.is_open ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
+                       <br/><br/>
+                       <Button size="sm" variant="primary" block={true} onClick={() => handleChoiceEnterprise(v.id) }>Acceder</Button>
+                     </Col>
+                   ))}
+                 </Row>
+               </Col>
+             </Row>
+           ) : (
+             <LoadingComponent />
+           )}
+          </>
 
         ) : typeVisibleDiv == 1 ? (
             <div className="authentication-inner">

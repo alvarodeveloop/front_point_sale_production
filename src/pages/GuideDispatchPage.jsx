@@ -42,6 +42,7 @@ import GastosComponent from 'components/invoice/GastosComponent'
 import TransferComponent from 'components/invoice/TransferComponent'
 import ProductTableComponent from 'components/invoice/ProductTableComponent'
 import {OBJECT_COTIZATION,API_FACTURACION} from 'utils/constants'
+import LoadingComponent from 'components/LoadingComponent'
 
 let DetailCotizacion = null
 
@@ -121,6 +122,7 @@ const GuideDispatchPage = (props) => {
     check_ref : false,
     check_transfer: false
   })
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     if(localStorage.getItem('configStore') === "null"){
@@ -134,6 +136,9 @@ const GuideDispatchPage = (props) => {
       fetchTypeTransfer()
       get_ref()
       setDisplayModals(true)
+      setTimeout(() => {
+        setDisplayLoading(false)
+      },3000)
     }
   },[props.id_branch_office])
 
@@ -223,6 +228,7 @@ const GuideDispatchPage = (props) => {
       let rut = cotizationData.rut_client_search.split('-')[0]
       let dv  = cotizationData.rut_client_search.split('-')[1]
       toast.info('Buscando datos, espere por favor...')
+      setDisplayLoading(true)
       axios.get(API_URL+'search_receptor_emisor_guide/'+rut+"/"+dv).then(result => {
 
        setCotizationData(oldData => {
@@ -262,9 +268,11 @@ const GuideDispatchPage = (props) => {
 
        setTimeout(function () {
          setDisplaySection(2)
+         setDisplayLoading(false)
        }, 500);
 
       }).catch(err => {
+        setDisplayLoading(false)
          if(err.response){
            toast.error(err.response.data.message)
          }else{
@@ -305,14 +313,17 @@ const GuideDispatchPage = (props) => {
 
 
     setDisableButton(true)
+    setDisplayLoading(true)
+
     axios.post(API_URL+'guide',object_post).then(result => {
       setDisableButton(false)
+      setDisplayLoading(false)
       toast.success('Guía guardada con éxito')
       setTimeout(function () {
         goToDashboard()
       }, 1500);
     }).catch(err => {
-
+      setDisplayLoading(false)
       setDisableButton(false)
       if(err.response){
         toast.error(err.response.data.message)
@@ -453,237 +464,241 @@ const GuideDispatchPage = (props) => {
   return (
     <Styles>
       <Container fluid>
-        <Form onSubmit={() => {}} noValidate validated={validated} ref={inputRef}>
-          <Row>
-            <Col sm={8} md={8} lg={8}>
-              <h4 className="title_principal">Formulario De Guías</h4>
-            </Col>
-            <Col sm={4} md={4} lg={4}>
-              <InputField
-               type='text'
-               label={(<h5 style={{color: "rgb(153, 31, 31)"}}>Ref.Guía</h5>)}
-               name='id_cotizacion'
-               required={true}
-               messageErrors={[
-
-               ]}
-               cols='col-md-12 col-lg-12 col-sm-12'
-               readonly={true}
-               value={cotizationData.ref}
-               handleChange={() => {}}
-              />
-            </Col>
-          </Row>
-          <hr/>
-          {displaySection == 1 ? (
-            <React.Fragment>
-              <Row className="justify-content-center">
+        {displayLoading ? (
+          <LoadingComponent />
+        ) : (
+          <Form onSubmit={() => {}} noValidate validated={validated} ref={inputRef}>
+            <Row>
+              <Col sm={8} md={8} lg={8}>
+                <h4 className="title_principal">Formulario De Guías</h4>
+              </Col>
+              <Col sm={4} md={4} lg={4}>
                 <InputField
-                  type='text'
-                  label='Ingrese el rut del cliente'
-                  name='rut_client_search'
-                  required={true}
-                  messageErrors={[
-                    'Requerido*'
-                  ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
-                  value={cotizationData.rut_client_search}
-                  handleChange={onChange}
+                type='text'
+                label={(<h5 style={{color: "rgb(153, 31, 31)"}}>Ref.Guía</h5>)}
+                name='id_cotizacion'
+                required={true}
+                messageErrors={[
+
+                ]}
+                cols='col-md-12 col-lg-12 col-sm-12'
+                readonly={true}
+                value={cotizationData.ref}
+                handleChange={() => {}}
                 />
-              </Row>
-              <Row className="justify-content-center">
-                <Col sm={4} md={4} lg={4}>
-                  <Button type="button" size="sm" variant="danger" block={true} onClick={searchClientReceptor}>Buscar <FaSearch /></Button>
-                </Col>
-              </Row>
-            </React.Fragment>
-          ) : (
-            <React.Fragment>
-              <Row>
-                <Col sm={12} md={12} lg={12}>
-                  <Accordion>
-                    <TransmitterInvoiceComponent
-                      isType="guide"
-                      cotizationData={cotizationData}
-                      setCotizationData={setCotizationData}
-                      onChange={onChange}
-                      />
-                    <ClientInvoiceComponent
-                      isType="guide"
-                      cotizationData={cotizationData}
-                      setCotizationData={setCotizationData}
-                      setIsShowModalClient={setIsShowModalClient}
-                      handleModalSeller={handleModalSeller}
-                      handleModalContacts={handleModalContacts}
-                      clients={clients}
-                      onChange={onChange}
-                      setIsShowModalClient={setIsShowModalClient}
-                      handleModalSeller={handleModalSeller}
-                      />
-                  </Accordion>
-                </Col>
-              </Row>
-              <br/>
-              <Row>
-                <Col sm={12} md={12} lg={12} className="text-center">
-                  <h5>Opcionales</h5>
-                </Col>
-              </Row>
-              <br/>
-              <Row className="justify-content-center">
-                <Col sm={3} md={3} lg={3} className="text-center">
-                  <Form.Group>
-                    <Form.Check type="checkbox"
-                      custom
-                      id={'check_ref'}
-                      label={'Referencias'}
-                      value={optionalFields.check_ref}
-                      checked={optionalFields.check_ref}
-                      onChange={onChangeOptionalFields}
-                    />
-                  </Form.Group>
-                </Col>
-                <Col sm={3} md={3} lg={3} className="text-center">
-                  <Form.Group>
-                    <Form.Check type="checkbox"
-                      custom
-                      id={'check_transfer'}
-                      label={'Transporte'}
-                      value={optionalFields.check_transfer}
-                      checked={optionalFields.check_transfer}
-                      onChange={onChangeOptionalFields}
-                    />
-                  </Form.Group>
-                </Col>
-              </Row>
-              <br/>
-              {optionalFields.check_ref ? (
-                <RefComponent
-                  onChangeTableRef={onChangeTableRef}
-                  refCotizacion={refCotizacion}
-                  removeProductRef={removeProductRef}
-                  addRef={addRef}
-                  isNotAccordeon={true}
-                  />
-              ) : ''}
-              <br/>
-              {optionalFields.check_transfer ? (
-                <TransferComponent
-                  cotizationData={cotizationData}
-                  onChange={onChange}
-                  isNotAccordeon={true}
-                  />
-              ) : '' }
-              <br/>
-              <ProductTableComponent
-                setDetailProducts={setDetailProducts}
-                detailProducts={detailProducts}
-                cotizationData={cotizationData}
-                setIsShowModalProduct={setIsShowModalProduct}
-                setGastosDetail={setGastosDetail}
-                onChange={onChange}
-              />
-              {/* ======================================================= */}
-              <hr/>
-              <GastosComponent
-                gastosDetail={gastosDetail}
-                setGastosDetail={setGastosDetail}
-                configGeneral={props.configGeneral}
-                setIsShowModalGastos={setIsShowModalGastos}
-              />
-                <br/>
-                <Row>
+              </Col>
+            </Row>
+            <hr/>
+            {displaySection == 1 ? (
+              <React.Fragment>
+                <Row className="justify-content-center">
                   <InputField
-                    type='date'
-                    label='Fecha de Emisión'
-                    name='date_issue_invoice'
+                    type='text'
+                    label='Ingrese el rut del cliente'
+                    name='rut_client_search'
                     required={true}
                     messageErrors={[
                       'Requerido*'
                     ]}
-                    cols='col-md-4 col-lg-4 col-sm-4 col-xs-12'
-                    value={cotizationData.date_issue_invoice}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={cotizationData.rut_client_search}
                     handleChange={onChange}
-                    />
-                  <InputField
-                    type='select'
-                    label='Tipo de Traslado'
-                    name='type_transfer'
-                    required={true}
-                    messageErrors={[
-                      'Requerido*'
-                    ]}
-                    cols='col-md-4 col-lg-4 col-sm-4 col-xs-12'
-                    value={cotizationData.type_transfer}
-                    handleChange={onChange}
-                  >
-                    <option value="">--Seleccione--</option>
-                    {typeTransfer.map((v,i) => (
-                      <option value={v.name} key={i}>{v.name}</option>
-                    ))}
-                  </InputField>
+                  />
                 </Row>
-                <TableTotalComponent
-                  configGeneral={props.configGeneral}
-                  gastosDetail={gastosDetail}
-                  detailProducts={detailProducts}
-                  configStore={props.configStore}
-                  cotizationData={cotizationData}
-                  isType={"cotizacion"}
-                />
-                <br/>
                 <Row className="justify-content-center">
                   <Col sm={4} md={4} lg={4}>
-                    <Button type="button" variant="primary" block={true} size="sm" onClick={handleSubmit} disabled={disableButtons}>Guardar <FaPlusCircle /></Button>
-                  </Col>
-                  <Col sm={4} md={4} lg={4}>
-                    <Button type="button" variant="danger" block={true} size="sm" onClick={goToDashboard} disabled={disableButtons}>Volver a la tabla</Button>
+                    <Button type="button" size="sm" variant="danger" block={true} onClick={searchClientReceptor}>Buscar <FaSearch /></Button>
                   </Col>
                 </Row>
-            </React.Fragment>
-          )}
-          {displayModals ? (
-            <React.Fragment>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <Row>
+                  <Col sm={12} md={12} lg={12}>
+                    <Accordion>
+                      <TransmitterInvoiceComponent
+                        isType="guide"
+                        cotizationData={cotizationData}
+                        setCotizationData={setCotizationData}
+                        onChange={onChange}
+                        />
+                      <ClientInvoiceComponent
+                        isType="guide"
+                        cotizationData={cotizationData}
+                        setCotizationData={setCotizationData}
+                        setIsShowModalClient={setIsShowModalClient}
+                        handleModalSeller={handleModalSeller}
+                        handleModalContacts={handleModalContacts}
+                        clients={clients}
+                        onChange={onChange}
+                        setIsShowModalClient={setIsShowModalClient}
+                        handleModalSeller={handleModalSeller}
+                        />
+                    </Accordion>
+                  </Col>
+                </Row>
+                <br/>
+                <Row>
+                  <Col sm={12} md={12} lg={12} className="text-center">
+                    <h5>Opcionales</h5>
+                  </Col>
+                </Row>
+                <br/>
+                <Row className="justify-content-center">
+                  <Col sm={3} md={3} lg={3} className="text-center">
+                    <Form.Group>
+                      <Form.Check type="checkbox"
+                        custom
+                        id={'check_ref'}
+                        label={'Referencias'}
+                        value={optionalFields.check_ref}
+                        checked={optionalFields.check_ref}
+                        onChange={onChangeOptionalFields}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col sm={3} md={3} lg={3} className="text-center">
+                    <Form.Group>
+                      <Form.Check type="checkbox"
+                        custom
+                        id={'check_transfer'}
+                        label={'Transporte'}
+                        value={optionalFields.check_transfer}
+                        checked={optionalFields.check_transfer}
+                        onChange={onChangeOptionalFields}
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <br/>
+                {optionalFields.check_ref ? (
+                  <RefComponent
+                    onChangeTableRef={onChangeTableRef}
+                    refCotizacion={refCotizacion}
+                    removeProductRef={removeProductRef}
+                    addRef={addRef}
+                    isNotAccordeon={true}
+                    />
+                ) : ''}
+                <br/>
+                {optionalFields.check_transfer ? (
+                  <TransferComponent
+                    cotizationData={cotizationData}
+                    onChange={onChange}
+                    isNotAccordeon={true}
+                    />
+                ) : '' }
+                <br/>
+                <ProductTableComponent
+                  setDetailProducts={setDetailProducts}
+                  detailProducts={detailProducts}
+                  cotizationData={cotizationData}
+                  setIsShowModalProduct={setIsShowModalProduct}
+                  setGastosDetail={setGastosDetail}
+                  onChange={onChange}
+                />
+                {/* ======================================================= */}
+                <hr/>
+                <GastosComponent
+                  gastosDetail={gastosDetail}
+                  setGastosDetail={setGastosDetail}
+                  configGeneral={props.configGeneral}
+                  setIsShowModalGastos={setIsShowModalGastos}
+                />
+                  <br/>
+                  <Row>
+                    <InputField
+                      type='date'
+                      label='Fecha de Emisión'
+                      name='date_issue_invoice'
+                      required={true}
+                      messageErrors={[
+                        'Requerido*'
+                      ]}
+                      cols='col-md-4 col-lg-4 col-sm-4 col-xs-12'
+                      value={cotizationData.date_issue_invoice}
+                      handleChange={onChange}
+                      />
+                    <InputField
+                      type='select'
+                      label='Tipo de Traslado'
+                      name='type_transfer'
+                      required={true}
+                      messageErrors={[
+                        'Requerido*'
+                      ]}
+                      cols='col-md-4 col-lg-4 col-sm-4 col-xs-12'
+                      value={cotizationData.type_transfer}
+                      handleChange={onChange}
+                    >
+                      <option value="">--Seleccione--</option>
+                      {typeTransfer.map((v,i) => (
+                        <option value={v.name} key={i}>{v.name}</option>
+                      ))}
+                    </InputField>
+                  </Row>
+                  <TableTotalComponent
+                    configGeneral={props.configGeneral}
+                    gastosDetail={gastosDetail}
+                    detailProducts={detailProducts}
+                    configStore={props.configStore}
+                    cotizationData={cotizationData}
+                    isType={"cotizacion"}
+                  />
+                  <br/>
+                  <Row className="justify-content-center">
+                    <Col sm={4} md={4} lg={4}>
+                      <Button type="button" variant="primary" block={true} size="sm" onClick={handleSubmit} disabled={disableButtons}>Guardar <FaPlusCircle /></Button>
+                    </Col>
+                    <Col sm={4} md={4} lg={4}>
+                      <Button type="button" variant="danger" block={true} size="sm" onClick={goToDashboard} disabled={disableButtons}>Volver a la tabla</Button>
+                    </Col>
+                  </Row>
+              </React.Fragment>
+            )}
+            {displayModals ? (
+              <React.Fragment>
 
-              <ModalInvoiceCotization
-                isShow={isOpenModalInvoice}
-                onHide={handleModalInvoice}
-                handleSubmit={submitData}
-                setDetailProducts={setDetailProducts}
-                products={detailProducts}
-                disableButtons={disableButtons}
-              />
+                <ModalInvoiceCotization
+                  isShow={isOpenModalInvoice}
+                  onHide={handleModalInvoice}
+                  handleSubmit={submitData}
+                  setDetailProducts={setDetailProducts}
+                  products={detailProducts}
+                  disableButtons={disableButtons}
+                />
 
-              <FormClientModal
-                isShow={isShowModalClient}
-                onHide={handleHideModalClient}
-                />
-                <ModalCotizacionProduct
-                  isShow={isShowModalProduct}
-                  onHide={handleHideModalProduct}
-                  products={products}
-                  handleSelectProduct={handleSelectProduct}
-                  handleSelectProductNotRegistered={() => {}}
-                  {...props}
-                />
-              <ModalGastosCotizacion
-                isShow={isShowModalGastos}
-                onHide={() => setIsShowModalGastos(false)}
-                handleGastoSubmit={handleGastoSubmit}
-                />
-              <ModalContacts
-                isShow={isShowModalContacts}
-                onHide={handleModalContacts}
-                handleSelectContact={handleSelectContact}
-                />
-              <ModalSeller
-                isShow={isShowModalSeller}
-                onHide={handleModalSeller}
-                handleSelectContact={handleSelectSeller}
-                />
-            </React.Fragment>
-          ) : ''}
-        </Form>
+                <FormClientModal
+                  isShow={isShowModalClient}
+                  onHide={handleHideModalClient}
+                  />
+                  <ModalCotizacionProduct
+                    isShow={isShowModalProduct}
+                    onHide={handleHideModalProduct}
+                    products={products}
+                    handleSelectProduct={handleSelectProduct}
+                    handleSelectProductNotRegistered={() => {}}
+                    {...props}
+                  />
+                <ModalGastosCotizacion
+                  isShow={isShowModalGastos}
+                  onHide={() => setIsShowModalGastos(false)}
+                  handleGastoSubmit={handleGastoSubmit}
+                  />
+                <ModalContacts
+                  isShow={isShowModalContacts}
+                  onHide={handleModalContacts}
+                  handleSelectContact={handleSelectContact}
+                  />
+                <ModalSeller
+                  isShow={isShowModalSeller}
+                  onHide={handleModalSeller}
+                  handleSelectContact={handleSelectSeller}
+                  />
+              </React.Fragment>
+            ) : ''}
+          </Form>
+        )}
       </Container>
     </Styles>
   )

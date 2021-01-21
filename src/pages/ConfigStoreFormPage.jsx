@@ -18,6 +18,7 @@ import {
   Container,
   Image
 } from 'react-bootstrap'
+import LoadingComponent from 'components/LoadingComponent'
 
 
 const ConfigStoreFormPage = (props) => {
@@ -44,6 +45,7 @@ const ConfigStoreFormPage = (props) => {
   const [paises, setPaises] = useState([])
   const [validate, setValidate] = useState(false)
   const [isUpdate, setIsUpdate] = useState(false)
+  const [displayLoading, setDisplayLoading] = useState(true)
   const [ imgComponent, setImgComponent ] = useState(
     <Image src={  require('../assets/img/utils/empty_logo.jpg') }
       id="imagen_logo" style={{ width: '80px' }} roundedCircle />
@@ -132,7 +134,9 @@ const ConfigStoreFormPage = (props) => {
           })
         }
       }
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -163,7 +167,7 @@ const ConfigStoreFormPage = (props) => {
         formData.append(v,dataStore[v])
       }
     })
-
+    setDisplayLoading(true)
     if(isUpdate){
       axios.put(API_URL+'config_store/'+props.match.params.id,formData).then(result => {
         toast.success('Configuración Modificada')
@@ -174,6 +178,7 @@ const ConfigStoreFormPage = (props) => {
         },1500)
 
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)
@@ -191,6 +196,7 @@ const ConfigStoreFormPage = (props) => {
         },1500)
 
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)

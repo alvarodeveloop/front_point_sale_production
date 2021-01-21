@@ -58,6 +58,7 @@ const DashboardPage = props => {
 DashboardPage.propTypes = {
   user: PropTypes.object,
   id_branch_office: PropTypes.string.isRequired,
+  id_enterprise: PropTypes.string,
 }
 
 function mapStateToProps(state){

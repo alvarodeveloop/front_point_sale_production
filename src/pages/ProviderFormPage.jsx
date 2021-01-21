@@ -15,6 +15,7 @@ import {
   Container,
   Image
 } from 'react-bootstrap'
+import LoadingComponent from 'components/LoadingComponent'
 
 const ProviderFormPage = (props) => {
 
@@ -35,6 +36,7 @@ const ProviderFormPage = (props) => {
   const [isCreated,setIsCreated] = useState(false)
   const [validate, setValidate] = useState(false)
   const [isUpdate, setIsUpdate] = useState(false)
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     validateConfig()
@@ -85,8 +87,9 @@ const ProviderFormPage = (props) => {
         })
         setIsUpdate(true)
       }
-
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -107,7 +110,7 @@ const ProviderFormPage = (props) => {
     }
 
     let data = Object.assign({},dataProvider)
-
+    setDisplayLoading(true)
     if(isUpdate){
       axios.put(API_URL+'provider/'+atob(props.match.params.id),data).then(result => {
         toast.success('Configuración Modificada')
@@ -115,8 +118,9 @@ const ProviderFormPage = (props) => {
         setTimeout(() => {
           props.history.push('/provider/list')
         },1500)
-
+        setDisplayLoading(false)
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)
@@ -129,8 +133,9 @@ const ProviderFormPage = (props) => {
         toast.success('Proveedor Creado')
 
         cleanForm()
-
+        setDisplayLoading(false)
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)
@@ -174,106 +179,113 @@ const ProviderFormPage = (props) => {
   return (
     <Container>
       <Form onSubmit={onSubmit} noValidate validated={validate}>
-        <Row className="justify-content-center align-items-center">
-          <Col sm={7} md={7} lg={7} xs={12} className="containerDivSeparated">
-            <h3 className="text-center title_principal">Formulario de Proveedores</h3>
-            <br/>
-            <Row>
-              <InputField
-                {...props.inputSocialRazon}
-                handleChange={onChange}
-                value={dataProvider.social_razon}
-              />
-              <InputField
-                {...props.inputTypeId}
-                handleChange={onChange}
-                value={dataProvider.type_id}
-              >
-                <option value="">--Seleccione--</option>
-                <option value={1}>Rut</option>
-                <option value={2}>Identificación Fiscal</option>
-              </InputField>
-            </Row>
-            <Row>
-              {dataProvider.type_id && dataProvider.type_id == 1 ? (
-                  <Form.Group className="col-md-6 col-sm-6 col-lg-6 col-12">
-                    <Form.Label className="fontBold">Rut</Form.Label>
-                    {/*<InputMask onChange={onChange} value={dataProvider.rut_provider} {...props.maskInput} {...props.inputRut}>
-                      { (inputProps) => <Form.Control {...inputProps} /> }
-                    </InputMask> */}
-                    <Form.Control onChange={onChange} value={dataProvider.rut_provider} {...props.inputRut} />
-                    <Form.Control.Feedback type="invalid">
-                      <span className="error-input">Requerido*</span>
-                    </Form.Control.Feedback>
-                  </Form.Group>
-              ) : dataProvider.type_id && dataProvider.type_id == 2 ? (
+        <>
+          {displayLoading ? (
+            <LoadingComponent />
+          ) : (
+
+            <Row className="justify-content-center align-items-center">
+              <Col sm={7} md={7} lg={7} xs={12} className="containerDivSeparated">
+                <h3 className="text-center title_principal">Formulario de Proveedores</h3>
+                <br/>
+                <Row>
                   <InputField
-                    {...props.inputId}
+                    {...props.inputSocialRazon}
                     handleChange={onChange}
-                    value={dataProvider.rut_provider}
+                    value={dataProvider.social_razon}
                   />
-              ) : ''}
-              <InputField
-                {...props.inputNameFantasy}
-                handleChange={onChange}
-                value={dataProvider.name_fantasy}
-              />
+                  <InputField
+                    {...props.inputTypeId}
+                    handleChange={onChange}
+                    value={dataProvider.type_id}
+                  >
+                    <option value="">--Seleccione--</option>
+                    <option value={1}>Rut</option>
+                    <option value={2}>Identificación Fiscal</option>
+                  </InputField>
+                </Row>
+                <Row>
+                  {dataProvider.type_id && dataProvider.type_id == 1 ? (
+                      <Form.Group className="col-md-6 col-sm-6 col-lg-6 col-12">
+                        <Form.Label className="fontBold">Rut</Form.Label>
+                        {/*<InputMask onChange={onChange} value={dataProvider.rut_provider} {...props.maskInput} {...props.inputRut}>
+                          { (inputProps) => <Form.Control {...inputProps} /> }
+                        </InputMask> */}
+                        <Form.Control onChange={onChange} value={dataProvider.rut_provider} {...props.inputRut} />
+                        <Form.Control.Feedback type="invalid">
+                          <span className="error-input">Requerido*</span>
+                        </Form.Control.Feedback>
+                      </Form.Group>
+                  ) : dataProvider.type_id && dataProvider.type_id == 2 ? (
+                      <InputField
+                        {...props.inputId}
+                        handleChange={onChange}
+                        value={dataProvider.rut_provider}
+                      />
+                  ) : ''}
+                  <InputField
+                    {...props.inputNameFantasy}
+                    handleChange={onChange}
+                    value={dataProvider.name_fantasy}
+                  />
+                </Row>
+                <Row>
+                  <InputField
+                    {...props.inputCountry}
+                    handleChange={onChange}
+                    value={dataProvider.id_country}
+                  >
+                    <option value=''>--Seleccione--</option>
+                    {paises.map((v,i) => (
+                      <option value={v.id} key={i}>{v.nombre}</option>
+                    ))}
+                  </InputField>
+                  <InputField
+                    {...props.inputComuna}
+                    handleChange={onChange}
+                    value={dataProvider.comuna}
+                  />
+                </Row>
+                <Row>
+                  <InputField
+                    {...props.inputCity}
+                    handleChange={onChange}
+                    value={dataProvider.city}
+                  />
+                  <InputField
+                    {...props.inputPhone}
+                    handleChange={onChange}
+                    value={dataProvider.phone}
+                  />
+                </Row>
+                <Row>
+                  <InputField
+                    {...props.inputSpin}
+                    handleChange={onChange}
+                    value={dataProvider.spin}
+                  />
+                </Row>
+                <Row>
+                  <InputField
+                    {...props.inputAddress}
+                    handleChange={onChange}
+                    value={dataProvider.address}
+                  />
+                </Row>
+              </Col>
+              <Col sm={3} md={3} lg={3} xs={6} className="containerDivSeparated justify-content-center align-items-center">
+                {isCreated ? (
+                  <Button size="sm" type="button" onClick={registerAnotherOne} variant="secondary" block={true}>Crear otro <FaPlusCircle /></Button>
+                ) : (
+                  <Button size="sm" type="submit" variant="primary" block={true}>Guardar <FaPlusCircle /></Button>
+                )}
+                <br/>
+                <p className="text-center">O</p>
+                <Button size="sm" type="button" onClick={goToProvider} variant="danger" block={true}>Volver a los Proveedores</Button>
+              </Col>
             </Row>
-            <Row>
-              <InputField
-                {...props.inputCountry}
-                handleChange={onChange}
-                value={dataProvider.id_country}
-              >
-                <option value=''>--Seleccione--</option>
-                {paises.map((v,i) => (
-                  <option value={v.id} key={i}>{v.nombre}</option>
-                ))}
-              </InputField>
-              <InputField
-                {...props.inputComuna}
-                handleChange={onChange}
-                value={dataProvider.comuna}
-              />
-            </Row>
-            <Row>
-              <InputField
-                {...props.inputCity}
-                handleChange={onChange}
-                value={dataProvider.city}
-              />
-              <InputField
-                {...props.inputPhone}
-                handleChange={onChange}
-                value={dataProvider.phone}
-              />
-            </Row>
-            <Row>
-              <InputField
-                {...props.inputSpin}
-                handleChange={onChange}
-                value={dataProvider.spin}
-              />
-            </Row>
-            <Row>
-              <InputField
-                {...props.inputAddress}
-                handleChange={onChange}
-                value={dataProvider.address}
-              />
-            </Row>
-          </Col>
-          <Col sm={3} md={3} lg={3} xs={6} className="containerDivSeparated justify-content-center align-items-center">
-            {isCreated ? (
-              <Button size="sm" type="button" onClick={registerAnotherOne} variant="secondary" block={true}>Crear otro <FaPlusCircle /></Button>
-            ) : (
-              <Button size="sm" type="submit" variant="primary" block={true}>Guardar <FaPlusCircle /></Button>
-            )}
-            <br/>
-            <p className="text-center">O</p>
-            <Button size="sm" type="button" onClick={goToProvider} variant="danger" block={true}>Volver a los Proveedores</Button>
-          </Col>
-        </Row>
+          )}
+        </>
       </Form>
     </Container>
   )

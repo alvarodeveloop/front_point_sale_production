@@ -19,11 +19,13 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 
 import 'styles/pages/users.css'
 import {connect} from 'react-redux'
+import LoadingComponent from 'components/LoadingComponent'
 
 
 const UserListPage = (props) => {
 
   const [users,setUsers] = useState([])
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     fetchData()
@@ -73,10 +75,12 @@ const UserListPage = (props) => {
   }
 
   const confirmDeleteRegister = id => {
+    setDisplayLoading(true)
     axios.delete(API_URL+'user/'+id).then(result => {
       toast.success('Registro eliminado con éxito')
       fetchData()
     }).catch(err => {
+      setDisplayLoading(false)
       const { response } = err
       if(response){
         toast.error(response.data.message)
@@ -93,7 +97,9 @@ const UserListPage = (props) => {
   const fetchData = () => {
     axios.get(API_URL+'user').then(result => {
       setUsers(result.data)
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       const { response } = err
       console.log(err,response)
       if(response){
@@ -114,11 +120,14 @@ const UserListPage = (props) => {
         <Col sm={6} md={6} lg={6}>
           <h4 className="title_principal">Usuarios</h4>
         </Col>
-        <Col sm={6} md={6} lg={6}>
+        <Col sm={6} md={6} lg={6} className="text-right">
           <h4 className="title_principal">Total Usuarios Registrados: <Badge variant="danger">{users.length}</Badge></h4>
         </Col>
       </Row>
       <hr/>
+      {displayLoading ? (
+        <LoadingComponent />
+      ) : (
       <Row className="justify-content-center">
         <Col sm={6} md={6} lg={6} xs={12}>
           <Button block={true} size="sm" title="Crear Usuario" onClick={goToForm} variant="success">Crear Usuario <FaPlusCircle /></Button>
@@ -127,6 +136,7 @@ const UserListPage = (props) => {
           <Table columns={userColumns} data={users} />
         </Col>
       </Row>
+      )}
     </Container>
   )
 }

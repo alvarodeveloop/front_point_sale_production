@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useCallback} from 'react'
 import PropTypes from 'prop-types'
 import {showPriceWithDecimals} from 'utils/functions'
 import {
@@ -9,7 +9,7 @@ import {
 
 const TableTotalComponent = (props) => {
 
-  const displayTotalProduct = () => {
+  const displayTotalProduct = useCallback(() => {
     let total = 0
 
     props.detailProducts.forEach((item, i) => {
@@ -32,9 +32,9 @@ const TableTotalComponent = (props) => {
       total+= parseFloat(item1.price) * item1.quantity
     })
     return total
-  }
+  },[props.detailProducts])
 
-  const displayTotalIva = () => {
+  const displayTotalIva = useCallback( () => {
     let total = 0
 
     props.detailProducts.forEach((item, i) => {
@@ -50,19 +50,19 @@ const TableTotalComponent = (props) => {
       }
     })
     return total
-  }
+  },[props.detailProducts])
 
-  const displayTotalGastos = () => {
+  const displayTotalGastos = useCallback( () => {
     let total = 0
     props.gastosDetail.forEach((item, i) => {
       total += parseFloat(item.amount)
     });
 
     return total
-  }
+  },[props.gastosDetail])
 
 
-  const displayTotalTotal = (sin_gastos = false) => {
+  const displayTotalTotal = useCallback((sin_gastos = false) => {
     let total_product = displayTotalProduct()
     let total_gastos  = displayTotalGastos()
     let total_iva = 0
@@ -74,9 +74,9 @@ const TableTotalComponent = (props) => {
     }else{
       return (parseFloat(total_product) + parseFloat(total_iva))
     }
-  }
+  },[props.detailProducts, props.gastosDetail])
 
-  const displayTotalDiscount = () => {
+  const displayTotalDiscount = useCallback(() => {
     let total = 0
 
     props.detailProducts.forEach((item, i) => {
@@ -99,7 +99,7 @@ const TableTotalComponent = (props) => {
       total+= value * item1.quantity
     })
     return total
-  }
+  }, [props.detailProducts])
 
   return (
     <Row>

@@ -14,6 +14,7 @@ import axios from 'axios'
 import {API_URL} from 'utils/constants'
 import {toast} from 'react-toastify'
 import {formatRut} from 'utils/functions'
+import LoadingComponent from 'components/LoadingComponent'
 
 const ConfigAidyPage = (props) => {
 
@@ -26,6 +27,7 @@ const ConfigAidyPage = (props) => {
     base64LoginImg: '',
   })
   const [validated, setValidated] = useState(false)
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     fetchData()
@@ -43,7 +45,9 @@ const ConfigAidyPage = (props) => {
         rut_nuxo : result.data.rut_nuxo+"-"+result.data.dv_nuxo,
         password_nuxo : result.data.password_nuxo,
       })
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
        if(err.response){
          toast.error(err.response.data.message)
        }else{
@@ -122,11 +126,12 @@ const ConfigAidyPage = (props) => {
         formDataPost.append(v,objectNew[v])
       }
     })
-
+    setDisplayLoading(true)
      axios.post(API_URL+'config_aidy',formDataPost).then(result => {
       toast.success('Configuración guardada')
-
+      setDisplayLoading(false)
      }).catch(err => {
+      setDisplayLoading(false)
        if(err.response){
          toast.error(err.response.data.message)
        }else{
@@ -138,69 +143,73 @@ const ConfigAidyPage = (props) => {
 
   return (
     <Container>
-      <Row>
-        <Col sm={12} md={12} lg={12}>
-          <Form onSubmit={onSubmit} noValidate validated={validated}>
-            <Row>
-              <Col sm={7} md={7} lg={7}>
-                <h4 className="title_principal">Formulario de configuración de aidy</h4>
-              </Col>
-              <Col sm={5} md={5} lg={5}>
-                <Button variant="danger" block={true} type="submit" size="sm">Guardar <FaRegPaperPlane /></Button>
-              </Col>
-            </Row>
-            <hr/>
-            <Row>
-              <Col sm={4} md={4} lg={4}>
-                <br/>
-                <Button variant="primary" block={true} onClick={openFileInput} type="button" size="sm">Escoger imagen login</Button>
-                <input type="file" onChange={onChangeInputFile} style={{display: "none"}} id="input_file_img_login" />
-              </Col>
-              <Col sm={4} md={4} lg={4} className="text-center">
-                {displayImgLogin()}
-              </Col>
-            </Row>
-            <Row>
-              <InputField
-               type='text'
-               label='Api Key Nuxo'
-               name='api_key_nuxo'
-               required={true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={formData.api_key_nuxo}
-               handleChange={onChange}
-              />
-              <InputField
-               type='text'
-               label='Rut Nuxo'
-               name='rut_nuxo'
-               required={true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={formData.rut_nuxo}
-               handleChange={onChange}
-              />
-              <InputField
-               type='password'
-               label='Password Nuxo'
-               name='password_nuxo'
-               required={true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={formData.password_nuxo}
-               handleChange={onChange}
-              />
-            </Row>
-          </Form>
-        </Col>
-      </Row>
+      {displayLoading ? (
+        <LoadingComponent />
+      ) : (
+        <Row>
+          <Col sm={12} md={12} lg={12}>
+            <Form onSubmit={onSubmit} noValidate validated={validated}>
+              <Row>
+                <Col sm={7} md={7} lg={7}>
+                  <h4 className="title_principal">Formulario de configuración de aidy</h4>
+                </Col>
+                <Col sm={5} md={5} lg={5}>
+                  <Button variant="danger" block={true} type="submit" size="sm">Guardar <FaRegPaperPlane /></Button>
+                </Col>
+              </Row>
+              <hr/>
+              <Row>
+                <Col sm={4} md={4} lg={4}>
+                  <br/>
+                  <Button variant="primary" block={true} onClick={openFileInput} type="button" size="sm">Escoger imagen login</Button>
+                  <input type="file" onChange={onChangeInputFile} style={{display: "none"}} id="input_file_img_login" />
+                </Col>
+                <Col sm={4} md={4} lg={4} className="text-center">
+                  {displayImgLogin()}
+                </Col>
+              </Row>
+              <Row>
+                <InputField
+                type='text'
+                label='Api Key Nuxo'
+                name='api_key_nuxo'
+                required={true}
+                messageErrors={[
+                'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={formData.api_key_nuxo}
+                handleChange={onChange}
+                />
+                <InputField
+                type='text'
+                label='Rut Nuxo'
+                name='rut_nuxo'
+                required={true}
+                messageErrors={[
+                'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={formData.rut_nuxo}
+                handleChange={onChange}
+                />
+                <InputField
+                type='password'
+                label='Password Nuxo'
+                name='password_nuxo'
+                required={true}
+                messageErrors={[
+                'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={formData.password_nuxo}
+                handleChange={onChange}
+                />
+              </Row>
+            </Form>
+          </Col>
+        </Row>
+      )}
     </Container>
   )
 }

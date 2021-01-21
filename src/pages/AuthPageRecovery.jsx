@@ -72,7 +72,7 @@ const AuthPageRecovery = props => {
         <div className="authentication-inner">
           {/* Side container */}
           {/* Do not display the container on extra small, small and medium screens */}
-
+          
           {!imgLogin ? (
             <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/background_1920-16.jpg')` }}>
               <div className="ui-bg-overlay bg-dark opacity-50"></div>

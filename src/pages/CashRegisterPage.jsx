@@ -20,6 +20,7 @@ import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
 import 'styles/components/modalComponents.css'
 import { confirmAlert } from 'react-confirm-alert'; // Import
+import LoadingComponent from 'components/LoadingComponent'
 
 import { connect } from 'react-redux'
 
@@ -38,6 +39,7 @@ const CashRegisterPage = (props) => {
     nro_caja: '',
     id: ''
   })
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     fetchData(true)
@@ -68,7 +70,7 @@ const CashRegisterPage = (props) => {
           }, 1500);
         }
       }
-
+      setDisplayLoading(false)
     }).catch(err => {
       if(err.response){
         toast.error(err.response.data.message)
@@ -102,14 +104,15 @@ const CashRegisterPage = (props) => {
     }
 
     let data = Object.assign({},formData)
-
+    setDisplayLoading(true)
     if(data.id){
       axios.put(API_URL+'cash_register/'+data.id,data).then(result => {
         toast.success('Caja Registradora Modificada')
         cleanForm()
         handleOpenModalAdd()
-        fetchData()
+        fetchData() 
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)
@@ -166,105 +169,113 @@ const CashRegisterPage = (props) => {
   }
 
   return (
-    <Container fluid>
-      <Row>
-        <Col sm={6} md={6} lg={6}>
-          <h4 className="title_principal">Caja Registradoras</h4>
-        </Col>
-        <Col sm={6} md={6} lg={6}>
-          <Button variant="success" block={true} onClick={createRegister} size="sm">Agregar Caja <FaPlusCircle /></Button>
-        </Col>
-      </Row>
-      <hr/>
-      <Row className="justify-content-center">
-        {dataCashRegister.map((v,i) => (
-          <Col sm={3} lg={3} md={3} className="text-center" key={i}>
-            <h5 style={{color: 'rgb(180, 55, 33)'}}>CAJA N° {v.nro_caja}</h5>
-            <Image src={require('../assets/img/caja_registradora.jpg')} style={{width: '100%'}}/>
-            Estado : {v.status ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
-            <br/><br/>
-            <DropdownButton size="md" id={'fila'+i} title="Acciones" style={{width: '100%'}} variant="primary">
-              <Dropdown.Item onClick={() => updateRegister(v) }>Modificar</Dropdown.Item>
-              <Dropdown.Item onClick={() => {}}>Eliminar</Dropdown.Item>
-            </DropdownButton>
-          </Col>
-        ))}
-      </Row>
-      <Modal
-        show={isOpenModalAdd}
-        onHide={handleOpenModalAdd}
-        size="xl"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header className="header_dark">
-          <Modal.Title id="contained-modal-title-vcenter">
-            {titleModal}
-            &nbsp;&nbsp;<Image src={require('../assets/img/caja_registradora.jpg')} style={{ width: '50px'}}/>
-          </Modal.Title>
-        </Modal.Header>
-        <Form onSubmit={onSubmit} noValidate validated={validated}>
-          <Modal.Body>
-            <Row>
-              <InputField
-                type="select"
-                label="Usuario a Asociar"
-                name="id_user"
-                required={false}
-                messageErrors={[
-                  'Requerido*'
-                ]}
-                cols="col-md-4 col-lg-4 col-sm-4"
-                value={formData.id_user}
-                handleChange={onChange}
-              >
-                <option value=''>--Seleccione--</option>
-                {users.map((v,i) => (
-                  <option value={v.id} key={i}>{v.name} - {v.email}</option>
-                ))}
-              </InputField>
-              <Col sm={4} md={4} lg={4}>
-                <br/>
-                <Form.Group>
-                  <Form.Check type="checkbox"
-                    custom
-                    id={'default_cash'}
-                    name={'default_cash'}
-                    label={'Saldo Inicial por Default'}
-                    value={formData.default_cash}
-                    checked={formData.default_cash}
-                    onChange={onChange} />
-                </Form.Group>
+    <>
+      {displayLoading ? (
+        <Container fluid>
+          <LoadingComponent />
+        </Container>
+      ) : (
+        <Container fluid>
+          <Row>
+            <Col sm={6} md={6} lg={6}>
+              <h4 className="title_principal">Caja Registradoras</h4>
+            </Col>
+            <Col sm={6} md={6} lg={6}>
+              <Button variant="success" block={true} onClick={createRegister} size="sm">Agregar Caja <FaPlusCircle /></Button>
+            </Col>
+          </Row>
+          <hr/>
+          <Row className="justify-content-center">
+            {dataCashRegister.map((v,i) => (
+              <Col sm={3} lg={3} md={3} className="text-center" key={i}>
+                <h5 style={{color: 'rgb(180, 55, 33)'}}>CAJA N° {v.nro_caja}</h5>
+                <Image src={require('../assets/img/caja_registradora.jpg')} style={{width: '100%'}}/>
+                Estado : {v.status ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
+                <br/><br/>
+                <DropdownButton size="md" id={'fila'+i} title="Acciones" style={{width: '100%'}} variant="primary">
+                  <Dropdown.Item onClick={() => updateRegister(v) }>Modificar</Dropdown.Item>
+                  <Dropdown.Item onClick={() => {}}>Eliminar</Dropdown.Item>
+                </DropdownButton>
               </Col>
-              {
-                formData.default_cash ? (
+            ))}
+          </Row>
+          <Modal
+            show={isOpenModalAdd}
+            onHide={handleOpenModalAdd}
+            size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header className="header_dark">
+              <Modal.Title id="contained-modal-title-vcenter">
+                {titleModal}
+                &nbsp;&nbsp;<Image src={require('../assets/img/caja_registradora.jpg')} style={{ width: '50px'}}/>
+              </Modal.Title>
+            </Modal.Header>
+            <Form onSubmit={onSubmit} noValidate validated={validated}>
+              <Modal.Body>
+                <Row>
                   <InputField
-                    type="number"
-                    label="Saldo Inicial"
-                    name="amount_cash_default"
-                    step="any"
+                    type="select"
+                    label="Usuario a Asociar"
+                    name="id_user"
                     required={false}
-                    messageErrors={[]}
+                    messageErrors={[
+                      'Requerido*'
+                    ]}
                     cols="col-md-4 col-lg-4 col-sm-4"
-                    value={formData.amount_cash_default}
+                    value={formData.id_user}
                     handleChange={onChange}
-                    />
-                ) : ''
-              }
-            </Row>
-            <hr/>
-              <Row className="justify-content-center">
-                <Col sm={4} md={4} lg={4}>
-                  <Button block={true} variant="primary" size="sm" type="submit">Guardar</Button>
-                </Col>
-                <Col sm={4} md={4} lg={4}>
-                  <Button block={true} variant="danger" size="sm" onClick={handleOpenModalAdd} type="button">Cerrar</Button>
-                </Col>
-              </Row>
-          </Modal.Body>
-        </Form>
-      </Modal>
-    </Container>
+                  >
+                    <option value=''>--Seleccione--</option>
+                    {users.map((v,i) => (
+                      <option value={v.id} key={i}>{v.name} - {v.email}</option>
+                    ))}
+                  </InputField>
+                  <Col sm={4} md={4} lg={4}>
+                    <br/>
+                    <Form.Group>
+                      <Form.Check type="checkbox"
+                        custom
+                        id={'default_cash'}
+                        name={'default_cash'}
+                        label={'Saldo Inicial por Default'}
+                        value={formData.default_cash}
+                        checked={formData.default_cash}
+                        onChange={onChange} />
+                    </Form.Group>
+                  </Col>
+                  {
+                    formData.default_cash ? (
+                      <InputField
+                        type="number"
+                        label="Saldo Inicial"
+                        name="amount_cash_default"
+                        step="any"
+                        required={false}
+                        messageErrors={[]}
+                        cols="col-md-4 col-lg-4 col-sm-4"
+                        value={formData.amount_cash_default}
+                        handleChange={onChange}
+                        />
+                    ) : ''
+                  }
+                </Row>
+                <hr/>
+                  <Row className="justify-content-center">
+                    <Col sm={4} md={4} lg={4}>
+                      <Button block={true} variant="primary" size="sm" type="submit">Guardar</Button>
+                    </Col>
+                    <Col sm={4} md={4} lg={4}>
+                      <Button block={true} variant="danger" size="sm" onClick={handleOpenModalAdd} type="button">Cerrar</Button>
+                    </Col>
+                  </Row>
+              </Modal.Body>
+            </Form>
+          </Modal>
+        </Container>
+      )}
+    </>
   )
 }
 

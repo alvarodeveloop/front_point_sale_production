@@ -14,10 +14,12 @@ import axios from 'axios'
 import {API_URL} from 'utils/constants'
 import {toast} from 'react-toastify'
 import InputField from 'components/input/InputComponent'
+import LoadingComponent from 'components/LoadingComponent'
 
 
 const ProfilePage = (props) => {
   const [validated, setValidated] = useState(false)
+  const [displayLoading, setDisplayLoading] = useState(true)
   const [dataForm, setDataForm] = useState({
     email: '',
     name: '',
@@ -54,8 +56,9 @@ const ProfilePage = (props) => {
             id="imagen_logo" style={{ width: '50%' }} roundedCircle />
         )
       }
-
+      setDisplayLoading(false)
      }).catch(err => {
+      setDisplayLoading(false)
        if(err.response){
          toast.error(err.response.data.message)
        }else{
@@ -91,13 +94,14 @@ const ProfilePage = (props) => {
         formData.append(item,dataForm[item])
       }
     });
-
+    setDisplayLoading(true)
     axios.post(API_URL+'profile',formData).then(result => {
       toast.success('Datos modificados con éxito')
       setTimeout(function () {
         props.history.replace('/dashboard')
       }, 1500);
     }).catch(err => {
+      setDisplayLoading(false)
      if(err.response){
        toast.error(err.response.data.message)
      }else{
@@ -135,112 +139,120 @@ const ProfilePage = (props) => {
   }
 
   return (
-    <Container fluid={true}>
-      <Row className="">
-        <Col sm={6} md={6} lg={6}>
-          <h4 className="title_principal">Perfil del Usuario</h4>
-        </Col>
-        <Col sm={6} md={6} lg={6} className="text-center">
-          {imgComponent}
-        </Col>
-      </Row>
-      <hr/>
-      <Col sm={12} md={12} lg={12}>
-        <Form onSubmit={onSubmit} noValidate validated={validated}>
-          <Row>
-            <InputField
-             type='email'
-             label='Email'
-             name='email'
-             required={true}
-             messageErrors={[
-             'Requerido* ','Formato Email'
-             ]}
-             cols='col-md-4 col-lg-4 col-sm-4'
-             value={dataForm.email}
-             handleChange={onChange}
-            />
-            <InputField
-              type='text'
-              label='Rut'
-              name='rut'
-              required={true}
-              messageErrors={[
-              'Requerido*'
-              ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
-              value={dataForm.rut}
-              handleChange={onChange}
-            />
-            <InputField
-             type='text'
-             label='Nombre completo'
-             name='name'
-             required={true}
-             messageErrors={[
-             'Requerido*'
-             ]}
-             cols='col-md-4 col-lg-4 col-sm-4'
-             value={dataForm.name}
-             handleChange={onChange}
-            />
-          </Row>
-          <Row>
-            <InputField
-             type='text'
-             label='Fono'
-             name='phone'
-             required={true}
-             messageErrors={[
-             'Requerido*'
-             ]}
-             cols='col-md-4 col-lg-4 col-sm-4'
-             value={dataForm.phone}
-             handleChange={onChange}
-             />
-           <InputField
-            type='password'
-            label='Contraseña'
-            name='password'
-            required={false}
-            messageErrors={[
-            'Requerido*'
-            ]}
-            cols='col-md-4 col-lg-4 col-sm-4'
-            value={dataForm.password}
-            handleChange={onChange}
-           />
-           <InputField
-             type='password'
-             label='Confirme Contraseña'
-             name='confirm_password'
-             required={false}
-             messageErrors={[
-             'Requerido*'
-             ]}
-             cols='col-md-4 col-lg-4 col-sm-4'
-             value={dataForm.confirm_password}
-             handleChange={onChange}
-           />
-          </Row>
-          <Row>
-            <Col sm={4} md={4} lg={4}>
-              <Button variant="primary" block={true} onClick={displayFileField} type="button" size="sm">Escoger imagen del perfil <FaImage /></Button>
-              <input type="file" style={{display : "none"}} id="input_file" onChange={readImgProduct} />
+    <>
+      {displayLoading ? (
+        <Container fluid={true}>
+          <LoadingComponent />
+        </Container>
+      ) : (
+        <Container fluid={true}>
+          <Row className="">
+            <Col sm={6} md={6} lg={6}>
+              <h4 className="title_principal">Perfil del Usuario</h4>
+            </Col>
+            <Col sm={6} md={6} lg={6} className="text-center">
+              {imgComponent}
             </Col>
           </Row>
-          <br/>
-          <Row className="justify-content-center">
-            <Col sm={4} md={4} lg={4}>
-              <Button variant="danger" block={true} type="submit" size="sm">Guardar <FaPlusCircle /></Button>
-            </Col>
-            <Col sm={4} md={4} lg={4}>
-              <Button variant="secondary" block={true} type="button" size="sm" onClick={goToDashboard}>Ir al Dashboard</Button>
-            </Col>
-          </Row>
-        </Form>
-      </Col>
-    </Container>
+          <hr/>
+          <Col sm={12} md={12} lg={12}>
+            <Form onSubmit={onSubmit} noValidate validated={validated}>
+              <Row>
+                <InputField
+                type='email'
+                label='Email'
+                name='email'
+                required={true}
+                messageErrors={[
+                'Requerido* ','Formato Email'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={dataForm.email}
+                handleChange={onChange}
+                />
+                <InputField
+                  type='text'
+                  label='Rut'
+                  name='rut'
+                  required={true}
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={dataForm.rut}
+                  handleChange={onChange}
+                />
+                <InputField
+                type='text'
+                label='Nombre completo'
+                name='name'
+                required={true}
+                messageErrors={[
+                'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={dataForm.name}
+                handleChange={onChange}
+                />
+              </Row>
+              <Row>
+                <InputField
+                type='text'
+                label='Fono'
+                name='phone'
+                required={true}
+                messageErrors={[
+                'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={dataForm.phone}
+                handleChange={onChange}
+                />
+              <InputField
+                type='password'
+                label='Contraseña'
+                name='password'
+                required={false}
+                messageErrors={[
+                'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={dataForm.password}
+                handleChange={onChange}
+              />
+              <InputField
+                type='password'
+                label='Confirme Contraseña'
+                name='confirm_password'
+                required={false}
+                messageErrors={[
+                'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={dataForm.confirm_password}
+                handleChange={onChange}
+              />
+              </Row>
+              <Row>
+                <Col sm={4} md={4} lg={4}>
+                  <Button variant="primary" block={true} onClick={displayFileField} type="button" size="sm">Escoger imagen del perfil <FaImage /></Button>
+                  <input type="file" style={{display : "none"}} id="input_file" onChange={readImgProduct} />
+                </Col>
+              </Row>
+              <br/>
+              <Row className="justify-content-center">
+                <Col sm={4} md={4} lg={4}>
+                  <Button variant="danger" block={true} type="submit" size="sm">Guardar <FaPlusCircle /></Button>
+                </Col>
+                <Col sm={4} md={4} lg={4}>
+                  <Button variant="secondary" block={true} type="button" size="sm" onClick={goToDashboard}>Ir al Dashboard</Button>
+                </Col>
+              </Row>
+            </Form>
+          </Col>
+        </Container>
+      )}
+    </>
   )
 }
 

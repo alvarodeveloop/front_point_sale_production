@@ -22,6 +22,7 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 
 import TableEarningExpensiveComponent from 'components/TableEarningExpensiveComponent'
 import { FaPlusCircle } from 'react-icons/fa'
+import LoadingComponent from 'components/LoadingComponent'
 let columns_center = []
 
 const FlowCashCenterCostePage = (props) => {
@@ -33,6 +34,7 @@ const FlowCashCenterCostePage = (props) => {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [displayEarnings, setDisplayEarnings] = useState([])
   const [displayExpensives, setDisplayExpensives] = useState([])
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     return () => {
@@ -78,10 +80,13 @@ const FlowCashCenterCostePage = (props) => {
   }
 
   const confirmDeleteRegister = id => {
+    setDisplayLoading(true)
     axios.delete(API_URL+'flow_cash_center_coste/'+id).then(result => {
       toast.success('Registro Eliminado')
       props.fetchData()
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -132,14 +137,16 @@ const FlowCashCenterCostePage = (props) => {
       return
     }
     const objectPost = Object.assign({},centerForm)
-
+    setDisplayLoading(true)
     if(objectPost.id){
       axios.put(API_URL+'flow_cash_center_coste/'+objectPost.id,objectPost).then(result => {
         toast.success('Cuenta Modificada')
         cleanForm()
         displayForm()
         props.fetchData()
+        setDisplayLoading(false)
       }).catch(err => {
+        setDisplayLoading(false)
         if(err.response){
           toast.error(err.response.data.message)
         }else{
@@ -152,7 +159,9 @@ const FlowCashCenterCostePage = (props) => {
         cleanForm()
         displayForm()
         props.fetchData()
+        setDisplayLoading(false)
       }).catch(err => {
+        setDisplayLoading(false)
         if(err.response){
           toast.error(err.response.data.message)
         }else{
@@ -182,76 +191,82 @@ const FlowCashCenterCostePage = (props) => {
   }
 
   return (
-    <Container>
-      <br/><br/>
-      {showForm ? (
-        <Form onSubmit={handleSubmit} noValidate validated={validated}>
-          <Row className="justify-content-center">
-              <InputField
-                {...props.inputName}
-                value={centerForm.name}
-                handleChange={onChange}
-              />
-          </Row>
-          <Row>
-            <Col sm={6} md={6} lg={6} xs={12}>
-              <br/>
-              <Button size="sm" type="submit" variant="primary" block={true}>Guardar Centro de Costo</Button>
-            </Col>
-            <Col sm={6} md={6} lg={6} xs={12}>
-              <br/>
-              <Button size="sm" type="button" variant="info" block={true} onClick={displayForm}>Desplegar Datos</Button>
-            </Col>
-          </Row>
-        </Form>
+    <>
+      {displayLoading ? (
+        <LoadingComponent />
       ) : (
-        <Row>
-          <Col sm={12} md={12} lg={12}>
+        <Container>
+          <br/><br/>
+          {showForm ? (
+            <Form onSubmit={handleSubmit} noValidate validated={validated}>
+              <Row className="justify-content-center">
+                  <InputField
+                    {...props.inputName}
+                    value={centerForm.name}
+                    handleChange={onChange}
+                  />
+              </Row>
+              <Row>
+                <Col sm={6} md={6} lg={6} xs={12}>
+                  <br/>
+                  <Button size="sm" type="submit" variant="primary" block={true}>Guardar Centro de Costo</Button>
+                </Col>
+                <Col sm={6} md={6} lg={6} xs={12}>
+                  <br/>
+                  <Button size="sm" type="button" variant="info" block={true} onClick={displayForm}>Desplegar Datos</Button>
+                </Col>
+              </Row>
+            </Form>
+          ) : (
             <Row>
-              <Col sm={6} md={6} lg={6} xs={12}>
-                <Button size="sm" variant="secondary" block={true} onClick={displayForm}>Agregar Centro de Costo <FaPlusCircle /></Button>
-              </Col>
-              <Col sm={6} md={6} lg={6} xs={12} className="text-right">
-                <h5>Total Centros: <Badge variant="danger" className="font_badge">{props.centerCostes.length}</Badge></h5>
+              <Col sm={12} md={12} lg={12}>
+                <Row>
+                  <Col sm={6} md={6} lg={6} xs={12}>
+                    <Button size="sm" variant="secondary" block={true} onClick={displayForm}>Agregar Centro de Costo <FaPlusCircle /></Button>
+                  </Col>
+                  <Col sm={6} md={6} lg={6} xs={12} className="text-right">
+                    <h5>Total Centros: <Badge variant="danger" className="font_badge">{props.centerCostes.length}</Badge></h5>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col sm={12} md={12} lg={12} xs={12}>
+                    <Table data={props.centerCostes} columns={columns_center} />
+                  </Col>
+                </Row>
               </Col>
             </Row>
-            <Row>
-              <Col sm={12} md={12} lg={12} xs={12}>
-                <Table data={props.centerCostes} columns={columns_center} />
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+          )}
+
+          <Modal
+            show={isOpenModal}
+            onHide={handleIsOpenModal}
+            size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton style={{backgroundColor: 'black', color: 'white'}}>
+              <Modal.Title id="contained-modal-title-vcenter">
+                Ingresos y Egresos
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Tabs defaultActiveKey="earnings" id="uncontrolled-tab-example">
+                <Tab eventKey="earnings" title="Ingresos">
+                  <TableEarningExpensiveComponent data={displayEarnings} isAccount={false} />
+                </Tab>
+                <Tab eventKey="expensives" title="Egresos">
+                  <TableEarningExpensiveComponent data={displayExpensives} isAccount={false} />
+                </Tab>
+              </Tabs>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button size="sm" variant="secondary" onClick={handleIsOpenModal}>cerrar</Button>
+            </Modal.Footer>
+          </Modal>
+
+        </Container>
       )}
-
-      <Modal
-        show={isOpenModal}
-        onHide={handleIsOpenModal}
-        size="xl"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton style={{backgroundColor: 'black', color: 'white'}}>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Ingresos y Egresos
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Tabs defaultActiveKey="earnings" id="uncontrolled-tab-example">
-            <Tab eventKey="earnings" title="Ingresos">
-              <TableEarningExpensiveComponent data={displayEarnings} isAccount={false} />
-            </Tab>
-            <Tab eventKey="expensives" title="Egresos">
-              <TableEarningExpensiveComponent data={displayExpensives} isAccount={false} />
-            </Tab>
-          </Tabs>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button size="sm" variant="secondary" onClick={handleIsOpenModal}>cerrar</Button>
-        </Modal.Footer>
-      </Modal>
-
-    </Container>
+    </>
   )
 }
 

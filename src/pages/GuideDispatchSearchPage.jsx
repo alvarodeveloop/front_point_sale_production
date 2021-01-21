@@ -28,10 +28,12 @@ import ModalInvoiceActions from 'components/modals/ModalInvoiceActions'
 
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import StadisticsInvoiceComponent from 'components/StadisticsInvoiceComponent'
+import LoadingComponent from 'components/LoadingComponent'
 let cotizacionColumns = null
 
 const GuideDispatchSearchPage = props => {
 
+  const [displayLoading, setDisplayLoading] = useState(true)
   const [invoiceData, setInvoiceData] = useState([])
   const [cotizationDetail, setCotizationDetail] = useState({})
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false)
@@ -289,7 +291,9 @@ const GuideDispatchSearchPage = props => {
       setTimeout(function () {
         setRedraw(true)
       }, 1000);
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       console.log(err);
       if(err.response){
         toast.error(err.response.data.message)
@@ -305,9 +309,12 @@ const GuideDispatchSearchPage = props => {
 
   const printInvoice = original => {
     toast.info('Cargando documento, espere por favor')
+    setDisplayLoading(true)
     axios.get(API_URL+'guide_print/'+original.id+"/0").then(result => {
       window.open(API_URL+'documents/guide/files_pdf/'+result.data.name)
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -360,11 +367,13 @@ const GuideDispatchSearchPage = props => {
 
   const confirmAnulateInvoice = id => {
     toast.info('Anulando factura, esto podría tardar unos segundos... espere por favor')
+    setDisplayLoading(true)
     axios.put(API_URL+'guide_status/'+id).then(result => {
         toast.success('Guía anulada con éxito')
         setInvoiceAction({...invoiceAction,status: 4})
         fetchData()
      }).catch(err => {
+      setDisplayLoading(false)
        if(err.response){
          toast.error(err.response.data.message)
        }else{
@@ -392,21 +401,27 @@ const GuideDispatchSearchPage = props => {
         </Col>
       </Row>
       <hr/>
-        <StadisticsInvoiceComponent
-          setDataForm={setDataForm}
-          dataForm={dataForm}
-          redraw={redraw}
-          statusCotization={statusCotization}
-          handleDisplayFilter={handleDisplayFilter}
-          handleStadistics={handleStadistics}
-          displayFilter={displayFilter}
-          configGeneral={props.configGeneral}
-        />
-      <Row>
-        <Col sm={12} md={12} lg={12} xs={12}>
-          <Table columns={cotizacionColumns} data={invoiceData}/>
-        </Col>
-      </Row>
+      {displayLoading ? (
+        <LoadingComponent />
+      ) : (
+        <>
+          <StadisticsInvoiceComponent
+            setDataForm={setDataForm}
+            dataForm={dataForm}
+            redraw={redraw}
+            statusCotization={statusCotization}
+            handleDisplayFilter={handleDisplayFilter}
+            handleStadistics={handleStadistics}
+            displayFilter={displayFilter}
+            configGeneral={props.configGeneral}
+          />
+          <Row>
+            <Col sm={12} md={12} lg={12} xs={12}>
+              <Table columns={cotizacionColumns} data={invoiceData}/>
+            </Col>
+          </Row>
+        </>
+      )}
       <Modal
         show={isOpenModalDetail}
         onHide={handleModalDetail}

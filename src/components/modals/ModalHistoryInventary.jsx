@@ -24,6 +24,8 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import InputFieldRef from 'components/input/InputComponentRef'
 import InputField from 'components/input/InputComponent'
 import Select from 'react-select';
+import LoadingComponent from 'components/LoadingComponent'
+
 
 let inventaryHistorialColumns = []
 
@@ -31,6 +33,7 @@ const ModalHistoryInventary = (props) => {
 
   const [costUpdate,setCostUpdate] = useState(null)
   const [validated,setValidated] = useState(null)
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
 
@@ -137,14 +140,16 @@ const ModalHistoryInventary = (props) => {
   }
 
   const confirmDeleteRegister = id => {
-
+    setDisplayLoading(true)
      axios.delete(API_URL+'inventary/'+id).then(result => {
       toast.success('Registro eliminado, actualizando registros del inventario...')
       props.fetchData()
       setTimeout( () => {
         document.getElementById('button_close').click()
       }, 1500);
+      setDisplayLoading(false)
      }).catch(err => {
+      setDisplayLoading(false)
        if(err.response){
          toast.error(err.response.data.message)
        }else{
@@ -169,12 +174,14 @@ const ModalHistoryInventary = (props) => {
       setValidated(true);
       return
     }
-
+    setDisplayLoading(true)
     axios.put(API_URL+'inventary/'+objectPost.id,objectPost).then(result => {
       toast.success('Stock Modificado')
       setCostUpdate(null)
       props.handleSubmitStock()
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -201,101 +208,109 @@ const ModalHistoryInventary = (props) => {
           Historial del Producto {Object.keys(props.costs).length > 0 ? props.costs.products.name_product : ''}
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        {costUpdate ? (
-          <Row>
-            <Col sm={12} md={12} lg={12}>
-              <h4 className="title_principal">Modificación del costo</h4>
-            </Col>
-            <Col sm={12} md={12} lg={12}>
-              <Form onSubmit={handleSubmit} noValidate validated={validated}>
-                <Row>
-                  <InputField
-                    type={'number'}
-                    required={true}
-                    name={'quantity'}
-                    label ={'Cantidad'}
-                    cols='col-md-4 col-lg-4 col-sm-4'
-                    messageErrors={[
+      <>
+        {displayLoading ? (
+          <Modal.Body>
+            <LoadingComponent />
+          </Modal.Body>
+        ) : (
+          <Modal.Body>
+            {costUpdate ? (
+              <Row>
+                <Col sm={12} md={12} lg={12}>
+                  <h4 className="title_principal">Modificación del costo</h4>
+                </Col>
+                <Col sm={12} md={12} lg={12}>
+                  <Form onSubmit={handleSubmit} noValidate validated={validated}>
+                    <Row>
+                      <InputField
+                        type={'number'}
+                        required={true}
+                        name={'quantity'}
+                        label ={'Cantidad'}
+                        cols='col-md-4 col-lg-4 col-sm-4'
+                        messageErrors={[
+                          'Requerido*'
+                        ]}
+                        handleChange={handleChange}
+                        value={costUpdate.quantity}
+                      />
+                      <InputField
+                      type='text'
+                      label='Detalle de Costo'
+                      name='detail'
+                      required={false}
+                      messageErrors={[
                       'Requerido*'
-                    ]}
-                    handleChange={handleChange}
-                    value={costUpdate.quantity}
-                  />
-                  <InputField
-                   type='text'
-                   label='Detalle de Costo'
-                   name='detail'
-                   required={false}
-                   messageErrors={[
-                   'Requerido*'
-                   ]}
-                   cols='col-md-4 col-lg-4 col-sm-4'
-                   value={costUpdate.detail ? costUpdate.detail : ''}
-                   handleChange={handleChange}
-                  />
-                  <InputField
-                   type='number'
-                   step="any"
-                   label='Costo'
-                   name='cost'
-                   required={true}
-                   messageErrors={[
-                   'Requerido*'
-                   ]}
-                   cols='col-md-4 col-lg-4 col-sm-4'
-                   value={costUpdate.cost}
-                   handleChange={handleChange}
-                  />
-                </Row>
-                <Row>
-                  <Form.Group className={'col-md-4 col-sm-4 col-lg-4'}>
-                     <Form.Label className="fontBold">Proveedores</Form.Label>
-                     <Select
-                       value={costUpdate.id_provider}
-                       onChange={onChangeSelect}
-                       isMulti={true}
-                       options={props.providers.map((v,i) => {
-                         return {value: v.id, label: v.social_razon}
-                       })}
-                     />
-                 </Form.Group>
-                  <InputField
-                      type='select'
-                      label='Tipo de Operación'
-                      name='type_operation'
+                      ]}
+                      cols='col-md-4 col-lg-4 col-sm-4'
+                      value={costUpdate.detail ? costUpdate.detail : ''}
+                      handleChange={handleChange}
+                      />
+                      <InputField
+                      type='number'
+                      step="any"
+                      label='Costo'
+                      name='cost'
                       required={true}
                       messageErrors={[
                       'Requerido*'
                       ]}
                       cols='col-md-4 col-lg-4 col-sm-4'
-                      value={costUpdate.type_operation}
+                      value={costUpdate.cost}
                       handleChange={handleChange}
-                  >
-                    <option value={1}>No afecta el Stock</option>
-                    <option value={2}>Afecta el Stock en forma de descuento</option>
-                    <option value={3}>Afecta el stock en forma de aumento</option>
-                  </InputField>
-                </Row>
-                <Row className="justify-content-center">
-                  <Col sm={4} md={4} lg={4}>
-                    <Button variant="danger" block={true} size="sm" type="submit">Enviar</Button>
-                  </Col>
-                  <Col sm={4} md={4} lg={4}>
-                    <Button variant="secondary" block={true} size="sm" type="button" onClick={() => setCostUpdate(null)}>Cancelar</Button>
-                  </Col>
-                </Row>
-              </Form>
-            </Col>
-          </Row>
-        ) : (
-          <Row>
-            <Col sm={12} md={12} lg={12} xs={12}>
-              <Table columns={inventaryHistorialColumns} data={props.costs.inventary_cost ? props.costs.inventary_cost : []} />
-            </Col>
-          </Row>
+                      />
+                    </Row>
+                    <Row>
+                      <Form.Group className={'col-md-4 col-sm-4 col-lg-4'}>
+                        <Form.Label className="fontBold">Proveedores</Form.Label>
+                        <Select
+                          value={costUpdate.id_provider}
+                          onChange={onChangeSelect}
+                          isMulti={true}
+                          options={props.providers.map((v,i) => {
+                            return {value: v.id, label: v.social_razon}
+                          })}
+                        />
+                    </Form.Group>
+                      <InputField
+                          type='select'
+                          label='Tipo de Operación'
+                          name='type_operation'
+                          required={true}
+                          messageErrors={[
+                          'Requerido*'
+                          ]}
+                          cols='col-md-4 col-lg-4 col-sm-4'
+                          value={costUpdate.type_operation}
+                          handleChange={handleChange}
+                      >
+                        <option value={1}>No afecta el Stock</option>
+                        <option value={2}>Afecta el Stock en forma de descuento</option>
+                        <option value={3}>Afecta el stock en forma de aumento</option>
+                      </InputField>
+                    </Row>
+                    <Row className="justify-content-center">
+                      <Col sm={4} md={4} lg={4}>
+                        <Button variant="danger" block={true} size="sm" type="submit">Enviar</Button>
+                      </Col>
+                      <Col sm={4} md={4} lg={4}>
+                        <Button variant="secondary" block={true} size="sm" type="button" onClick={() => setCostUpdate(null)}>Cancelar</Button>
+                      </Col>
+                    </Row>
+                  </Form>
+                </Col>
+              </Row>
+            ) : (
+              <Row>
+                <Col sm={12} md={12} lg={12} xs={12}>
+                  <Table columns={inventaryHistorialColumns} data={props.costs.inventary_cost ? props.costs.inventary_cost : []} />
+                </Col>
+              </Row>
+            )}
+          </Modal.Body>
         )}
-      </Modal.Body>
+      </>
       <Modal.Footer>
         <Button onClick={props.onHide} id="button_close">Cerrar</Button>
       </Modal.Footer>

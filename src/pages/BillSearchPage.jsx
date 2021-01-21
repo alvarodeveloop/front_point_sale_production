@@ -27,6 +27,7 @@ import { connect } from 'react-redux'
 import ModalInvoiceActions from 'components/modals/ModalInvoiceActions'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import StadisticsInvoiceComponent from 'components/StadisticsInvoiceComponent'
+import LoadingComponent from 'components/LoadingComponent'
 
 let cotizacionColumns = null
 
@@ -38,6 +39,7 @@ const BillSearchPage = props => {
   const [redraw, setRedraw] = useState(false)
   const [statusCotization, setStatusCotization] = useState({})
   const [displayFilter,setDisplayFilter] = useState(1)
+  const [displayLoading, setDisplayLoading] = useState(true)
   const [dataForm, setDataForm] = useState({
     date_desde : '',
     date_hasta: '',
@@ -276,13 +278,16 @@ const BillSearchPage = props => {
   const handleStadistics = () => {
     let objectPost = Object.assign({},dataForm)
     setDisplayFilter(3)
+    setDisplayLoading(true)
      axios.post(API_URL+'invoice_stadistics',objectPost).then(result => {
       setStatusCotization({...statusCotization,statusesBonds: result.data.statusesBonds, statuses : result.data.statuses, bondsByMonth: result.data.bondsByMonth, invoiceByYear: result.data.invoiceByYear, totalByStatus: result.data.totalByStatus})
       setTimeout(function () {
         setRedraw(true)
         setDisplayFilter(1)
+        setDisplayLoading(false)
       }, 1000);
      }).catch(err => {
+      setDisplayLoading(false)
        setDisplayFilter(1)
        if(err.response){
          toast.error(err.response.data.message)
@@ -313,7 +318,9 @@ const BillSearchPage = props => {
       setTimeout(function () {
         setRedraw(true)
       }, 1000);
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       console.log(err);
       if(err.response){
         toast.error(err.response.data.message)
@@ -386,11 +393,13 @@ const BillSearchPage = props => {
   }
 
   const confirmAnulateInvoice = id => {
+    setDisplayLoading(true)
     axios.put(API_URL+'invoice_status/'+id).then(result => {
         toast.success('Boleta anulada con éxito')
         setInvoiceAction({...invoiceAction,status: 4})
         fetchData()
      }).catch(err => {
+      setDisplayLoading(false)
        if(err.response){
          toast.error(err.response.data.message)
        }else{
@@ -400,267 +409,274 @@ const BillSearchPage = props => {
     })
   }
   return (
-
-    <Container fluid>
-      <Row>
-        <Col sm={6} md={6} lg={6} className="text-center">
-          <h4 className="title_principal">Tabla de Boletas</h4>
-          <Button block={true} variant="success" onClick={goToForm} size="sm">Nueva Boleta <FaPlusCircle /></Button>
-        </Col>
-        <Col sm={6} md={6} lg={6} className="text-center title_principal">
-          <h4>Total Boletas Realizadas</h4>
-          <Badge variant="danger">{billData.length}</Badge>
-        </Col>
-      </Row>
-      <hr/>
-      <StadisticsInvoiceComponent
-        setDataForm={setDataForm}
-        dataForm={dataForm}
-        redraw={redraw}
-        statusCotization={statusCotization}
-        handleDisplayFilter={handleDisplayFilter}
-        handleStadistics={handleStadistics}
-        displayFilter={displayFilter}
-        configGeneral={props.configGeneral}
-      />
-      <Row>
-        <Col sm={12} md={12} lg={12} xs={12}>
-          <Table columns={cotizacionColumns} data={billData}/>
-        </Col>
-      </Row>
-      <Modal
-        show={isOpenModalDetail}
-        onHide={handleModalDetail}
-        size="xl"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-        >
-        <Modal.Header closeButton className="header_dark">
-          <Modal.Title id="contained-modal-title-vcenter">
-            Detalles de la Factura N° {Object.keys(cotizationDetail).length > 0 ? cotizationDetail.ref : ''}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Row>
-            <Col sm={12} md={12} lg={12}>
-              <h4 className="title_principal text-center">Datos del Registrador</h4>
-              <br/>
-              <table className="table table-striped table-bordered">
-                <thead>
-                  <tr>
-                    <th className="text-center">Nombre</th>
-                    <th className="text-center">Rut</th>
-                    <th className="text-center">Dirección</th>
-                    <th className="text-center">Email</th>
-                    <th className="text-center">Fono</th>
-                    <th className="text-center">País</th>
-                  </tr>
-                </thead>
-                <tbody className="text-center">
-                  {Object.keys(cotizationDetail).length > 0 ? (
-                    <tr>
-                      <td>{cotizationDetail.business_name_transmitter}</td>
-                      <td>{cotizationDetail.rut_transmitter}</td>
-                      <td>{cotizationDetail.address_transmitter}</td>
-                      <td>{cotizationDetail.email_transmitter}</td>
-                      <td>{cotizationDetail.phone_transmitter}</td>
-                      <td>{cotizationDetail.country_transmitter}</td>
-                    </tr>
-                  ) : ''}
-                </tbody>
-              </table>
-            </Col>
-          </Row>
-          <br/>
-          <Row>
-            <Col sm={12} md={12} lg={12}>
-              <h4 className="title_principal text-center">Datos del Cliente</h4>
-              <br/>
-              <table className="table table-striped table-bordered">
-                <thead>
-                  <tr>
-                    <th className="text-center">Razon Social / Nombre</th>
-                    <th className="text-center">Rut</th>
-                    <th className="text-center">Dirección</th>
-                    <th className="text-center">Ciudad</th>
-                    <th className="text-center">Comuna</th>
-                    <th className="text-center">Giro</th>
-                  </tr>
-                </thead>
-                <tbody className="text-center">
-                  {Object.keys(cotizationDetail).length > 0 ? (
-                    <tr>
-                      <td>{cotizationDetail.business_name_client}</td>
-                      <td>{cotizationDetail.rut_client}</td>
-                      <td>{cotizationDetail.address_client}</td>
-                      <td>{cotizationDetail.city_client}</td>
-                      <td>{cotizationDetail.comuna_client}</td>
-                      <td>{cotizationDetail.spin_client}</td>
-                    </tr>
-                  ) : ''}
-                </tbody>
-              </table>
-            </Col>
-          </Row>
-          <br/>
-          <Row>
-            <Col sm={12} md={12} lg={12} className="table-responsive">
-              <h4 className="title_principal text-center">Productos de la Factura</h4>
-              <br/>
-              <table className="table table-striped table-bordered">
-                <thead>
-                  <tr>
-                    <th className="text-center">Categoria</th>
-                    <th className="text-center">Nombre</th>
-                    <th className="text-center">Descripción</th>
-                    <th className="text-center">Cantidad</th>
-                    <th className="text-center">Precio</th>
-                    <th className="text-center">Descuento</th>
-                    <th className="text-center">Método de Venta</th>
-                    <th className="text-center">Neto</th>
-                    <th className="text-center">Total</th>
-                  </tr>
-                </thead>
-                <tbody className="text-center">
-                  {Object.keys(cotizationDetail).length > 0 ? (
-                    <React.Fragment>
-                      {cotizationDetail.products.map((v,i) => (
-                        <tr>
-                          <td>{v.category}</td>
-                          <td>{v.name_product}</td>
-                          <td>{v.description}</td>
-                          <td>{v.quantity}</td>
-                          <td>{props.configGeneral.simbolo_moneda}{formatNumber(v.price,2,',','.')}</td>
-                          <td>{v.discount}</td>
-                          <td>{displayMehotdSale(v.method_sale)}</td>
-                          <td>{v.is_neto ? 'Neto' : "Iva"}</td>
-                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(v.total,2,',','.')}</Badge></td>
-                        </tr>
-                      ))}
-                    </React.Fragment>
-                  ) : ''}
-                </tbody>
-              </table>
-            </Col>
-          </Row>
-          <br/>
-          <Row>
-            <Col sm={12} md={12} lg={12} className="">
-              <h4 className="title_principal text-center">Gastos de la Factura</h4>
-              <br/>
-              <table className="table table-striped table-bordered">
-                <thead>
-                  <tr>
-                    <th className="text-center">Descripción</th>
-                    <th className="text-center">Monto</th>
-                  </tr>
-                </thead>
-                <tbody className="text-center">
-                  {Object.keys(cotizationDetail).length > 0 ? (
-                    <React.Fragment>
-                      {cotizationDetail.gastos.map((v,i) => (
-                        <tr>
-                          <td>{v.description}</td>
-                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(v.amount,2,',','.')}</Badge></td>
-                        </tr>
-                      ))}
-                    </React.Fragment>
-                  ) : ''}
-                </tbody>
-              </table>
-            </Col>
-          </Row>
-          <br/>
-          {Object.keys(cotizationDetail).length > 0 && cotizationDetail.refs.length > 0 ? (
-            <Row>
-              <Col sm={12} md={12} lg={12} className="">
-                <h4 className="title_principal text-center">Referencias de la Factura</h4>
-                <br/>
-                <table className="table table-striped table-bordered">
-                  <thead>
-                    <tr>
-                      <th className="text-center">Tipo de Documento</th>
-                      <th className="text-center">Referencia Cotiz.</th>
-                      <th className="text-center">Ind</th>
-                      <th className="text-center">Fecha Ref.</th>
-                      <th className="text-center">Razón de Referencia</th>
-                      <th className="text-center">Tipo de Código</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-center">
-                    {Object.keys(cotizationDetail).length > 0 ? (
-                      <React.Fragment>
-                        {cotizationDetail.refs.map((v,i) => (
-                          <tr>
-                            <td>{v.type_document}</td>
-                            <td>{v.ref_invoice}</td>
-                            <td>{v.ind}</td>
-                            <td>{v.date_ref ? moment(v.date_ref).tz('America/Santiago').format('DD-MM-YYYY') : ''}</td>
-                            <td>{v.reason_ref}</td>
-                            <td>{v.type_code}</td>
-                          </tr>
-                        ))}
-                      </React.Fragment>
-                    ) : ''}
-                  </tbody>
-                </table>
-              </Col>
-            </Row>
-          ) : ''}
-          <Row>
-            <Col sm={12} md={12} lg={12} className="">
-              <h4 className="title_principal text-center">Totales</h4>
-              <br/>
-              <table className="table table-striped table-bordered">
-                <thead>
-                  <tr>
-                    <th className="text-center">Total Neto</th>
-                    <th className="text-center">Total Iva</th>
-                    <th className="text-center">Total Gastos</th>
-                    <th className="text-center">Total Balance</th>
-                  </tr>
-                </thead>
-                <tbody className="text-center">
-                  {Object.keys(cotizationDetail).length > 0 ? (
-                    <tr>
-                      <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_product,2,',','.')}</Badge></td>
-                      <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_iva,2,',','.')}</Badge></td>
-                      <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_gastos,2,',','.')}</Badge></td>
-                      <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_balance,2,',','.')}</Badge></td>
-                    </tr>
-                  ) : ''}
-                </tbody>
-              </table>
-            </Col>
-          </Row>
-          <br/>
+    <>
+      {displayLoading ? (
+        <Container fluid>
+          <LoadingComponent />
+        </Container>
+      ) : (
+        <Container fluid>
           <Row>
             <Col sm={6} md={6} lg={6} className="text-center">
-              {Object.keys(cotizationDetail).length > 0 ? (
-                <h5>Mostrar solo los Totales: <Badge variant="primary" className="font-badge">{cotizationDetail.total_with_iva ? 'No' : "Si"}</Badge></h5>
-              ) : ''}
+              <h4 className="title_principal">Tabla de Boletas</h4>
+              <Button block={true} variant="success" onClick={goToForm} size="sm">Nueva Boleta <FaPlusCircle /></Button>
             </Col>
-            <Col sm={6} md={6} lg={6} className="text-center">
-              {Object.keys(cotizationDetail).length > 0 ? (
-                <h5>Método de Pago: <Badge variant="primary" className="font-badge">{cotizationDetail.way_of_payment}</Badge></h5>
-              ) : ''}
+            <Col sm={6} md={6} lg={6} className="text-center title_principal">
+              <h4>Total Boletas Realizadas</h4>
+              <Badge variant="danger">{billData.length}</Badge>
             </Col>
           </Row>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button size="md" variant="secondary" onClick={handleModalDetail}>cerrar</Button>
-        </Modal.Footer>
-      </Modal>
-      <ModalInvoiceActions
-        isShow={isOpenModalAction}
-        onHide={onHideModalAction}
-        cotization={invoiceAction}
-        printInvoice={printInvoice}
-        goToBond={goToBond}
-        anulateInvoice={anulateInvoice}
-        seeDetailCotization={seeDetailCotization}
-      />
-    </Container>
+          <hr/>
+          <StadisticsInvoiceComponent
+            setDataForm={setDataForm}
+            dataForm={dataForm}
+            redraw={redraw}
+            statusCotization={statusCotization}
+            handleDisplayFilter={handleDisplayFilter}
+            handleStadistics={handleStadistics}
+            displayFilter={displayFilter}
+            configGeneral={props.configGeneral}
+          />
+          <Row>
+            <Col sm={12} md={12} lg={12} xs={12}>
+              <Table columns={cotizacionColumns} data={billData}/>
+            </Col>
+          </Row>
+          <Modal
+            show={isOpenModalDetail}
+            onHide={handleModalDetail}
+            size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+            >
+            <Modal.Header closeButton className="header_dark">
+              <Modal.Title id="contained-modal-title-vcenter">
+                Detalles de la Factura N° {Object.keys(cotizationDetail).length > 0 ? cotizationDetail.ref : ''}
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Row>
+                <Col sm={12} md={12} lg={12}>
+                  <h4 className="title_principal text-center">Datos del Registrador</h4>
+                  <br/>
+                  <table className="table table-striped table-bordered">
+                    <thead>
+                      <tr>
+                        <th className="text-center">Nombre</th>
+                        <th className="text-center">Rut</th>
+                        <th className="text-center">Dirección</th>
+                        <th className="text-center">Email</th>
+                        <th className="text-center">Fono</th>
+                        <th className="text-center">País</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-center">
+                      {Object.keys(cotizationDetail).length > 0 ? (
+                        <tr>
+                          <td>{cotizationDetail.business_name_transmitter}</td>
+                          <td>{cotizationDetail.rut_transmitter}</td>
+                          <td>{cotizationDetail.address_transmitter}</td>
+                          <td>{cotizationDetail.email_transmitter}</td>
+                          <td>{cotizationDetail.phone_transmitter}</td>
+                          <td>{cotizationDetail.country_transmitter}</td>
+                        </tr>
+                      ) : ''}
+                    </tbody>
+                  </table>
+                </Col>
+              </Row>
+              <br/>
+              <Row>
+                <Col sm={12} md={12} lg={12}>
+                  <h4 className="title_principal text-center">Datos del Cliente</h4>
+                  <br/>
+                  <table className="table table-striped table-bordered">
+                    <thead>
+                      <tr>
+                        <th className="text-center">Razon Social / Nombre</th>
+                        <th className="text-center">Rut</th>
+                        <th className="text-center">Dirección</th>
+                        <th className="text-center">Ciudad</th>
+                        <th className="text-center">Comuna</th>
+                        <th className="text-center">Giro</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-center">
+                      {Object.keys(cotizationDetail).length > 0 ? (
+                        <tr>
+                          <td>{cotizationDetail.business_name_client}</td>
+                          <td>{cotizationDetail.rut_client}</td>
+                          <td>{cotizationDetail.address_client}</td>
+                          <td>{cotizationDetail.city_client}</td>
+                          <td>{cotizationDetail.comuna_client}</td>
+                          <td>{cotizationDetail.spin_client}</td>
+                        </tr>
+                      ) : ''}
+                    </tbody>
+                  </table>
+                </Col>
+              </Row>
+              <br/>
+              <Row>
+                <Col sm={12} md={12} lg={12} className="table-responsive">
+                  <h4 className="title_principal text-center">Productos de la Factura</h4>
+                  <br/>
+                  <table className="table table-striped table-bordered">
+                    <thead>
+                      <tr>
+                        <th className="text-center">Categoria</th>
+                        <th className="text-center">Nombre</th>
+                        <th className="text-center">Descripción</th>
+                        <th className="text-center">Cantidad</th>
+                        <th className="text-center">Precio</th>
+                        <th className="text-center">Descuento</th>
+                        <th className="text-center">Método de Venta</th>
+                        <th className="text-center">Neto</th>
+                        <th className="text-center">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-center">
+                      {Object.keys(cotizationDetail).length > 0 ? (
+                        <React.Fragment>
+                          {cotizationDetail.products.map((v,i) => (
+                            <tr>
+                              <td>{v.category}</td>
+                              <td>{v.name_product}</td>
+                              <td>{v.description}</td>
+                              <td>{v.quantity}</td>
+                              <td>{props.configGeneral.simbolo_moneda}{formatNumber(v.price,2,',','.')}</td>
+                              <td>{v.discount}</td>
+                              <td>{displayMehotdSale(v.method_sale)}</td>
+                              <td>{v.is_neto ? 'Neto' : "Iva"}</td>
+                              <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(v.total,2,',','.')}</Badge></td>
+                            </tr>
+                          ))}
+                        </React.Fragment>
+                      ) : ''}
+                    </tbody>
+                  </table>
+                </Col>
+              </Row>
+              <br/>
+              <Row>
+                <Col sm={12} md={12} lg={12} className="">
+                  <h4 className="title_principal text-center">Gastos de la Factura</h4>
+                  <br/>
+                  <table className="table table-striped table-bordered">
+                    <thead>
+                      <tr>
+                        <th className="text-center">Descripción</th>
+                        <th className="text-center">Monto</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-center">
+                      {Object.keys(cotizationDetail).length > 0 ? (
+                        <React.Fragment>
+                          {cotizationDetail.gastos.map((v,i) => (
+                            <tr>
+                              <td>{v.description}</td>
+                              <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(v.amount,2,',','.')}</Badge></td>
+                            </tr>
+                          ))}
+                        </React.Fragment>
+                      ) : ''}
+                    </tbody>
+                  </table>
+                </Col>
+              </Row>
+              <br/>
+              {Object.keys(cotizationDetail).length > 0 && cotizationDetail.refs.length > 0 ? (
+                <Row>
+                  <Col sm={12} md={12} lg={12} className="">
+                    <h4 className="title_principal text-center">Referencias de la Factura</h4>
+                    <br/>
+                    <table className="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th className="text-center">Tipo de Documento</th>
+                          <th className="text-center">Referencia Cotiz.</th>
+                          <th className="text-center">Ind</th>
+                          <th className="text-center">Fecha Ref.</th>
+                          <th className="text-center">Razón de Referencia</th>
+                          <th className="text-center">Tipo de Código</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-center">
+                        {Object.keys(cotizationDetail).length > 0 ? (
+                          <React.Fragment>
+                            {cotizationDetail.refs.map((v,i) => (
+                              <tr>
+                                <td>{v.type_document}</td>
+                                <td>{v.ref_invoice}</td>
+                                <td>{v.ind}</td>
+                                <td>{v.date_ref ? moment(v.date_ref).tz('America/Santiago').format('DD-MM-YYYY') : ''}</td>
+                                <td>{v.reason_ref}</td>
+                                <td>{v.type_code}</td>
+                              </tr>
+                            ))}
+                          </React.Fragment>
+                        ) : ''}
+                      </tbody>
+                    </table>
+                  </Col>
+                </Row>
+              ) : ''}
+              <Row>
+                <Col sm={12} md={12} lg={12} className="">
+                  <h4 className="title_principal text-center">Totales</h4>
+                  <br/>
+                  <table className="table table-striped table-bordered">
+                    <thead>
+                      <tr>
+                        <th className="text-center">Total Neto</th>
+                        <th className="text-center">Total Iva</th>
+                        <th className="text-center">Total Gastos</th>
+                        <th className="text-center">Total Balance</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-center">
+                      {Object.keys(cotizationDetail).length > 0 ? (
+                        <tr>
+                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_product,2,',','.')}</Badge></td>
+                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_iva,2,',','.')}</Badge></td>
+                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_gastos,2,',','.')}</Badge></td>
+                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_balance,2,',','.')}</Badge></td>
+                        </tr>
+                      ) : ''}
+                    </tbody>
+                  </table>
+                </Col>
+              </Row>
+              <br/>
+              <Row>
+                <Col sm={6} md={6} lg={6} className="text-center">
+                  {Object.keys(cotizationDetail).length > 0 ? (
+                    <h5>Mostrar solo los Totales: <Badge variant="primary" className="font-badge">{cotizationDetail.total_with_iva ? 'No' : "Si"}</Badge></h5>
+                  ) : ''}
+                </Col>
+                <Col sm={6} md={6} lg={6} className="text-center">
+                  {Object.keys(cotizationDetail).length > 0 ? (
+                    <h5>Método de Pago: <Badge variant="primary" className="font-badge">{cotizationDetail.way_of_payment}</Badge></h5>
+                  ) : ''}
+                </Col>
+              </Row>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button size="md" variant="secondary" onClick={handleModalDetail}>cerrar</Button>
+            </Modal.Footer>
+          </Modal>
+          <ModalInvoiceActions
+            isShow={isOpenModalAction}
+            onHide={onHideModalAction}
+            cotization={invoiceAction}
+            printInvoice={printInvoice}
+            goToBond={goToBond}
+            anulateInvoice={anulateInvoice}
+            seeDetailCotization={seeDetailCotization}
+          />
+        </Container>
+      )}
+    </>
   )
 }
 

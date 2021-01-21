@@ -17,10 +17,11 @@ import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import 'styles/pages/users.css'
 import {formatRut} from 'utils/functions'
+import LoadingComponent from 'components/LoadingComponent'
 let count = 0
 
 const UserCreatePage  = props => {
-
+  const [displayLoading, setDisplayLoading] = useState(false)
   const [userData,setUserData] = useState({
     name: "",
     email: "",
@@ -81,7 +82,9 @@ const UserCreatePage  = props => {
         if(result[2].data.message) setMessageDisplay(result[2].data.message)
         setIsUpdate(true)
       }
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       toast.error('Error, contacte con soporte')
     })
   }
@@ -142,7 +145,7 @@ const UserCreatePage  = props => {
     let user = Object.assign({},userData,{
       modules: modulesUser,
     })
-
+    setDisplayLoading(true)
     if(!isUpdate){
       if(!user.password){
         toast.error('Debe escribir una contraseña')
@@ -165,15 +168,16 @@ const UserCreatePage  = props => {
     }
 
     let route = ''
-
+    setDisplayLoading(true)
     if(isUpdate){
-
       route = user.id_rol >= 3 && user.id_rol <= 7 ? API_URL+'user_by_branch_office/'+props.match.params.id : API_URL+'user/'+props.match.params.id
 
       axios.put(route,user).then(result => {
         toast.success('Usuario Modificado')
         renderMenuNew(true)
+        setDisplayLoading(false)
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)
@@ -186,7 +190,9 @@ const UserCreatePage  = props => {
       axios.post(route,user).then(result => {
         toast.success('Usuario Registrado')
         renderMenuNew(false)
+        setDisplayLoading(false)
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)
@@ -253,113 +259,117 @@ const UserCreatePage  = props => {
   }
   return(
     <Container>
-      <Form onSubmit={onSubmit} noValidate validated={validated}>
-        <Row>
-          <Col sm={ typeDisplayModule > 1 ? 12 : 5 } md={typeDisplayModule > 1 ? 12 : 5} lg={typeDisplayModule > 1 ? 12 : 5} xs={12} style={{borderRight: '1px solid rgb(237, 237, 237)'}}>
+      {displayLoading ? (
+        <LoadingComponent />
+      ) : (
+        <Form onSubmit={onSubmit} noValidate validated={validated}>
+          <Row>
+            <Col sm={ typeDisplayModule > 1 ? 12 : 5 } md={typeDisplayModule > 1 ? 12 : 5} lg={typeDisplayModule > 1 ? 12 : 5} xs={12} style={{borderRight: '1px solid rgb(237, 237, 237)'}}>
 
-            <h4 className="text-center title_principal">Formulario de usuarios</h4>
-            <br/>
-            <Row>
-              <InputField
-                { ...props.inputName}
-                handleChange={onChange}
-                value={userData.name}
-                />
-              <InputField
-                { ...props.inputEmail}
-                handleChange={onChange}
-                value={userData.email}
-                />
-            </Row>
-            <Row>
-              <InputField
-                { ...props.inputRut}
-                handleChange={onChange}
-                value={userData.rut}
-                />
-              <InputField
-                { ...props.inputPassword}
-                handleChange={onChange}
-                value={userData.password}
-                />
-            </Row>
-            <Row>
-              <InputField
-               type='password'
-               label='Confirme Contraseña'
-               name='password_repeat'
-               required={false}
-               messageErrors={[
+              <h4 className="text-center title_principal">Formulario de usuarios</h4>
+              <br/>
+              <Row>
+                <InputField
+                  { ...props.inputName}
+                  handleChange={onChange}
+                  value={userData.name}
+                  />
+                <InputField
+                  { ...props.inputEmail}
+                  handleChange={onChange}
+                  value={userData.email}
+                  />
+              </Row>
+              <Row>
+                <InputField
+                  { ...props.inputRut}
+                  handleChange={onChange}
+                  value={userData.rut}
+                  />
+                <InputField
+                  { ...props.inputPassword}
+                  handleChange={onChange}
+                  value={userData.password}
+                  />
+              </Row>
+              <Row>
+                <InputField
+                type='password'
+                label='Confirme Contraseña'
+                name='password_repeat'
+                required={false}
+                messageErrors={[
 
-               ]}
-               cols='col-md-6 col-lg-6 col-sm-6'
-               value={userData.password_repeat}
-               handleChange={onChange}
-              />
-              <InputField
-                { ...props.inputSelect}
-                cols={'col-md-6 col-sm-6 col-lg-6'}
+                ]}
+                cols='col-md-6 col-lg-6 col-sm-6'
+                value={userData.password_repeat}
                 handleChange={onChange}
-                value={userData.id_rol}
-              >
-                <option value=''>--Seleccione--</option>
-                {displayRolesOption()}
-              </InputField>
-            </Row>
-            <Row className="justify-content-center">
-              {typeDisplayModule === 1 ? (
-                <Col sm={12} md={12} lg={12} xs={12} className="text-center">
-                  <Button size="sm" type="submit" variant="danger" block>Enviar <FaPlusCircle /></Button>
-                  o
-                  <Button size="sm" onClick={goToListUser} type="button" variant="info" block>Ir al Listado</Button>
-                </Col>
-              ) : (
-                <Col sm={6} md={6} lg={6} xs={12} className="text-center">
-                  <Button size="sm" type="submit" variant="danger" block>Enviar <FaPlusCircle /></Button>
-                  o
-                  <Button size="sm" onClick={goToListUser} type="button" variant="info" block>Ir al Listado</Button>
-                </Col>
-              )}
-            </Row>
-            <br/>
-            {messageDisplay ? (
-              <p className="alert alert-info text-center">{messageDisplay}</p>
-            ) : ''}
-          </Col>
-          {
-            typeDisplayModule == 1 ? (
-              <Col sm={7} md={7} lg={7} xs={12} className="containerDivSeparated" style={{height: '450px'}}>
-                <h4 className="text-center title_principal">Módulos</h4>
-                <Row>
-                  {modules.map((v,i) => (
-                    <Col sm={4} md={4} lg={4} xs={6} key={i}>
-                      <Form.Group>
-                        <Form.Check type="checkbox"
-                          custom
-                          id={v.name_item+v.id}
-                          label={v.name_item}
-                          value={v.id}
-                          checked={!!modulesUser.find(f => f == v.id)}
-                          onChange={(e) => handleAccess(e,v.id) } />
-                      </Form.Group>
+                />
+                <InputField
+                  { ...props.inputSelect}
+                  cols={'col-md-6 col-sm-6 col-lg-6'}
+                  handleChange={onChange}
+                  value={userData.id_rol}
+                >
+                  <option value=''>--Seleccione--</option>
+                  {displayRolesOption()}
+                </InputField>
+              </Row>
+              <Row className="justify-content-center">
+                {typeDisplayModule === 1 ? (
+                  <Col sm={12} md={12} lg={12} xs={12} className="text-center">
+                    <Button size="sm" type="submit" variant="danger" block>Enviar <FaPlusCircle /></Button>
+                    o
+                    <Button size="sm" onClick={goToListUser} type="button" variant="info" block>Ir al Listado</Button>
+                  </Col>
+                ) : (
+                  <Col sm={6} md={6} lg={6} xs={12} className="text-center">
+                    <Button size="sm" type="submit" variant="danger" block>Enviar <FaPlusCircle /></Button>
+                    o
+                    <Button size="sm" onClick={goToListUser} type="button" variant="info" block>Ir al Listado</Button>
+                  </Col>
+                )}
+              </Row>
+              <br/>
+              {messageDisplay ? (
+                <p className="alert alert-info text-center">{messageDisplay}</p>
+              ) : ''}
+            </Col>
+            {
+              typeDisplayModule == 1 ? (
+                <Col sm={7} md={7} lg={7} xs={12} className="containerDivSeparated" style={{height: '450px'}}>
+                  <h4 className="text-center title_principal">Módulos</h4>
+                  <Row>
+                    {modules.map((v,i) => (
+                      <Col sm={4} md={4} lg={4} xs={6} key={i}>
+                        <Form.Group>
+                          <Form.Check type="checkbox"
+                            custom
+                            id={v.name_item+v.id}
+                            label={v.name_item}
+                            value={v.id}
+                            checked={!!modulesUser.find(f => f == v.id)}
+                            onChange={(e) => handleAccess(e,v.id) } />
+                        </Form.Group>
+                      </Col>
+                    ))}
+                  </Row>
+                  <Row className="fixedBottom">
+                    <Col sm={12} md={12} lg={12}>
+                      <p className="text-center">Hacer click en el botón enviar para guardar los cambios</p>
                     </Col>
-                  ))}
-                </Row>
-                <Row className="fixedBottom">
-                  <Col sm={12} md={12} lg={12}>
-                    <p className="text-center">Hacer click en el botón enviar para guardar los cambios</p>
-                  </Col>
-                  <Col sm={6} md={6} lg={6} xs={12}>
-                    <Button size="sm" variant="secondary" block={true} onClick={addAllModules}>Seleccionar Todos <FaCheckCircle /></Button>
-                  </Col>
-                  <Col sm={6} md={6} lg={6} xs={12}>
-                    <Button size="sm" variant="secondary" block={true} onClick={removeAllModules}>Deseleccionar Todos <FaTrashAlt /></Button>
-                  </Col>
-                </Row>
-              </Col>
-            ) : '' }
-        </Row>
-      </Form>
+                    <Col sm={6} md={6} lg={6} xs={12}>
+                      <Button size="sm" variant="secondary" block={true} onClick={addAllModules}>Seleccionar Todos <FaCheckCircle /></Button>
+                    </Col>
+                    <Col sm={6} md={6} lg={6} xs={12}>
+                      <Button size="sm" variant="secondary" block={true} onClick={removeAllModules}>Deseleccionar Todos <FaTrashAlt /></Button>
+                    </Col>
+                  </Row>
+                </Col>
+              ) : '' }
+          </Row>
+        </Form>
+      )}
     </Container>
   )
 }

@@ -27,6 +27,7 @@ import {showPriceWithDecimals, s2ab} from 'utils/functions'
 import * as xlsx from 'xlsx'
 import Table from 'components/Table'
 import FileSaver from 'file-saver'
+import LoadingComponent from 'components/LoadingComponent'
 
 let bondColumns = []
 
@@ -44,7 +45,7 @@ const BillBondsPage = (props) => {
     detail: "",
     date_payment_bond: moment().tz('America/Santiago').format('YYYY-MM-DD')
   })
-  const [displayLoading, setDisplayLoading] = useState(false)
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   let count = 0
   let id_branch = null
@@ -360,146 +361,144 @@ const BillBondsPage = (props) => {
   }
 
   return (
-    <Container fluid>
-      <Row>
-        <Col sm={7} md={7} lg={7}>
-          <h4 className="title_principal">Historial de Pagos de la Boleta {invoice  ? (<Badge variant="danger" className="font-badge">{invoice.ref}</Badge>) : ''}</h4>
-        </Col>
-        <Col sm={5} md={5} lg={5}>
-          <Button variant="primary" block={true} type="button" onClick={goToInvoice} size="sm">Volver a las Boletas</Button>
-        </Col>
-      </Row>
-      <InvoiceBondComponent
-        invoice={invoice}
-        configGeneral={props.configGeneral}
-        configStore={props.configStore}
-      />
-      <br/>
-      <Row>
-        <Col sm={3} md={3} lg={3}>
-          <Button variant="success" block={true} type="button" onClick={exportToExcel} size="sm">Exportar a Excel <FaRegFileCode /></Button>
-        </Col>
-        <Col sm={3} md={3} lg={3}>
-          <Button variant="success" block={true} type="button" onClick={handleModalBond} size="sm" disabled={invoice && invoice.status === 2 ? true : false}>Agregar Abono <FaPlusCircle /></Button>
-        </Col>
-        <Col sm={3} md={3} lg={3}>
-          <Button variant="success" block={true} type="button" onClick={exportToPdf} size="sm">Exportar a Pdf <FaRegFilePdf /></Button>
-        </Col>
-        <Col sm={3} md={3} lg={3}>
-          <Button variant="success" block={true} type="button" onClick={printInvoice} size="sm">Imprimir Factura <FaRegFilePdf /></Button>
-        </Col>
-      </Row>
+    <>
       {displayLoading ? (
-        <Row>
-          <Col sm={12} md={12} lg={12} className="text-center">
-            <br/>
-            <Image src={require('../assets/img/loading.gif')} width="30" />
-            <br/>
-            Cargando Documento...
-          </Col>
-        </Row>
-      ) : ''}
-      <Row>
-        <Col sm={12} md={12} lg={12}>
+        <Container fluid>
+          <LoadingComponent />
+        </Container>
+      ) : (
+        <Container fluid>
+          <Row>
+            <Col sm={7} md={7} lg={7}>
+              <h4 className="title_principal">Historial de Pagos de la Boleta {invoice  ? (<Badge variant="danger" className="font-badge">{invoice.ref}</Badge>) : ''}</h4>
+            </Col>
+            <Col sm={5} md={5} lg={5}>
+              <Button variant="primary" block={true} type="button" onClick={goToInvoice} size="sm">Volver a las Boletas</Button>
+            </Col>
+          </Row>
+          <InvoiceBondComponent
+            invoice={invoice}
+            configGeneral={props.configGeneral}
+            configStore={props.configStore}
+          />
           <br/>
-          <Table columns={bondColumns} data={bonds} />
-        </Col>
-      </Row>
+          <Row>
+            <Col sm={3} md={3} lg={3}>
+              <Button variant="success" block={true} type="button" onClick={exportToExcel} size="sm">Exportar a Excel <FaRegFileCode /></Button>
+            </Col>
+            <Col sm={3} md={3} lg={3}>
+              <Button variant="success" block={true} type="button" onClick={handleModalBond} size="sm" disabled={invoice && invoice.status === 2 ? true : false}>Agregar Abono <FaPlusCircle /></Button>
+            </Col>
+            <Col sm={3} md={3} lg={3}>
+              <Button variant="success" block={true} type="button" onClick={exportToPdf} size="sm">Exportar a Pdf <FaRegFilePdf /></Button>
+            </Col>
+            <Col sm={3} md={3} lg={3}>
+              <Button variant="success" block={true} type="button" onClick={printInvoice} size="sm">Imprimir Factura <FaRegFilePdf /></Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={12} md={12} lg={12}>
+              <br/>
+              <Table columns={bondColumns} data={bonds} />
+            </Col>
+          </Row>
 
-      <Modal
-        show={isShow}
-        onHide={handleModalBond}
-        size="xl"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton className="header_dark">
-          <Modal.Title id="contained-modal-title-vcenter">
-            Agregar Abono $
-          </Modal.Title>
-        </Modal.Header>
-        <Form onSubmit={handleSubmitBold} noValidate validated={validated}>
-          <Modal.Body>
-            <Row>
-              <InputField
-               type='date'
-               label='Fecha del Pago'
-               name='date_payment_bond'
-               required={true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={formBond.date_payment_bond}
-               handleChange={onChange}
-              />
-             <InputField
-              type='select'
-              label='Tipo de Abono'
-              name='id_type_bond'
-              required={true}
-              messageErrors={[
-              'Requerido*'
-              ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
-              value={formBond.id_type_bond}
-              handleChange={onChange}
-              >
-              <option value="">--Seleccione--</option>
-              {typeBond.map((v,i) => (
-                <option value={v.id} key={i}>{v.name}</option>
-              ))}
-            </InputField>
-              <InputField
-               type='number'
-               step="any"
-               label='Monto'
-               name='amount'
-               required={true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={formBond.amount}
-               handleChange={onChange}
-               />
-            </Row>
-            <Row>
-              <InputField
-               type='text'
-               label='Detalle'
-               name='detail'
-               required={false}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={formBond.detail}
-               handleChange={onChange}
-               />
-             {/*
-              <Col sm={4} md={4} lg={4}>
-                <br/>
-                <Form.Group>
-                  <Form.Check
-                    name="notify_client"
-                    type={'checkbox'}
-                    id={`checkbox-1`}
-                    label={`Notificar al Cliente`}
-                    checked={formBond.notify_client}
-                    onChange={onChange}
-                    />
-                </Form.Group>
-              </Col>*/}
-            </Row>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button size="md" type="submit" variant="primary"  disabled={disableButton}>Enviar</Button>
-            <Button size="md" variant="secondary" onClick={handleModalBond} disabled={disableButton}>cerrar</Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
-    </Container>
+          <Modal
+            show={isShow}
+            onHide={handleModalBond}
+            size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton className="header_dark">
+              <Modal.Title id="contained-modal-title-vcenter">
+                Agregar Abono $
+              </Modal.Title>
+            </Modal.Header>
+            <Form onSubmit={handleSubmitBold} noValidate validated={validated}>
+              <Modal.Body>
+                <Row>
+                  <InputField
+                  type='date'
+                  label='Fecha del Pago'
+                  name='date_payment_bond'
+                  required={true}
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={formBond.date_payment_bond}
+                  handleChange={onChange}
+                  />
+                <InputField
+                  type='select'
+                  label='Tipo de Abono'
+                  name='id_type_bond'
+                  required={true}
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={formBond.id_type_bond}
+                  handleChange={onChange}
+                  >
+                  <option value="">--Seleccione--</option>
+                  {typeBond.map((v,i) => (
+                    <option value={v.id} key={i}>{v.name}</option>
+                  ))}
+                </InputField>
+                  <InputField
+                  type='number'
+                  step="any"
+                  label='Monto'
+                  name='amount'
+                  required={true}
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={formBond.amount}
+                  handleChange={onChange}
+                  />
+                </Row>
+                <Row>
+                  <InputField
+                  type='text'
+                  label='Detalle'
+                  name='detail'
+                  required={false}
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={formBond.detail}
+                  handleChange={onChange}
+                  />
+                {/*
+                  <Col sm={4} md={4} lg={4}>
+                    <br/>
+                    <Form.Group>
+                      <Form.Check
+                        name="notify_client"
+                        type={'checkbox'}
+                        id={`checkbox-1`}
+                        label={`Notificar al Cliente`}
+                        checked={formBond.notify_client}
+                        onChange={onChange}
+                        />
+                    </Form.Group>
+                  </Col>*/}
+                </Row>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button size="md" type="submit" variant="primary"  disabled={disableButton}>Enviar</Button>
+                <Button size="md" variant="secondary" onClick={handleModalBond} disabled={disableButton}>cerrar</Button>
+              </Modal.Footer>
+            </Form>
+          </Modal>
+        </Container>
+      )}
+    </>
   )
 }
 

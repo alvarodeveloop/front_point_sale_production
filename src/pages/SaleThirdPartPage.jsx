@@ -22,10 +22,13 @@ import {FaUser,FaPencilAlt} from 'react-icons/fa'
 
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import LoadingComponent from 'components/LoadingComponent'
+
 let status = 1
 
 const SaleThirdPartPage = (props) => {
 
+  const [displayLoading, setDisplayLoading] = useState(false)
   const [payment, setPayment] = useState({
     payment: 0,
     turned: '',
@@ -85,7 +88,7 @@ const SaleThirdPartPage = (props) => {
           status,
           id_cash_register: JSON.parse(localStorage.getItem('cash_register')).id_cash_register
         })
-
+        setDisplayLoading(true)
         axios.post(API_URL+'sale',cartSale).then(async result => {
 
           if(status === 2){
@@ -94,6 +97,7 @@ const SaleThirdPartPage = (props) => {
           }else{
             toast.success('Proceso completado, espere mientras se genera el documento de factura')
             let invoice_response = await axios.get(API_URL+'invoice_print_by_sale/'+result.data.id)
+            setDisplayLoading(false)
             window.open(API_URL+'documents/sales/files_pdf/'+invoice_response.data.name)
             setTimeout(function () {
               returnToBegginig()
@@ -101,6 +105,7 @@ const SaleThirdPartPage = (props) => {
           }
 
         }).catch(err => {
+          setDisplayLoading(false)
           if(err.response){
             toast.error(err.response.data.message)
           }else{
@@ -271,16 +276,18 @@ const SaleThirdPartPage = (props) => {
       status,
       id_cash_register: JSON.parse(localStorage.getItem('cash_register')).id_cash_register
     })
-
+    setDisplayLoading(true)
     axios.post(API_URL+'sale_by_dispatch',cartSale).then(result => {
 
       toast.success('Proceso Completado')
       clearForm()
       props.removeCart()
+      setDisplayLoading(false)
       setTimeout(() => {
         props.handleChangeView(1)
       },1500)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -305,135 +312,139 @@ const SaleThirdPartPage = (props) => {
         </Col>
       </Row>
       <br/><br/>
-      <Row>
-        <Col sm={4} md={4} lg={4} style={{borderRadius:'15px',boxShadow:'5px 5px 5px lightgray'}}>
-          <h4 className="text-center">Métodos de Pago</h4>
-          <br/>
-          <Row>
-            <Col sm={6} md={6} lg={6} xs={6}>
-              <Button size="sm" onClick={() => setTypePayment(1)} variant={payment.type === 1 ? 'secondary' : 'dark'} block="true">Efectivo</Button>
-            </Col>
-            <Col sm={6} md={6} lg={6} xs={6}>
-              <Button size="sm" onClick={() => setTypePayment(2)} variant={payment.type === 2 ? 'secondary' : 'dark'} block="true">Tarjeta Debito</Button>
-            </Col>
-          </Row>
-          <br></br>
-          <br></br>
-          <Row>
-            <Col sm={6} md={6} lg={6} xs={6}>
-              <Button size="sm" onClick={() => setTypePayment(3)} variant={payment.type === 3 ? 'secondary' : 'dark'} block="true">Tarjeta Crédito</Button>
-            </Col>
-            {/*<Col sm={6} md={6} lg={6} xs={6}>
-              <Button size="sm" onClick={() => setTypePayment(4)} variant={payment.type === 4 ? 'secondary' : 'dark'} block="true">Cheque</Button>
-            </Col>*/}
-          </Row>
-          {/*
-          <br/><br/>
-          <Row>
-            <Col sm={6} md={6} lg={6} xs={6}>
-              <Button size="sm" onClick={() => setTypePayment(5)} variant={payment.type === 5 ? 'secondary' : 'dark'} block="true">Otros</Button>
-            </Col>
-            <Col sm={6} md={6} lg={6} xs={6}>
-              <Button size="sm" onClick={() => setTypePayment(6)} variant={payment.type === 6 ? 'secondary' : 'dark'} block="true">Pago multiple</Button>
-            </Col>
-          </Row>*/}
-          <br></br>
-          <hr/>
-          <Row>
-            <Col sm={6} md={6} lg={6}>
-              <Form.Group>
-                <Form.Check type="checkbox"
-                  custom
-                  id={'voucherCheckbox'}
-                  label={'Venta sin Boleta'}
-                  value={payment.voucher}
-                  checked={payment.voucher}
-                  onChange={onChange} />
-              </Form.Group>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={6} md={6} lg={6}>
-              <Form.Group>
-                <Form.Check type="radio"
-                  custom
-                  id={'typeDelivery1'}
-                  name="type_delivery"
-                  label={'Entrega Inmediata'}
-                  value={true}
-                  checked={payment.type_delivery}
-                  onChange={onChange} />
-              </Form.Group>
-            </Col>
-            <Col sm={6} md={6} lg={6}>
-              <Form.Group>
-                <Form.Check type="radio"
-                  custom
-                  id={'typeDelivery2'}
-                  name="type_delivery"
-                  label={'Guardar en Despacho'}
-                  value={false}
-                  checked={!payment.type_delivery}
-                  onChange={onChange} />
-              </Form.Group>
-            </Col>
-          </Row>
-          <Button size="sm" variant="danger" className="text-white" block="true" onClick={() => handleFinishPayment(1) } style={{color:'black'}}>Finalizar</Button>
-          <br/>
-        </Col>
-        { /* separacion de los botones y el monto */}
-        <Col sm={7} md={7} lg={7} xs={7}  style={{borderRadius:'15px',boxShadow:'10px 5px 5px lightgray'}}>
-          <br/>
-          <Row>
-            <Col sm={4} md={4} lg={4} xs={12} className="text-center">
-              <h4>Sub Total:</h4>
-              <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.neto) } </Badge>
-            </Col>
-            <Col sm={4} md={4} lg={4} xs={12} className="text-center">
-              <h4>Tax:</h4>
-              <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.tax) }</Badge>
-            </Col>
-            <Col sm={4} md={4} lg={4} xs={12} className="text-center">
-              <h4>Total:</h4>
-              <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.total) }</Badge>
-            </Col>
-          </Row>
-          <Row className="justify-content-center">
-            <InputField
-              {...props.inputPayment}
-              handleChange={onChange}
-              value={payment.payment}
-              handleKeyUp={onKeyUp}
-              readonly={isReadOnlyPayment}
-              />
-          </Row>
-          <Row className="justify-content-center">
-            <InputField
-              {...props.inputTurned}
-              handleChange={onChange}
-              value={payment.turned}
-              />
-          </Row>
-          <Row className="justify-content-center">
-            <Col sm={6} md={6} lg={6} xs={12}>
-              <Button size="sm" block="true" variant="primary" type="button" onClick={ () => handleFinishPayment(2) } >Guardar Pedido</Button>
-            </Col>
-          </Row>
-          <br/>
-          <Row className="justify-content-center">
-            <Col sm={6} md={6} lg={6} xs={12}>
-              <DropdownButton size="sm" id={'cart_button_quantity'} title="Opciones del Carrito"  block="true" variant="primary" className="dropdown_block" drop={'up'}>
-                <Dropdown.Item onClick={() => props.handleChangeView(2)}>Volver a la Sección 2</Dropdown.Item>
-                {props.sale.rooms.map((v,i) => (
-                  <Dropdown.Item onClick={ () => props.changeCartId(i) } key={i}>Carrito N° { i + 1 }</Dropdown.Item>
-                ))}
-              </DropdownButton>
-              { props.showIndexCart() }
-              <br/><br/>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+      {displayLoading ? (
+        <LoadingComponent />
+      ) : (
+        <Row>
+          <Col sm={4} md={4} lg={4} style={{borderRadius:'15px',boxShadow:'5px 5px 5px lightgray'}}>
+            <h4 className="text-center">Métodos de Pago</h4>
+            <br/>
+            <Row>
+              <Col sm={6} md={6} lg={6} xs={6}>
+                <Button size="sm" onClick={() => setTypePayment(1)} variant={payment.type === 1 ? 'secondary' : 'dark'} block="true">Efectivo</Button>
+              </Col>
+              <Col sm={6} md={6} lg={6} xs={6}>
+                <Button size="sm" onClick={() => setTypePayment(2)} variant={payment.type === 2 ? 'secondary' : 'dark'} block="true">Tarjeta Debito</Button>
+              </Col>
+            </Row>
+            <br></br>
+            <br></br>
+            <Row>
+              <Col sm={6} md={6} lg={6} xs={6}>
+                <Button size="sm" onClick={() => setTypePayment(3)} variant={payment.type === 3 ? 'secondary' : 'dark'} block="true">Tarjeta Crédito</Button>
+              </Col>
+              {/*<Col sm={6} md={6} lg={6} xs={6}>
+                <Button size="sm" onClick={() => setTypePayment(4)} variant={payment.type === 4 ? 'secondary' : 'dark'} block="true">Cheque</Button>
+              </Col>*/}
+            </Row>
+            {/*
+            <br/><br/>
+            <Row>
+              <Col sm={6} md={6} lg={6} xs={6}>
+                <Button size="sm" onClick={() => setTypePayment(5)} variant={payment.type === 5 ? 'secondary' : 'dark'} block="true">Otros</Button>
+              </Col>
+              <Col sm={6} md={6} lg={6} xs={6}>
+                <Button size="sm" onClick={() => setTypePayment(6)} variant={payment.type === 6 ? 'secondary' : 'dark'} block="true">Pago multiple</Button>
+              </Col>
+            </Row>*/}
+            <br></br>
+            <hr/>
+            <Row>
+              <Col sm={6} md={6} lg={6}>
+                <Form.Group>
+                  <Form.Check type="checkbox"
+                    custom
+                    id={'voucherCheckbox'}
+                    label={'Venta sin Boleta'}
+                    value={payment.voucher}
+                    checked={payment.voucher}
+                    onChange={onChange} />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={6} md={6} lg={6}>
+                <Form.Group>
+                  <Form.Check type="radio"
+                    custom
+                    id={'typeDelivery1'}
+                    name="type_delivery"
+                    label={'Entrega Inmediata'}
+                    value={true}
+                    checked={payment.type_delivery}
+                    onChange={onChange} />
+                </Form.Group>
+              </Col>
+              <Col sm={6} md={6} lg={6}>
+                <Form.Group>
+                  <Form.Check type="radio"
+                    custom
+                    id={'typeDelivery2'}
+                    name="type_delivery"
+                    label={'Guardar en Despacho'}
+                    value={false}
+                    checked={!payment.type_delivery}
+                    onChange={onChange} />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Button size="sm" variant="danger" className="text-white" block="true" onClick={() => handleFinishPayment(1) } style={{color:'black'}}>Finalizar</Button>
+            <br/>
+          </Col>
+          { /* separacion de los botones y el monto */}
+          <Col sm={7} md={7} lg={7} xs={7}  style={{borderRadius:'15px',boxShadow:'10px 5px 5px lightgray'}}>
+            <br/>
+            <Row>
+              <Col sm={4} md={4} lg={4} xs={12} className="text-center">
+                <h4>Sub Total:</h4>
+                <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.neto) } </Badge>
+              </Col>
+              <Col sm={4} md={4} lg={4} xs={12} className="text-center">
+                <h4>Tax:</h4>
+                <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.tax) }</Badge>
+              </Col>
+              <Col sm={4} md={4} lg={4} xs={12} className="text-center">
+                <h4>Total:</h4>
+                <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.total) }</Badge>
+              </Col>
+            </Row>
+            <Row className="justify-content-center">
+              <InputField
+                {...props.inputPayment}
+                handleChange={onChange}
+                value={payment.payment}
+                handleKeyUp={onKeyUp}
+                readonly={isReadOnlyPayment}
+                />
+            </Row>
+            <Row className="justify-content-center">
+              <InputField
+                {...props.inputTurned}
+                handleChange={onChange}
+                value={payment.turned}
+                />
+            </Row>
+            <Row className="justify-content-center">
+              <Col sm={6} md={6} lg={6} xs={12}>
+                <Button size="sm" block="true" variant="primary" type="button" onClick={ () => handleFinishPayment(2) } >Guardar Pedido</Button>
+              </Col>
+            </Row>
+            <br/>
+            <Row className="justify-content-center">
+              <Col sm={6} md={6} lg={6} xs={12}>
+                <DropdownButton size="sm" id={'cart_button_quantity'} title="Opciones del Carrito"  block="true" variant="primary" className="dropdown_block" drop={'up'}>
+                  <Dropdown.Item onClick={() => props.handleChangeView(2)}>Volver a la Sección 2</Dropdown.Item>
+                  {props.sale.rooms.map((v,i) => (
+                    <Dropdown.Item onClick={ () => props.changeCartId(i) } key={i}>Carrito N° { i + 1 }</Dropdown.Item>
+                  ))}
+                </DropdownButton>
+                { props.showIndexCart() }
+                <br/><br/>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      )}
       <ModalPaymentMultiple
         isShow={isOpenMultiple}
         onHide={handleHideModal}

@@ -19,6 +19,7 @@ import { formatNumber, s2ab } from 'utils/functions'
 import * as moment from 'moment-timezone'
 import { saveAs } from 'file-saver'
 import * as xlsx from 'xlsx'
+import LoadingComponent from 'components/LoadingComponent'
 
 let valueIncrementTotal = 0
 
@@ -27,6 +28,7 @@ const FlowCashReportGeneralPage = (props) => {
   const [years, setYears] = useState([])
   const [yearSelect, setYearSelect] = useState('')
   const [dataGeneral, setDataGeneral] = useState(null)
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     handleFetchData()
@@ -47,7 +49,9 @@ const FlowCashReportGeneralPage = (props) => {
         setYearSelect(result.data[0].year)
         handleGetDataGeneral(result.data[0].year)
       }
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -58,10 +62,12 @@ const FlowCashReportGeneralPage = (props) => {
   }
 
   const handleGetDataGeneral = yearValue => {
-
+    setDisplayLoading(true)
     axios.get(API_URL+'flow_cash_data_general/'+yearValue).then(result => {
       setDataGeneral(result.data)
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -109,102 +115,110 @@ const FlowCashReportGeneralPage = (props) => {
   }
 
   return (
-    <Container className="containerDiv">
-      <Row>
-        <Col sm={12} md={12} lg={12}>
-          <h4 className="title_principal">Reporte General de Caja</h4>
-        </Col>
-      </Row>
-      <hr/>
-      <Row className="justify-content-center">
-        <InputField
-          {...props.inputSelect}
-          handleChange={handleChange}
-          value={yearSelect}
-        >
-          <option value=''>--Seleccione--</option>
-          {years.map((v,i) => (
-            <option key={i} value={v.year}>{v.year}</option>
-          ))}
-        </InputField>
-        <Col sm={4} md={4} lg={4} xs={6}>
-          <br/>
-          <Button size="sm" variant="success" block={true} onClick={exportToExcel}>Exportar a Excel <FaRegFileExcel /></Button>
-        </Col>
-      </Row>
-      <br/>
-      {
-        dataGeneral ? (
-
+    <>
+      {displayLoading ? (
+        <Container>
+          <LoadingComponent />
+        </Container>
+      ) : (
+        <Container className="containerDiv">
           <Row>
-            <Col sm={12} md={12} lg={12} className="table-responsive">
-              <table className="table table-bordered">
-                <thead>
-                  <tr style={{ backgroundColor: 'rgb(28, 33, 93)', color: 'white'}}>
-                    <th className="text-center"></th>
-                    <th className="text-center">Mes1</th>
-                    <th className="text-center">Mes2</th>
-                    <th className="text-center">Mes 3</th>
-                    <th className="text-center">Mes 4</th>
-                    <th className="text-center">Mes 5</th>
-                    <th className="text-center">Mes 6</th>
-                    <th className="text-center">Mes 7</th>
-                    <th className="text-center">Mes 8</th>
-                    <th className="text-center">Mes 9</th>
-                    <th className="text-center">Mes 10</th>
-                    <th className="text-center">Mes 11</th>
-                    <th className="text-center">Mes 12</th>
-                    <th className="text-center">Totales</th>
-                  </tr>
-                </thead>
-                <tbody className="text-center">
-
-                  <tr>
-                    <td><b>Total Ingreso</b></td>
-                    {
-                      dataGeneral.ingresos.map((v,i) => (
-                        <td key={i}>{formatNumber(v.total,2,',','.')}</td>
-                      ))
-                    }
-                  </tr>
-                  <tr>
-                    <td><b>Total Egreso</b></td>
-                      {
-                        dataGeneral.egresos.map((v,i) => (
-                          <td key={i}>{formatNumber(v.total,2,',','.')}</td>
-                        ))
-                      }
-                  </tr>
-                  <tr>
-                    <td><b>Ingresos - Egresos</b></td>
-                      {
-                        dataGeneral.ingresoMenosEgreso.map((v,i) => (
-                          <td key={i}>{formatNumber(v,2,',','.')}</td>
-                        ))
-                      }
-                  </tr>
-                  <tr style={{ backgroundColor : 'rgb(244, 240, 194)', color: 'rgb(19, 20, 20)' }}>
-                    <td><b>Saldo Final de Caja</b></td>
-                    {
-                      dataGeneral.totales.map((v,i) => (
-                        <td key={i}>{formatNumber(v,2,',','.')}</td>
-                      ))
-                    }
-                  </tr>
-                </tbody>
-              </table>
-            </Col>
-          </Row>
-
-        ) : (
-          <Row className="justify-content-center">
             <Col sm={12} md={12} lg={12}>
-              <h4 className="text-center">Sin Ingresos o Egresos que Mostrar...</h4>
+              <h4 className="title_principal">Reporte General de Caja</h4>
             </Col>
           </Row>
-        )
-      }
-    </Container>
+          <hr/>
+          <Row className="justify-content-center">
+            <InputField
+              {...props.inputSelect}
+              handleChange={handleChange}
+              value={yearSelect}
+            >
+              <option value=''>--Seleccione--</option>
+              {years.map((v,i) => (
+                <option key={i} value={v.year}>{v.year}</option>
+              ))}
+            </InputField>
+            <Col sm={4} md={4} lg={4} xs={6}>
+              <br/>
+              <Button size="sm" variant="success" block={true} onClick={exportToExcel}>Exportar a Excel <FaRegFileExcel /></Button>
+            </Col>
+          </Row>
+          <br/>
+          {
+            dataGeneral ? (
+
+              <Row>
+                <Col sm={12} md={12} lg={12} className="table-responsive">
+                  <table className="table table-bordered">
+                    <thead>
+                      <tr style={{ backgroundColor: 'rgb(28, 33, 93)', color: 'white'}}>
+                        <th className="text-center"></th>
+                        <th className="text-center">Mes1</th>
+                        <th className="text-center">Mes2</th>
+                        <th className="text-center">Mes 3</th>
+                        <th className="text-center">Mes 4</th>
+                        <th className="text-center">Mes 5</th>
+                        <th className="text-center">Mes 6</th>
+                        <th className="text-center">Mes 7</th>
+                        <th className="text-center">Mes 8</th>
+                        <th className="text-center">Mes 9</th>
+                        <th className="text-center">Mes 10</th>
+                        <th className="text-center">Mes 11</th>
+                        <th className="text-center">Mes 12</th>
+                        <th className="text-center">Totales</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-center">
+
+                      <tr>
+                        <td><b>Total Ingreso</b></td>
+                        {
+                          dataGeneral.ingresos.map((v,i) => (
+                            <td key={i}>{formatNumber(v.total,2,',','.')}</td>
+                          ))
+                        }
+                      </tr>
+                      <tr>
+                        <td><b>Total Egreso</b></td>
+                          {
+                            dataGeneral.egresos.map((v,i) => (
+                              <td key={i}>{formatNumber(v.total,2,',','.')}</td>
+                            ))
+                          }
+                      </tr>
+                      <tr>
+                        <td><b>Ingresos - Egresos</b></td>
+                          {
+                            dataGeneral.ingresoMenosEgreso.map((v,i) => (
+                              <td key={i}>{formatNumber(v,2,',','.')}</td>
+                            ))
+                          }
+                      </tr>
+                      <tr style={{ backgroundColor : 'rgb(244, 240, 194)', color: 'rgb(19, 20, 20)' }}>
+                        <td><b>Saldo Final de Caja</b></td>
+                        {
+                          dataGeneral.totales.map((v,i) => (
+                            <td key={i}>{formatNumber(v,2,',','.')}</td>
+                          ))
+                        }
+                      </tr>
+                    </tbody>
+                  </table>
+                </Col>
+              </Row>
+
+            ) : (
+              <Row className="justify-content-center">
+                <Col sm={12} md={12} lg={12}>
+                  <h4 className="text-center">Sin Ingresos o Egresos que Mostrar...</h4>
+                </Col>
+              </Row>
+            )
+          }
+        </Container>
+      )}
+    </>
   )
 }
 

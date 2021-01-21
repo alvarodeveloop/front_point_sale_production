@@ -25,6 +25,7 @@ import * as xlsx from 'xlsx'
 import Table from 'components/Table'
 import TooltipComponent from 'components/TooltipComponent'
 import TableEarningExpensiveComponent from 'components/TableEarningExpensiveComponent'
+import LoadingComponent from 'components/LoadingComponent'
 let columns_account = []
 
 const ReportDetailCenterCoste = props => {
@@ -34,6 +35,7 @@ const ReportDetailCenterCoste = props => {
   const [years, setYears] = useState([])
   const [yearCombo, setYearCombo] = useState('')
   const [isOpenModal,setIsOpenModal] = useState(false)
+  const [displayLoading, setDisplayLoading] = useState(true)
 
 
   useEffect(() => {
@@ -276,11 +278,13 @@ const ReportDetailCenterCoste = props => {
     let yearValueTemporal = document.getElementById('year').value
     let route = API_URL+'flow_cash_data_detail_center_coste_earning_expensive/'+dataOriginal.id+'/'+month+'/'+yearValueTemporal
     toast.info('Cargando datos, espere mientras abre la modal')
-
+    setDisplayLoading(true)
     axios.get(route).then(result => {
       setDataModalEarningExpensive(result.data)
       handleIsOpenModal()
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -376,8 +380,9 @@ const ReportDetailCenterCoste = props => {
        setYearCombo(result.data[0].year)
        handleGetDataDetail(result.data[0].year)
      }
-
+     setDisplayLoading(false)
    }).catch(err => {
+    setDisplayLoading(false)
      if(err.response){
        toast.error(err.response.data.message)
      }else{
@@ -388,10 +393,12 @@ const ReportDetailCenterCoste = props => {
  }
 
  const handleGetDataDetail = yearValue => {
-
+  setDisplayLoading(true)
    axios.get(API_URL+'flow_cash_data_detail_center_coste/'+yearValue).then(result => {
      setDataDetailCenterCoste(result.data)
+     setDisplayLoading(false)
    }).catch(err => {
+    setDisplayLoading(false)
      if(err.response){
        toast.error(err.response.data.message)
      }else{
@@ -406,85 +413,93 @@ const ReportDetailCenterCoste = props => {
  }
 
   return (
-    <Container className="containerDiv">
-      <br/>
-      <Row className="justify-content-center">
-        <InputField
-          {...props.inputSelect}
-          handleChange={handleChange}
-          value={yearCombo}
-        >
-          <option value="">--Seleccione--</option>
-          {years.map((v,i) => (
-            <option key={i} value={v.year}>{v.year}</option>
-          ))}
-        </InputField>
-        <Col sm={4} md={4} lg={4} xs={6}>
+    <>
+      {displayLoading ? (
+        <Container>
+          <LoadingComponent />
+        </Container>
+      ) : (
+        <Container className="containerDiv">
           <br/>
-          <Button size="sm" variant="success" block={true} onClick={handleExportDataExcel}>Exportar a Excel <FaRegFileExcel /></Button>
-        </Col>
-      </Row>
-      <hr/>
-      {
-        dataDetailCenterCoste ? (
-          <Row>
-            <Col sm={12} md={12} lg={12}>
-              <Row>
-                <Col sm={12} md={12} lg={12} className="table-responsive">
-                  <h4 className="title_principal">Ingresos</h4>
-                  <Table data={dataDetailCenterCoste.ingresos} columns={columns_account} />
-                </Col>
-              </Row>
-              <hr/>
-              <Row>
-                <Col sm={12} md={12} lg={12} className="table-responsive">
-                  <h4 className="title_principal">Egresos</h4>
-                  <Table data={dataDetailCenterCoste.egresos} columns={columns_account} />
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-
-
-        ) : (
           <Row className="justify-content-center">
-            <Col sm={12} md={12} lg={12}>
-              <h4 className="text-center">Sin Ingresos o Egresos que Mostrar...</h4>
+            <InputField
+              {...props.inputSelect}
+              handleChange={handleChange}
+              value={yearCombo}
+            >
+              <option value="">--Seleccione--</option>
+              {years.map((v,i) => (
+                <option key={i} value={v.year}>{v.year}</option>
+              ))}
+            </InputField>
+            <Col sm={4} md={4} lg={4} xs={6}>
+              <br/>
+              <Button size="sm" variant="success" block={true} onClick={handleExportDataExcel}>Exportar a Excel <FaRegFileExcel /></Button>
             </Col>
           </Row>
-        )
-      }
-      <Modal
-        show={isOpenModal}
-        onHide={handleIsOpenModal}
-        size="xl"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton style={{backgroundColor: 'black', color: 'white'}}>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Ingresos y Egresos
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Tabs defaultActiveKey="earnings" id="uncontrolled-tab-example">
-            <Tab eventKey="earnings" title="Ingresos">
-              {dataModalEarningExpensive ? (
-                <TableEarningExpensiveComponent data={dataModalEarningExpensive.ingresos} isAccount={false} isReport={true} />
-              ) : ''}
-            </Tab>
-            <Tab eventKey="expensives" title="Egresos">
-              {dataModalEarningExpensive ? (
-                <TableEarningExpensiveComponent data={dataModalEarningExpensive.egresos} isAccount={false} isReport={true} />
-              ) : '' }
-            </Tab>
-          </Tabs>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button size="sm" variant="secondary" onClick={handleIsOpenModal}>cerrar</Button>
-        </Modal.Footer>
-      </Modal>
-    </Container>
+          <hr/>
+          {
+            dataDetailCenterCoste ? (
+              <Row>
+                <Col sm={12} md={12} lg={12}>
+                  <Row>
+                    <Col sm={12} md={12} lg={12} className="table-responsive">
+                      <h4 className="title_principal">Ingresos</h4>
+                      <Table data={dataDetailCenterCoste.ingresos} columns={columns_account} />
+                    </Col>
+                  </Row>
+                  <hr/>
+                  <Row>
+                    <Col sm={12} md={12} lg={12} className="table-responsive">
+                      <h4 className="title_principal">Egresos</h4>
+                      <Table data={dataDetailCenterCoste.egresos} columns={columns_account} />
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+
+
+            ) : (
+              <Row className="justify-content-center">
+                <Col sm={12} md={12} lg={12}>
+                  <h4 className="text-center">Sin Ingresos o Egresos que Mostrar...</h4>
+                </Col>
+              </Row>
+            )
+          }
+          <Modal
+            show={isOpenModal}
+            onHide={handleIsOpenModal}
+            size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton style={{backgroundColor: 'black', color: 'white'}}>
+              <Modal.Title id="contained-modal-title-vcenter">
+                Ingresos y Egresos
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Tabs defaultActiveKey="earnings" id="uncontrolled-tab-example">
+                <Tab eventKey="earnings" title="Ingresos">
+                  {dataModalEarningExpensive ? (
+                    <TableEarningExpensiveComponent data={dataModalEarningExpensive.ingresos} isAccount={false} isReport={true} />
+                  ) : ''}
+                </Tab>
+                <Tab eventKey="expensives" title="Egresos">
+                  {dataModalEarningExpensive ? (
+                    <TableEarningExpensiveComponent data={dataModalEarningExpensive.egresos} isAccount={false} isReport={true} />
+                  ) : '' }
+                </Tab>
+              </Tabs>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button size="sm" variant="secondary" onClick={handleIsOpenModal}>cerrar</Button>
+            </Modal.Footer>
+          </Modal>
+        </Container>
+      )}
+    </>
   )
 }
 

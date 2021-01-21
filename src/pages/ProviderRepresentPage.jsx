@@ -18,6 +18,7 @@ import { API_URL } from 'utils/constants'
 import { providerRepresentColumns } from 'utils/columns/provider'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
+import LoadingComponent from 'components/LoadingComponent'
 
 
 
@@ -27,6 +28,7 @@ const ProviderRepresentPage = (props) => {
   const [validate,setValidate] = useState(false)
   const [isUpdate,setIsUpdate] = useState(false)
   const [represent,setRepresent] = useState([])
+  const [displayLoading, setDisplayLoading] = useState(true)
   const [dataRepresent,setDataRepresent] = useState({
     name_contact: '',
     phone: '',
@@ -86,10 +88,12 @@ const ProviderRepresentPage = (props) => {
   }
 
   const confirmDeleteRegister = id => {
+    setDisplayLoading(true)
     axios.delete(API_URL+'provider_contact/'+id).then(result => {
       toast.success('Registro eliminado con éxito')
       fetchData()
     }).catch(err => {
+      setDisplayLoading(false)
       const { response } = err
       if(response){
         toast.error(response.data.message)
@@ -116,7 +120,9 @@ const ProviderRepresentPage = (props) => {
   const fetchData = () => {
     axios.get(API_URL+'provider_contact/'+id_provider).then(result => {
       setRepresent(result.data)
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       const { response } = err
       console.log(err,response)
       if(response){
@@ -147,13 +153,14 @@ const ProviderRepresentPage = (props) => {
     }
 
     let data = Object.assign({},dataRepresent)
-
+    setDisplayLoading(true)
     if(isUpdate){
       axios.put(API_URL+'provider_contact/'+data.id,data).then(result => {
         toast.success('Conctacto Modificado')
         cleanForm()
         fetchData()
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)
@@ -167,6 +174,7 @@ const ProviderRepresentPage = (props) => {
         fetchData()
         cleanForm()
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)
@@ -194,67 +202,76 @@ const ProviderRepresentPage = (props) => {
   }
 
   return (
-    <Container>
-      <Row className="justify-content-center">
-        <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
-          <h3 className="text-center title_principal">Formulario De Contacto</h3>
-          <br/>
-          <Form onSubmit={onSubmit} noValidate validated={validate}>
-            <Row>
-              <InputFieldRef
-                ref={inputRef}
-                {...props.inputName}
-                handleChange={onChange}
-                value={dataRepresent.name_contact}
-              />
-              <InputField
-                {...props.inputEmail}
-                handleChange={onChange}
-                value={dataRepresent.email}
-              />
-            </Row>
-            <Row>
-              <InputField
-                {...props.inputPhone}
-                handleChange={onChange}
-                value={dataRepresent.phone}
-              />
-              <InputField
-                {...props.inputPosition}
-                handleChange={onChange}
-                value={dataRepresent.position}
-              />
-            </Row>
-            <Row className="justify-content-center">
-              <Col sm={6} md={6} lg={6} xs={6}>
-                <Button size="sm" type="submit" variant="primary" block="true">Guardar <FaPlusCircle /></Button>
-              </Col>
-            </Row>
-            {isUpdate ? (
-              <Row className="justify-content-center">
-                <Col sm={6} md={6} lg={6} xs={6}>
-                  <br/>
-                  <Button size="sm" type="button" onClick={cancelUpdate} variant="secondary" block="true">Cancelar Modificación</Button>
-                </Col>
-              </Row>
-            ) : (
-              <Row className="justify-content-center">
-                <Col sm={6} md={6} lg={6} xs={6}>
-                  <br/>
-                  <Button size="sm" type="button" onClick={goToProvider} variant="danger" block="true">Ir a los Proveedores</Button>
-                </Col>
-              </Row>
-            )}
+    <>
+      {displayLoading ? (
+        <Container>
+          <LoadingComponent />
+        </Container>
+      ) : (
+        
+        <Container>
+          <Row className="justify-content-center">
+            <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
+              <h3 className="text-center title_principal">Formulario De Contacto</h3>
+              <br/>
+              <Form onSubmit={onSubmit} noValidate validated={validate}>
+                <Row>
+                  <InputFieldRef
+                    ref={inputRef}
+                    {...props.inputName}
+                    handleChange={onChange}
+                    value={dataRepresent.name_contact}
+                  />
+                  <InputField
+                    {...props.inputEmail}
+                    handleChange={onChange}
+                    value={dataRepresent.email}
+                  />
+                </Row>
+                <Row>
+                  <InputField
+                    {...props.inputPhone}
+                    handleChange={onChange}
+                    value={dataRepresent.phone}
+                  />
+                  <InputField
+                    {...props.inputPosition}
+                    handleChange={onChange}
+                    value={dataRepresent.position}
+                  />
+                </Row>
+                <Row className="justify-content-center">
+                  <Col sm={6} md={6} lg={6} xs={6}>
+                    <Button size="sm" type="submit" variant="primary" block="true">Guardar <FaPlusCircle /></Button>
+                  </Col>
+                </Row>
+                {isUpdate ? (
+                  <Row className="justify-content-center">
+                    <Col sm={6} md={6} lg={6} xs={6}>
+                      <br/>
+                      <Button size="sm" type="button" onClick={cancelUpdate} variant="secondary" block="true">Cancelar Modificación</Button>
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row className="justify-content-center">
+                    <Col sm={6} md={6} lg={6} xs={6}>
+                      <br/>
+                      <Button size="sm" type="button" onClick={goToProvider} variant="danger" block="true">Ir a los Proveedores</Button>
+                    </Col>
+                  </Row>
+                )}
 
-          </Form>
-        </Col>
-      </Row>
-      <Row>
-        <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
-          <Table columns={providerRepresentColumns} data={represent} />
-        </Col>
-      </Row>
-    </Container>
+              </Form>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
+              <Table columns={providerRepresentColumns} data={represent} />
+            </Col>
+          </Row>
+        </Container>
+      )}
+    </>
   )
 }
 

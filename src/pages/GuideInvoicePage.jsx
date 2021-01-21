@@ -37,6 +37,7 @@ import {formatRut} from 'utils/functions'
 import {OBJECT_COTIZATION} from 'utils/constants'
 import InvoiceExcentasComponent from 'components/invoice/InvoiceExcentasComponent'
 import InvoiceAfectaComponent from 'components/invoice/InvoiceAfectaComponent'
+import LoadingComponent from 'components/LoadingComponent'
 
 let DetailCotizacion = null
 
@@ -85,6 +86,7 @@ let count = 0
 
 const GuideInvoicePage = (props) => {
 
+  const [displayLoading, setDisplayLoading] = useState(true)
   const [clients,setClients] = useState([])
   const [clientDetail,setClientDetail] = useState({})
   const [detailProducts, setDetailProducts] = useState([])
@@ -205,8 +207,9 @@ const GuideInvoicePage = (props) => {
           total_with_iva: result.data.total_with_iva,
         })
       })
-
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       console.log(err);
       if(err.response){
         toast.error(err.response.data.message)
@@ -373,29 +376,25 @@ const GuideInvoicePage = (props) => {
     }
 
     setDisableButton(true)
-
+    setDisplayLoading(true)
     axios.put(API_URL+'invoice_by_guide/'+props.match.params.id,object_post).then(result => {
+
       toast.success('Guía facturada con éxito')
+      let invoice_word = result.data.length > 1 ? "Facturas" : "Factura"
+      //toast.success(invoice_word+' realizada con éxito')
+      setDisplayLoading(false)
       setDisableButton(false)
+      toast.info('Generando pdf de la '+invoice_word+', espere por favor...')
 
-      toast.info('Generando pdf de la Guía, espere por favor...')
+      result.data.forEach((item, i) => {
+        window.open(item.pdf_public_url,'_blank')
+      });
 
-      axios.get(API_URL+'guide_print/'+props.match.params.id+"/0").then(result => {
-        window.open(API_URL+'documents/guide/files_pdf/'+result.data.name)
-        setTimeout(function () {
-          goToDashboard()
-        }, 1000);
-      }).catch(err => {
-        console.log(err);
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
-      })
+      goToDashboard()
 
     }).catch(err => {
       setDisableButton(false)
+      setDisplayLoading(false)
       console.log(err);
       if(err.response){
         toast.error(err.response.data.message)
@@ -421,159 +420,163 @@ const GuideInvoicePage = (props) => {
   return (
     <Styles>
       <Container fluid>
-        <Form ref={inputRef} onSubmit={handleSubmitInvoice} noValidate validated={validated}>
-          <Row>
-            <Col sm={8} md={8} lg={8}>
-              <h4 className="title_principal">Facturación de Guías</h4>
-            </Col>
-            <Col sm={4} md={4} lg={4}>
-              <InputField
-               type='text'
-               label={(<h5 style={{color: "rgb(153, 31, 31)"}}>Ref.Guía</h5>)}
-               name='id_cotizacion'
-               required={true}
-               messageErrors={[
+        {displayLoading ? (
+          <LoadingComponent />
+        ) : (
+          <Form ref={inputRef} onSubmit={handleSubmitInvoice} noValidate validated={validated}>
+            <Row>
+              <Col sm={8} md={8} lg={8}>
+                <h4 className="title_principal">Facturación de Guías</h4>
+              </Col>
+              <Col sm={4} md={4} lg={4}>
+                <InputField
+                type='text'
+                label={(<h5 style={{color: "rgb(153, 31, 31)"}}>Ref.Guía</h5>)}
+                name='id_cotizacion'
+                required={true}
+                messageErrors={[
 
-               ]}
-               cols='col-md-12 col-lg-12 col-sm-12'
-               readonly={true}
-               value={cotizationData.ref}
-               handleChange={() => {}}
-              />
-            </Col>
-          </Row>
-          <hr/>
-          <Row className="justify-content-center">
-            <Col sm={4} md={4} lg={4}>
-              <Row>
-                <Col sm={12} md={12} lg={12} className="text-center">
-                  <b>Tipo de Factura</b>
-                </Col>
-              </Row>
-               <Row>
-                 <Col sm={6} md={6} lg={6}>
-                   <Form.Group>
-                     <Form.Check
-                       name="type_invoicing"
-                       type={'radio'}
-                       id={`radio-5`}
-                       label={`Afecta`}
-                       value={true}
-                       checked={cotizationData.type_invoicing === true}
-                       required={true}
-                       onChange={onChange}
-                       />
-                   </Form.Group>
-                 </Col>
-                 <Col sm={6} md={6} lg={6} className="text-right">
-                   <Form.Group>
-                     <Form.Check
-                       name="type_invoicing"
-                       type={'radio'}
-                       id={`radio-6`}
-                       label={`Excento`}
-                       value={false}
-                       required={true}
-                       checked={cotizationData.type_invoicing === false}
-                       onChange={onChange}
-                       />
-                   </Form.Group>
-                 </Col>
-               </Row>
-            </Col>
-          </Row>
-          {cotizationData.type_invoicing === true ? (
-            <InvoiceAfectaComponent
-              setCotizationData={setCotizationData}
-              cotizationData={cotizationData}
-              configGeneral={props.configGeneral}
-              configStore={props.configStore}
-              gastosDetail={gastosDetail}
-              detailProducts={detailProducts}
-              setDetailProducts={setDetailProducts}
-              setGastosDetail={setGastosDetail}
-              setIsShowModalGastos={setIsShowModalGastos}
-              setIsShowModalProduct={setIsShowModalProduct}
-              onChange={onChange}
-              setIsShowModalClient={setIsShowModalClient}
-              handleModalSeller={handleModalSeller}
-              handleModalContacts={handleModalContacts}
-              clients={clients}
-              onChangeTableRef={onChangeTableRef}
-              refCotizacion={refCotizacion}
-              removeProductRef={removeProductRef}
-              addRef={addRef}
-              submitData={handleSubmitInvoice}
-              goToDashboard={goToDashboard}
-              products={products}
-              {...props}
-            />
-          ) : cotizationData.type_invoicing === false ? (
-            <InvoiceExcentasComponent
-              setCotizationData={setCotizationData}
-              cotizationData={cotizationData}
-              configGeneral={props.configGeneral}
-              configStore={props.configStore}
-              gastosDetail={gastosDetail}
-              detailProducts={detailProducts}
-              setDetailProducts={setDetailProducts}
-              setGastosDetail={setGastosDetail}
-              setIsShowModalGastos={setIsShowModalGastos}
-              setIsShowModalProduct={setIsShowModalProduct}
-              onChange={onChange}
-              setIsShowModalClient={setIsShowModalClient}
-              handleModalSeller={handleModalSeller}
-              handleModalContacts={handleModalContacts}
-              clients={clients}
-              onChangeTableRef={onChangeTableRef}
-              refCotizacion={refCotizacion}
-              removeProductRef={removeProductRef}
-              addRef={addRef}
-              submitData={handleSubmitInvoice}
-              goToDashboard={goToDashboard}
-              products={products}
-              {...props}
-            />
-          ) : (
-            <Row className="justify-content-center">
-              <Col sm={3} md={3} lg={3}>
-                <Button variant="secondary" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
+                ]}
+                cols='col-md-12 col-lg-12 col-sm-12'
+                readonly={true}
+                value={cotizationData.ref}
+                handleChange={() => {}}
+                />
               </Col>
             </Row>
-          )}
-
-          {displayModals ? (
-            <React.Fragment>
-              <FormClientModal
-                isShow={isShowModalClient}
-                onHide={handleHideModalClient}
-                />
-              <ModalGastosCotizacion
-                isShow={isShowModalGastos}
-                onHide={() => setIsShowModalGastos(false)}
-                handleGastoSubmit={handleGastoSubmit}
-                />
-              <ModalContacts
-                isShow={isShowModalContacts}
-                onHide={handleModalContacts}
-                handleSelectContact={handleSelectContact}
-                />
-              <ModalSeller
-                isShow={isShowModalSeller}
-                onHide={handleModalSeller}
-                handleSelectContact={handleSelectSeller}
-              />
-              <ModalInvoiceCotization
-                isShow={isOpenModalInvoice}
-                onHide={handleModalInvoice}
-                handleSubmit={handleSubmitInvoice}
+            <hr/>
+            <Row className="justify-content-center">
+              <Col sm={4} md={4} lg={4}>
+                <Row>
+                  <Col sm={12} md={12} lg={12} className="text-center">
+                    <b>Tipo de Factura</b>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col sm={6} md={6} lg={6}>
+                    <Form.Group>
+                      <Form.Check
+                        name="type_invoicing"
+                        type={'radio'}
+                        id={`radio-5`}
+                        label={`Afecta`}
+                        value={true}
+                        checked={cotizationData.type_invoicing === true}
+                        required={true}
+                        onChange={onChange}
+                        />
+                    </Form.Group>
+                  </Col>
+                  <Col sm={6} md={6} lg={6} className="text-right">
+                    <Form.Group>
+                      <Form.Check
+                        name="type_invoicing"
+                        type={'radio'}
+                        id={`radio-6`}
+                        label={`Excento`}
+                        value={false}
+                        required={true}
+                        checked={cotizationData.type_invoicing === false}
+                        onChange={onChange}
+                        />
+                    </Form.Group>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            {cotizationData.type_invoicing === true ? (
+              <InvoiceAfectaComponent
+                setCotizationData={setCotizationData}
+                cotizationData={cotizationData}
+                configGeneral={props.configGeneral}
+                configStore={props.configStore}
+                gastosDetail={gastosDetail}
+                detailProducts={detailProducts}
                 setDetailProducts={setDetailProducts}
-                products={detailProducts}
-                disableButtons={disableButtons}
+                setGastosDetail={setGastosDetail}
+                setIsShowModalGastos={setIsShowModalGastos}
+                setIsShowModalProduct={setIsShowModalProduct}
+                onChange={onChange}
+                setIsShowModalClient={setIsShowModalClient}
+                handleModalSeller={handleModalSeller}
+                handleModalContacts={handleModalContacts}
+                clients={clients}
+                onChangeTableRef={onChangeTableRef}
+                refCotizacion={refCotizacion}
+                removeProductRef={removeProductRef}
+                addRef={addRef}
+                submitData={handleSubmitInvoice}
+                goToDashboard={goToDashboard}
+                products={products}
+                {...props}
               />
-            </React.Fragment>
-          ) : ''}
-        </Form>
+            ) : cotizationData.type_invoicing === false ? (
+              <InvoiceExcentasComponent
+                setCotizationData={setCotizationData}
+                cotizationData={cotizationData}
+                configGeneral={props.configGeneral}
+                configStore={props.configStore}
+                gastosDetail={gastosDetail}
+                detailProducts={detailProducts}
+                setDetailProducts={setDetailProducts}
+                setGastosDetail={setGastosDetail}
+                setIsShowModalGastos={setIsShowModalGastos}
+                setIsShowModalProduct={setIsShowModalProduct}
+                onChange={onChange}
+                setIsShowModalClient={setIsShowModalClient}
+                handleModalSeller={handleModalSeller}
+                handleModalContacts={handleModalContacts}
+                clients={clients}
+                onChangeTableRef={onChangeTableRef}
+                refCotizacion={refCotizacion}
+                removeProductRef={removeProductRef}
+                addRef={addRef}
+                submitData={handleSubmitInvoice}
+                goToDashboard={goToDashboard}
+                products={products}
+                {...props}
+              />
+            ) : (
+              <Row className="justify-content-center">
+                <Col sm={3} md={3} lg={3}>
+                  <Button variant="secondary" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
+                </Col>
+              </Row>
+            )}
+
+            {displayModals ? (
+              <React.Fragment>
+                <FormClientModal
+                  isShow={isShowModalClient}
+                  onHide={handleHideModalClient}
+                  />
+                <ModalGastosCotizacion
+                  isShow={isShowModalGastos}
+                  onHide={() => setIsShowModalGastos(false)}
+                  handleGastoSubmit={handleGastoSubmit}
+                  />
+                <ModalContacts
+                  isShow={isShowModalContacts}
+                  onHide={handleModalContacts}
+                  handleSelectContact={handleSelectContact}
+                  />
+                <ModalSeller
+                  isShow={isShowModalSeller}
+                  onHide={handleModalSeller}
+                  handleSelectContact={handleSelectSeller}
+                />
+                <ModalInvoiceCotization
+                  isShow={isOpenModalInvoice}
+                  onHide={handleModalInvoice}
+                  handleSubmit={handleSubmitInvoice}
+                  setDetailProducts={setDetailProducts}
+                  products={detailProducts}
+                  disableButtons={disableButtons}
+                />
+              </React.Fragment>
+            ) : ''}
+          </Form>
+        )}
       </Container>
     </Styles>
   )

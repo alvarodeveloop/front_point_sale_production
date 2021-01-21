@@ -26,6 +26,8 @@ import {Doughnut} from 'react-chartjs-2';
 import { ARRAY_COLORS } from 'utils/constants'
 import { connect } from 'react-redux'
 import layoutHelpers from 'shared/layouts/helpers'
+import LoadingComponent from 'components/LoadingComponent'
+
 let saleColumns = []
 
 let optionsBar = {
@@ -57,6 +59,7 @@ const HistorySalePage = (props) => {
   const [isOpenDetailSale,setIsOpenDetailSale] = useState(false)
   const [redraw,setRedraw] = useState(false)
   const [stadistics,setStadistics] = useState([])
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() =>{
     if(!props.config || !props.configStore){
@@ -200,7 +203,9 @@ const HistorySalePage = (props) => {
     Promise.all(promise).then(result => {
       setSales(result[0].data)
       setStadistics(result[1].data.sale)
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -228,39 +233,48 @@ const HistorySalePage = (props) => {
   }
 
   return (
-    <Container>
-      <Row>
-        <Col sm={6} md={6} lg={6}>
-          <h4 className="title_principal">Tabla de Ventas</h4>
-        </Col>
-        <Col sm={6} md={6} lg={6} className="text-center">
-          <h4 className="title_principal">Total ventas <Badge variant="danger" className="font-badge">{sales.length}</Badge></h4>
-        </Col>
-      </Row>
-      <hr/>
-      <Row>
-        <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
-          <Table columns={saleColumns} data={sales} />
-        </Col>
-      </Row>
-      <ModalSolvedSale
-        isShow={isOpenSolvedSale}
-        onHide={handleOnhideSaleFiao}
-        config={props.config}
-        configStore={props.configStore}
-        dataToPay={saleDataOption}
-      />
-      {props.config && props.configStore ? (
-        <ModalDetailSale
-          isShow={isOpenDetailSale}
-          onHide={() => setIsOpenDetailSale(false) }
-          config={props.config}
-          configStore={props.configStore}
-          dataSale={saleDataOption}
-        />
-      ) : ''}
+    <>
+      {displayLoading ? (
+        <Container>
+          <LoadingComponent />
+        </Container>
+      ) : (
 
-    </Container>
+        <Container>
+          <Row>
+            <Col sm={6} md={6} lg={6}>
+              <h4 className="title_principal">Tabla de Ventas</h4>
+            </Col>
+            <Col sm={6} md={6} lg={6} className="text-center">
+              <h4 className="title_principal">Total ventas <Badge variant="danger" className="font-badge">{sales.length}</Badge></h4>
+            </Col>
+          </Row>
+          <hr/>
+          <Row>
+            <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
+              <Table columns={saleColumns} data={sales} />
+            </Col>
+          </Row>
+          <ModalSolvedSale
+            isShow={isOpenSolvedSale}
+            onHide={handleOnhideSaleFiao}
+            config={props.config}
+            configStore={props.configStore}
+            dataToPay={saleDataOption}
+          />
+          {props.config && props.configStore ? (
+            <ModalDetailSale
+              isShow={isOpenDetailSale}
+              onHide={() => setIsOpenDetailSale(false) }
+              config={props.config}
+              configStore={props.configStore}
+              dataSale={saleDataOption}
+            />
+          ) : ''}
+
+        </Container>
+      )}
+    </>
   )
 }
 

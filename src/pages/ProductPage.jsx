@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { FaPlusCircle } from "react-icons/fa";
+import { FaPlusCircle, FaFileExcel } from "react-icons/fa";
 import axios from 'axios'
 import { connect } from 'react-redux'
 import {
@@ -19,6 +19,8 @@ import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
+import FileSaver from 'file-saver'
+import * as XLSX from 'xlsx';
 
 import 'styles/components/modalComponents.css'
 import 'styles/pages/productStyle.css'
@@ -27,6 +29,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import {formatNumber} from 'utils/functions'
 import layoutHelpers from 'shared/layouts/helpers'
+import LoadingComponent from 'components/LoadingComponent'
 let productColumns = []
 
 const ProductPage = (props) => {
@@ -34,6 +37,7 @@ const ProductPage = (props) => {
   const [product,setProduct] = useState([])
   const [isOpen, setIsOpen] = useState(false)
   const [productDetail, setProductDetail] = useState({})
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     fetchData()
@@ -184,6 +188,7 @@ const ProductPage = (props) => {
 
     Promise.all(promises).then(result => {
       setProduct(result[0].data)
+      setIsLoading(false)
     }).catch(err => {
       const { response } = err
       console.log(err,response)
@@ -207,31 +212,82 @@ const ProductPage = (props) => {
     setIsOpen(false)
   }
 
+  const donwloandExcel = async () => {
+    window.open(API_URL+"documents/product/cargar_productos.xlsx",'_blank') 
+    toast.info("Debe llenar el excel con los datos y después cargar el archivo en la opción subir archivo")
+  }
+
+  const displayInputFile = () => {
+    document.getElementById('inputFile').click()
+  }
+
+  const uploadExcel = e => {
+    setIsLoading(true)
+    let f = e.target.files[0]
+    var name = f.name;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+        const bstr = evt.target.result;
+        const wb = XLSX.read(bstr, {type:'binary'});
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_json(ws, {header:1});
+        handleRequestExcel(data)
+    };
+    reader.readAsBinaryString(f);
+  }
+
+  const handleRequestExcel = data => {
+    axios.post(API_URL+"product_excel",{data}).then(result => {
+      toast.success("Registros importados con éxito : "+result.data.positivo+"\n registros no importados : "+result.data.negativo)
+      fetchData()
+    }).catch(err => {
+      setIsLoading(false)
+      if(err.response){
+        toast.error(err.response.data.message)
+      }else{
+        console.log(err);
+        toast.error("Error, contacte con soporte")
+      }
+    })    
+  }
+
   return (
     <Container>
-      <Row>
-        <Col sm={12} md={12} lg={12}>
-          <br/>
-          <h4 className="title_principal">Tabla Productos</h4>
-          <hr/>
-        </Col>
-        <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
-          <Row>
-            <Col sm={6} md={6} lg={6} xs={12}>
-              <Button variant="success" block={true} size="sm" onClick={goToForm}>Crear Producto <FaPlusCircle /></Button>
-            </Col>
-            <Col sm={6} md={6} lg={6} xs={12} className="text-right">
-              <h5>Total Productos: <Badge variant="danger" className="title_badge">{product.length}</Badge></h5>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={12} md={12} lg={12} xs={12}>
-              <Table columns={productColumns} data={product} />
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-
+      {isLoading ? (
+        <LoadingComponent />
+      ) : (
+        <Row>
+          <Col sm={8} md={8} lg={8}>
+            <br/>
+            <h4 className="title_principal">Tabla Productos</h4>
+          </Col>
+          <Col sm={4} md={4} lg={4}>
+            <br/>
+            <DropdownButton size="sm" id={'dropExcel'} title={(<span>Cargar Productos <FaFileExcel /></span>)} variant="success"  block="true">
+              <Dropdown.Item onClick={donwloandExcel}>Descargar plantilla excel</Dropdown.Item>
+              <Dropdown.Item onClick={displayInputFile}>Subir excel</Dropdown.Item>
+            </DropdownButton>
+            <input type="file" style={{display: "none"}} id="inputFile" onChange={uploadExcel} accept=".xlsx" />
+          </Col>
+          <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
+            <hr/>
+            <Row>
+              <Col sm={6} md={6} lg={6} xs={12}>
+                <Button variant="success" block={true} size="sm" onClick={goToForm}>Crear Producto <FaPlusCircle /></Button>
+              </Col>
+              <Col sm={6} md={6} lg={6} xs={12} className="text-right">
+                <h5>Total Productos: <Badge variant="danger" className="title_badge">{product.length}</Badge></h5>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={12} md={12} lg={12} xs={12}>
+                <Table columns={productColumns} data={product} />
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      )}
       <Modal
         show={isOpen}
         onHide={onHide}

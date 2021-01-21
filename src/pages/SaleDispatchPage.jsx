@@ -29,6 +29,7 @@ import { connect } from 'react-redux'
 import layoutHelpers from 'shared/layouts/helpers'
 import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import LoadingComponent from 'components/LoadingComponent'
 
 let saleColumns = []
 
@@ -55,6 +56,7 @@ let data_donut_ss_status = {
 
 const SaleDispatchPage = (props) => {
 
+  const [displayLoading, setDisplayLoading] = useState(true)
   const [sales,setSales] = useState([])
   const [isOpenSolvedSale,setIsOpenSolvedSale] = useState(false)
   const [saleDataOption, setSaleDataOption] = useState({})
@@ -253,11 +255,13 @@ const SaleDispatchPage = (props) => {
   }
 
   const  storageDispatch = data => {
+    setDisplayLoading(true)
     axios.put(API_URL+'sale_storage_dispatch/'+data.id).then(result =>{
       toast.success('Despacho Guardado')
       resetChartData()
       fetchData()
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -308,7 +312,9 @@ const SaleDispatchPage = (props) => {
       console.log(result[0].data,'aqui flaco malvado');
       setSales(result[0].data)
       setStadistics(result[1].data.delivery)
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -339,7 +345,7 @@ const SaleDispatchPage = (props) => {
     }
 
     let data = Object.assign({},formStatus)
-
+    setDisplayLoading(true)
     axios.put(API_URL+'sale_dispatch_status_delivery/'+data.dispatch.id,data).then(result => {
       toast.success('Status Modificado')
       cleanFormStatusDelivery()
@@ -347,6 +353,7 @@ const SaleDispatchPage = (props) => {
       resetChartData()
       fetchData()
     }).catch(err => {
+      setDisplayLoading(false)
       const { response } = err
       if(response){
         toast.error(response.data.message)
@@ -393,11 +400,15 @@ const SaleDispatchPage = (props) => {
         </Col>
       </Row>
       <hr/>
-      <Row>
-        <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
-          <Table columns={saleColumns} data={sales} />
-        </Col>
-      </Row>
+      {displayLoading ? (
+        <LoadingComponent />
+      ) : (
+        <Row>
+          <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
+            <Table columns={saleColumns} data={sales} />
+          </Col>
+        </Row>
+      )}
       <ModalSolvedSale
         isShow={isOpenSolvedSale}
         onHide={handleOnhideSaleFiao}

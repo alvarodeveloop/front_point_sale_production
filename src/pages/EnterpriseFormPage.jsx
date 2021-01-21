@@ -27,6 +27,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import BranchOfficeFormModal from 'components/modals/BranchOfficeFormModal'
 import { setConfigStore } from 'actions/configs'
+import LoadingComponent from 'components/LoadingComponent'
 
 const EnterpriseFormPage = (props) => {
 
@@ -47,6 +48,7 @@ const EnterpriseFormPage = (props) => {
     actividad_economica: '',
     giro : '',
   })
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   /*========================= sección de las sucursales =====================*/
 
@@ -105,7 +107,9 @@ const EnterpriseFormPage = (props) => {
           giro: result[1].data.giro
         })
       }
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -131,6 +135,7 @@ const EnterpriseFormPage = (props) => {
       return false
     }
 
+    setDisplayLoading(true)
     if(data.id){
       let backup = data.plan_backup
 
@@ -160,6 +165,7 @@ const EnterpriseFormPage = (props) => {
         }
 
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)
@@ -195,6 +201,7 @@ const EnterpriseFormPage = (props) => {
           }, 1500);
         }
       }).catch(err => {
+        setDisplayLoading(false)
         console.log(err);
         const { response } = err
         if(response){
@@ -232,6 +239,7 @@ const EnterpriseFormPage = (props) => {
     let val = Object.assign({},dataForm).rut
      if(val){
        toast.info('Buscando Receptor, espere por favor')
+       setDisplayLoading(true)
        axios.get(API_URL+'search_receptor/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
          setDataForm(oldData => {
            return Object.assign({},oldData,{
@@ -242,8 +250,9 @@ const EnterpriseFormPage = (props) => {
              city : result.data.ciudad_seleccionada,
            })
          })
-
+         setDisplayLoading(false)
        }).catch(err => {
+        setDisplayLoading(false)
          if(err.response){
            toast.error(err.response.data.message)
          }else{
@@ -264,7 +273,7 @@ const EnterpriseFormPage = (props) => {
 
   const fetchDataBranch = (type = false, update = false) => {
     let promises = [axios.get(API_URL+'branch_office')]
-
+    setDisplayLoading(true)
     Promise.all(promises).then(async result => {
       if(type){
         props.setBranchOffices(result[0].data)
@@ -282,7 +291,9 @@ const EnterpriseFormPage = (props) => {
           }
         }
       }
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -293,168 +304,176 @@ const EnterpriseFormPage = (props) => {
   }
 
   return (
-    <Container fluid>
-      <Row>
-        <Col sm={6} md={6} lg={6}>
-          <h4 className="title_principal">Formulario de Empresas</h4>
-        </Col>
-        <Col sm={6} md={6} lg={6}>
-          <h4 className="title_principal text-right">Plan de la empresa: <Badge variant="danger" className="font-badge">{Object.keys(dataForm.plan).length > 0 ? dataForm.plan.name : 'Ninguno'}</Badge></h4>
-        </Col>
-      </Row>
-      <hr/>
-      <Row>
-        <Col sm={12} lg={12} md={12}>
-          <Form onSubmit={onSubmit} noValidate validated={validated}>
-            <Row>
-              <Col sm={4} md={4} lg={4}>
-                <Form.Label className="fontBold">Rut</Form.Label>
-                <Form.Group className={"divContainerFlex"}>
-                  <Form.Control
-                    style={{flexGrow:2}}
+    <>
+      {displayLoading ? (
+        <Container fluid>
+          <LoadingComponent />
+        </Container>
+      ) : (
+        <Container fluid>
+          <Row>
+            <Col sm={6} md={6} lg={6}>
+              <h4 className="title_principal">Formulario de Empresas</h4>
+            </Col>
+            <Col sm={6} md={6} lg={6}>
+              <h4 className="title_principal text-right">Plan de la empresa: <Badge variant="danger" className="font-badge">{Object.keys(dataForm.plan).length > 0 ? dataForm.plan.name : 'Ninguno'}</Badge></h4>
+            </Col>
+          </Row>
+          <hr/>
+          <Row>
+            <Col sm={12} lg={12} md={12}>
+              <Form onSubmit={onSubmit} noValidate validated={validated}>
+                <Row>
+                  <Col sm={4} md={4} lg={4}>
+                    <Form.Label className="fontBold">Rut</Form.Label>
+                    <Form.Group className={"divContainerFlex"}>
+                      <Form.Control
+                        style={{flexGrow:2}}
+                        type='text'
+                        label='Rut'
+                        id="rut_client_sii"
+                        name='rut'
+                        required={false}
+                        placeholder="rut de la empresa"
+                        cols='col-md-12 col-lg-12 col-sm-12'
+                        className="form-control-sm"
+                        onChange={onChange}
+                        value={dataForm.rut}
+                        />
+                      <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para buscar datos de la empresa</Tooltip>}>
+                          <Button variant="secondary" size="sm" onClick={() => searchClientByApiFacturacion()}><FaSearch /></Button>
+                      </OverlayTrigger>
+                    </Form.Group>
+                  </Col>
+                  <InputField
                     type='text'
-                    label='Rut'
-                    id="rut_client_sii"
-                    name='rut'
-                    required={false}
-                    placeholder="rut de la empresa"
-                    cols='col-md-12 col-lg-12 col-sm-12'
-                    className="form-control-sm"
-                    onChange={onChange}
-                    value={dataForm.rut}
-                    />
-                  <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para buscar datos de la empresa</Tooltip>}>
-                      <Button variant="secondary" size="sm" onClick={() => searchClientByApiFacturacion()}><FaSearch /></Button>
-                  </OverlayTrigger>
-                </Form.Group>
-              </Col>
-               <InputField
-                type='text'
-                label='Razon Social'
-                name='bussines_name'
-                required={true}
-                messageErrors={[
-                'Requerido*'
-                ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
-                value={dataForm.bussines_name}
-                handleChange={onChange}
-               />
-               <InputField
-                type='text'
-                label='Nombre'
-                name='name'
-                required={true}
-                messageErrors={[
-                'Requerido*'
-                ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
-                value={dataForm.name}
-                handleChange={onChange}
-               />
-            </Row>
-            <Row>
-              <InputField
-               type='textarea'
-               label='Dirección'
-               name='address'
-               required={true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={dataForm.address}
-               handleChange={onChange}
-               />
-               <InputField
-                type='text'
-                label='Ciudad'
-                name='city'
-                required={true}
-                messageErrors={[
-                'Requerido*'
-                ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
-                value={dataForm.city}
-                handleChange={onChange}
-               />
-               <InputField
-                type='text'
-                label='Comuna'
-                name='comuna'
-                required={true}
-                messageErrors={[
-                'Requerido*'
-                ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
-                value={dataForm.comuna}
-                handleChange={onChange}
-               />
-            </Row>
-            <Row>
-              <InputField
-               type='email'
-               label='Email'
-               name='email_enterprise'
-               required={false}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={dataForm.email_enterprise}
-               handleChange={onChange}
-              />
-              <InputField
-               type='number'
-               label='Fono'
-               name='phone'
-               required={true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={dataForm.phone}
-               handleChange={onChange}
-              />
-            </Row>
-            <Row className="justify-content-center">
-              <Col sm={12} md={12} lg={12}>
-                <h4 className="title_principal">Planes para la empresa</h4>
-                <Row className="snip1404 justify-content-center">
-                  {planes.map((v,i) => (
-                    <Col sm={4} md={4} lg={4} key={i}>
-                      <TablePlansComponent plan={v} handleSelect={handleSelectPlan}/>
-                    </Col>
-                  ))}
+                    label='Razon Social'
+                    name='bussines_name'
+                    required={true}
+                    messageErrors={[
+                    'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={dataForm.bussines_name}
+                    handleChange={onChange}
+                  />
+                  <InputField
+                    type='text'
+                    label='Nombre'
+                    name='name'
+                    required={true}
+                    messageErrors={[
+                    'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={dataForm.name}
+                    handleChange={onChange}
+                  />
                 </Row>
-              </Col>
-            </Row>
-            <br/>
-            <Row className="justify-content-center">
-              <Col sm={4} md={4} lg={4}>
-                <Button variant="primary" block={true} size="sm" type="submit">Enviar <FaPlusCircle /></Button>
-              </Col>
-              <Col sm={4} md={4} lg={4}>
-                <Button variant="secondary" block={true} size="sm" type="button" onClick={goToTable}>Volver</Button>
-              </Col>
-            </Row>
-          </Form>
-        </Col>
-      </Row>
-      <BranchOfficeFormModal
-        branchOfficeForm={branchOfficeForm}
-        userForm={userForm}
-        setUserForm={setUserForm}
-        setBranchOfficeForm={setBranchOfficeForm}
-        handleOpenModalAdd={handleOpenModalAdd}
-        isOpenModalAdd={isOpenModalAdd}
-        titleModal={"Crear Sucursal"}
-        requiredInput={requiredInput}
-        setRequiredInput={setRequiredInput}
-        fetchData={fetchDataBranch}
-        menu={props.modules}
-      />
-    </Container>
+                <Row>
+                  <InputField
+                  type='textarea'
+                  label='Dirección'
+                  name='address'
+                  required={true}
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={dataForm.address}
+                  handleChange={onChange}
+                  />
+                  <InputField
+                    type='text'
+                    label='Ciudad'
+                    name='city'
+                    required={true}
+                    messageErrors={[
+                    'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={dataForm.city}
+                    handleChange={onChange}
+                  />
+                  <InputField
+                    type='text'
+                    label='Comuna'
+                    name='comuna'
+                    required={true}
+                    messageErrors={[
+                    'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={dataForm.comuna}
+                    handleChange={onChange}
+                  />
+                </Row>
+                <Row>
+                  <InputField
+                  type='email'
+                  label='Email'
+                  name='email_enterprise'
+                  required={false}
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={dataForm.email_enterprise}
+                  handleChange={onChange}
+                  />
+                  <InputField
+                  type='number'
+                  label='Fono'
+                  name='phone'
+                  required={true}
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={dataForm.phone}
+                  handleChange={onChange}
+                  />
+                </Row>
+                <Row className="justify-content-center">
+                  <Col sm={12} md={12} lg={12}>
+                    <h4 className="title_principal">Planes para la empresa</h4>
+                    <Row className="snip1404 justify-content-center">
+                      {planes.map((v,i) => (
+                        <Col sm={4} md={4} lg={4} key={i}>
+                          <TablePlansComponent plan={v} handleSelect={handleSelectPlan}/>
+                        </Col>
+                      ))}
+                    </Row>
+                  </Col>
+                </Row>
+                <br/>
+                <Row className="justify-content-center">
+                  <Col sm={4} md={4} lg={4}>
+                    <Button variant="primary" block={true} size="sm" type="submit">Enviar <FaPlusCircle /></Button>
+                  </Col>
+                  <Col sm={4} md={4} lg={4}>
+                    <Button variant="secondary" block={true} size="sm" type="button" onClick={goToTable}>Volver</Button>
+                  </Col>
+                </Row>
+              </Form>
+            </Col>
+          </Row>
+          <BranchOfficeFormModal
+            branchOfficeForm={branchOfficeForm}
+            userForm={userForm}
+            setUserForm={setUserForm}
+            setBranchOfficeForm={setBranchOfficeForm}
+            handleOpenModalAdd={handleOpenModalAdd}
+            isOpenModalAdd={isOpenModalAdd}
+            titleModal={"Crear Sucursal"}
+            requiredInput={requiredInput}
+            setRequiredInput={setRequiredInput}
+            fetchData={fetchDataBranch}
+            menu={props.modules}
+          />
+        </Container>
+      )}
+    </>
   )
 }
 

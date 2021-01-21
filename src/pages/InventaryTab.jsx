@@ -18,6 +18,8 @@ import ModalHistoryInventary from 'components/modals/ModalHistoryInventary'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { connect } from 'react-redux'
+import LoadingComponent from 'components/LoadingComponent'
+
 let inventaryColumns = []
 
 const InventaryTab = (props) => {
@@ -28,6 +30,7 @@ const InventaryTab = (props) => {
   const [product, setProduct] = useState({})
   const [costs, setCosts] = useState([])
   const [providers, setProviders] = useState([])
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     fetchData()
@@ -135,7 +138,9 @@ const InventaryTab = (props) => {
     Promise.all(promises).then(result => {
       setInventary(result[1].data)
       setProviders(result[0].data)
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
      	 if(err.response){
         toast.error(err.response.data.message)
        }else{
@@ -165,37 +170,46 @@ const InventaryTab = (props) => {
   }
 
   return (
-    <Container>
-      <Row>
-        <Col sm={6} md={6} lg={6}>
-          <br/>
-          <h4 className="title_principal">Tabla Inventario</h4>
-        </Col>
-        <Col sm={6} md={6} lg={6} className="text-right">
-          <br/>
-          <h4 className="title_principal">Cantidad Productos: <Badge variant="danger" className="title_badge">{inventary.length}</Badge></h4>
-        </Col>
-        <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
-          <hr/>
-          <Table columns={ inventaryColumns } data={ inventary } />
-        </Col>
-      </Row>
-      <ModalStockInventary
-        isShow={isOpenStock}
-        onHide={handleOnHideModalStock}
-        product={product}
-        handleSubmitStock={handleSubmit}
-        providers={providers}
-      />
-    <ModalHistoryInventary
-      isShow={isOpenHistory}
-      onHide={handleOnHideModalHistory}
-      costs={costs}
-      fetchData={fetchData}
-      handleSubmitStock={handleSubmit}
-      providers={providers}
-    />
-    </Container>
+    <> 
+      {displayLoading ? (
+        <Container>
+          <LoadingComponent />
+        </Container>
+      ) : (
+
+        <Container>
+          <Row>
+            <Col sm={6} md={6} lg={6}>
+              <br/>
+              <h4 className="title_principal">Tabla Inventario</h4>
+            </Col>
+            <Col sm={6} md={6} lg={6} className="text-right">
+              <br/>
+              <h4 className="title_principal">Cantidad Productos: <Badge variant="danger" className="title_badge">{inventary.length}</Badge></h4>
+            </Col>
+            <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
+              <hr/>
+              <Table columns={ inventaryColumns } data={ inventary } />
+            </Col>
+          </Row>
+          <ModalStockInventary
+            isShow={isOpenStock}
+            onHide={handleOnHideModalStock}
+            product={product}
+            handleSubmitStock={handleSubmit}
+            providers={providers}
+          />
+          <ModalHistoryInventary
+            isShow={isOpenHistory}
+            onHide={handleOnHideModalHistory}
+            costs={costs}
+            fetchData={fetchData}
+            handleSubmitStock={handleSubmit}
+            providers={providers}
+          />
+        </Container>
+      )}
+    </>
   )
 }
 

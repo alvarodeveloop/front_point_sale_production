@@ -19,6 +19,7 @@ import {FaPlusCircle} from 'react-icons/fa'
 import layoutHelpers from 'shared/layouts/helpers'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import LoadingComponent from 'components/LoadingComponent'
 
 import { connect } from 'react-redux'
 
@@ -29,6 +30,7 @@ const ClientPage = (props) => {
   const [clients, setClients] = useState([])
   const [clientUpdate, setClientUpdate] = useState(null)
   const [isOpenModal, setIsOpenModal] = useState(false)
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     fetchData()
@@ -94,7 +96,9 @@ const ClientPage = (props) => {
   const fetchData = () => {
     axios.get(API_URL+'client').then(result => {
       setClients(result.data)
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -143,10 +147,12 @@ const ClientPage = (props) => {
   }
 
   const confirmDeleteRegister = id => {
+    setDisplayLoading(true)
     axios.delete(API_URL+'client/'+id).then(result => {
       toast.success('Proceso completado')
       fetchData()
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -156,34 +162,41 @@ const ClientPage = (props) => {
   }
 
   return (
-    <Container fluid={true}>
-      <Row className="">
-        <Col sm={6} md={6} lg={6}>
-          <h4 className="title_principal">Tabla de Clientes</h4>
-        </Col>
-        <Col sm={6} md={6} lg={6} className="text-center">
-          <h4 className="title_principal">Total Clientes</h4>
-          <Badge variant="danger">{clients.length}</Badge>
-        </Col>
-      </Row>
-      <Row>
-        <Col sm={6} md={6} lg={6}>
-          <Button variant="success" block={true} size="sm" onClick={handleModalHide} type="button">Crear Cliente <FaPlusCircle /></Button>
-        </Col>
-      </Row>
-      <hr/>
-      <Row className="">
-        <Col sm={12} md={12} lg={12}>
-          <Table data={clients} columns={columns_client} />
-        </Col>
-      </Row>
-      <FormClientModal
-        isShow={isOpenModal}
-        onHide={handleModalHide}
-        dataModify={clientUpdate}
-      />
-    </Container>
-
+    <>
+      {displayLoading ? (
+        <Container>
+          <LoadingComponent />
+        </Container>
+      ) : (
+        <Container fluid={true}>
+          <Row className="">
+            <Col sm={6} md={6} lg={6}>
+              <h4 className="title_principal">Tabla de Clientes</h4>
+            </Col>
+            <Col sm={6} md={6} lg={6} className="text-center">
+              <h4 className="title_principal">Total Clientes</h4>
+              <Badge variant="danger">{clients.length}</Badge>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={6} md={6} lg={6}>
+              <Button variant="success" block={true} size="sm" onClick={handleModalHide} type="button">Crear Cliente <FaPlusCircle /></Button>
+            </Col>
+          </Row>
+          <hr/>
+          <Row className="">
+            <Col sm={12} md={12} lg={12}>
+              <Table data={clients} columns={columns_client} />
+            </Col>
+          </Row>
+          <FormClientModal
+            isShow={isOpenModal}
+            onHide={handleModalHide}
+            dataModify={clientUpdate}
+          />
+        </Container>
+      )}
+    </>
   )
 }
 

@@ -19,9 +19,12 @@ import { setConfig } from 'actions/configs'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import {formatRut} from 'utils/functions'
+import LoadingComponent from 'components/LoadingComponent'
+
 
 const ConfigGeneralFormPage = (props) => {
 
+  const [displayLoading, setDisplayLoading] = useState(true)
   const [ configData, setConfigData ] = useState({
     simbolo_moneda: '',
     active_price_decimals: '',
@@ -59,9 +62,10 @@ const ConfigGeneralFormPage = (props) => {
           logo: result.data.logo,
         })
       })
-
       setIsUpdate(true)
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       const { response } = err
       if(response){
         toast.error(response.data.message)
@@ -93,10 +97,10 @@ const ConfigGeneralFormPage = (props) => {
         newFormData.append('logo',configData[v])
       }else{
         newFormData.append(v,configData[v])
-      }
-
+      }      
     });
 
+    setDisplayLoading(true)
     if(isUpdate){
       axios.put(API_URL+'config_general/'+props.match.params.id,newFormData).then(result => {
         toast.success('Configuración General Modificada')
@@ -106,6 +110,7 @@ const ConfigGeneralFormPage = (props) => {
         },1500)
 
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)
@@ -121,6 +126,7 @@ const ConfigGeneralFormPage = (props) => {
           props.history.push('/config/config_general')
         },1500)
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)
@@ -164,183 +170,189 @@ const ConfigGeneralFormPage = (props) => {
 
   return (
     <Container>
-      <Row className="">
-        <Col sm={12} md={12} lg={12}>
-          <h4 className="title_principal">Formulario de Configuración General</h4>
-          <br/>
-          <Form onSubmit={onSubmit} noValidate validated={validated} className="">
-            <Row>
-              <Col md={4} lg={4} sm={4}>
-                <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled1">Este campo contendrá el simbolo con el que se mostraran los precios en el sistema</Tooltip>}>
-                  <Row>
-                    <InputField
-                      { ...props.inputSymbol}
-                      handleChange={onChange}
-                      value={configData.simbolo_moneda}
-                      />
-                  </Row>
-                </OverlayTrigger>
-              </Col>
-              <Col md={4} lg={4} sm={4}>
-                <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Campo para activar la función de mostrar los precios con 2 decimales en el sistema</Tooltip>}>
-                  <Row>
-                    <InputField
-                      { ...props.inputPriceDecimals}
-                      handleChange={onChange}
-                      value={configData.active_price_decimals}
-                      >
-                      <option value=''>--Seleccione--</option>
-                      <option value={true}>Activo</option>
-                      <option value={false}>Desactivado</option>
-                    </InputField>
-                  </Row>
-                </OverlayTrigger>
-              </Col>
-              <Col md={4} lg={4} sm={4}>
-                <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled3">Campo para activar la función de cerrar la sesión en el sistema</Tooltip>}>
-                  <Row>
-                    <InputField
-                      { ...props.inputSession}
-                      handleChange={onChange}
-                      value={configData.close_session}
-                      >
-                      <option value=''>--Seleccione--</option>
-                      <option value={true}>Activo</option>
-                      <option value={false}>Desactivado</option>
-                    </InputField>
-                  </Row>
-                </OverlayTrigger>
-              </Col>
-            </Row>
-            <Row>
-              <InputField
-               type='text'
-               label='Actividad Económica'
-               name='actividad_economica'
-               required={false}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={configData.actividad_economica}
-               handleChange={onChange}
-              />
-              <InputField
-               type='text'
-               label='Giro'
-               name='giro'
-               required={false}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={configData.giro}
-               handleChange={onChange}
-              />
-              <Col sm={4} md={4} lg={4}>
-                {imgComponent ? (
-                  <React.Fragment>
-                    <Row className="justify-content-center">
-                      <Col sm={8} md={8} lg={8}>
-                        {imgComponent}
-                      </Col>
-                    </Row>
+      <>
+       {displayLoading ? (
+         <LoadingComponent />
+       ) : (
+        <Row className="">
+          <Col sm={12} md={12} lg={12}>
+            <h4 className="title_principal">Formulario de Configuración General</h4>
+            <br/>
+            <Form onSubmit={onSubmit} noValidate validated={validated} className="">
+              <Row>
+                <Col md={4} lg={4} sm={4}>
+                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled1">Este campo contendrá el simbolo con el que se mostraran los precios en el sistema</Tooltip>}>
                     <Row>
-                      <Col sm={12} md={12} lg={12} className="text-center">
-                        <br/>
-                        <Button variant="dark" size="sm" onClick={removeLogo} type="button"><FaTrash /></Button>
-                      </Col>
+                      <InputField
+                        { ...props.inputSymbol}
+                        handleChange={onChange}
+                        value={configData.simbolo_moneda}
+                        />
                     </Row>
-                  </React.Fragment>
-                ) : (
-                  <React.Fragment>
-                    <br/>
-                    <Button block={true} size="sm" type="button" variant="primary" onClick={openFileInput}>Logo Empresa <FaImage /></Button>
-                    <input type="file" id="file_input" style={{display: 'none'}} onChange={readFileImg} />
-                  </React.Fragment>
-                )}
-              </Col>
-            </Row>
-            <Row>
-              <Col sm={4} md={4} lg={4}>
-                <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled4">
-                  Rut del representante legal de la empresa en el Sii
-                </Tooltip>}
-                >
-                  <Row>
-                    <InputField
-                     type='text'
-                     label='Rut Representante Legal'
-                     name='rut_legal_representative'
-                     required={false}
-                     messageErrors={[
-                     'Requerido*'
-                     ]}
-                     cols='col-md-12 col-lg-12 col-sm-12'
-                     value={configData.rut_legal_representative}
-                     handleChange={onChange}
-                     />
-                  </Row>
-                </OverlayTrigger>
-              </Col>
-              <Col sm={4} md={4} lg={4}>
-                <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled5">
-                  Clave del representate legal de la empresa en el Sii
-                </Tooltip>}
-                >
-                  <Row>
-                    <InputField
-                     type='text'
-                     label='Clave Sii'
-                     name='clave_login_sii'
-                     required={false}
-                     messageErrors={[
-                     'Requerido*'
-                     ]}
-                     cols='col-md-12 col-lg-12 col-sm-12'
-                     value={configData.clave_login_sii}
-                     handleChange={onChange}
-                     />
-                  </Row>
-                </OverlayTrigger>
-              </Col>
-              <Col sm={4} md={4} lg={4}>
-                <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled6">
-                  Firma del representate legal en el Sii
-                </Tooltip>}
-                >
-                  <Row>
-                    <InputField
-                     type='text'
-                     label='Firma Sii'
-                     name='clave_sii'
-                     required={false}
-                     messageErrors={[
-                     'Requerido*'
-                     ]}
-                     cols='col-md-12 col-lg-12 col-sm-12'
-                     value={configData.clave_sii}
-                     handleChange={onChange}
-                     />
-                  </Row>
-                </OverlayTrigger>
-              </Col>
-            </Row>
-            <Row className="justify-content-center">
-              <Col sm={4} md={4} lg={4}>
-                <Button size="sm" type="submit" variant="danger" block="true">
-                  Enviar <FaCheckCircle />
+                  </OverlayTrigger>
+                </Col>
+                <Col md={4} lg={4} sm={4}>
+                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Campo para activar la función de mostrar los precios con 2 decimales en el sistema</Tooltip>}>
+                    <Row>
+                      <InputField
+                        { ...props.inputPriceDecimals}
+                        handleChange={onChange}
+                        value={configData.active_price_decimals}
+                        >
+                        <option value=''>--Seleccione--</option>
+                        <option value={true}>Activo</option>
+                        <option value={false}>Desactivado</option>
+                      </InputField>
+                    </Row>
+                  </OverlayTrigger>
+                </Col>
+                <Col md={4} lg={4} sm={4}>
+                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled3">Campo para activar la función de cerrar la sesión en el sistema</Tooltip>}>
+                    <Row>
+                      <InputField
+                        { ...props.inputSession}
+                        handleChange={onChange}
+                        value={configData.close_session}
+                        >
+                        <option value=''>--Seleccione--</option>
+                        <option value={true}>Activo</option>
+                        <option value={false}>Desactivado</option>
+                      </InputField>
+                    </Row>
+                  </OverlayTrigger>
+                </Col>
+              </Row>
+              <Row>
+                <InputField
+                type='text'
+                label='Actividad Económica'
+                name='actividad_economica'
+                required={false}
+                messageErrors={[
+                'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={configData.actividad_economica}
+                handleChange={onChange}
+                />
+                <InputField
+                type='text'
+                label='Giro'
+                name='giro'
+                required={false}
+                messageErrors={[
+                'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={configData.giro}
+                handleChange={onChange}
+                />
+                <Col sm={4} md={4} lg={4}>
+                  {imgComponent ? (
+                    <React.Fragment>
+                      <Row className="justify-content-center">
+                        <Col sm={8} md={8} lg={8}>
+                          {imgComponent}
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col sm={12} md={12} lg={12} className="text-center">
+                          <br/>
+                          <Button variant="dark" size="sm" onClick={removeLogo} type="button"><FaTrash /></Button>
+                        </Col>
+                      </Row>
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      <br/>
+                      <Button block={true} size="sm" type="button" variant="primary" onClick={openFileInput}>Logo Empresa <FaImage /></Button>
+                      <input type="file" id="file_input" style={{display: 'none'}} onChange={readFileImg} />
+                    </React.Fragment>
+                  )}
+                </Col>
+              </Row>
+              <Row>
+                <Col sm={4} md={4} lg={4}>
+                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled4">
+                    Rut del representante legal de la empresa en el Sii
+                  </Tooltip>}
+                  >
+                    <Row>
+                      <InputField
+                      type='text'
+                      label='Rut Representante Legal'
+                      name='rut_legal_representative'
+                      required={false}
+                      messageErrors={[
+                      'Requerido*'
+                      ]}
+                      cols='col-md-12 col-lg-12 col-sm-12'
+                      value={configData.rut_legal_representative}
+                      handleChange={onChange}
+                      />
+                    </Row>
+                  </OverlayTrigger>
+                </Col>
+                <Col sm={4} md={4} lg={4}>
+                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled5">
+                    Clave del representate legal de la empresa en el Sii
+                  </Tooltip>}
+                  >
+                    <Row>
+                      <InputField
+                      type='text'
+                      label='Clave Sii'
+                      name='clave_login_sii'
+                      required={false}
+                      messageErrors={[
+                      'Requerido*'
+                      ]}
+                      cols='col-md-12 col-lg-12 col-sm-12'
+                      value={configData.clave_login_sii}
+                      handleChange={onChange}
+                      />
+                    </Row>
+                  </OverlayTrigger>
+                </Col>
+                <Col sm={4} md={4} lg={4}>
+                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled6">
+                    Firma del representate legal en el Sii
+                  </Tooltip>}
+                  >
+                    <Row>
+                      <InputField
+                      type='text'
+                      label='Firma Sii'
+                      name='clave_sii'
+                      required={false}
+                      messageErrors={[
+                      'Requerido*'
+                      ]}
+                      cols='col-md-12 col-lg-12 col-sm-12'
+                      value={configData.clave_sii}
+                      handleChange={onChange}
+                      />
+                    </Row>
+                  </OverlayTrigger>
+                </Col>
+              </Row>
+              <Row className="justify-content-center">
+                <Col sm={4} md={4} lg={4}>
+                  <Button size="sm" type="submit" variant="danger" block="true">
+                    Enviar <FaCheckCircle />
+                  </Button>
+                </Col>
+                <Col sm={4} md={4} lg={4}>
+                  <Button size="sm" type="button" variant="secondary" block="true" onClick={goToConfig}>
+                    Ir a la configuración <FaCogs />
                 </Button>
-              </Col>
-              <Col sm={4} md={4} lg={4}>
-                <Button size="sm" type="button" variant="secondary" block="true" onClick={goToConfig}>
-                  Ir a la configuración <FaCogs />
-              </Button>
-              </Col>
-            </Row>
-          </Form>
-        </Col>
-      </Row>
+                </Col>
+              </Row>
+            </Form>
+          </Col>
+        </Row>
+       )}
+      </>
     </Container>
   )
 }

@@ -33,6 +33,7 @@ import {Doughnut,Bar,Line} from 'react-chartjs-2';
 import { ARRAY_COLORS, ARRAY_MONTH } from 'utils/constants'
 import { CSSTransition } from 'react-transition-group';
 import ModalActionsCotization from 'components/modals/ModalActionsCotization'
+import LoadingComponent from 'components/LoadingComponent'
 
 let optionsBar = {
   responsive: true,
@@ -108,6 +109,7 @@ let cotizacionColumns = null
 
 const CotizacionSearchPage = props => {
 
+  const [displayLoading, setDisplayLoading] = useState(true)
   const [cotizacionData, setCotizacionData] = useState([])
   const [cotizationDetail, setCotizationDetail] = useState({})
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false)
@@ -425,6 +427,7 @@ const CotizacionSearchPage = props => {
   const handleStadistics = () => {
     let objectPost = Object.assign({},dataForm)
     setDisplayFilter(3)
+    toast.info("Filtrando datos...")
      axios.post(API_URL+'cotizacion_stadistics',objectPost).then(result => {
       setStatusCotization({...statusCotization,statuses : result.data.statuses, invoice: result.data.invoice, invoiceByYear: result.data.invoiceByYear, totalByStatus: result.data.totalByStatus})
       setTimeout(function () {
@@ -465,7 +468,9 @@ const CotizacionSearchPage = props => {
       setTimeout(function () {
         setRedraw(true)
       }, 1000);
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       console.log(err);
       if(err.response){
         toast.error(err.response.data.message)
@@ -480,10 +485,12 @@ const CotizacionSearchPage = props => {
   }
 
   const deleteCotizacion = id => {
+    setDisplayLoading(true)
     axios.delete(API_URL+'cotizacion/'+id).then(result => {
       toast.success('Proceso completado')
       fetchData()
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.messsage)
       }else{
@@ -499,10 +506,12 @@ const CotizacionSearchPage = props => {
   const printCotizacion = id => {
 
     toast.info('Buscando documento, espere por favor...')
-
+    setDisplayLoading(true)
     axios.get(API_URL+'cotizacion_print/'+id+'/0').then(result => {
       window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -514,9 +523,12 @@ const CotizacionSearchPage = props => {
 
   const printCotizacionNew = id => {
     toast.info('Generando documento, espere por favor...')
+    setDisplayLoading(true)
     axios.get(API_URL+'cotizacion_print/'+id+'/0/1').then(result => {
       window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -531,6 +543,7 @@ const CotizacionSearchPage = props => {
      status
    }
    toast.info('Cambiando estado, espere por favor...')
+   setDisplayLoading(true)
    axios.put(API_URL+'cotizacion_status/'+id,objectStatus).then(result => {
     toast.success('Status Cambiado')
     if(Object.keys(cotizationAction).length){
@@ -538,6 +551,7 @@ const CotizacionSearchPage = props => {
     }
     fetchData()
    }).catch(err => {
+    setDisplayLoading(false)
      if(err.response){
        toast.error(err.response.data.message)
      }else{
@@ -573,6 +587,7 @@ const CotizacionSearchPage = props => {
   }
 
   const confirmAnulateCotization = (id,status) => {
+    setDisplayLoading(true)
     axios.delete(API_URL+'cotizacion/'+id).then(result => {
       if(status >= 1 && status <= 2){
         toast.success('Cotización Anulada con éxito')
@@ -587,6 +602,7 @@ const CotizacionSearchPage = props => {
       }
       fetchData()
      }).catch(err => {
+      setDisplayLoading(false)
        if(err.response){
          toast.error(err.response.data.message)
        }else{
@@ -649,164 +665,170 @@ const CotizacionSearchPage = props => {
         </Col>
       </Row>
       <hr/>
-      <Row>
-        <Col sm={12} md={12} lg={12} xs={12}>
-          <Accordion>
-            <Card>
-              <Accordion.Toggle as={Card.Header} eventKey="0" className="header_card">
-                <b>Estadísticas</b> <FaChartLine />
-              </Accordion.Toggle>
-              <Accordion.Collapse eventKey="0">
-                <Card.Body>
-                  <Row className="justify-content-center">
-                    {displayFilter == 1 ? (
-                      <Col sm={2} md={2} lg={2}>
-                        <Button variant="secondary" type="button" size="sm" block={true} onClick={() => handleDisplayFilter(2)}>Activar Filtros</Button>
-                      </Col>
-                    ) : displayFilter == 2 ? (
-                      <React.Fragment>
-                        <InputField
-                         type='date'
-                         label='Fecha desde'
-                         name='date_desde'
-                         required={true}
-                         messageErrors={[
-                         'Requerido*'
-                         ]}
-                         cols='col-md-3 col-lg-3 col-sm-3'
-                         value={dataForm.date_desde}
-                         handleChange={onChange}
-                        />
-                        <InputField
-                          type='date'
-                          label='Fecha Hasta'
-                          name='date_hasta'
-                          required={true}
-                          messageErrors={[
-                          'Requerido*'
-                          ]}
-                          cols='col-md-3 col-lg-3 col-sm-3'
-                          value={dataForm.date_hasta}
-                          handleChange={onChange}
-                        />
-                        <Col sm={3} md={3} lg={3}>
-                          <br/>
-                          <Button variant="danger" type="button" size="sm" block={true} onClick={handleStadistics}>Buscar</Button>
-                        </Col>
-                        <Col sm={3} md={3} lg={3}>
-                          <br/>
-                          <Button variant="secondary" type="button" size="sm" block={true} onClick={() => handleDisplayFilter(1)}>Ocultar Filtros</Button>
-                        </Col>
-                      </React.Fragment>
+      {displayLoading ? (
+        <LoadingComponent />
+      ) : (
+        <>
+          <Row>
+            <Col sm={12} md={12} lg={12} xs={12}>
+              <Accordion>
+                <Card>
+                  <Accordion.Toggle as={Card.Header} eventKey="0" className="header_card">
+                    <b>Estadísticas</b> <FaChartLine />
+                  </Accordion.Toggle>
+                  <Accordion.Collapse eventKey="0">
+                    <Card.Body>
+                      <Row className="justify-content-center">
+                        {displayFilter == 1 ? (
+                          <Col sm={2} md={2} lg={2}>
+                            <Button variant="secondary" type="button" size="sm" block={true} onClick={() => handleDisplayFilter(2)}>Activar Filtros</Button>
+                          </Col>
+                        ) : displayFilter == 2 ? (
+                          <React.Fragment>
+                            <InputField
+                            type='date'
+                            label='Fecha desde'
+                            name='date_desde'
+                            required={true}
+                            messageErrors={[
+                            'Requerido*'
+                            ]}
+                            cols='col-md-3 col-lg-3 col-sm-3'
+                            value={dataForm.date_desde}
+                            handleChange={onChange}
+                            />
+                            <InputField
+                              type='date'
+                              label='Fecha Hasta'
+                              name='date_hasta'
+                              required={true}
+                              messageErrors={[
+                              'Requerido*'
+                              ]}
+                              cols='col-md-3 col-lg-3 col-sm-3'
+                              value={dataForm.date_hasta}
+                              handleChange={onChange}
+                            />
+                            <Col sm={3} md={3} lg={3}>
+                              <br/>
+                              <Button variant="danger" type="button" size="sm" block={true} onClick={handleStadistics}>Buscar</Button>
+                            </Col>
+                            <Col sm={3} md={3} lg={3}>
+                              <br/>
+                              <Button variant="secondary" type="button" size="sm" block={true} onClick={() => handleDisplayFilter(1)}>Ocultar Filtros</Button>
+                            </Col>
+                          </React.Fragment>
 
-                    ) : (
-                      <Col sm={12} md={12} lg={12} className="text-center">
-                        <br/>
-                        <Image src={require('../assets/img/loading.gif')} width="30" />
-                        <br/>
-                        Cargando datos...
-                      </Col>
-                    )}
-                  </Row>
-                  <br/>
-                  <Row>
-                    <Col sm={6} md={6} lg={6} style={{height: "200px"}}>
-                      <Doughnut data={data_donut_ss_status} redraw={redraw} options={optionsBar} />
-                    </Col>
-                    <Col sm={6} md={6} lg={6}>
-                      <table className="table table-bordered">
-                        <thead>
-                          <tr>
-                            <th className="text-center" colSpan="2" style={{backgroundColor: "rgb(147, 52, 12)", color: "white"}}>Monto acumulado por estados</th>
-                          </tr>
-                          <tr>
-                            <th className="text-center" style={{backgroundColor: "rgb(133, 124, 124)", color: "white"}}>Estado</th>
-                            <th className="text-center" style={{backgroundColor: "rgb(133, 124, 124)", color: "white"}}>Total</th>
-                          </tr>
-                        </thead>
-                        <tbody className="text-center">
-                          {Object.keys(statusCotization).length > 0 ? (
-                            <React.Fragment>
-                              {statusCotization.statuses.map((v,i) => (
-                                <tr key={i}>
-                                  <td>{v.status}</td>
-                                  <td>{props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,v.total)}</td>
+                        ) : (
+                          <Col sm={12} md={12} lg={12} className="text-center">
+                            <br/>
+                            <Image src={require('../assets/img/loading.gif')} width="30" />
+                            <br/>
+                            Cargando datos...
+                          </Col>
+                        )}
+                      </Row>
+                      <br/>
+                      <Row>
+                        <Col sm={6} md={6} lg={6} style={{height: "200px"}}>
+                          <Doughnut data={data_donut_ss_status} redraw={redraw} options={optionsBar} />
+                        </Col>
+                        <Col sm={6} md={6} lg={6}>
+                          <table className="table table-bordered">
+                            <thead>
+                              <tr>
+                                <th className="text-center" colSpan="2" style={{backgroundColor: "rgb(147, 52, 12)", color: "white"}}>Monto acumulado por estados</th>
+                              </tr>
+                              <tr>
+                                <th className="text-center" style={{backgroundColor: "rgb(133, 124, 124)", color: "white"}}>Estado</th>
+                                <th className="text-center" style={{backgroundColor: "rgb(133, 124, 124)", color: "white"}}>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody className="text-center">
+                              {Object.keys(statusCotization).length > 0 ? (
+                                <React.Fragment>
+                                  {statusCotization.statuses.map((v,i) => (
+                                    <tr key={i}>
+                                      <td>{v.status}</td>
+                                      <td>{props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,v.total)}</td>
+                                    </tr>
+                                  ))}
+                                </React.Fragment>
+                              ) : (
+                                <tr>
+                                  <td colSpan="3" className="text-center">Sin registros...</td>
                                 </tr>
-                              ))}
-                            </React.Fragment>
-                          ) : (
-                            <tr>
-                              <td colSpan="3" className="text-center">Sin registros...</td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col sm={12} md={12} lg={12} style={{height: "200px"}}>
-                      <Bar
-                        data={data_bar_failure_tipology}
-                        options={optionsBar}
-                        redraw={redraw}
-                      />
-                    </Col>
-                  </Row>
-                  <br/>
-                  <Row>
-                    <Col sm={6} md={6} lg={6} style={{height: "230px"}}>
-                      <table className="table table-bordered">
-                        <thead>
-                          <tr>
-                            <th className="text-center" colSpan="2" style={{backgroundColor: "rgb(147, 52, 12)", color: "white"}}>Total cotizaciones realizadas</th>
-                          </tr>
-                          <tr>
-                            <th className="text-center" style={{backgroundColor: "rgb(133, 124, 124)", color: "white"}}>Estado</th>
-                            <th className="text-center" style={{backgroundColor: "rgb(133, 124, 124)", color: "white"}}>Total</th>
-                          </tr>
-                        </thead>
-                        <tbody className="text-center">
-                          {Object.keys(statusCotization).length > 0 ? (
-                            <React.Fragment>
-                              {statusCotization.totalByStatus.map((v,i) => (
-                                <tr key={i}>
-                                  <td>{v.name}</td>
-                                  <td>{v.total}</td>
+                              )}
+                            </tbody>
+                          </table>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col sm={12} md={12} lg={12} style={{height: "200px"}}>
+                          <Bar
+                            data={data_bar_failure_tipology}
+                            options={optionsBar}
+                            redraw={redraw}
+                          />
+                        </Col>
+                      </Row>
+                      <br/>
+                      <Row>
+                        <Col sm={6} md={6} lg={6} style={{height: "230px"}}>
+                          <table className="table table-bordered">
+                            <thead>
+                              <tr>
+                                <th className="text-center" colSpan="2" style={{backgroundColor: "rgb(147, 52, 12)", color: "white"}}>Total cotizaciones realizadas</th>
+                              </tr>
+                              <tr>
+                                <th className="text-center" style={{backgroundColor: "rgb(133, 124, 124)", color: "white"}}>Estado</th>
+                                <th className="text-center" style={{backgroundColor: "rgb(133, 124, 124)", color: "white"}}>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody className="text-center">
+                              {Object.keys(statusCotization).length > 0 ? (
+                                <React.Fragment>
+                                  {statusCotization.totalByStatus.map((v,i) => (
+                                    <tr key={i}>
+                                      <td>{v.name}</td>
+                                      <td>{v.total}</td>
+                                    </tr>
+                                  ))}
+                                </React.Fragment>
+                              ) : (
+                                <tr>
+                                  <td colSpan="3" className="text-center">Sin registros...</td>
                                 </tr>
-                              ))}
-                            </React.Fragment>
-                          ) : (
-                            <tr>
-                              <td colSpan="3" className="text-center">Sin registros...</td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </Col>
-                    <Col sm={6} md={6} lg={6} style={{height: "200px"}} className="text-center">
-                      <Doughnut data={data_donut_total_status} redraw={redraw} options={optionsBar} />
-                    </Col>
-                  </Row>
-                  <br/><br/><br/><br/><br/><br/><br/><br/><br/>
-                  <Row>
-                    <Col sm={12} md={12} lg={12} style={{height: "200px"}}>
-                      <Line data={data_line_by_year} options={options_line} />
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Accordion.Collapse>
-            </Card>
-          </Accordion>
-        </Col>
-      </Row>
-      <Row>
-        <Col sm={12} md={12} lg={12} xs={12}>
-          <Table columns={cotizacionColumns} data={cotizacionData}/>
-        </Col>
-      </Row>
+                              )}
+                            </tbody>
+                          </table>
+                        </Col>
+                        <Col sm={6} md={6} lg={6} style={{height: "200px"}} className="text-center">
+                          <Doughnut data={data_donut_total_status} redraw={redraw} options={optionsBar} />
+                        </Col>
+                      </Row>
+                      <br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                      <Row>
+                        <Col sm={12} md={12} lg={12} style={{height: "200px"}}>
+                          <Line data={data_line_by_year} options={options_line} />
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Accordion.Collapse>
+                </Card>
+              </Accordion>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={12} md={12} lg={12} xs={12}>
+              <Table columns={cotizacionColumns} data={cotizacionData}/>
+            </Col>
+          </Row>
+        </>
+      )}
       <Modal
-        show={isOpenModalDetail}
         onHide={handleModalDetail}
+        show={isOpenModalDetail}
         size="xl"
         aria-labelledby="contained-modal-title-vcenter"
         centered

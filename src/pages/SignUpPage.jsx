@@ -17,9 +17,11 @@ import {formatRut} from 'utils/functions'
 import { connect } from 'react-redux'
 import { login } from 'actions/auth'
 import { setAuthorizationToken } from 'utils/functions'
+import LoadingComponent from 'components/LoadingComponent'
 
 const SignUpPage = (props) => {
 
+  const [displayLoading, setDisplayLoading] = useState(false)
   const [validatedForm, setValidatedForm] = useState(false)
   const [user,setUser] = useState({
     name: '',
@@ -77,17 +79,19 @@ const SignUpPage = (props) => {
       toast.error('Las contraseñas no coinciden')
       return false
     }
-
+    setDisplayLoading(true)
     axios.post(API_URL+'user_free',userSave).then(result => {
       toast.success('Felicidades, usuario registrado con éxito')
       localStorage.setItem('user',JSON.stringify(result.data.user))
       localStorage.setItem('token',result.data.token)
       setAuthorizationToken(result.data.token)
       props.login(result.data.user)
+      setDisplayLoading(false)
       setTimeout(() => {
         props.history.replace('/dashboard')
       },1500)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -149,54 +153,58 @@ const SignUpPage = (props) => {
               <h4 className="text-center text-lighter font-weight-normal mt-5 mb-0"></h4>
 
               {/* Form */}
-              <Form onSubmit={onSubmit} noValidate validated={validatedForm}>
-                <Row className="justify-content-center">
-                  <InputField
-                    {...props.inputName}
-                    handleChange={onChange}
-                    value={user.name}
-                  />
-                </Row>
-                <Row className="justify-content-center">
-                  <InputField
-                    {...props.inputEmail}
-                    handleChange={onChange}
-                    value={user.email}
-                  />
-                </Row>
-                <Row className="justify-content-center">
-                  <InputField
-                    {...props.inputRut}
-                    handleChange={onChange}
-                    value={user.rut}
-                  />
-                </Row>
-                <Row className="justify-content-center">
-                  <InputField
-                    {...props.inputPassword}
-                    handleChange={onChange}
-                    value={user.password}
-                  />
-                </Row>
-                <Row className="justify-content-center">
-                  <InputField
-                    {...props.inputPasswordRepeat}
-                    handleChange={onChange}
-                    value={user.password_repeat}
-                  />
-                </Row>
-                <Row className="justify-content-center">
-                  <Col sm={12} md={12} lg={12}>
-                    <Button size="sm" variant="primary" block={true} type="submit">Enviar</Button>
-                  </Col>
-                </Row>
-                <br/>
-                <Row className="justify-content-center">
-                  <Col sm={12} md={12} lg={12}>
-                    <Button size="sm" variant="secondary" block={true} type="button" onClick={() => props.history.replace('/')}>Volver</Button>
-                  </Col>
-                </Row>
-              </Form>
+              {displayLoading ? (
+                <LoadingComponent />
+              ) : (
+                <Form onSubmit={onSubmit} noValidate validated={validatedForm}>
+                  <Row className="justify-content-center">
+                    <InputField
+                      {...props.inputName}
+                      handleChange={onChange}
+                      value={user.name}
+                    />
+                  </Row>
+                  <Row className="justify-content-center">
+                    <InputField
+                      {...props.inputEmail}
+                      handleChange={onChange}
+                      value={user.email}
+                    />
+                  </Row>
+                  <Row className="justify-content-center">
+                    <InputField
+                      {...props.inputRut}
+                      handleChange={onChange}
+                      value={user.rut}
+                    />
+                  </Row>
+                  <Row className="justify-content-center">
+                    <InputField
+                      {...props.inputPassword}
+                      handleChange={onChange}
+                      value={user.password}
+                    />
+                  </Row>
+                  <Row className="justify-content-center">
+                    <InputField
+                      {...props.inputPasswordRepeat}
+                      handleChange={onChange}
+                      value={user.password_repeat}
+                    />
+                  </Row>
+                  <Row className="justify-content-center">
+                    <Col sm={12} md={12} lg={12}>
+                      <Button size="sm" variant="primary" block={true} type="submit">Enviar</Button>
+                    </Col>
+                  </Row>
+                  <br/>
+                  <Row className="justify-content-center">
+                    <Col sm={12} md={12} lg={12}>
+                      <Button size="sm" variant="secondary" block={true} type="button" onClick={() => props.history.replace('/')}>Volver</Button>
+                    </Col>
+                  </Row>
+                </Form>
+              )}
             </div>
           </div>
         </div>

@@ -30,6 +30,8 @@ import ModalInvoiceActions from 'components/modals/ModalInvoiceActions'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import StadisticsInvoiceComponent from 'components/StadisticsInvoiceComponent'
 import ModalCreditNoteComponent from 'components/modals/ModalCreditNoteComponent'
+import LoadingComponent from 'components/LoadingComponent'
+
 let cotizacionColumns = null
 let noteCreditColumns = null
 
@@ -51,6 +53,7 @@ const InvoiceSearchPage = props => {
   const [invoiceObject,setInvoiceObject] = useState({})
   const [invoiceAction,setInvoiceAction] = useState({})
   const [isOpenModalAction,setIsOpenModalAction] = useState(false)
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useMemo(() => {
     cotizacionColumns = [
@@ -450,7 +453,9 @@ const InvoiceSearchPage = props => {
       setTimeout(function () {
         setRedraw(true)
       }, 1000);
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       console.log(err);
       if(err.response){
         toast.error(err.response.data.message)
@@ -546,11 +551,13 @@ const InvoiceSearchPage = props => {
 
   const confirmAnulateInvoice = id => {
     toast.info('Anulando factura, esto podría tardar unos segundos... espere por favor')
+    setDisplayLoading(true)
     axios.put(API_URL+'invoice_status/'+id).then(result => {
         toast.success('Factura anulada con éxito')
         setInvoiceAction({...invoiceAction,status: 4})
         fetchData()
      }).catch(err => {
+      setDisplayLoading(false)
        if(err.response){
          toast.error(err.response.data.message)
        }else{
@@ -594,33 +601,39 @@ const InvoiceSearchPage = props => {
         </Col>
       </Row>
       <hr/>
-        <StadisticsInvoiceComponent
-          setDataForm={setDataForm}
-          dataForm={dataForm}
-          redraw={redraw}
-          statusCotization={statusCotization}
-          handleDisplayFilter={handleDisplayFilter}
-          handleStadistics={handleStadistics}
-          displayFilter={displayFilter}
-          configGeneral={props.configGeneral}
-        />
-      <br/>
-      <Tabs defaultActiveKey="invoice" id="uncontrolled-tab-example">
-        <Tab eventKey="invoice" title="Facturas">
-          <Row>
-            <Col sm={12} md={12} lg={12} xs={12}>
-              <Table columns={cotizacionColumns} data={invoiceData}/>
-            </Col>
-          </Row>
-        </Tab>
-        <Tab eventKey="product" title="Notas">
-          <Row>
-            <Col sm={12} md={12} lg={12} xs={12}>
-              <Table columns={noteCreditColumns} data={invoiceNotes}/>
-            </Col>
-          </Row>
-        </Tab>
-      </Tabs>
+      {displayLoading ? (
+        <LoadingComponent />
+      ) : (
+        <>
+          <StadisticsInvoiceComponent
+            setDataForm={setDataForm}
+            dataForm={dataForm}
+            redraw={redraw}
+            statusCotization={statusCotization}
+            handleDisplayFilter={handleDisplayFilter}
+            handleStadistics={handleStadistics}
+            displayFilter={displayFilter}
+            configGeneral={props.configGeneral}
+          />
+          <br/>
+          <Tabs defaultActiveKey="invoice" id="uncontrolled-tab-example">
+            <Tab eventKey="invoice" title="Facturas">
+              <Row>
+                <Col sm={12} md={12} lg={12} xs={12}>
+                  <Table columns={cotizacionColumns} data={invoiceData}/>
+                </Col>
+              </Row>
+            </Tab>
+            <Tab eventKey="product" title="Notas">
+              <Row>
+                <Col sm={12} md={12} lg={12} xs={12}>
+                  <Table columns={noteCreditColumns} data={invoiceNotes}/>
+                </Col>
+              </Row>
+            </Tab>
+          </Tabs>
+        </>
+      )}
       <Modal
         show={isOpenModalDetail}
         onHide={handleModalDetail}

@@ -18,8 +18,7 @@ import { categoryColumns } from 'utils/columns/category'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import { connect } from 'react-redux'
-
-
+import LoadingComponent from 'components/LoadingComponent'
 
 const CategoryPage = (props) => {
 
@@ -29,6 +28,7 @@ const CategoryPage = (props) => {
   const [dataCategory,setDataCategory] = useState({
     name_category: '',
   })
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     fetchData()
@@ -78,6 +78,7 @@ const CategoryPage = (props) => {
   }
 
   const confirmDeleteRegister = id => {
+    setDisplayLoading(true)
     axios.delete(API_URL+'category/'+id).then(result => {
       toast.success('Registro eliminado con éxito')
       fetchData()
@@ -105,7 +106,9 @@ const CategoryPage = (props) => {
   const fetchData = () => {
     axios.get(API_URL+'category').then(result => {
       setCategory(result.data)
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       const { response } = err
       console.log(err,response)
       if(response){
@@ -132,13 +135,14 @@ const CategoryPage = (props) => {
     }
 
     let data = Object.assign({},dataCategory)
-
+    setDisplayLoading(true)
     if(isUpdate){
       axios.put(API_URL+'category/'+data.id,data).then(result => {
         toast.success('Categoria Modificada')
         cleanForm()
         fetchData()
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)
@@ -152,6 +156,7 @@ const CategoryPage = (props) => {
         fetchData()
         cleanForm()
       }).catch(err => {
+        setDisplayLoading(false)
         const { response } = err
         if(response){
           toast.error(response.data.message)
@@ -175,43 +180,51 @@ const CategoryPage = (props) => {
   }
 
   return (
-    <Container>
-      <Row className="justify-content-center">
-        <Col sm={12} md={12} lg={12} xs={12} className="containerDivSeparated">
-          <br/>
-          <h4 className="text-center title_principal">Formulario De Categorias</h4>
-          <br/>
-          <Form onSubmit={onSubmit} noValidate validated={validate}>
-            <Row className="justify-content-center">
-              <InputField
-                {...props.inputName}
-                handleChange={onChange}
-                value={dataCategory.name_category}
-              />
-            </Row>
-            <Row className="justify-content-center">
-              <Col sm={6} md={6} lg={6} xs={6}>
-                <Button size="sm" type="submit" variant="primary" block="true">Guardar <FaPlusCircle /></Button>
-              </Col>
-            </Row>
-            {isUpdate ? (
-              <Row className="justify-content-center">
-                <Col sm={6} md={6} lg={6} xs={6}>
-                  <br/>
-                  <Button size="sm" type="button" onClick={cancelUpdate} variant="secondary" block="true">Cancelar Modificación</Button>
-                </Col>
-              </Row>
-            ) : ''}
+    <>
+      {displayLoading ? (
+        <Container>
+          <LoadingComponent />
+        </Container>
+      ) : (
+        <Container>
+          <Row className="justify-content-center">
+            <Col sm={12} md={12} lg={12} xs={12} className="containerDivSeparated">
+              <br/>
+              <h4 className="text-center title_principal">Formulario De Categorias</h4>
+              <br/>
+              <Form onSubmit={onSubmit} noValidate validated={validate}>
+                <Row className="justify-content-center">
+                  <InputField
+                    {...props.inputName}
+                    handleChange={onChange}
+                    value={dataCategory.name_category}
+                  />
+                </Row>
+                <Row className="justify-content-center">
+                  <Col sm={6} md={6} lg={6} xs={6}>
+                    <Button size="sm" type="submit" variant="primary" block="true">Guardar <FaPlusCircle /></Button>
+                  </Col>
+                </Row>
+                {isUpdate ? (
+                  <Row className="justify-content-center">
+                    <Col sm={6} md={6} lg={6} xs={6}>
+                      <br/>
+                      <Button size="sm" type="button" onClick={cancelUpdate} variant="secondary" block="true">Cancelar Modificación</Button>
+                    </Col>
+                  </Row>
+                ) : ''}
 
-          </Form>
-        </Col>
-      </Row>
-      <Row>
-        <Col sm={12} md={12} lg={12} xs={12} className="containerDivSeparated">
-          <Table columns={categoryColumns} data={category} />
-        </Col>
-      </Row>
-    </Container>
+              </Form>
+            </Col>
+          </Row>
+          <Row>
+            <Col sm={12} md={12} lg={12} xs={12} className="containerDivSeparated">
+              <Table columns={categoryColumns} data={category} />
+            </Col>
+          </Row>
+        </Container>
+      )}
+    </>
   )
 }
 

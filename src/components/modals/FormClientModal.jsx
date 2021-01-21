@@ -15,10 +15,12 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import InputField from 'components/input/InputComponent'
 import { formatRut } from 'utils/functions'
+import LoadingComponent from 'components/LoadingComponent'
 
 const FormClientModal = (props) => {
 
   const [validate, setValidate] = useState(false)
+  const [displayLoading, setDisplayLoading] = useState(false)
 
   const [client,setClient] = useState({
     name_client: '',
@@ -80,12 +82,14 @@ const FormClientModal = (props) => {
     }
 
     const dataSend = Object.assign({},client)
-
+    setDisplayLoading(true)
     if(props.dataModify){
       axios.put(API_URL+'client/'+dataSend.id,dataSend).then(result => {
         toast.success('Cliente Modificado')
         handleOnHide()
+        setDisplayLoading(false)
       }).catch(err => {
+        setDisplayLoading(false)
         if(err.response){
           toast.error(err.response.data.message)
         }else{
@@ -96,7 +100,9 @@ const FormClientModal = (props) => {
       axios.post(API_URL+'client',client).then(result => {
         toast.success('Cliente Registrado')
         handleOnHide(true)
+        setDisplayLoading(false)
       }).catch(err => {
+        setDisplayLoading(false)
         if(err.response){
           toast.error(err.response.data.message)
         }else{
@@ -139,115 +145,121 @@ const FormClientModal = (props) => {
         </Modal.Title>
       </Modal.Header>
       <Form onSubmit={() => {}} noValidate validated={validate} ref={inputRef}>
-      <Modal.Body>
-        <Row>
-          <Col sm={12} md={12} lg={12} xs={12}>
-              <Row>
-                <InputField
-                  {...props.inputName}
-                  handleChange={handleOnChange}
-                  value={client.name_client}
-                />
-                <InputField
-                  {...props.inputEmail}
-                  handleChange={handleOnChange}
-                  value={client.email}
-                />
-                <InputField
-                  {...props.inputTypeDocument}
-                  handleChange={handleOnChange}
-                  value={client.type_document}
-                  >
-                  <option value=''>--Seleccione--</option>
-                  <option value={'Rut'}>Rut</option>
-                  <option value={'Id'}>Id</option>
-                  <option value={'Nro pasaporte'}>N° pasaporte</option>
-                </InputField>
-              </Row>
-              <Row>
-                <InputField
-                  {...props.inputDataDocument}
-                  handleChange={handleOnChange}
-                  value={client.data_document}
-                />
-                <InputField
-                  {...props.inputPhone}
-                  handleChange={handleOnChange}
-                  placeholder="opcional"
-                  value={client.phone}
+      {displayLoading ? (
+        <Modal.Body>
+          <LoadingComponent />
+        </Modal.Body>
+      ) : (
+        <Modal.Body>
+          <Row>
+            <Col sm={12} md={12} lg={12} xs={12}>
+                <Row>
+                  <InputField
+                    {...props.inputName}
+                    handleChange={handleOnChange}
+                    value={client.name_client}
                   />
-                <InputField
-                  {...props.inputAddress}
-                  placeholder="opcional"
-                  handleChange={handleOnChange}
-                  value={client.address}
-                />
-              </Row>
-              <Row>
-                <InputField
-                 type='text'
-                 label='Ciudad'
-                 name='city'
-                 required={false}
-                 placeholder="opcional"
-                 messageErrors={[
-                 'Requerido*'
-                 ]}
-                 cols='col-md-4 col-lg-4 col-sm-4'
-                 value={client.city}
-                 handleChange={handleOnChange}
-                 />
-                 <InputField
+                  <InputField
+                    {...props.inputEmail}
+                    handleChange={handleOnChange}
+                    value={client.email}
+                  />
+                  <InputField
+                    {...props.inputTypeDocument}
+                    handleChange={handleOnChange}
+                    value={client.type_document}
+                    >
+                    <option value=''>--Seleccione--</option>
+                    <option value={'Rut'}>Rut</option>
+                    <option value={'Id'}>Id</option>
+                    <option value={'Nro pasaporte'}>N° pasaporte</option>
+                  </InputField>
+                </Row>
+                <Row>
+                  <InputField
+                    {...props.inputDataDocument}
+                    handleChange={handleOnChange}
+                    value={client.data_document}
+                  />
+                  <InputField
+                    {...props.inputPhone}
+                    handleChange={handleOnChange}
+                    placeholder="opcional"
+                    value={client.phone}
+                    />
+                  <InputField
+                    {...props.inputAddress}
+                    placeholder="opcional"
+                    handleChange={handleOnChange}
+                    value={client.address}
+                  />
+                </Row>
+                <Row>
+                  <InputField
                   type='text'
-                  label='Comuna'
-                  name='comuna'
+                  label='Ciudad'
+                  name='city'
                   required={false}
                   placeholder="opcional"
                   messageErrors={[
                   'Requerido*'
                   ]}
                   cols='col-md-4 col-lg-4 col-sm-4'
-                  value={client.comuna}
+                  value={client.city}
                   handleChange={handleOnChange}
                   />
                   <InputField
-                   type='text'
-                   label='Giro'
-                   name='spin'
-                   required={false}
-                   placeholder="opcional"
-                   messageErrors={[
-                   'Requerido*'
-                   ]}
-                   cols='col-md-4 col-lg-4 col-sm-4'
-                   value={client.spin}
-                   handleChange={handleOnChange}
-                   />
-              </Row>
-              <Row>
-                <InputField
-                  {...props.inputObservation}
-                  handleChange={handleOnChange}
-                  placeholder="opcional"
-                  value={client.observation}
-                  />
+                    type='text'
+                    label='Comuna'
+                    name='comuna'
+                    required={false}
+                    placeholder="opcional"
+                    messageErrors={[
+                    'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={client.comuna}
+                    handleChange={handleOnChange}
+                    />
+                    <InputField
+                    type='text'
+                    label='Giro'
+                    name='spin'
+                    required={false}
+                    placeholder="opcional"
+                    messageErrors={[
+                    'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={client.spin}
+                    handleChange={handleOnChange}
+                    />
+                </Row>
+                <Row>
                   <InputField
-                   type='text'
-                   label='Actividad Económica'
-                   placeholder="opcional"
-                   name='actividad_economica'
-                   required={false}
-                   messageErrors={[
-                   'Requerido*'
-                   ]}
-                   cols='col-md-4 col-lg-4 col-sm-4'
-                   value={client.actividad_economica}
-                   handleChange={handleOnChange}
-                   />
-              </Row>
-          </Col>
-        </Row>
-      </Modal.Body>
+                    {...props.inputObservation}
+                    handleChange={handleOnChange}
+                    placeholder="opcional"
+                    value={client.observation}
+                    />
+                    <InputField
+                    type='text'
+                    label='Actividad Económica'
+                    placeholder="opcional"
+                    name='actividad_economica'
+                    required={false}
+                    messageErrors={[
+                    'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={client.actividad_economica}
+                    handleChange={handleOnChange}
+                    />
+                </Row>
+            </Col>
+          </Row>
+        </Modal.Body>
+      )}
       <Modal.Footer>
         <Button size="md" variant="success" type="button" onClick={onSubmit}>Guardar <FaSave /></Button>
         <Button size="md" onClick={handleOnHide}>Cerrar</Button>

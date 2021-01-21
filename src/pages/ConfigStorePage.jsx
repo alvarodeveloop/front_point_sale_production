@@ -14,7 +14,7 @@ import {
 import { API_URL } from 'utils/constants'
 import { toast } from 'react-toastify'
 import { confirmAlert } from 'react-confirm-alert'; // Import
-
+import LoadingComponent from 'components/LoadingComponent'
 import styled from 'styled-components'
 
 const Styles = styled.div`
@@ -44,6 +44,7 @@ const ConfigStorePage = (props) => {
     rut: '',
     comuna: '',
   })
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     fetchData()
@@ -72,7 +73,9 @@ const ConfigStorePage = (props) => {
           comuna : result.data.comuna
         })
       }
+      setDisplayLoading(false)
     }).catch(err => {
+      setDisplayLoading(false)
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -91,50 +94,58 @@ const ConfigStorePage = (props) => {
 
   return (
     <Styles>
-      <Container>
-        <Row>
-          <Col sm={12} md={12} lg={12}>
-            <h4 className="title_principal">Configuración Tienda</h4>
-            <hr/>
-          </Col>
-        </Row>
-        <br/>
-        <Row className="justify-content-md-center">
-          <Col
-            sm={{
-              span: 6,
-            }}
-            md={{
-              span: 6,
-            }}
-            lg={{
-              span: 6,
-            }}
-            xs={12}
-            className="containerDivSeparated"
-            >
-            {dataStore.name_store ? (
-              <Button size="sm" onClick={updateConfig} variant="primary" block={true}>Modificar Configuración <FaEdit /></Button>
-            ) : (
-              <Button size="sm" onClick={createConfig} variant="primary" block={true}>Crear Configuración <FaCogs /></Button>
-            )}
-          </Col>
-        </Row>
-        <br/><br/>
-        <Row className="justify-content-center">
-          <Col sm={5} lg={5} md={5} xs={12} className="containerDivSeparated">
-            <h4 className="text-center font-title">Datos de la Tienda</h4>
-            <br/>
-            <ul className="list-group">
-              <li className="list-group-item melon_y_melames"><b>País: </b> <br/> { dataStore.country.nombre }</li>
-              <li className="list-group-item melon_y_melames"><b>Ciudad: </b> <br/> { dataStore.city }</li>
-              <li className="list-group-item melon_y_melames"><b>Comuna: </b> <br/> { dataStore.comuna }</li>
-              <li className="list-group-item melon_y_melames"><b>Tax:</b> <br/> { dataStore.tax }</li>
-              <li className="list-group-item melon_y_melames"><b>Maneja Stock:</b> <br/> { dataStore.handle_stock ? 'Si' : 'No' }</li>
-          </ul>
-        </Col>
-      </Row>
-    </Container>
+      <>
+        {displayLoading ? (
+          <Container>
+            <LoadingComponent />
+          </Container>
+        ) : (
+            <Container>
+              <Row>
+                <Col sm={12} md={12} lg={12}>
+                  <h4 className="title_principal">Configuración Tienda</h4>
+                  <hr/>
+                </Col>
+              </Row>
+              <br/>
+              <Row className="justify-content-md-center">
+                <Col
+                  sm={{
+                    span: 6,
+                  }}
+                  md={{
+                    span: 6,
+                  }}
+                  lg={{
+                    span: 6,
+                  }}
+                  xs={12}
+                  className="containerDivSeparated"
+                  >
+                  {dataStore.name_store ? (
+                    <Button size="sm" onClick={updateConfig} variant="primary" block={true}>Modificar Configuración <FaEdit /></Button>
+                  ) : (
+                    <Button size="sm" onClick={createConfig} variant="primary" block={true}>Crear Configuración <FaCogs /></Button>
+                  )}
+                </Col>
+              </Row>
+              <br/><br/>
+              <Row className="justify-content-center">
+                <Col sm={5} lg={5} md={5} xs={12} className="containerDivSeparated">
+                  <h4 className="text-center font-title">Datos de la Tienda</h4>
+                  <br/>
+                  <ul className="list-group">
+                    <li className="list-group-item melon_y_melames"><b>País: </b> <br/> { dataStore.country.nombre }</li>
+                    <li className="list-group-item melon_y_melames"><b>Ciudad: </b> <br/> { dataStore.city }</li>
+                    <li className="list-group-item melon_y_melames"><b>Comuna: </b> <br/> { dataStore.comuna }</li>
+                    <li className="list-group-item melon_y_melames"><b>Tax:</b> <br/> { dataStore.tax }</li>
+                    <li className="list-group-item melon_y_melames"><b>Maneja Stock:</b> <br/> { dataStore.handle_stock ? 'Si' : 'No' }</li>
+                </ul>
+              </Col>
+            </Row>
+          </Container>
+        )}
+      </>
     </Styles>
   )
 }
