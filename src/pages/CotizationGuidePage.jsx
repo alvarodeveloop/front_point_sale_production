@@ -290,7 +290,7 @@ const CotizationGuidePage = (props) => {
         setDisplayLoading(true)
       }
       axios.get(API_URL+'search_receptor_emisor_guide/'+rut+"/"+dv).then(result => {
-
+        console.log(result.data,'aqui===================')
        setCotizationData(oldData => {
          return Object.assign({},oldData,{
            actividad_economica_transmitter_array: result.data.emisor.actvidades_economicas,
@@ -306,8 +306,10 @@ const CotizationGuidePage = (props) => {
            type_transfer_trasmitter_array: API_FACTURACION ? result.data.emisor.tipos_de_traslado : result.data.emisor.tipos_de_venta,
            type_transfer_trasmitter: API_FACTURACION ? result.data.emisor.tipos_de_traslado.length > 0 ? result.data.emisor.tipos_de_traslado[0].tipo1 : result.data.emisor.tipos_de_venta.length > 0 ? result.data.emisor.tipos_de_venta[0].tipo1 : '' : result.data.emisor.tipos_de_venta.length > 0 ? result.data.emisor.tipos_de_venta[0].tipo1 : '',
 
-           type_sale_transmitter_array: result.data.emisor.tipos_de_venta,
-           type_sale_transmitter: result.data.emisor.tipos_de_venta.length > 0 ? result.data.emisor.tipos_de_venta[0].tipo1 : '',
+           //type_sale_transmitter_array: result.data.emisor.tipos_de_venta,
+           //type_sale_transmitter: result.data.emisor.tipos_de_venta.length > 0 ? result.data.emisor.tipos_de_venta[0].tipo1 : '',
+           type_sale_transmitter_array : [],
+           type_sale_transmitter : '',
 
            facturaId: API_FACTURACION ? result.data.guiaDespachoID : result.data.facturaID,
            token: result.data.token,
@@ -320,8 +322,8 @@ const CotizationGuidePage = (props) => {
            city_client: result.data.receptor.ciudad_seleccionada,
            spin_client_array: result.data.receptor.giros,
            spin_client: result.data.receptor.giro_seccionado,
-           type_buy_client_array: API_FACTURACION ? result.data.receptor.tipos_de_compra : [],
-           type_buy_client: 'Tipo de compra',
+           type_buy_client_array: [],
+           type_buy_client: '1',
            name_contact: result.data.receptor.contacto,
          })
        })
@@ -376,28 +378,14 @@ const CotizationGuidePage = (props) => {
     setDisplayLoading(true)
     axios.put(API_URL+'cotizacion_facturar_guide/'+props.match.params.id,object_post).then(result => {
       setDisableButton(false)
+      setDisplayLoading(false)
       handleModalInvoice()
       toast.success('Guía guardada con éxito')
-
       toast.info('Generando pdf de la Guía, espere por favor...')
-      setDisplayLoading(false)
-      axios.get(API_URL+'cotizacion_print/'+props.match.params.id+'/0').then(result => {
-        window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
-        setTimeout( () => {
-          goToDashboard()
-        }, 1500);
-      }).catch(err => {
-        setDisplayLoading(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
-      })
-
-      setTimeout(function () {
-        goToDashboard()
-      }, 1500);
+      result.data.response.forEach((item, i) => {
+        window.open(item.pdf_public_url,'_blank')
+      });
+      goToDashboard()
 
     }).catch(err => {
       setDisplayLoading(false)

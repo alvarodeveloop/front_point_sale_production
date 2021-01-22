@@ -61,7 +61,7 @@ const RefComponent = (props) => {
                                   handleChange={(e) => {props.onChangeTableRef(e,i)}}
                                   >
                                   <option value="">--Seleccione--</option>
-                                  <option value={"Hoja Entrada de Servicio"}>Hoja Entrada de Servicio</option>
+                                  <option value={"HES"}>Hoja Entrada de Servicio</option>
                                 </InputField>
                               </Row>
                             </td>

@@ -33,6 +33,10 @@ const ClientInvoiceComponet = (props) => {
     }
   },[props.cotizationData.searchReceptorDefault])
 
+  useEffect(() => {
+    console.log(props.cotizationData,'aquiii======================')
+  },[])
+
 
   const onChange = e => {
     if(e.target.name === "type_api" || e.target.name === "total_with_iva" || e.target.name === "type_effect" || e.target.name === "type_invoicing"){
@@ -84,8 +88,8 @@ const ClientInvoiceComponet = (props) => {
     // para buscar receptores a la factura o la nota de venta
     let val = !rut ? rutFacturacionClientSearch : rut
     if(val){
-      setDisplayLoading(true)
       if(props.isType === "facturacion"){
+        setDisplayLoading(true)
         toast.info('Buscando Receptor, espere por favor')
 
         if(props.cotizationData.type_invoicing === true){
@@ -145,7 +149,9 @@ const ClientInvoiceComponet = (props) => {
         }
       }else{
         // si es nota de venta
-        searchClientByApiFacturacion(val)
+        if(props.isType === "sale_note"){
+          searchClientByApiFacturacion(val)
+        }
       }
     }
   }
@@ -301,7 +307,8 @@ const ClientInvoiceComponet = (props) => {
                       cols='col-md-4 col-lg-4 col-sm-4'
                       value={props.cotizationData.address_client}
                       handleChange={onChange}
-                      >
+                    >
+                      <option value="">--Seleccione--</option>
                       {props.cotizationData.address_client_array.map((v,i) => (
                         <option value={v} key={i}>{v}</option>
                       ))}
@@ -380,7 +387,7 @@ const ClientInvoiceComponet = (props) => {
                       >
                         <option value="">--Seleccione--</option>
                         {props.cotizationData.spin_client_array.map((v,i) => (
-                          <option value={v.nombre} key={i}>{v.nombre}</option>
+                          <option value={v[0]} key={i}>{v[1]}</option>
                         ))}
                       </InputField>
                     ) : (
@@ -397,7 +404,7 @@ const ClientInvoiceComponet = (props) => {
                         handleChange={onChange}
                       />
                     )}
-                    {props.cotizationData.type_buy_client_array.length > 0 ? (
+                    {/*props.cotizationData.type_buy_client_array.length > 0 ? (
                       <InputField
                         type='select'
                         label='Tipo de Compra'
@@ -428,7 +435,7 @@ const ClientInvoiceComponet = (props) => {
                         value={props.cotizationData.type_buy_client}
                         handleChange={onChange}
                       />
-                    )}
+                      )*/}
                   </Row>
                 ) : ''}
                 {props.isType !== "boleta" && props.isType !== "guide" ? (
