@@ -25,6 +25,9 @@ const ConfigAidyPage = (props) => {
     password_nuxo: '',
     file_img_login : '',
     base64LoginImg: '',
+    bussines_name: '',
+    address: '',
+    email: '',
   })
   const [validated, setValidated] = useState(false)
   const [displayLoading, setDisplayLoading] = useState(true)
@@ -204,6 +207,44 @@ const ConfigAidyPage = (props) => {
                 cols='col-md-4 col-lg-4 col-sm-4'
                 value={formData.password_nuxo}
                 handleChange={onChange}
+                />
+              </Row>
+              <Row>
+                <InputField
+                  type='text'
+                  label='Nombre de la empresa'
+                  name='bussines_name'
+                  required={true}
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={formData.bussines_name}
+                  handleChange={onChange}
+                />
+                  <InputField
+                  type='text'
+                  label='Dirección'
+                  name='address'
+                  required={true}
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={formData.address}
+                  handleChange={onChange}
+                />
+                  <InputField
+                  type='email'
+                  label='Email'
+                  name='email'
+                  required={true}
+                  messageErrors={[
+                  'Requerido* ','*Formato email requerido'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={formData.email}
+                  handleChange={onChange}
                 />
               </Row>
             </Form>

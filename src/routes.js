@@ -244,4 +244,8 @@ export const routes = [
     path: '/profile',
     component: lazy(() => import('./pages/ProfilePage'))
   },
+  {
+    path: '/days_extended',
+    component: lazy(() => import('./pages/ExtendendedDaysPage'))
+  },
 ]

@@ -375,13 +375,17 @@ const AuthPageTemplate = props => {
                 </Col>
               </Row>
             ) : (
-              <LoadingComponent />
+              <Row>
+               <Col>
+                <LoadingComponent />
+               </Col>
+             </Row>
             )}
           </>
         ) : typeVisibleDiv == 2 ? (
           <>
            {!showGif ? (
-               <Row className="fondo">
+              <Row className="fondo">
                <Col sm={12} md={12} lg={12} className="animate__animated animate__zoomIn">
                  <Row className="separated_top justify-content-center">
                    <Col sm={6} md={6} lg={6}>
@@ -406,7 +410,11 @@ const AuthPageTemplate = props => {
                </Col>
              </Row>
            ) : (
-             <LoadingComponent />
+             <Row>
+               <Col>
+                <LoadingComponent />
+               </Col>
+             </Row>
            )}
           </>
 

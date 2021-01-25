@@ -67,7 +67,7 @@ const MainContainer = props => {
               }
 
             } catch (e) {
-              console.log(e);
+              console.log(e,e.response);
               toast.error('Error, contacte con soporte si este error persiste')
             }
 
