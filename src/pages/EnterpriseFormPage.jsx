@@ -110,12 +110,7 @@ const EnterpriseFormPage = (props) => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -166,12 +161,7 @@ const EnterpriseFormPage = (props) => {
 
       }).catch(err => {
         setDisplayLoading(false)
-        const { response } = err
-        if(response){
-          toast.error(response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       axios.post(API_URL+'enterprise',data).then(async result => {
@@ -203,12 +193,7 @@ const EnterpriseFormPage = (props) => {
       }).catch(err => {
         setDisplayLoading(false)
         console.log(err);
-        const { response } = err
-        if(response){
-          toast.error(response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }
   }
@@ -253,12 +238,7 @@ const EnterpriseFormPage = (props) => {
          setDisplayLoading(false)
        }).catch(err => {
         setDisplayLoading(false)
-         if(err.response){
-           toast.error(err.response.data.message)
-         }else{
-           console.log(err);
-           toast.error('Error, contacte con soporte')
-         }
+        props.tokenExpired(err)
        })
      }else{
        toast.info('Debe ingresar un rut para buscar los datos de la empresa')
@@ -294,12 +274,7 @@ const EnterpriseFormPage = (props) => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 

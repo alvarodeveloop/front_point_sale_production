@@ -82,7 +82,7 @@ export default function ExtendendedDaysPage(props) {
       setIsLoading(false)
     }).catch(err => { 
       setIsLoading(false)
-      console.log(err);
+      props.tokenExpired(err)
     })
   }
 
@@ -127,7 +127,7 @@ export default function ExtendendedDaysPage(props) {
       setDisplaySection(1)
       fetchData()
     }).catch(err => {
-      console.log(err);
+      props.tokenExpired(err)
     })
 
   }

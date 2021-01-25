@@ -45,12 +45,7 @@ const SignUpPage = (props) => {
         setImgLogin(result.data.img_login)
       }
     }).catch(err => {
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+      props.tokenExpired(err)
      })
   }
 
@@ -92,11 +87,7 @@ const SignUpPage = (props) => {
       },1500)
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
 
   }

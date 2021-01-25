@@ -84,12 +84,7 @@ const BranchOfficePage = (props) => {
       setIsloading(false)
     }).catch(err => {
       setIsloading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 

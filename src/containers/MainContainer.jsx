@@ -98,7 +98,6 @@ const MainContainer = props => {
     },[props.isLogin])
 
     const handleLogoutUser = async () => {
-      let userLocal = JSON.parse(localStorage.getItem('user'))
       localStorage.removeItem('user')
       localStorage.removeItem('token')
       localStorage.removeItem('configStore')
@@ -129,11 +128,11 @@ const MainContainer = props => {
     }
 
     if(props.isLogin){
-
+      
       return(
 
         <Layout1 {...props} menuUser={props.menu} logoutUser={handleLogoutUser} logoutByToken={logoutUserByTokenExpired}>
-            {props.children}
+            {React.cloneElement(props.children,{tokenExpired: logoutUserByTokenExpired})}
             <ToastContainer/>
         </Layout1>
 

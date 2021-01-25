@@ -48,7 +48,7 @@ const DashboardPage = props => {
           )}
         </React.Fragment>
       ) : (
-        <MasterDashboardComponent />
+        <MasterDashboardComponent {...props} />
       )}
     </Page>
   );

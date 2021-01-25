@@ -87,11 +87,7 @@ const FlowCashCenterCostePage = (props) => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -147,11 +143,7 @@ const FlowCashCenterCostePage = (props) => {
         setDisplayLoading(false)
       }).catch(err => {
         setDisplayLoading(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       axios.post(API_URL+'flow_cash_center_coste',objectPost).then(result => {
@@ -162,11 +154,7 @@ const FlowCashCenterCostePage = (props) => {
         setDisplayLoading(false)
       }).catch(err => {
         setDisplayLoading(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }
   }

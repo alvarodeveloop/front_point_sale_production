@@ -184,12 +184,7 @@ const BillBondsPage = (props) => {
         handleModalBond()
         fetchData()
       }).catch(err => {
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          console.log(err);
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       axios.post(API_URL+'invoice_bonds',objectPost).then(result => {
@@ -197,12 +192,7 @@ const BillBondsPage = (props) => {
         handleModalBond()
         fetchData()
       }).catch(err => {
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          console.log(err);
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }
   }
@@ -265,12 +255,7 @@ const BillBondsPage = (props) => {
      toast.success('Abono eliminado con éxito')
      fetchData()
     }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -320,12 +305,7 @@ const BillBondsPage = (props) => {
         setDisplayLoading(false)
       }).catch(err => {
         setDisplayLoading(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          console.log(err);
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       toast.error('No hay pagos para realizar el informe')
@@ -351,12 +331,7 @@ const BillBondsPage = (props) => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 

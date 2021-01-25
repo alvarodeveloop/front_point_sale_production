@@ -51,12 +51,7 @@ const ConfigAidyPage = (props) => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+       props.tokenExpired(err)
     })
   }
 
@@ -135,12 +130,7 @@ const ConfigAidyPage = (props) => {
       setDisplayLoading(false)
      }).catch(err => {
       setDisplayLoading(false)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+       props.tokenExpired(err)
      })
   }
 

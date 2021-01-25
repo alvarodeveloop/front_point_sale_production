@@ -85,7 +85,7 @@ const UserCreatePage  = props => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      toast.error('Error, contacte con soporte')
+      props.tokenExpired(err)
     })
   }
 
@@ -178,12 +178,7 @@ const UserCreatePage  = props => {
         setDisplayLoading(false)
       }).catch(err => {
         setDisplayLoading(false)
-        const { response } = err
-        if(response){
-          toast.error(response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       route = user.id_rol >= 3 && user.id_rol <= 7 ? API_URL+'user_by_brach_office' : API_URL+'user'
@@ -193,12 +188,7 @@ const UserCreatePage  = props => {
         setDisplayLoading(false)
       }).catch(err => {
         setDisplayLoading(false)
-        const { response } = err
-        if(response){
-          toast.error(response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }
   }

@@ -72,12 +72,8 @@ const CashRegisterPage = (props) => {
       }
       setDisplayLoading(false)
     }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
+      setDisplayLoading(false)
+      props.tokenExpired(err)
     })
   }
 
@@ -113,12 +109,7 @@ const CashRegisterPage = (props) => {
         fetchData() 
       }).catch(err => {
         setDisplayLoading(false)
-        const { response } = err
-        if(response){
-          toast.error(response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       data.nro_caja = configStore.ref_cash_register
@@ -128,12 +119,8 @@ const CashRegisterPage = (props) => {
         handleOpenModalAdd()
         fetchData(true)
       }).catch(err => {
-        const { response } = err
-        if(response){
-          toast.error(response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        setDisplayLoading(false)
+        props.tokenExpired(err)
       })
     }
   }

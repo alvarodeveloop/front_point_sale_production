@@ -221,12 +221,7 @@ const SalePageParent = (props) => {
 
 
     }).catch(err => {
-      const { response } = err
-      if(response){
-        toast.error(response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 

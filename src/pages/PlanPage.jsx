@@ -48,12 +48,7 @@ const PlanPage = (props) => {
        setDisplayLoading(false)
      }).catch(err => {
       setDisplayLoading(false)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+       props.tokenExpired(err)
      })
   }
 
@@ -62,12 +57,7 @@ const PlanPage = (props) => {
     axios.get(API_URL+'modules_all').then(result => {
       setModules(result.data)
     }).catch(err => {
-     if(err.response){
-       toast.error(err.response.data.message)
-     }else{
-       console.log(err);
-       toast.error('Error, contacte con soporte')
-     }
+      props.tokenExpired(err)
     })
   }
 
@@ -92,12 +82,7 @@ const PlanPage = (props) => {
         fetchData()
       }).catch(err => {
         setDisplayLoading(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          console.log(err);
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       toast.info('Guardando... espere mientras se modifican los modulos de los usuarios con este plan')
@@ -107,12 +92,7 @@ const PlanPage = (props) => {
         fetchData()
       }).catch(err => {
         setDisplayLoading(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          console.log(err);
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }
   }
@@ -158,12 +138,7 @@ const PlanPage = (props) => {
       fetchData()
      }).catch(err => {
       setDisplayLoading(false)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+       props.tokenExpired(err)
      })
   }
 

@@ -88,11 +88,7 @@ const FlowCashAccountPage = (props) => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -148,11 +144,7 @@ const FlowCashAccountPage = (props) => {
         setDisplayLoading(false)
       }).catch(err => {
         setDisplayLoading(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       axios.post(API_URL+'flow_cash_account',objectPost).then(result => {
@@ -163,11 +155,7 @@ const FlowCashAccountPage = (props) => {
         setDisplayLoading(false)
       }).catch(err => {
         setDisplayLoading(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }
   }

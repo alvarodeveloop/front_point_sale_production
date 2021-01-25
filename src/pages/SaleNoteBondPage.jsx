@@ -122,12 +122,7 @@ const SaleNoteBondPage = (props) => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+      props.tokenExpired(err)
     })
   }
 
@@ -135,12 +130,7 @@ const SaleNoteBondPage = (props) => {
     axios.get(API_URL+'type_bond').then(result => {
         setTypeBond(result.data)
       }).catch(err => {
-         if(err.response){
-           toast.error(err.response.data.message)
-         }else{
-           console.log(err);
-           toast.error('Error, contacte con soporte')
-         }
+        props.tokenExpired(err)
     })
   }
 
@@ -164,12 +154,7 @@ const SaleNoteBondPage = (props) => {
         fetchData()
       }).catch(err => {
         setDisplayLoading(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          console.log(err);
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       axios.post(API_URL+'invoice_bonds',objectPost).then(result => {
@@ -178,12 +163,7 @@ const SaleNoteBondPage = (props) => {
         fetchData()
       }).catch(err => {
         setDisplayLoading(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          console.log(err);
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }
   }
@@ -248,12 +228,7 @@ const SaleNoteBondPage = (props) => {
      fetchData()
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -303,12 +278,7 @@ const SaleNoteBondPage = (props) => {
         setDisplayLoading(false)
       }).catch(err => {
         setDisplayLoading(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          console.log(err);
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       toast.error('No hay pagos para realizar el informe')
@@ -326,12 +296,7 @@ const SaleNoteBondPage = (props) => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 

@@ -167,12 +167,7 @@ const ProductPage = (props) => {
       toast.success('Registro eliminado con éxito')
       fetchData()
     }).catch(err => {
-      const { response } = err
-      if(response){
-        toast.error(response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -190,13 +185,7 @@ const ProductPage = (props) => {
       setProduct(result[0].data)
       setIsLoading(false)
     }).catch(err => {
-      const { response } = err
-      console.log(err,response)
-      if(response){
-        toast.error(response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -243,12 +232,7 @@ const ProductPage = (props) => {
       fetchData()
     }).catch(err => {
       setIsLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error("Error, contacte con soporte")
-      }
+      props.tokenExpired(err)
     })    
   }
 

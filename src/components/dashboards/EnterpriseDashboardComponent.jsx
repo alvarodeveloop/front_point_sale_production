@@ -203,12 +203,7 @@ const EnterpriseDashboardComponent = (props) => {
       setDataDh(result.data)
       setLoading(false)
     }).catch(err => {
-      const { response } = err
-      if(response){
-        toast.error(response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -364,6 +359,6 @@ const EnterpriseDashboardComponent = (props) => {
 
 
 EnterpriseDashboardComponent.propTypes = {
-  id_branch_office : PropTypes.number.isRequired,
+  id_branch_office : PropTypes.string.isRequired,
 }
 export default EnterpriseDashboardComponent

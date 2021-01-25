@@ -223,13 +223,7 @@ const MasterDashboardComponent = (props) => {
       setDataDh(result.data)
       setIsLoading(false)
     }).catch(err => {
-      const { response } = err
-      if(response){
-        toast.error(response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 

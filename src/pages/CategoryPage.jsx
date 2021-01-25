@@ -83,12 +83,7 @@ const CategoryPage = (props) => {
       toast.success('Registro eliminado con éxito')
       fetchData()
     }).catch(err => {
-      const { response } = err
-      if(response){
-        toast.error(response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -109,13 +104,7 @@ const CategoryPage = (props) => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      const { response } = err
-      console.log(err,response)
-      if(response){
-        toast.error(response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -143,12 +132,7 @@ const CategoryPage = (props) => {
         fetchData()
       }).catch(err => {
         setDisplayLoading(false)
-        const { response } = err
-        if(response){
-          toast.error(response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       axios.post(API_URL+'category',data).then(result => {
@@ -157,12 +141,7 @@ const CategoryPage = (props) => {
         cleanForm()
       }).catch(err => {
         setDisplayLoading(false)
-        const { response } = err
-        if(response){
-          toast.error(response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }
   }

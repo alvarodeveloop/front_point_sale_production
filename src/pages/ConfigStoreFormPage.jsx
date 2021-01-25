@@ -137,12 +137,7 @@ const ConfigStoreFormPage = (props) => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err)
-        toast.error('Error,contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -179,12 +174,7 @@ const ConfigStoreFormPage = (props) => {
 
       }).catch(err => {
         setDisplayLoading(false)
-        const { response } = err
-        if(response){
-          toast.error(response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       axios.post(API_URL+'config_store',formData).then(result => {
@@ -197,12 +187,7 @@ const ConfigStoreFormPage = (props) => {
 
       }).catch(err => {
         setDisplayLoading(false)
-        const { response } = err
-        if(response){
-          toast.error(response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }
 

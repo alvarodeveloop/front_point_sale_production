@@ -81,12 +81,7 @@ const UserListPage = (props) => {
       fetchData()
     }).catch(err => {
       setDisplayLoading(false)
-      const { response } = err
-      if(response){
-        toast.error(response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -100,13 +95,7 @@ const UserListPage = (props) => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      const { response } = err
-      console.log(err,response)
-      if(response){
-        toast.error(response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 

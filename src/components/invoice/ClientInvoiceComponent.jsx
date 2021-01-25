@@ -34,7 +34,7 @@ const ClientInvoiceComponet = (props) => {
   },[props.cotizationData.searchReceptorDefault])
 
   useEffect(() => {
-    console.log(props.cotizationData,'aquiii======================')
+
   },[])
 
 

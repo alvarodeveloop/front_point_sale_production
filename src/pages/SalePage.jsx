@@ -62,11 +62,7 @@ const SalePage = (props) => {
     axios.get(API_URL+'productByCodeBar/'+codeBar).then(result => {
       setIsShowModalEan(false)
     }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+     props.tokenExpired(err)
     })
   }
 
@@ -80,11 +76,7 @@ const SalePage = (props) => {
       setProducts(result.data)
       setProductsBackup(result.data)
     }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+     props.tokenExpired(err)
     })
   }
 
@@ -92,11 +84,7 @@ const SalePage = (props) => {
     axios.get(API_URL+'client').then(result => {
       setClients(result.data)
     }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+     props.tokenExpired(err)
     })
   }
 
@@ -104,11 +92,7 @@ const SalePage = (props) => {
     axios.get(API_URL+'category').then(result => {
       setCategorys(result.data)
     }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+     props.tokenExpired(err)
 
     })
   }
@@ -274,11 +258,7 @@ const SalePage = (props) => {
         setProducts(result.data)
         setProductsBackup(result.data)
       }).catch(err => {
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }
   }

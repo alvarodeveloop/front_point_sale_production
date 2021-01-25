@@ -35,12 +35,7 @@ const FlowCashPage = (props) => {
       setAccounts(result[0].data)
       setCenterCostes(result[1].data)
     }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-
+      props.tokenExpired(err)
     })
 
   }

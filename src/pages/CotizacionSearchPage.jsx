@@ -436,12 +436,7 @@ const CotizacionSearchPage = props => {
       }, 1000);
      }).catch(err => {
        setDisplayFilter(1)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+       props.tokenExpired(err)
      })
   }
 
@@ -471,12 +466,7 @@ const CotizacionSearchPage = props => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      console.log(err);
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -491,11 +481,7 @@ const CotizacionSearchPage = props => {
       fetchData()
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.messsage)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -512,12 +498,7 @@ const CotizacionSearchPage = props => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -529,12 +510,7 @@ const CotizacionSearchPage = props => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -552,12 +528,7 @@ const CotizacionSearchPage = props => {
     fetchData()
    }).catch(err => {
     setDisplayLoading(false)
-     if(err.response){
-       toast.error(err.response.data.message)
-     }else{
-       console.log(err);
-       toast.error('Error, contacte con soporte')
-     }
+    props.tokenExpired(err)
    })
   }
 
@@ -603,12 +574,7 @@ const CotizacionSearchPage = props => {
       fetchData()
      }).catch(err => {
       setDisplayLoading(false)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+       props.tokenExpired(err)
      })
   }
 
