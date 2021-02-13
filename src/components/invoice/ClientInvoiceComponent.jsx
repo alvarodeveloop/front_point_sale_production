@@ -13,7 +13,6 @@ import InputField from 'components/input/InputComponent'
 import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
 import {toast} from 'react-toastify'
 import axios from 'axios'
-import layoutHelpers from 'shared/layouts/helpers'
 import {formatRut} from 'utils/functions'
 import {API_URL,API_FACTURACION} from 'utils/constants'
 import LoadingComponent from 'components/LoadingComponent'
@@ -53,52 +52,90 @@ const ClientInvoiceComponet = (props) => {
     setRutFacturacionClientSearch(formatRut(e.target.value))
   }
 
-  const searchClientByApiFacturacion = (rut = false) =>{
+  const searchClientByApiFacturacion = async (rut = false) =>{
     // para buscar receptores simple
      let val = !rut ? rutFacturacionClientSearch : rut
      if(val){
        toast.info('Buscando Receptor, espere por favor')
        setDisplayLoading(true)
-       axios.get(API_URL+'search_receptor/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
-         props.setCotizationData(oldData => {
-           return Object.assign({},oldData,{
-             rut_client : result.data.rut +"-"+result.data.dv,
-             business_name_client: result.data.razon_social,
-             address_client: result.data.direccion_seleccionada,
-             comuna_client : result.data.comuna_seleccionada,
-             city_client : result.data.ciudad_seleccionada,
-             address_client_array: result.data.direcciones[0]
-           })
-         })
-         setReadonlyRut(true)
-         setDisplayLoading(false)
-       }).catch(err => {
-        setDisplayLoading(false)
-         if(err.response){
-           toast.error(err.response.data.message)
-         }else{
-           console.log(err);
-           toast.error('Error, contacte con soporte')
-         }
-       })
+        if(props.isType === "guide"){
+          try {
+            let receptor = await axios.get(API_URL+'search_receptor_guide/'+props.cotizationData.facturaId+"/"+val)
+            if(!receptor.data.error){
+              props.setCotizationData(oldData => {
+                return Object.assign({},oldData,{
+                  rut_client: receptor.data.receptor.rut+"-"+receptor.data.receptor.dv,
+                  business_name_client: receptor.data.receptor.razon_social,
+                  address_client_array: receptor.data.receptor.direcciones[0],
+                  address_client: receptor.data.receptor.direccion_seleccionada,
+                  comuna_client: receptor.data.receptor.comuna_seleccionada,
+                  city_client: receptor.data.receptor.ciudad_seleccionada,
+                  spin_client_array: Array.isArray(receptor.data.girosReceptor) ? receptor.data.girosReceptor : [receptor.data.girosReceptor],
+                  spin_client: Array.isArray(receptor.data.girosReceptor) ? receptor.data.girosReceptor[0].nombre : receptor.data.girosReceptor.nombre,
+                  type_buy_client_array: Array.isArray(receptor.data.TipoDeCompra) ? receptor.data.TipoDeCompra : [receptor.data.TipoDeCompra] ,
+                  type_buy_client: receptor.data.receptor.tipoDeCompraId.toString(),
+                })
+              })
+              setReadonlyRut(true)
+            }
+            setDisplayLoading(false)
+          } catch (error) {
+            setDisplayLoading(false)
+            if(error.response){
+              toast.error(error.response.data.message)
+            }else{
+              console.log(error);
+              toast.error('Error, contacte con soporte')
+            }
+          }
+       }else{
+          try {
+            let receptor = await axios.get(API_URL+'search_receptor/'+val.split('-')[0]+'/'+val.split('-')[1])
+            if(receptor.data){
+              props.setCotizationData(oldData => {
+                return Object.assign({},oldData,{
+                  rut_client : receptor.data.rut +"-"+receptor.data.dv,
+                  business_name_client: receptor.data.razon_social,
+                  address_client: receptor.data.direccion_seleccionada,
+                  comuna_client : receptor.data.comuna_seleccionada,
+                  city_client : receptor.data.ciudad_seleccionada,
+                  address_client_array: receptor.data.direcciones[0]
+                })
+              })
+              setReadonlyRut(true)
+            }
+            setDisplayLoading(false)
+          } catch (error) {
+            setDisplayLoading(false)
+            if(error.response){
+              toast.error(error.response.data.message)
+            }else{
+              console.log(error);
+              toast.error('Error, contacte con soporte')
+            }
+          }
+        }
+     }else{
+       toast.info("Debe ingresar un rut para realizar la busqueda")
      }
   }
 
-  const searchClientByApiFacturacionInvoice = (rut = false) =>{
+  const searchClientByApiFacturacionInvoice = async (rut = false) =>{
     // para buscar receptores a la factura o la nota de venta
     let val = !rut ? rutFacturacionClientSearch : rut
-    if(val){
-      if(props.isType === "facturacion"){
-        setDisplayLoading(true)
-        toast.info('Buscando Receptor, espere por favor')
+    try {
+      if(val){
+        if(props.isType === "facturacion"){
+          setDisplayLoading(true)
+          toast.info('Buscando Receptor, espere por favor')
+  
+          if(props.cotizationData.type_invoicing === true){
 
-        if(props.cotizationData.type_invoicing === true){
-
-          axios.get(API_URL+'get_client_invoice/'+props.cotizationData.facturaId+'/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
-
-            let giroReceptor = API_FACTURACION ? result.data.receptor.giroReceptor : {"id":1,"nombre":"ACTIVIDADES DE CONSULTORIA DE INFORMATIC"}
-            let tipo_compra = API_FACTURACION ? result.data.receptor.tipoDeCompra : {"id":1,"valor":"1","nombre":"Del Giro"}
-
+            let result = await axios.get(API_URL+'get_client_invoice/'+props.cotizationData.facturaId+'/'+val.split('-')[0]+'/'+val.split('-')[1])
+            console.log(result,"aqui mmgbo");
+            let girosReceptor = API_FACTURACION ? result.data.girosReceptor : {"id":1,"nombre":"ACTIVIDADES DE CONSULTORIA DE INFORMATIC"}
+            let tipo_compra = API_FACTURACION ? result.data.TipoDeCompra : {"id":1,"valor":"1","nombre":"Del Giro"}
+  
             props.setCotizationData(oldData1 => {
               let object_return = Object.assign({},oldData1,{
                 rut_client : result.data.receptor.rut +"-"+result.data.receptor.dv,
@@ -107,52 +144,50 @@ const ClientInvoiceComponet = (props) => {
                 address_client_array : result.data.receptor.direcciones[0],
                 comuna_client : result.data.receptor.comuna_seleccionada,
                 city_client : result.data.receptor.ciudad_seleccionada,
-                type_buy_client: Array.isArray(tipo_compra) ? tipo_compra[0].id.toString() : tipo_compra.id.toString(),
+                type_buy_client: result.data.receptor.tipoDeCompraId.toString(),
                 type_buy_client_array: Array.isArray(tipo_compra) ? tipo_compra : [tipo_compra],
-                spin_client_array : Array.isArray(giroReceptor) ? giroReceptor : [giroReceptor],
-                spin_client: Array.isArray(giroReceptor) ? giroReceptor[0].nombre : giroReceptor.nombre,
+                spin_client_array : Array.isArray(girosReceptor) ? girosReceptor : [girosReceptor],
+                spin_client: Array.isArray(result.data.girosReceptor) ? result.data.girosReceptor[0].nombre :  result.data.girosReceptor.nombre,
               })
-
+  
               return object_return
             })
             setReadonlyRut(true)
             setDisplayLoading(false)
-          }).catch(err => {
+  
+          }else{
+            let receptor = await axios.get(API_URL+"get_receptor_invoice_excenta/"+props.cotizationData.facturaId+"/"+val)
+            console.log(receptor,"aqui el receptor ========================");
+            props.setCotizationData(oldData => {
+              let objectReturn = Object.assign({},oldData,{
+                rut_client : receptor.data.receptor.rut +"-"+ receptor.data.receptor.dv,
+                business_name_client: receptor.data.receptor.razon_social,
+                address_client_array: receptor.data.receptor.direcciones[0],
+                address_client: receptor.data.receptor.direccion_seleccionada,
+                comuna_client: receptor.data.receptor.comuna_seleccionada,
+                city_client: receptor.data.receptor.ciudad_seleccionada,
+                spin_client: Array.isArray(receptor.data.girosReceptor) ? receptor.data.girosReceptor[0].nombre : receptor.data.girosReceptor.nombre,
+                spin_client_array: Array.isArray(receptor.data.girosReceptor) ? receptor.data.girosReceptor : [receptor.data.girosReceptor],
+                name_contact : receptor.data.receptor.contacto,
+                type_buy_client : receptor.data.receptor.tipoDeCompraId.toString(),
+                type_buy_client_array : Array.isArray(receptor.data.TipoDeCompra) ? receptor.data.TipoDeCompra : [receptor.data.TipoDeCompra],
+              })
+              console.log(objectReturn,"aqui el objectreturn");
+              return objectReturn
+            })
+            setReadonlyRut(true)
             setDisplayLoading(false)
-            if(err.response){
-              toast.error(err.response.data.message)
-            }else{
-              console.log(err);
-              toast.error('Error, contacte con soporte')
-            }
-          })
+          }
         }else{
-          /*axios.get(API_URL+'get_client_invoice/'+val.split('-')[0]+'/'+val.split('-')[1]).then(result => {
-              props.setCotizationData(oldData => {
-              return Object.assign({},oldData,{
-              rut_client : result.data.rut +"-"+result.data.dv,
-              business_name_client: result.data.razon_social,
-              address_client: result.data.direccion_seleccionada,
-              comuna_client : result.data.comuna_seleccionada,
-              city_client : result.data.ciudad_seleccionada,
-              })
-              })
-              setReadonlyRut(true)
-              }).catch(err => {
-              if(err.response){
-              toast.error(err.response.data.message)
-            }else{
-            console.log(err);
-            toast.error('Error, contacte con soporte')
-
-          })*/
-        }
-      }else{
-        // si es nota de venta
-        if(props.isType === "sale_note"){
-          searchClientByApiFacturacion(val)
+          // si es nota de venta
+          if(props.isType === "sale_note"){
+            searchClientByApiFacturacion(val)
+          }
         }
       }
+    } catch (error) {
+      setDisplayLoading(false)
+      toast.error("ha ocurrido un error buscando el receptor, intente de nuevo por favor")
     }
   }
 
@@ -387,7 +422,7 @@ const ClientInvoiceComponet = (props) => {
                       >
                         <option value="">--Seleccione--</option>
                         {props.cotizationData.spin_client_array.map((v,i) => (
-                          <option value={v[0]} key={i}>{v[1]}</option>
+                          <option value={v.nombre} key={i}>{v.nombre}</option>
                         ))}
                       </InputField>
                     ) : (
@@ -404,7 +439,7 @@ const ClientInvoiceComponet = (props) => {
                         handleChange={onChange}
                       />
                     )}
-                    {/*props.cotizationData.type_buy_client_array.length > 0 ? (
+                    {props.cotizationData.type_buy_client_array.length > 0 ? (
                       <InputField
                         type='select'
                         label='Tipo de Compra'
@@ -419,7 +454,7 @@ const ClientInvoiceComponet = (props) => {
                       >
                         <option value="">--Seleccione--</option>
                         {props.cotizationData.type_buy_client_array.map((v,i) => (
-                          <option value={v.id.toString()} key={i}>{v.nombre}</option>
+                          <option value={v.valor} key={i}>{v.nombre}</option>
                         ))}
                       </InputField>
                     ) : (
@@ -435,7 +470,7 @@ const ClientInvoiceComponet = (props) => {
                         value={props.cotizationData.type_buy_client}
                         handleChange={onChange}
                       />
-                      )*/}
+                      )}
                   </Row>
                 ) : ''}
                 {props.isType !== "boleta" && props.isType !== "guide" ? (
@@ -701,45 +736,23 @@ const ClientInvoiceComponet = (props) => {
                     handleChange={onChange}
                   />
                   {props.cotizationData.spin_client_array.length > 0 ? (
-                    <React.Fragment>
-                      {props.cotizationData.type_invoicing ? (
-                        <InputField
-                          type='select'
-                          label='Giro'
-                          name='spin_client'
-                          required={false}
-                          messageErrors={[
-                            'Requerido*'
-                          ]}
-                          cols='col-md-4 col-lg-4 col-sm-4'
-                          value={props.cotizationData.spin_client}
-                          handleChange={onChange}
-                          >
-                          <option value={""}>--Seleccione--</option>
-                          {props.cotizationData.spin_client_array.map((v,i) => (
-                            <option value={v.nombre} key={i}>{v.nombre}</option>
-                          ))}
-                        </InputField>
-                      ) : (
-                        <InputField
-                          type='select'
-                          label='Giro'
-                          name='spin_client'
-                          required={false}
-                          messageErrors={[
-                            'Requerido*'
-                          ]}
-                          cols='col-md-4 col-lg-4 col-sm-4'
-                          value={props.cotizationData.spin_client}
-                          handleChange={onChange}
-                          >
-                          <option value="">--Seleccione--</option>
-                          {props.cotizationData.spin_client_array.map((v,i) => (
-                            <option value={v.nombre} key={i}>{v.nombre}</option>
-                          ))}
-                        </InputField>
-                      )}
-                    </React.Fragment>
+                    <InputField
+                      type='select'
+                      label='Giro'
+                      name='spin_client'
+                      required={true}
+                      messageErrors={[
+                        'Requerido*'
+                      ]}
+                      cols='col-md-4 col-lg-4 col-sm-4'
+                      value={props.cotizationData.spin_client}
+                      handleChange={onChange}
+                      >
+                      <option value="">--Seleccione--</option>
+                      {props.cotizationData.spin_client_array.map((v,i) => (
+                        <option value={v.nombre} key={i}>{v.nombre}</option>
+                      ))}
+                    </InputField>
                   ) : (
                     <InputField
                       type='text'
@@ -753,42 +766,9 @@ const ClientInvoiceComponet = (props) => {
                       value={props.cotizationData.spin_client}
                       handleChange={onChange}
                     />
-                  )}
+                    )}
                 </Row>
                 <Row>
-                {props.cotizationData.actividad_economica_client_array.length > 0 ? (
-                    <InputField
-                      type='select'
-                      label='Actividad Económica'
-                      name='actividad_economica_client'
-                      placeholder={props.cotizationData.type_invoicing ? "opcional" : ""}
-                      required={false}
-                      messageErrors={[
-                        'Requerido*'
-                      ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
-                      value={props.cotizationData.actividad_economica_client}
-                      handleChange={onChange}
-                    >
-                      {props.cotizationData.actividad_economica_client_array.map( (v,i) => (
-                        <option value={v['actividad']+(i+1)}>{v['actividad']+(i+1)}</option>
-                      ))}
-                    </InputField>
-                  ): (
-                    <InputField
-                      type='text'
-                      label='Actividad Económica'
-                      name='actividad_economica_client'
-                      placeholder={"opcional"}
-                      required={false}
-                      messageErrors={[
-                        'Requerido*'
-                      ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
-                      value={props.cotizationData.actividad_economica_client}
-                      handleChange={onChange}
-                    />
-                  )}
                   {props.cotizationData.type_buy_client_array.length > 0 ? (
                       <InputField
                         type='select'
@@ -805,7 +785,7 @@ const ClientInvoiceComponet = (props) => {
                       >
                         <option value="">--Seleccione--</option>
                         {props.cotizationData.type_buy_client_array.map( (v,i) => (
-                          <option value={v.id.toString()} key={i}>{v.nombre}</option>
+                          <option value={v.valor.toString()} key={i}>{v.nombre}</option>
                         ))}
                       </InputField>
                     ): (
@@ -822,7 +802,7 @@ const ClientInvoiceComponet = (props) => {
                         value={props.cotizationData.type_buy_client}
                         handleChange={onChange}
                       />
-                    )}
+                     )}
                 </Row>
                 <Row style={{borderBottom: '1px solid rgb(229, 227, 231)'}}>
                   <Col sm={8} md={8} lg={8}>

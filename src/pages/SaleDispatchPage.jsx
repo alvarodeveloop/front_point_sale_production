@@ -6,8 +6,6 @@ import {
   Row,
   Col,
   Button,
-  DropdownButton,
-  Dropdown,
   Modal,
   Badge,
   Form
@@ -70,6 +68,8 @@ const SaleDispatchPage = (props) => {
   const [validated, setValidated] = useState(false)
   const [redraw,setRedraw] = useState(false)
   const [stadistics,setStadistics] = useState([])
+  const [isOpenModalAction, setIsOpenModalAction] = useState(false)
+  const [dispatchUpdate, setDispatchUpdate] = useState(null)
 
   useEffect(() =>{
     /*if(!props.config || !props.configStore){
@@ -213,27 +213,7 @@ const SaleDispatchPage = (props) => {
           Header: 'Acciones',
           Cell: props1 =>{
             const { original } = props1.cell.row
-            return(
-              <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                <Dropdown.Item onClick={() => openModalStatusDispatch(original) } >Cambiar Status de Entrega</Dropdown.Item>
-                {
-                  original.status_dispatch != 5 && original.status_payment_dispatch != 3 ? (
-                    <Dropdown.Item onClick={() => solvedSale(original)} >Pagar Despacho</Dropdown.Item>
-                  ) : ''
-                }
-                {
-                  original.status_dispatch != 5 && original.status_payment_dispatch == 1 ? (
-                      <Dropdown.Item onClick={() => storageDispatch(original)} >Guardar Despacho</Dropdown.Item>
-                  ) : ''
-                }
-                {
-                  original.status_payment_dispatch == 3 ? (
-                      <Dropdown.Item onClick={() => printInvoice(original)} >Imprimir Factura</Dropdown.Item>
-                  ) : ''
-                }
-                <Dropdown.Item onClick={() => seeDetails(original)} >Ver Detalle</Dropdown.Item>
-              </DropdownButton>
-            )
+            return (<Button variant="primary" block={true} size="sm" onClick={() => actionsDispatchHandler(original)}>Acciones</Button>)
           }
         }
       ]
@@ -258,6 +238,7 @@ const SaleDispatchPage = (props) => {
     setDisplayLoading(true)
     axios.put(API_URL+'sale_storage_dispatch/'+data.id).then(result =>{
       toast.success('Despacho Guardado')
+      handleModalActions()
       resetChartData()
       fetchData()
     }).catch(err => {
@@ -280,7 +261,27 @@ const SaleDispatchPage = (props) => {
   }
 
   const printInvoice = datos => {
-    window.open('/invoicePrintPage/'+datos.id,'_blank')
+    let params = "/"+datos.ref;
+    setDisplayLoading(true)
+    axios.get(API_URL+"sale_print_invoice_history/"+datos.ref).then(result => {
+      if(datos.voucher){
+        
+        axios.get(API_URL+'invoice_print/'+result.data.id+"/2/2").then(result => {
+          window.open(API_URL+'documents/sale_note/files_pdf/'+result.data.name)
+          setDisplayLoading(false)
+        }).catch(err => {
+          setDisplayLoading(false)
+          props.tokenExpired(err)
+        })
+
+      }else{
+        setDisplayLoading(false)
+        window.open(result.data.pdf_public_url_bill,"_blank")
+      }
+    }).catch(error => {
+      setDisplayLoading(false)
+      props.tokenExpired(error)
+    })
   }
 
   const solvedSale = data => {
@@ -291,10 +292,6 @@ const SaleDispatchPage = (props) => {
   const seeDetails = data => {
     setSaleDataOption(data)
     setIsOpenDetailSale(true)
-  }
-
-  const anulateSale = data => {
-
   }
 
   const fetchData = () => {
@@ -314,14 +311,26 @@ const SaleDispatchPage = (props) => {
     })
   }
 
-  const handleOnhideSaleFiao = () => {
+  const handleOnhideSaleFiao = (isPost = false) => {
     setIsOpenSolvedSale(false)
-    resetChartData()
-    fetchData()
+    if(isPost){
+      handleModalActions()
+      resetChartData()
+      fetchData()
+    }
   }
 
   const handleOnHideFormStatus = () => {
     setIsOpenStatusDispatch(!isOpenStatusDispatch)
+  }
+
+  const handleModalActions = (data = {}) => {
+    setIsOpenModalAction(!isOpenModalAction)
+  }
+
+  const actionsDispatchHandler = data => {
+    setDispatchUpdate(data)
+    handleModalActions()
   }
 
   const handleSubmitStatus = e => {
@@ -365,11 +374,10 @@ const SaleDispatchPage = (props) => {
     		hoverBackgroundColor: []
     	}]
     }
-
   }
 
   return (
-    <Container>
+    <Container fluid>
       <Row>
         <Col sm={6} md={6} lg={6}></Col>
         <Col sm={6} md={6} lg={6}>
@@ -467,10 +475,55 @@ const SaleDispatchPage = (props) => {
 
           </Modal.Body>
           <Modal.Footer>
-            <Button size="sm" variant="primary" type="submit">Guardar</Button>
-            <Button size="sm" variant="danger" onClick={handleOnHideFormStatus}>Cerrar</Button>
+            <Button  variant="primary" type="submit">Guardar</Button>
+            <Button  variant="danger" onClick={handleOnHideFormStatus}>Cerrar</Button>
           </Modal.Footer>
         </Form>
+      </Modal>
+      <Modal
+        show={isOpenModalAction}
+        onHide={handleModalActions}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton className="header_dark">
+          <Modal.Title id="contained-modal-title-vcenter">
+            {dispatchUpdate ? `Acciones para el despacho Nº ${dispatchUpdate.ref}` : ""}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {dispatchUpdate && !displayLoading ? (
+            <>
+              <Row className="justify-content-center">
+                {dispatchUpdate.status_dispatch != 5 && dispatchUpdate.status_payment_dispatch != 3 ? (
+                  <Col sm={3} md={3} lg={3} xl={3}>
+                    <Button block={true} size="sm" variant="secondary" onClick={() => solvedSale(dispatchUpdate)}>Pagar Despacho</Button>
+                  </Col>
+                ) : ""}
+                {dispatchUpdate.status_dispatch != 5 && dispatchUpdate.status_payment_dispatch == 1 ? (
+                  <Col sm={3} md={3} lg={3} xl={3}>
+                    <Button block={true} size="sm" variant="secondary" onClick={() => storageDispatch(dispatchUpdate)} >Guardar Despacho</Button>
+                  </Col>
+                ) : ""}
+                {dispatchUpdate.status_payment_dispatch == 3 ? (
+                  <Col sm={3} md={3} lg={3} xl={3}>
+                    <Button block={true} size="sm" variant="secondary" onClick={() => printInvoice(dispatchUpdate)} >Imprimir Factura</Button>
+                  </Col>
+                ) : ""}
+                <Col sm={3} md={3} lg={3} xl={3}>
+                  <Button block={true} size="sm" variant="secondary" onClick={() => seeDetails(dispatchUpdate)} >Ver detalles</Button>
+                </Col>
+                <Col sm={3} md={3} lg={3} xl={3}>
+                  <Button block={true} variant="secondary" size="sm" onClick={() => openModalStatusDispatch(dispatchUpdate) } >Cambiar Status de Entrega</Button>
+                </Col>
+              </Row>
+            </>
+          ) : <LoadingComponent />}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={handleModalActions}>Cerrar</Button>
+        </Modal.Footer>
       </Modal>
     </Container>
   )

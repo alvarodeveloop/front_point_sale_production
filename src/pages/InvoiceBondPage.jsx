@@ -145,12 +145,7 @@ const InvoiceBondPage = (props) => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+       props.tokenExpired(err)
     })
   }
 
@@ -158,12 +153,7 @@ const InvoiceBondPage = (props) => {
     axios.get(API_URL+'type_bond').then(result => {
         setTypeBond(result.data)
       }).catch(err => {
-         if(err.response){
-           toast.error(err.response.data.message)
-         }else{
-           console.log(err);
-           toast.error('Error, contacte con soporte')
-         }
+        props.tokenExpired(err)
     })
   }
 
@@ -186,12 +176,7 @@ const InvoiceBondPage = (props) => {
         handleModalBond()
         fetchData()
       }).catch(err => {
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          console.log(err);
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       axios.post(API_URL+'invoice_bonds',objectPost).then(result => {
@@ -199,12 +184,7 @@ const InvoiceBondPage = (props) => {
         handleModalBond()
         fetchData()
       }).catch(err => {
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          console.log(err);
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }
   }
@@ -269,12 +249,7 @@ const InvoiceBondPage = (props) => {
      fetchData()
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -324,12 +299,7 @@ const InvoiceBondPage = (props) => {
         setDisplayLoading(false)
       }).catch(err => {
         setDisplayLoading(false)
-        if(err.response){
-          toast.error(err.response.data.message)
-        }else{
-          console.log(err);
-          toast.error('Error, contacte con soporte')
-        }
+        props.tokenExpired(err)
       })
     }else{
       toast.error('No hay pagos para realizar el informe')

@@ -7,39 +7,24 @@ import {
   Col,
   Container,
   Button,
-  Dropdown,
-  DropdownButton,
-  Accordion,
-  Card,
   Form
 } from 'react-bootstrap'
-import { API_URL, FRONT_URL } from 'utils/constants'
-import { FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt, FaUser, FaUsers, FaBook } from 'react-icons/fa'
-import Table from 'components/Table'
-import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
+import { API_URL } from 'utils/constants'
 import FormClientModal from 'components/modals/FormClientModal'
 import ModalGastosCotizacion from 'components/modals/ModalGastosCotizacion'
-import { showPriceWithDecimals } from 'utils/functions'
 import * as moment from 'moment-timezone'
 import InputField from 'components/input/InputComponent'
 import { connect } from 'react-redux'
-import { ColumnsCotization, GastosCotizacion } from 'utils/columns/cotization'
-import ModalClientCotizacion from 'components/modals/ModalClientCotizacion'
 import ModalContacts from 'components/modals/ModalContacts'
 import ModalSeller from 'components/modals/ModalSeller'
 import styled from 'styled-components'
 import layoutHelpers from 'shared/layouts/helpers'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import TableProductsCotization from 'components/TableProductsCotization'
 import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
 import {formatRut} from 'utils/functions'
 import {OBJECT_COTIZATION} from 'utils/constants'
 import InvoiceExcentasComponent from 'components/invoice/InvoiceExcentasComponent'
 import InvoiceAfectaComponent from 'components/invoice/InvoiceAfectaComponent'
 import LoadingComponent from 'components/LoadingComponent'
-
-let DetailCotizacion = null
 
 const Styles = styled.div`
 
@@ -81,19 +66,15 @@ let count = 0
 const InvoiceCreatePage = (props) => {
 
   const [clients,setClients] = useState([])
-  const [clientDetail,setClientDetail] = useState({})
   const [detailProducts, setDetailProducts] = useState([])
   const [isShowModalClient, setIsShowModalClient] = useState(false)
   const [isShowModalGastos, setIsShowModalGastos] = useState(false)
   const [isShowModalProduct, setIsShowModalProduct] = useState(false)
   const [products,setProducts] = useState([])
-  const [resetValueClient,setResetValueClient] = useState(false)
   const [gastosDetail,setGastosDetail] = useState([])
-  const [openModalClientMail,setOpenModalClientMail] = useState(false)
   const [disableButtons,setDisableButton] = useState(false)
   const [isShowModalContacts,setIsShowModalContacts] = useState(false)
   const [isShowModalSeller,setIsShowModalSeller] = useState(false)
-  const [rutFacturacionClientSearch, setRutFacturacionClientSearch] = useState('')
   const [validated, setValidated] = useState(false)
   const [isOpenModalInvoice, setIsOpenModalInvoice] = useState(false)
   const [cotizationData, setCotizationData] = useState(
@@ -105,9 +86,9 @@ const InvoiceCreatePage = (props) => {
     }))
   const [displayModals,setDisplayModals] = useState(false)
   const [refCotizacion, setRefCotizacion] = useState([])
-  const [displayReturnButton, setDisplayReturnButton] = useState(false)
   const inputRef = useRef(null)
   const [displayLoading, setDisplayLoading] = useState(true)
+  const [displayLoadingModal, setDisplayLoadingModal] = useState(false)
 
   useEffect(() => {
     if(!props.configStore || !props.configGeneral){
@@ -131,25 +112,8 @@ const InvoiceCreatePage = (props) => {
         }, 3000);
         return
       }
-      fetchClients()
-      fetchProducts()
-      setCotizationData(oldData => {
-        return Object.assign({},oldData,{
-          business_name_transmitter: props.configStore ? props.configStore.name_store : '',
-          rut_transmitter: props.configStore ? props.configStore.rut : '',
-          address_transmitter: props.configStore ? props.configStore.address : '',
-          country_transmitter: props.configStore ? props.configStore.pais.nombre : '',
-          email_transmitter: props.configStore ? props.configStore.email : '',
-          phone_transmitter: props.configStore ? props.configStore.phone : '',
-          actividad_economica_transmitter: props.configStore ? props.configGeneral.actividad_economica : '',
-          comuna_transmitter: props.configStore ? props.configStore.comuna : '',
-          city_transmitter: props.configStore ? props.configStore.city : '',
-        })
-      })
+      fetchData()
       setDisplayModals(true)
-      setTimeout(() => {
-        setDisplayLoading(false)
-      },3000)
     }
   },[props.id_branch_office])
 
@@ -161,32 +125,36 @@ const InvoiceCreatePage = (props) => {
     }
   },[])
 
+  const fetchData = (onlyClient = false) => {
+    
+    if(!displayLoading){
+      setDisplayLoading(true)
+    }
+
+    let promises = null
+    if(!onlyClient){
+      promises = [
+        axios.get(API_URL+'client'),
+        axios.get(API_URL+'product'),
+      ]
+    }else if(onlyClient){
+      promises = [axios.get(API_URL+'client')]
+    }
+
+    Promise.all(promises).then(result => {
+      setClients(result[0].data)
+      if(result.length >= 2){
+        setProducts(result[1].data)
+      }
+      setDisplayLoading(false)
+    }).catch(err => {
+      setDisplayLoading(false)
+      props.tokenExpired(err)
+    })
+  }
+
   const goToDashboard = () => {
       props.history.replace('/invoice/invoice_search')
-  }
-
-  const fetchClients = () => {
-    axios.get(API_URL+'client').then(result => {
-      setClients(result.data)
-    }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-    })
-  }
-
-  const fetchProducts = () => {
-    axios.get(API_URL+'product').then(result => {
-      setProducts(result.data)
-    }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-    })
   }
 
   const onChange = async e => {
@@ -217,11 +185,7 @@ const InvoiceCreatePage = (props) => {
   }
   const handleHideModalClient = () => {
     setIsShowModalClient(false)
-    fetchClients()
-  }
-
-  const handleHideModalProduct = () => {
-    setIsShowModalProduct(false)
+    fetchData()
   }
 
   const handleModalContacts = () => {
@@ -230,40 +194,6 @@ const InvoiceCreatePage = (props) => {
 
   const handleModalSeller = () => {
     setIsShowModalSeller(!isShowModalSeller)
-  }
-
-  const handleSelectProduct = product => {
-    // metodo para manejar la escogencia del producto en la modal de productos para el detalle de la cotizacion
-    if(!product.quantity) product.quantity = 1
-    if(!product.category){
-      product.category = ""
-      if(Array.isArray(product.categories)){
-        product.categories.forEach((item, i) => {
-          product.category+= item.name_category
-        });
-      }
-    }
-    product.id_product = product.id
-    product.discount_stock = true
-    if(product.inventary[0].inventary_cost.length){
-      setGastosDetail([...gastosDetail, {description: product.inventary[0].inventary_cost[0].detail, amount: product.inventary[0].inventary_cost[0].cost, id_product: product.id}])
-      setDetailProducts([...detailProducts, product])
-    }else{
-      setDetailProducts([...detailProducts, product])
-    }
-    setIsShowModalProduct(false)
-  }
-
-  const removeItemDetail = data => {
-    setDetailProducts(detail => {
-      return detail.filter(v => v.name_product !== data.name_product)
-    })
-  }
-
-  const removeGastoDetail = data => {
-    setGastosDetail(gastos =>{
-     return gastos.filter(v => v.description !== data.description)
-    })
   }
 
   const handleSelectContact = dataContact => {
@@ -336,12 +266,12 @@ const InvoiceCreatePage = (props) => {
     }
 
     setDisableButton(true)
-    setDisplayLoading(true)
+    setDisplayLoadingModal(true)
 
     axios.post(API_URL+'invoice',object_post).then(result => {
       let invoice_word = result.data.length > 1 ? "Facturas" : "Factura"
       toast.success(invoice_word+' realizada con éxito')
-      setDisplayLoading(false)
+      setDisplayLoadingModal(false)
       toast.info('Generando pdf de la '+invoice_word+', espere por favor...')
 
       result.data.forEach((item, i) => {
@@ -351,13 +281,9 @@ const InvoiceCreatePage = (props) => {
       goToDashboard()
 
     }).catch(err => {
-      setDisableButton(false)
-      setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      setDisplayLoadingModal(false)
+      //setDisplayLoading(false)
+      props.tokenExpired(err)
     })
 
   }
@@ -527,6 +453,7 @@ const InvoiceCreatePage = (props) => {
                   setDetailProducts={setDetailProducts}
                   products={detailProducts}
                   disableButtons={disableButtons}
+                  isLoading={displayLoadingModal}
                 />
               </React.Fragment>
             ) : ''}

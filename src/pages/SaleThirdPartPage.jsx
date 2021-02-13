@@ -82,23 +82,37 @@ const SaleThirdPartPage = (props) => {
       if(paymentTotal < total_to_pay && status === 1){
         toast.error('El monto pagado es inferior al total por pagar')
       }else{
-
         let cartSale = Object.assign({},props.sale.rooms[props.sale.idCartSelected],{
           payment,
           status,
           id_cash_register: JSON.parse(localStorage.getItem('cash_register')).id_cash_register
         })
+
         setDisplayLoading(true)
         axios.post(API_URL+'sale',cartSale).then(async result => {
 
           if(status === 2){
-            toast.success('Proceso Completado')
-            returnToBegginig()
-          }else{
             toast.success('Proceso completado, espere mientras se genera el documento de factura')
             let invoice_response = await axios.get(API_URL+'invoice_print_by_sale/'+result.data.id)
             setDisplayLoading(false)
             window.open(API_URL+'documents/sales/files_pdf/'+invoice_response.data.name)
+            setTimeout(function () {
+              returnToBegginig()
+            }, 1000);
+          }else{
+            if(cartSale.payment.voucher){
+              toast.success('Proceso completado, espere mientras se genera el documento de factura')
+              await Promise.all(result.data.map( async  (v,i) => {
+                let invoice_response = await axios.get(API_URL+'invoice_print/'+v.id+"/3/2")
+                window.open(API_URL+'documents/sale_note/files_pdf/'+invoice_response.data.name)
+              }))
+            }else{
+              toast.success('Proceso completado, espere mientras se genera el documento de factura')
+              result.data.forEach((v,i) => {
+                window.open(v.url,"_blank")
+              })
+            }
+            setDisplayLoading(false)
             setTimeout(function () {
               returnToBegginig()
             }, 1000);

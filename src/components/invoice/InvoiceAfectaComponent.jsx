@@ -5,37 +5,18 @@ import { toast } from 'react-toastify'
 import {
   Row,
   Col,
-  Container,
   Button,
-  Dropdown,
-  DropdownButton,
   Accordion,
-  Card,
-  Form,
-  Image
 } from 'react-bootstrap'
-import { API_URL, FRONT_URL } from 'utils/constants'
-import { FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt, FaUser, FaUsers, FaBook } from 'react-icons/fa'
-import Table from 'components/Table'
-import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
-import { showPriceWithDecimals } from 'utils/functions'
-import * as moment from 'moment-timezone'
+import { API_URL } from 'utils/constants'
 import InputField from 'components/input/InputComponent'
-import { connect } from 'react-redux'
-import styled from 'styled-components'
-import layoutHelpers from 'shared/layouts/helpers'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import TableProductsCotization from 'components/TableProductsCotization'
-import {formatRut} from 'utils/functions'
 import TransmitterInvoiceComponent from 'components/invoice/TransmitterInvoiceComponent'
 import ClientInvoiceComponent from 'components/invoice/ClientInvoiceComponent'
 import TableTotalComponent from 'components/invoice/TableTotalComponent'
 import RefComponent from 'components/invoice/RefComponent'
 import GastosComponent from 'components/invoice/GastosComponent'
 import ProductTableComponent from 'components/invoice/ProductTableComponent'
-
-let DetailCotizacion = null
+import LoadingComponent from 'components/LoadingComponent'
 
 
 const InvoiceAfectaComponent = (props) => {
@@ -48,7 +29,6 @@ const InvoiceAfectaComponent = (props) => {
       searchReceptorEmisor()
     }
 
-    console.log(props.configGeneral,'aqui console2');
   },[props.cotizationData.type_invoicing])
 
 
@@ -62,26 +42,27 @@ const InvoiceAfectaComponent = (props) => {
      toast.info('Buscando datos del emisor')
      axios.get(API_URL+'get_transmitter_invoice').then(transmitter => {
 
-      props.setCotizationData(oldData => {
-        return Object.assign({},oldData,{
-          actividad_economica_transmitter_array: transmitter.data.emisor.actvidades_economicas,
-          actividad_economica_transmitter : transmitter.data.emisor.actvidades_economicas.length > 0 ? transmitter.data.emisor.actvidades_economicas[0][0] : props.configGeneral.actividad_economica,
-          city_transmitter : transmitter.data.emisor.ciudad_seleccionada,
-          comuna_transmitter: transmitter.data.emisor.comuna_seleccionada,
-          address_transmitter:  transmitter.data.emisor.direccion_seleccionada,
-          address_transmitter_array: transmitter.data.emisor.direcciones[0],
-          business_name_transmitter : transmitter.data.emisor.razon_social,
-          type_sale_transmitter_array: transmitter.data.emisor.tipos_de_venta,
-          type_sale_transmitter: transmitter.data.emisor.tipos_de_venta.length > 0 ? transmitter.data.emisor.tipos_de_venta[0][0] : '',
-          facturaId: transmitter.data.id,
-          token: transmitter.data.token,
-          searchReceptorDefault : true
+        props.setCotizationData(oldData => {
+          return Object.assign({},oldData,{
+            actividad_economica_transmitter_array: transmitter.data.emisor.actvidades_economicas,
+            actividad_economica_transmitter : transmitter.data.emisor.actvidades_economicas.length > 0 ? transmitter.data.emisor.actvidades_economicas[0][0] : props.configGeneral.actividad_economica,
+            city_transmitter : transmitter.data.emisor.ciudad_seleccionada,
+            comuna_transmitter: transmitter.data.emisor.comuna_seleccionada,
+            address_transmitter:  transmitter.data.emisor.direccion_seleccionada,
+            address_transmitter_array: transmitter.data.emisor.direcciones[0],
+            business_name_transmitter : transmitter.data.emisor.razon_social,
+            spin_transmitter : transmitter.data.emisor.giro,
+            type_sale_transmitter_array: transmitter.data.emisor.tipos_de_venta,
+            type_sale_transmitter: transmitter.data.emisor.tipos_de_venta.length > 0 ? transmitter.data.emisor.tipos_de_venta[0][0] : '',
+            facturaId: transmitter.data.id,
+            token: transmitter.data.token,
+            searchReceptorDefault : true
+          })
         })
-      })
 
-      setTimeout(function () {
-        setDisplaySection(2)
-      }, 400);
+        setTimeout(function () {
+          setDisplaySection(2)
+        }, 400);
      }).catch(err => {
        props.setCotizationData({...props.cotizationData,type_invoicing: 3})
        setDisplaySection(1)
@@ -227,14 +208,7 @@ const InvoiceAfectaComponent = (props) => {
           </Row>
         </React.Fragment>
       ) : displaySection === 1 ? (
-        <Row>
-          <Col sm={12} md={12} lg={12} className="text-center">
-            <br/>
-            <Image src={require('../../assets/img/loading.gif')} width="50" />
-            <br/>
-            Cargando Datos de la Factura...
-          </Col>
-        </Row>
+        <LoadingComponent />
       ) : ''}
     </React.Fragment>
   )

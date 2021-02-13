@@ -9,11 +9,15 @@ import axios from 'axios'
 import {API_URL} from 'utils/constants'
 import {toast} from 'react-toastify'
 import { showPriceWithDecimals } from 'utils/functions'
+import LoadingComponent from 'components/LoadingComponent'
 
 const ModalCreditNoteComponent = (props) => {
 
+  const [isLoading, setIsloading] = useState(false)
+
   const [dataForm,setDataForm] = useState({
-    type_note_credit : 3,
+    type_operation : null,
+    type_note : null,
     products : [],
     sectionDisplay : 1,
     cotization : {},
@@ -32,7 +36,8 @@ const ModalCreditNoteComponent = (props) => {
     }else{
       props.invoiceObject.products = copyProductsVariable
       setDataForm({
-        type_note_credit : 3,
+        type_operation : null,
+        type_note : null,
         products : [],
         sectionDisplay : 1,
         cotization : {},
@@ -55,13 +60,19 @@ const ModalCreditNoteComponent = (props) => {
     const dataSend = Object.assign({},dataForm,{
       typeSubmit
     })
+    setIsloading(true)
     axios.post(API_URL+'invoice_note_credit',dataSend).then(result => {
-      toast.success('Nota de crédito realizada con éxito')
+      toast.success(`Nota de ${!dataSend.type_operation ? "Débito" : "Crédito"} realizada con éxito`);
+      setIsloading(false)
       props.fetchData()
+      result.data.forEach((v,i) => {
+        window.open(v.pdf_public_url,"_blank")
+      })
       setTimeout(function () {
         props.onHide()
       }, 1000);
     }).catch(err => {
+      setIsloading(false)
        if(err.response){
          toast.error(err.response.data.message)
        }else{
@@ -75,10 +86,17 @@ const ModalCreditNoteComponent = (props) => {
     e.persist()
     if(e.target.name === "reason_ref"){
       setDataForm({...dataForm, [e.target.name] : e.target.value})
-    }else{
+    }else if(e.target.name === "type_note"){
       let val = e.target.value === "true" ? true : false
-      setDataForm({...dataForm, [e.target.name] : val, sectionDisplay: val ? 3 : 2})
+      setDataForm({...dataForm, [e.target.name] : val, sectionDisplay: 2})
+    }else if(e.target.name === "type_operation"){
+      let val = e.target.value === "true" ? true : false
+      setDataForm({...dataForm, [e.target.name] : val, sectionDisplay: val ? 4 : 3})
     }
+  }
+
+  const getBackSection = () => {
+    setDataForm({...dataForm, sectionDisplay: dataForm.sectionDisplay - 1 > 0 ? dataForm.sectionDisplay - 1 : dataForm.sectionDisplay})
   }
 
   const onChangeProduct = (e,pos) => {
@@ -113,206 +131,266 @@ const ModalCreditNoteComponent = (props) => {
     >
       <Modal.Header closeButton className="header_dark">
         <Modal.Title id="contained-modal-title-vcenter">
-          Nota de Crédito de la factura { Object.keys(dataForm.cotization).length > 0 ? dataForm.cotization.ref ? dataForm.cotization.ref : '' : '' } <FaFileContract/>
+          Nota para la factura { Object.keys(dataForm.cotization).length > 0 ? dataForm.cotization.ref ? dataForm.cotization.ref : '' : '' } <FaFileContract/>
         </Modal.Title>
       </Modal.Header>
       <Form onSubmit={() => {}} noValidate validated={validate} ref={inputRef}>
-      <Modal.Body>
-        {dataForm.sectionDisplay == 1 ? (
-          <Row className="justify-content-center">
-            <Col sm={4} md={4} lg={4}>
-              <Row>
-                <Col sm={12} md={12} lg={12} className="text-center">
-                  <b>Tipo de Nota</b>
+      {
+        isLoading ? (
+          <Modal.Body>
+            <LoadingComponent />
+          </Modal.Body>
+        ) : (
+          <Modal.Body>
+            {dataForm.sectionDisplay == 1 ? (
+              <Row className="justify-content-center">
+                <Col sm={4} md={4} lg={4}>
+                  <Row>
+                    <Col sm={12} md={12} lg={12} className="text-center">
+                      <b>Tipo de Nota</b>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col sm={6} md={6} lg={6}>
+                      <Form.Group>
+                        <Form.Check
+                          name="type_note"
+                          type={'radio'}
+                          id={`radio-5`}
+                          label={`Crédito`}
+                          value={true}
+                          checked={dataForm.type_note === true}
+                          required={true}
+                          onChange={onChange}
+                          />
+                      </Form.Group>
+                    </Col>
+                    <Col sm={6} md={6} lg={6} className="text-right">
+                      <Form.Group>
+                        <Form.Check
+                          name="type_note"
+                          type={'radio'}
+                          id={`radio-6`}
+                          label={`Debito`}
+                          value={false}
+                          required={true}
+                          checked={dataForm.type_note === false}
+                          onChange={onChange}
+                          />
+                      </Form.Group>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
-               <Row>
-                 <Col sm={6} md={6} lg={6}>
-                   <Form.Group>
-                     <Form.Check
-                       name="type_note_credit"
-                       type={'radio'}
-                       id={`radio-5`}
-                       label={`Anulación`}
-                       value={true}
-                       checked={dataForm.type_note_credit === true}
-                       required={true}
-                       onChange={onChange}
-                       />
-                   </Form.Group>
-                 </Col>
-                 <Col sm={6} md={6} lg={6} className="text-right">
-                   <Form.Group>
-                     <Form.Check
-                       name="type_note_credit"
-                       type={'radio'}
-                       id={`radio-6`}
-                       label={`Parcial`}
-                       value={false}
-                       required={true}
-                       checked={dataForm.type_note_credit === false}
-                       onChange={onChange}
-                       />
-                   </Form.Group>
-                 </Col>
-               </Row>
-            </Col>
-          </Row>
-        ) : dataForm.sectionDisplay == 2 ? (
-          <React.Fragment>
-            <Row>
-              <Col sm={12} md={12} lg={12}>
-                <h4 className="title_principal text-center">Modificar Productos para la nota</h4>
-              </Col>
-            </Row>
-            <Row>
-              <Col sm={12} md={12} lg={12} className="table-responsive">
-                <table className="table table-striped table-bordered">
-                  <thead>
-                    <tr style={{backgroundColor: 'rgb(218,236,242)', fontWeight: 'bold'}}>
-                      <th className="text-center">Categoria</th>
-                      <th className="text-center">Producto</th>
-                      <th className="text-center">Precio</th>
-                      <th className="text-center">Método de Venta</th>
-                      <th className="text-center">Inventariable</th>
-                      <th className="text-center">Stock Inventario</th>
-                      <th className="text-center">Cantidad</th>
-                      <th className="text-center"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-center">
-                    {dataForm.products.map((v,i) => (
-                      <tr key={i}>
-                        <td><br/>{v.category}</td>
-                        <td><br/>{v.name_product}</td>
-                        <td>
-                          <InputField
-                            type='text'
-                            id={"price-"+i}
-                            name='price'
+            ) : dataForm.sectionDisplay == 2 ? (
+              <>
+                <Row className="justify-content-center">
+                  <Col sm={4} md={4} lg={4}>
+                    <Row>
+                      <Col sm={12} md={12} lg={12} className="text-center">
+                        <b>Tipo de Operación</b>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col sm={6} md={6} lg={6}>
+                        <Form.Group>
+                          <Form.Check
+                            name="type_operation"
+                            type={'radio'}
+                            id={`radio-5`}
+                            label={`Anulación`}
+                            value={true}
+                            checked={dataForm.type_operation === true}
                             required={true}
-                            messageErrors={[
-                              'Requerido*'
-                            ]}
-                            cols='col-md-12 col-lg-12 col-sm-12'
-                            value={dataForm.products[i].price}
-                            handleChange={(e) => onChangeProduct(e,i)}
+                            onChange={onChange}
                             />
-                        </td>
-                        <td><br/>{determinatedMethodSale(v.method_sale)}</td>
-                        <td><br/>{v.id_product ? (<Badge variant="primary" className="font-badge">Si</Badge>) : (<Badge variant="secondary" className="font-badge">No</Badge>)}</td>
-                        <td><br/>{v.id_product ? v.products ?  Array.isArray(v.products.inventary) ? v.products.inventary[0].stock :  v.products.inventary.stock :  v.inventary ? v.inventary[0].stock : 'Sin Stock' : 'Sin Stock'}</td>
-                        <td>
-                          <InputField
-                            type='text'
-                            id={"quantity-"+i}
-                            name='quantity'
+                        </Form.Group>
+                      </Col>
+                      <Col sm={6} md={6} lg={6} className="text-right">
+                        <Form.Group>
+                          <Form.Check
+                            name="type_operation"
+                            type={'radio'}
+                            id={`radio-6`}
+                            label={`Parcial`}
+                            value={false}
                             required={true}
-                            messageErrors={[
-                              'Requerido*'
-                            ]}
-                            cols='col-md-12 col-lg-12 col-sm-12'
-                            value={dataForm.products[i].quantity}
-                            handleChange={(e) => onChangeProduct(e,i)}
+                            checked={dataForm.type_operation === false}
+                            onChange={onChange}
                             />
-                        </td>
-                        <td>
-                          <br/>
-                          <OverlayTrigger placement={'bottom'} overlay={<Tooltip id={"tooltip-modal-credit-"+i}>Remover producto de la nota</Tooltip>}>
-                            <Button variant="danger" block={true} size="sm" onClick={() => removeProduct(i)}><FaTrash /></Button>
-                          </OverlayTrigger>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </Col>
-            </Row>
-            <Row className="justify-content-center">
-              <InputField
-               type='text'
-               label='Razón de Referencia'
-               name='reason_ref'
-               required={true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={dataForm.reason_ref}
-               handleChange={onChange}
-              />
-            </Row>
-            <Row className="justify-content-center">
-              <Col sm={4} md={4} lg={4}>
-                <Button variant="primary" onClick={() => onSubmit(1)} block={true} size="sm" type="button">Guardar y afectar inventario</Button>
-              </Col>
-              <Col sm={4} md={4} lg={4}>
-                <Button variant="primary" onClick={() => onSubmit(2)} block={true} size="sm" type="button">Guardar</Button>
-              </Col>
-            </Row>
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <Row>
-              <Col sm={12} md={12} lg={12}>
-                <h4 className="title_principal text-center">Modificar Productos para la nota</h4>
-              </Col>
-            </Row>
-            <Row>
-              <Col sm={12} md={12} lg={12} className="table-responsive">
-                <table className="table table-striped table-bordered">
-                  <thead>
-                    <tr style={{backgroundColor: 'rgb(218,236,242)', fontWeight: 'bold'}}>
-                      <th className="text-center">Categoria</th>
-                      <th className="text-center">Producto</th>
-                      <th className="text-center">Precio</th>
-                      <th className="text-center">Método de Venta</th>
-                      <th className="text-center">Inventariable</th>
-                      <th className="text-center">Stock Inventario</th>
-                      <th className="text-center">Cantidad</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-center">
-                    {dataForm.products.map((v,i) => (
-                      <tr key={i}>
-                        <td>{v.category}</td>
-                        <td>{v.name_product}</td>
-                        <td>{showPriceWithDecimals(props.configGeneral,v.price)}</td>
-                        <td>{determinatedMethodSale(v.method_sale)}</td>
-                        <td>{v.id_product ? (<Badge variant="primary" className="font-badge">Si</Badge>) : (<Badge variant="secondary" className="font-badge">No</Badge>)}</td>
-                        <td>{v.id_product ? v.products ?  Array.isArray(v.products.inventary) ? v.products.inventary[0].stock :  v.products.inventary.stock :  v.inventary ? v.inventary[0].stock : 'Sin Stock' : 'Sin Stock'}</td>
-                        <td>{v.quantity}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </Col>
-            </Row>
-            <Row className="justify-content-center">
-              <InputField
-               type='text'
-               label='Razón de Referencia'
-               name='reason_ref'
-               required={true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={dataForm.reason_ref}
-               handleChange={onChange}
-              />
-            </Row>
-            <Row className="justify-content-center">
-              <Col sm={4} md={4} lg={4}>
-                <Button variant="primary" onClick={() => onSubmit(1)} block={true} size="sm" type="button">Guardar y afectar inventario</Button>
-              </Col>
-              <Col sm={4} md={4} lg={4}>
-                <Button variant="primary" onClick={() => onSubmit(2)} block={true} size="sm" type="button">Guardar</Button>
-              </Col>
-            </Row>
-          </React.Fragment>
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
+                <Row className="justify-content-center">
+                  <Col sm={4} md={4} lg={4} xl={4}>
+                    <Button variant="danger" block={true} size="sm" type="button" onClick={getBackSection}>Ir atras</Button>
+                  </Col>
+                </Row>
+              </>
+            ) : dataForm.sectionDisplay === 3 ? (
+              <React.Fragment>
+                <Row>
+                  <Col sm={12} md={12} lg={12}>
+                    <h4 className="title_principal text-center">Modificar Productos para la nota</h4>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col sm={12} md={12} lg={12} className="table-responsive">
+                    <table className="table table-striped table-bordered">
+                      <thead>
+                        <tr style={{backgroundColor: 'rgb(218,236,242)', fontWeight: 'bold'}}>
+                          <th className="text-center">Categoria</th>
+                          <th className="text-center">Producto</th>
+                          <th className="text-center">Precio</th>
+                          <th className="text-center">Método de Venta</th>
+                          <th className="text-center">Inventariable</th>
+                          <th className="text-center">Stock Inventario</th>
+                          <th className="text-center">Cantidad</th>
+                          <th className="text-center"></th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-center">
+                        {dataForm.products.map((v,i) => (
+                          <tr key={i}>
+                            <td><br/>{v.category}</td>
+                            <td><br/>{v.name_product}</td>
+                            <td>
+                              <InputField
+                                type='text'
+                                id={"price-"+i}
+                                name='price'
+                                required={true}
+                                messageErrors={[
+                                  'Requerido*'
+                                ]}
+                                cols='col-md-12 col-lg-12 col-sm-12'
+                                value={dataForm.products[i].price}
+                                handleChange={(e) => onChangeProduct(e,i)}
+                                />
+                            </td>
+                            <td><br/>{determinatedMethodSale(v.method_sale)}</td>
+                            <td><br/>{v.id_product ? (<Badge variant="primary" className="font-badge">Si</Badge>) : (<Badge variant="secondary" className="font-badge">No</Badge>)}</td>
+                            <td><br/>{v.id_product ? v.products ?  Array.isArray(v.products.inventary) ? v.products.inventary[0].stock :  v.products.inventary.stock :  v.inventary ? v.inventary[0].stock : 'Sin Stock' : 'Sin Stock'}</td>
+                            <td>
+                              <InputField
+                                type='text'
+                                id={"quantity-"+i}
+                                name='quantity'
+                                required={true}
+                                messageErrors={[
+                                  'Requerido*'
+                                ]}
+                                cols='col-md-12 col-lg-12 col-sm-12'
+                                value={dataForm.products[i].quantity}
+                                handleChange={(e) => onChangeProduct(e,i)}
+                                />
+                            </td>
+                            <td>
+                              <br/>
+                              <OverlayTrigger placement={'bottom'} overlay={<Tooltip id={"tooltip-modal-credit-"+i}>Remover producto de la nota</Tooltip>}>
+                                <Button variant="danger" block={true} size="sm" onClick={() => removeProduct(i)}><FaTrash /></Button>
+                              </OverlayTrigger>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </Col>
+                </Row>
+                <Row className="justify-content-center">
+                  <InputField
+                  type='text'
+                  label='Razón de Referencia'
+                  name='reason_ref'
+                  required={true}
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={dataForm.reason_ref}
+                  handleChange={onChange}
+                  />
+                </Row>
+                <Row className="justify-content-center">
+                  <Col sm={4} md={4} lg={4}>
+                    <Button variant="primary" onClick={() => onSubmit(1)} block={true} size="sm" type="button">Guardar y afectar inventario</Button>
+                  </Col>
+                  <Col sm={4} md={4} lg={4}>
+                    <Button variant="primary" onClick={() => onSubmit(2)} block={true} size="sm" type="button">Guardar</Button>
+                  </Col>
+                  <Col sm={4} md={4} lg={4} xl={4}>
+                    <Button variant="danger" block={true} size="sm" type="button" onClick={getBackSection}>Ir atras</Button>
+                  </Col>
+                </Row>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <Row>
+                  <Col sm={12} md={12} lg={12}>
+                    <h4 className="title_principal text-center">Modificar Productos para la nota</h4>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col sm={12} md={12} lg={12} className="table-responsive">
+                    <table className="table table-striped table-bordered">
+                      <thead>
+                        <tr style={{backgroundColor: 'rgb(218,236,242)', fontWeight: 'bold'}}>
+                          <th className="text-center">Categoria</th>
+                          <th className="text-center">Producto</th>
+                          <th className="text-center">Precio</th>
+                          <th className="text-center">Método de Venta</th>
+                          <th className="text-center">Inventariable</th>
+                          <th className="text-center">Stock Inventario</th>
+                          <th className="text-center">Cantidad</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-center">
+                        {dataForm.products.map((v,i) => (
+                          <tr key={i}>
+                            <td>{v.category}</td>
+                            <td>{v.name_product}</td>
+                            <td>{showPriceWithDecimals(props.configGeneral,v.price)}</td>
+                            <td>{determinatedMethodSale(v.method_sale)}</td>
+                            <td>{v.id_product ? (<Badge variant="primary" className="font-badge">Si</Badge>) : (<Badge variant="secondary" className="font-badge">No</Badge>)}</td>
+                            <td>{v.id_product ? v.products ?  Array.isArray(v.products.inventary) ? v.products.inventary[0].stock :  v.products.inventary.stock :  v.inventary ? v.inventary[0].stock : 'Sin Stock' : 'Sin Stock'}</td>
+                            <td>{v.quantity}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </Col>
+                </Row>
+                <Row className="justify-content-center">
+                  <InputField
+                  type='text'
+                  label='Razón de Referencia'
+                  name='reason_ref'
+                  required={true}
+                  messageErrors={[
+                  'Requerido*'
+                  ]}
+                  cols='col-md-4 col-lg-4 col-sm-4'
+                  value={dataForm.reason_ref}
+                  handleChange={onChange}
+                  />
+                </Row>
+                <Row className="justify-content-center">
+                  <Col sm={4} md={4} lg={4}>
+                    <Button variant="primary" onClick={() => onSubmit(1)} block={true} size="sm" type="button">Guardar y afectar inventario</Button>
+                  </Col>
+                  <Col sm={4} md={4} lg={4}>
+                    <Button variant="primary" onClick={() => onSubmit(2)} block={true} size="sm" type="button">Guardar</Button>
+                  </Col>
+                  <Col sm={4} md={4} lg={4} xl={4}>
+                    <Button variant="danger" block={true} size="sm" type="button" onClick={getBackSection}>Ir atras</Button>
+                  </Col>
+                </Row>
+              </React.Fragment>
+            )}
+          </Modal.Body>
         )}
-      </Modal.Body>
       <Modal.Footer>
         <Button size="md" variant="secondary" onClick={handleOnHide}>Cerrar</Button>
       </Modal.Footer>

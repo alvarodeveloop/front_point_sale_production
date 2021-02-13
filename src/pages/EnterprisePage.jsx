@@ -43,16 +43,6 @@ const EnterprisePage = (props) => {
     fetchData()
   },[])
 
-  const displayPricePlan = plan => {
-    let config = JSON.parse(localStorage.getItem('configGeneral'))
-    if(plan.discount > 0){
-      let discount = parseFloat((plan.discount * plan.price) / 100)
-      return (<Badge variant="danger" className="font-badge">{config.simbolo_moneda+formatNumber(parseFloat(plan.price) - discount,2,',','.')}</Badge>)
-    }else{
-      return (<Badge variant="danger" className="font-badge">{config.simbolo_moneda+formatNumber(parseFloat(plan.price),2,',','.')}</Badge>)
-    }
-  }
-
   const fetchData = () => {
     axios.get(API_URL+'enterprise').then(result => {
       setEnterprises(result.data)

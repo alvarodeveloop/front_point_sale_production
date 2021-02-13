@@ -208,12 +208,14 @@ export let OBJECT_COTIZATION = {
   patent_transfer: '',
   rut_driver: '',
   name_driver: '',
+  type_transfer_trasmitter_array : [],
+  type_transfer_trasmitter : "",
 }
 
 export const API_FACTURACION = true
 //export const API_URL = 'https://api-app.anclick.tech/'
 //export const FRONT_URL = 'https://app.anclick.tech/create_quotitation'
-//export const API_URL = 'http://localhost:5000/'
-//export const FRONT_URL = 'http://localhost:3000/quotitation/create_quotitation'
-export const API_URL = 'https://api.aidy.cl/'
-export const FRONT_URL = 'http://app.aidy.cl/quotitation/create_quotitation'
+export const API_URL = 'http://localhost:5000/'
+export const FRONT_URL = 'http://localhost:3000/quotitation/create_quotitation'
+//export const API_URL = 'https://api.aidy.cl/'
+//export const FRONT_URL = 'http://app.aidy.cl/quotitation/create_quotitation'

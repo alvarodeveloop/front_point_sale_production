@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Form, Button } from 'react-bootstrap'
 import 'vendor/styles/pages/authentication.scss'
 import { ToastContainer, toast } from 'react-toastify'
@@ -46,10 +46,6 @@ const AuthPageTemplate = props => {
   useEffect(() => {
     fetchAidyConfig()
   },[])
-
-  useEffect(() => {
-    displayImgSection()
-  },[imgLogin])
 
   let hr_tz = moment().tz('America/Santiago').format('HH')
   let array_morning = ['06','07','08','09','10','11']
@@ -99,47 +95,8 @@ const AuthPageTemplate = props => {
       return false
     }
     setDisabledButton(true)
-    axios.post(API_URL+'auth',credentials).then( async result => {
-      setDisabledButton(false)
-      const { data } = result
-      setStorage({
-        user: data.user,
-        token: data.token,
-      })
-      setAuthorizationToken(data.token)
-      if(data.user.branch_offices.length > 0){
-        if(data.user.branch_offices.length === 1){
-          // si solo hay una empresa y solo una sucursal
-          await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: data.user.branch_offices[0].id, id_enterprise: data.user.enterprises[0].id, id_parent : data.user.id_parent, email: data.user.email})
-          localStorage.setItem('user',JSON.stringify(data.user))
-          localStorage.setItem('token',data.token)
-          localStorage.setItem('id_enterprise',data.user.enterprises[0].id)
-          localStorage.setItem('id_branch_office',data.user.branch_offices[0].id)
-          authFinish(data.user)
-        }else{
-          // si solo hay una empresa y más de una sucursal
-          setStorage({user: data.user,toke: data.token,token_facturacion: data.token_facturacion,id_enterprise: data.user.enterprises[0].id})
-          setBranchOffices(data.user.branch_offices)
-          setTypeVisibleDiv(3)
-        }
-      }else{
-        if(data.user.enterprises.length > 0){
-          if(data.user.enterprises.length === 1){
-            localStorage.setItem('user',JSON.stringify(data.user))
-            localStorage.setItem('token',data.token)
-            localStorage.setItem('id_enterprise',data.user.enterprises[0].id)
-            await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: '', id_enterprise: data.user.enterprises[0].id, id_parent : data.user.id_parent, email: data.user.email})
-            authFinish(data.user)
-          }else{
-            setEnterprises(data.user.enterprises)
-            setTypeVisibleDiv(2)
-          }
-        }else{
-          localStorage.setItem('user',JSON.stringify(data.user))
-          localStorage.setItem('token',data.token)
-          props.loginDispatch(data.user)
-        }
-      }
+    axios.post(API_URL+'auth',credentials).then(result => {
+      handleAuthResponse(result)
     }).catch(err => {
       setDisabledButton(false)
       const { response } = err
@@ -159,10 +116,7 @@ const AuthPageTemplate = props => {
     axios.post(API_URL+'auth_by_social_media',profile).then(result => {
       const { data } = result
       if(data.user){
-        localStorage.setItem('user',JSON.stringify(data.user))
-        localStorage.setItem('token',data.token)
-        setAuthorizationToken(data.token)
-        authFinish(data.user)
+        handleAuthResponse(result)
       }else{
         registerUserBySocialMedia(profile)
       }
@@ -311,38 +265,63 @@ const AuthPageTemplate = props => {
     })
   }
 
-  const displayImgSection = () => {
+  let displayImgSection = useMemo(() =>{
     return (
-      <React.Fragment>
-        {!imgLogin ? (
-          <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/background_1920-16.jpg')` }}>
-            <div className="ui-bg-overlay bg-dark opacity-50"></div>
+    <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: !imgLogin ? `url('${process.env.PUBLIC_URL}/background_1920-16.jpg'}` : `url('${API_URL}images/aidy/${imgLogin}')` }}>
+      <div className="ui-bg-overlay bg-dark opacity-50"></div>
 
-            {/* Text */}
-            <div className="w-100 text-white px-5">
-              <h1 className="display-2 font-weight-bolder mb-4">BIENVENIDO A AIDY</h1>
-              <div className="text-large font-weight-light">
-                Sistema de administración, gestión de ventas e inventario
-              </div>
-            </div>
-            {/* /.Text */}
-          </div>
-        ) : (
-          <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: `url('${API_URL}images/aidy/${imgLogin}')` }}>
-            <div className="ui-bg-overlay bg-dark opacity-50"></div>
+      {/* Text */}
+      <div className="w-100 text-white px-5">
+        <h1 className="display-2 font-weight-bolder mb-4">BIENVENIDO A AIDY</h1>
+        <div className="text-large font-weight-light">
+          Sistema de administración, gestión de ventas e inventario
+        </div>
+      </div>
+      {/* /.Text */}
+    </div>)
+  },[imgLogin])
 
-            {/* Text */}
-            <div className="w-100 text-white px-5">
-              <h1 className="display-2 font-weight-bolder mb-4">BIENVENIDO A AIDY</h1>
-              <div className="text-large font-weight-light">
-                Sistema de administración, gestión de ventas e inventario
-              </div>
-            </div>
-            {/* /.Text */}
-          </div>
-        )}
-      </React.Fragment>
-    )
+  const handleAuthResponse = async result => {
+    setDisabledButton(false)
+    const { data } = result
+    setStorage({
+      user: data.user,
+      token: data.token,
+    })
+    setAuthorizationToken(data.token)
+    if(data.user.branch_offices.length > 0){
+      if(data.user.branch_offices.length === 1){
+        // si solo hay una empresa y solo una sucursal
+        await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: data.user.branch_offices[0].id, id_enterprise: data.user.enterprises[0].id, id_parent : data.user.id_parent, email: data.user.email})
+        localStorage.setItem('user',JSON.stringify(data.user))
+        localStorage.setItem('token',data.token)
+        localStorage.setItem('id_enterprise',data.user.enterprises[0].id)
+        localStorage.setItem('id_branch_office',data.user.branch_offices[0].id)
+        authFinish(data.user)
+      }else{
+        // si solo hay una empresa y más de una sucursal
+        setStorage({user: data.user,toke: data.token,token_facturacion: data.token_facturacion,id_enterprise: data.user.enterprises[0].id})
+        setBranchOffices(data.user.branch_offices)
+        setTypeVisibleDiv(3)
+      }
+    }else{
+      if(data.user.enterprises.length > 0){
+        if(data.user.enterprises.length === 1){
+          localStorage.setItem('user',JSON.stringify(data.user))
+          localStorage.setItem('token',data.token)
+          localStorage.setItem('id_enterprise',data.user.enterprises[0].id)
+          await axios.post(API_URL+'user_id_sucursal_enterprise',{id_sucursal_active: '', id_enterprise: data.user.enterprises[0].id, id_parent : data.user.id_parent, email: data.user.email})
+          authFinish(data.user)
+        }else{
+          setEnterprises(data.user.enterprises)
+          setTypeVisibleDiv(2)
+        }
+      }else{
+        localStorage.setItem('user',JSON.stringify(data.user))
+        localStorage.setItem('token',data.token)
+        props.loginDispatch(data.user)
+      }
+    }
   }
 
   return (
@@ -375,11 +354,9 @@ const AuthPageTemplate = props => {
                 </Col>
               </Row>
             ) : (
-              <Row>
-               <Col>
+              <div style={{width: "100%"}}>
                 <LoadingComponent />
-               </Col>
-             </Row>
+              </div>
             )}
           </>
         ) : typeVisibleDiv == 2 ? (
@@ -410,11 +387,9 @@ const AuthPageTemplate = props => {
                </Col>
              </Row>
            ) : (
-             <Row>
-               <Col>
-                <LoadingComponent />
-               </Col>
-             </Row>
+            <div style={{width: "100%"}}>
+              <LoadingComponent />
+            </div>
            )}
           </>
 
@@ -422,7 +397,7 @@ const AuthPageTemplate = props => {
             <div className="authentication-inner">
               {/* Side container */}
               {/* Do not display the container on extra small, small and medium screens */}
-              {displayImgSection()}
+              {displayImgSection}
               {/* / Side container */}
 
               {/* Form container */}
@@ -532,7 +507,7 @@ const AuthPageTemplate = props => {
           <div className="authentication-inner">
               {/* Side container */}
               {/* Do not display the container on extra small, small and medium screens */}
-              {displayImgSection()}
+              {displayImgSection}
               {/* / Side container */}
 
               {/* Form container */}

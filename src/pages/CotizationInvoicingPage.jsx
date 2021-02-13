@@ -144,10 +144,7 @@ const CotizationInvoicingPage = (props) => {
           props.history.replace('/quotitation/search_quotitation')
         }, 1500);
       }else{
-        console.log(props.configGeneral,'aqui console1');
-        fetchClients()
-        fetchProducts()
-        fetchDataUpdate()
+        fetchData()
         setDisplayModals(true)
       }
     }
@@ -161,107 +158,80 @@ const CotizationInvoicingPage = (props) => {
     }
   },[])
 
+  const fetchData = (onlyClient = false) => {
+    if(!displayLoading){
+      setDisplayLoading(true)
+    }
+    let promises = null
+    if(!onlyClient){
+      promises = [
+        axios.get(API_URL+'client'),
+        axios.get(API_URL+'product'),
+        axios.get(API_URL+'cotizacion/'+props.match.params.id)
+      ]
+    }else if(onlyClient){
+      promises = [axios.get(API_URL+'client')]
+    }
 
-  const clearData = () => {
-    setDetailProducts([])
-    setGastosDetail([])
-    setClientDetail({})
+    Promise.all(promises).then(result => {
+      setClients(result[0].data)
+      if(result.length >= 2){
+        
+        setProducts(result[1].data)
+        setGastosDetail(result[2].data.gastos)
+        setDetailProducts(result[2].data.products)
 
-    setCotizationData(oldData => {
-      return {
-        comment: '',
-        date_issue_invoice : moment().tz('America/Santiago').format('YYYY-MM-DD'),
-        date_expiration : moment().tz('America/Santiago').format('YYYY-MM-DD'),
-      }
-    })
-    setTimeout(() => {
-
-    },300)
-  }
-
-  const fetchDataUpdate = () => {
-    axios.get(API_URL+'cotizacion/'+props.match.params.id).then(result => {
-      setGastosDetail(result.data.gastos)
-      setDetailProducts(result.data.products)
-
-      setCotizationData(oldData => {
-        return Object.assign({},oldData,{
-          business_name_transmitter: result.data.business_name_transmitter,
-          rut_transmitter: result.data.rut_transmitter,
-          address_transmitter: result.data.address_transmitter,
-          country_transmitter: result.data.country_transmitter,
-          email_transmitter: result.data.email_transmitter,
-          phone_transmitter: result.data.phone_transmitter,
-          actividad_economica_transmitter: result.data.actividad_economica_transmitter,
-          city_transmitter : result.data.city_transmitter,
-          comment: result.data.comment,
-          date_issue_invoice: result.data.date_issue_invoice ? moment(result.data.date_issue_invoice).tz('America/Santiago').format('YYYY-MM-DD') : moment().tz('America/Santiago').format('YYYY-MM-DD'),
-          type_api: result.data.type_api,
-          rut_client: result.data.rut_client,
-          business_name_client: result.data.business_name_client,
-          address_client: result.data.address_client,
-          actividad_economica_client: result.data.actividad_economica_client,
-          city_client : result.data.city_client,
-          name_contact: result.data.name_contact,
-          phone_contact: result.data.phone_contact,
-          email_contact: result.data.email_contact,
-          name_seller: result.data.name_seller,
-          phone_seller: result.data.phone_seller,
-          email_seller: result.data.email_seller,
-          total_with_iva : result.data.total_with_iva, // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
-          price_list: "",
-          status: result.data.status,
-          ref: result.data.ref,
-          way_of_payment: result.data.way_of_payment ? result.data.way_of_payment : "Crédito",
-          discount_global: result.data.discount_global,
-          days_expiration: result.data.days_expiration ? result.data.days_expiration : 30,
-          id_branch_office : result.data.id_branch_office,
-          comuna_client: result.data.comuna_client,
-          city_client: result.data.city_client,
-          spin_client: result.data.spin_client,
-          comuna_transmitter: result.data.comuna_transmitter,
-          type_buy_client: result.data.type_buy_client,
-          type_sale_transmitter: result.data.type_sale_transmitter,
-          type_invoicing : result.data.type_effect
+        setCotizationData(oldData => {
+          return Object.assign({},oldData,{
+            business_name_transmitter: result[2].data.business_name_transmitter,
+            rut_transmitter: result[2].data.rut_transmitter,
+            address_transmitter: result[2].data.address_transmitter,
+            country_transmitter: result[2].data.country_transmitter,
+            email_transmitter: result[2].data.email_transmitter,
+            phone_transmitter: result[2].data.phone_transmitter,
+            actividad_economica_transmitter: result[2].data.actividad_economica_transmitter,
+            city_transmitter : result[2].data.city_transmitter,
+            comment: result[2].data.comment,
+            date_issue_invoice: result[2].data.date_issue_invoice ? moment(result[2].data.date_issue_invoice).tz('America/Santiago').format('YYYY-MM-DD') : moment().tz('America/Santiago').format('YYYY-MM-DD'),
+            type_api: result[2].data.type_api,
+            rut_client: result[2].data.rut_client,
+            business_name_client: result[2].data.business_name_client,
+            address_client: result[2].data.address_client,
+            actividad_economica_client: result[2].data.actividad_economica_client,
+            city_client : result[2].data.city_client,
+            name_contact: result[2].data.name_contact,
+            phone_contact: result[2].data.phone_contact,
+            email_contact: result[2].data.email_contact,
+            name_seller: result[2].data.name_seller,
+            phone_seller: result[2].data.phone_seller,
+            email_seller: result[2].data.email_seller,
+            total_with_iva : result[2].data.total_with_iva, // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
+            price_list: "",
+            status: result[2].data.status,
+            ref: result[2].data.ref,
+            way_of_payment: result[2].data.way_of_payment ? result[2].data.way_of_payment : "Crédito",
+            discount_global: result[2].data.discount_global,
+            days_expiration: result[2].data.days_expiration ? result[2].data.days_expiration : 30,
+            id_branch_office : result[2].data.id_branch_office,
+            comuna_client: result[2].data.comuna_client,
+            city_client: result[2].data.city_client,
+            spin_client: result[2].data.spin_client,
+            comuna_transmitter: result[2].data.comuna_transmitter,
+            type_buy_client: result[2].data.type_buy_client,
+            type_sale_transmitter: result[2].data.type_sale_transmitter,
+            type_invoicing : result[2].data.type_effect
+          })
         })
-      })
+      }
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
-
+  
   const goToDashboard = () => {
       props.history.replace('/quotitation/search_quotitation')
-  }
-
-  const fetchClients = () => {
-    axios.get(API_URL+'client').then(result => {
-      setClients(result.data)
-    }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-    })
-  }
-
-  const fetchProducts = () => {
-    axios.get(API_URL+'product').then(result => {
-      setProducts(result.data)
-    }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-    })
   }
 
   const onChange = async e => {
@@ -291,7 +261,7 @@ const CotizationInvoicingPage = (props) => {
   }
   const handleHideModalClient = () => {
     setIsShowModalClient(false)
-    fetchClients()
+    fetchData(true)
   }
 
   const handleHideModalProduct = () => {
@@ -304,18 +274,6 @@ const CotizationInvoicingPage = (props) => {
 
   const handleModalSeller = () => {
     setIsShowModalSeller(!isShowModalSeller)
-  }
-
-  const removeItemDetail = data => {
-    setDetailProducts(detail => {
-      return detail.filter(v => v.name_product !== data.name_product)
-    })
-  }
-
-  const removeGastoDetail = data => {
-    setGastosDetail(gastos =>{
-     return gastos.filter(v => v.description !== data.description)
-    })
   }
 
   const handleSelectContact = dataContact => {
@@ -396,13 +354,12 @@ const CotizationInvoicingPage = (props) => {
     }
 
     setDisableButton(true)
-    setDisplayLoading(true)
+    //setDisplayLoading(true)
     axios.put(API_URL+'cotizacion_facturar/'+props.match.params.id,object_post).then(result => {
       toast.success('Cotización facturada con éxito')
       setDisableButton(false)
-      setDisplayLoading(false)
+      //setDisplayLoading(false)
       handleModalInvoice()
-      clearData()
       toast.info('Generando pdf de la Factura, espere por favor...')
       result.data.response.forEach((item, i) => {
         window.open(item.pdf_public_url,'_blank')
@@ -410,13 +367,9 @@ const CotizationInvoicingPage = (props) => {
        goToDashboard()
 
     }).catch(err => {
-      setDisplayLoading(false)
+      //setDisplayLoading(false)
       setDisableButton(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
 
   }

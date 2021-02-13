@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import 'styles/components/modalComponents.css'
 import {Modal,Row,Col,Button} from 'react-bootstrap'
-import {FaEdit,FaEye,FaFilePdf,FaBan,FaSync,FaFileInvoice} from 'react-icons/fa'
+import {FaEye,FaFilePdf,FaBan,FaFileInvoice} from 'react-icons/fa'
 
 const ModalInvoiceActions = (props) => {
   return (
@@ -35,7 +35,7 @@ const ModalInvoiceActions = (props) => {
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printInvoice(props.cotization)} block={true}>Ver factura pdf <FaFilePdf /></Button>
                 </Col>
                 <Col sm={3} md={3} lg={3}>
-                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.noteCredit(props.cotization)} block={true}>Nota de crédito <FaFilePdf /></Button>
+                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.noteCredit(props.cotization)} block={true}>Nota de crédito o Debito <FaFilePdf /></Button>
                 </Col>
               </Row>
             ) : props.isGuide ? (
@@ -109,7 +109,7 @@ ModalInvoiceActions.propTypes = {
   cotization: PropTypes.object.isRequired,
   printInvoice: PropTypes.func.isRequired,
   goToBond: PropTypes.func,
-  noteCredit: PropTypes.func.isRequired,
+  noteCredit: PropTypes.func,
   anulateInvoice: PropTypes.func.isRequired,
   seeDetailCotization: PropTypes.func.isRequired,
   goToInvoice: PropTypes.func,

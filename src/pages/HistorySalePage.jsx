@@ -162,6 +162,10 @@ const HistorySalePage = (props) => {
       ]
   })
 
+  const anulateSale = () => {
+
+  }
+  
   const handleDataDonutSsStatus = () => {
 
     stadistics.forEach((v, i) => {
@@ -178,7 +182,27 @@ const HistorySalePage = (props) => {
   }
 
   const printInvoice = datos => {
-    window.open('/invoicePrintPage/'+datos.id,'_blank')
+    let params = "/"+datos.ref;
+    setDisplayLoading(true)
+    axios.get(API_URL+"sale_print_invoice_history/"+datos.ref).then(result => {
+      if(datos.voucher){
+        
+        axios.get(API_URL+'invoice_print/'+result.data.id+"/2/2").then(result => {
+          window.open(API_URL+'documents/sale_note/files_pdf/'+result.data.name)
+          setDisplayLoading(false)
+        }).catch(err => {
+          setDisplayLoading(false)
+          props.tokenExpired(err)
+        })
+
+      }else{
+        setDisplayLoading(false)
+        window.open(result.data.pdf_public_url_bill,"_blank")
+      }
+    }).catch(error => {
+      setDisplayLoading(false)
+      props.tokenExpired(error)
+    })
   }
 
   const solvedSale = data => {
@@ -189,10 +213,6 @@ const HistorySalePage = (props) => {
   const seeDetails = data => {
     setSaleDataOption(data)
     setIsOpenDetailSale(true)
-  }
-
-  const anulateSale = data => {
-
   }
 
   const fetchData = () => {
@@ -210,10 +230,12 @@ const HistorySalePage = (props) => {
     })
   }
 
-  const handleOnhideSaleFiao = () => {
+  const handleOnhideSaleFiao = (isPost = false) => {
     setIsOpenSolvedSale(false)
-    resetChartData()
-    fetchData()
+    if(isPost){
+      resetChartData()
+      fetchData()
+    }
   }
 
   const resetChartData = () => {
@@ -234,8 +256,7 @@ const HistorySalePage = (props) => {
           <LoadingComponent />
         </Container>
       ) : (
-
-        <Container>
+        <Container fluid>
           <Row>
             <Col sm={6} md={6} lg={6}>
               <h4 className="title_principal">Tabla de Ventas</h4>

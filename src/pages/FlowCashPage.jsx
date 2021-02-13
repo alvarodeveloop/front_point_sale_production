@@ -7,7 +7,6 @@ import {
   Tab,
   Tabs
 } from 'react-bootstrap'
-import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import axios from 'axios'
 import { connect } from 'react-redux'

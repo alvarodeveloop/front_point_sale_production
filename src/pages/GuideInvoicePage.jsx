@@ -7,39 +7,24 @@ import {
   Col,
   Container,
   Button,
-  Dropdown,
-  DropdownButton,
-  Accordion,
-  Card,
   Form
 } from 'react-bootstrap'
-import { API_URL, FRONT_URL } from 'utils/constants'
-import { FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt, FaUser, FaUsers, FaBook } from 'react-icons/fa'
-import Table from 'components/Table'
-import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
+import { API_URL } from 'utils/constants'
 import FormClientModal from 'components/modals/FormClientModal'
 import ModalGastosCotizacion from 'components/modals/ModalGastosCotizacion'
-import { showPriceWithDecimals } from 'utils/functions'
 import * as moment from 'moment-timezone'
 import InputField from 'components/input/InputComponent'
 import { connect } from 'react-redux'
-import { ColumnsCotization, GastosCotizacion } from 'utils/columns/cotization'
-import ModalClientCotizacion from 'components/modals/ModalClientCotizacion'
 import ModalContacts from 'components/modals/ModalContacts'
 import ModalSeller from 'components/modals/ModalSeller'
 import styled from 'styled-components'
 import layoutHelpers from 'shared/layouts/helpers'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import TableProductsCotization from 'components/TableProductsCotization'
 import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
 import {formatRut} from 'utils/functions'
 import {OBJECT_COTIZATION} from 'utils/constants'
 import InvoiceExcentasComponent from 'components/invoice/InvoiceExcentasComponent'
 import InvoiceAfectaComponent from 'components/invoice/InvoiceAfectaComponent'
 import LoadingComponent from 'components/LoadingComponent'
-
-let DetailCotizacion = null
 
 const Styles = styled.div`
 
@@ -88,14 +73,12 @@ const GuideInvoicePage = (props) => {
 
   const [displayLoading, setDisplayLoading] = useState(true)
   const [clients,setClients] = useState([])
-  const [clientDetail,setClientDetail] = useState({})
   const [detailProducts, setDetailProducts] = useState([])
   const [isShowModalClient, setIsShowModalClient] = useState(false)
   const [isShowModalGastos, setIsShowModalGastos] = useState(false)
   const [isShowModalProduct, setIsShowModalProduct] = useState(false)
   const [products,setProducts] = useState([])
   const [gastosDetail,setGastosDetail] = useState([])
-  const [openModalClientMail,setOpenModalClientMail] = useState(false)
   const [disableButtons,setDisableButton] = useState(false)
   const [isShowModalContacts,setIsShowModalContacts] = useState(false)
   const [isShowModalSeller,setIsShowModalSeller] = useState(false)
@@ -143,9 +126,7 @@ const GuideInvoicePage = (props) => {
           props.history.replace('/guide/guide_search')
         }, 1500);
       }else{
-        fetchClients()
-        fetchProducts()
-        fetchDataUpdate()
+        fetchData()
         setDisplayModals(true)
       }
     }
@@ -159,63 +140,76 @@ const GuideInvoicePage = (props) => {
     }
   },[])
 
+  const fetchData = (onlyClient = false) => {
+    if(!displayLoading){
+      setDisplayLoading(true)
+    }
+    let promises = null
+    if(!onlyClient){
+      promises = [
+        axios.get(API_URL+'client'),
+        axios.get(API_URL+'product'),
+        axios.get(API_URL+'guide/'+props.match.params.id)
+      ]
+    }else if(onlyClient){
+      promises = [axios.get(API_URL+'client')]
+    }
 
-  const fetchDataUpdate = () => {
-    axios.get(API_URL+'guide/'+props.match.params.id).then(result => {
-      setGastosDetail(result.data.gastos)
-      setDetailProducts(result.data.products)
+    Promise.all(promises).then(result => {
+      setClients(result[0].data)
+      if(result.length >= 2){
+        
+        setProducts(result[1].data)
+        setGastosDetail(result[2].data.gastos)
+        setDetailProducts(result[2].data.products)
 
-      setCotizationData(oldData => {
-        return Object.assign({},oldData,{
-          id_guide: props.match.params.id,
-          business_name_transmitter: result.data.business_name_transmitter,
-          rut_transmitter: result.data.rut_transmitter,
-          address_transmitter: result.data.address_transmitter,
-          country_transmitter: result.data.country_transmitter,
-          email_transmitter: result.data.email_transmitter,
-          phone_transmitter: result.data.phone_transmitter,
-          actividad_economica_transmitter: result.data.actividad_economica_transmitter,
-          city_transmitter : result.data.city_transmitter,
-          comment: result.data.comment,
-          date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-          type_api: result.data.type_api,
-          rut_client: result.data.rut_client,
-          business_name_client: result.data.business_name_client,
-          address_client: result.data.address_client,
-          actividad_economica_client: result.data.actividad_economica_client,
-          city_client : result.data.city_client,
-          name_contact: result.data.name_contact,
-          phone_contact: result.data.phone_contact,
-          email_contact: result.data.email_contact ? result.data.email_contact : props.configGeneral ? props.configGeneral.email_enterprise : '' ,
-          name_seller: result.data.name_seller,
-          phone_seller: result.data.phone_seller,
-          email_seller: result.data.email_seller,
-          total_with_iva : result.data.total_with_iva, // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
-          price_list: "",
-          status: result.data.status,
-          ref: result.data.ref,
-          way_of_payment: result.data.way_of_payment ? result.data.way_of_payment : 1,
-          discount_global: result.data.discount_global,
-          days_expiration: result.data.days_expiration,
-          id_branch_office : result.data.id_branch_office,
-          comuna_client: result.data.comuna_client,
-          city_client: result.data.city_client,
-          spin_client: result.data.spin_client,
-          comuna_transmitter: result.data.comuna_transmitter,
-          type_buy_client: result.data.type_buy_client,
-          type_sale_transmitter: result.data.type_sale_transmitter,
-          total_with_iva: result.data.total_with_iva,
+        setCotizationData(oldData => {
+          return Object.assign({},oldData,{
+            id_guide: props.match.params.id,
+            business_name_transmitter: result[2].data.business_name_transmitter,
+            rut_transmitter: result[2].data.rut_transmitter,
+            address_transmitter: result[2].data.address_transmitter,
+            country_transmitter: result[2].data.country_transmitter,
+            email_transmitter: result[2].data.email_transmitter,
+            phone_transmitter: result[2].data.phone_transmitter,
+            actividad_economica_transmitter: result[2].data.actividad_economica_transmitter,
+            city_transmitter : result[2].data.city_transmitter,
+            comment: result[2].data.comment,
+            date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+            type_api: result[2].data.type_api,
+            rut_client: result[2].data.rut_client,
+            business_name_client: result[2].data.business_name_client,
+            address_client: result[2].data.address_client,
+            actividad_economica_client: result[2].data.actividad_economica_client,
+            city_client : result[2].data.city_client,
+            name_contact: result[2].data.name_contact,
+            phone_contact: result[2].data.phone_contact,
+            email_contact: result[2].data.email_contact ? result[2].data.email_contact : props.configGeneral ? props.configGeneral.email_enterprise : '' ,
+            name_seller: result[2].data.name_seller,
+            phone_seller: result[2].data.phone_seller,
+            email_seller: result[2].data.email_seller,
+            total_with_iva : result[2].data.total_with_iva, // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
+            price_list: "",
+            status: result[2].data.status,
+            ref: result[2].data.ref,
+            way_of_payment: result[2].data.way_of_payment ? result[2].data.way_of_payment : 1,
+            discount_global: result[2].data.discount_global,
+            days_expiration: result[2].data.days_expiration,
+            id_branch_office : result[2].data.id_branch_office,
+            comuna_client: result[2].data.comuna_client,
+            city_client: result[2].data.city_client,
+            spin_client: result[2].data.spin_client,
+            comuna_transmitter: result[2].data.comuna_transmitter,
+            type_buy_client: result[2].data.type_buy_client,
+            type_sale_transmitter: result[2].data.type_sale_transmitter,
+            total_with_iva: result[2].data.total_with_iva,
+          })
         })
-      })
+      }
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      console.log(err);
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -223,31 +217,6 @@ const GuideInvoicePage = (props) => {
     props.history.replace('/guide/guide_search')
   }
 
-  const fetchClients = () => {
-    axios.get(API_URL+'client').then(result => {
-      setClients(result.data)
-    }).catch(err => {
-      console.log(err);
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-    })
-  }
-
-  const fetchProducts = () => {
-    axios.get(API_URL+'product').then(result => {
-      setProducts(result.data)
-    }).catch(err => {
-      console.log(err);
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-    })
-  }
 
   const onChange = async e => {
     e.persist()
@@ -276,7 +245,7 @@ const GuideInvoicePage = (props) => {
   }
   const handleHideModalClient = () => {
     setIsShowModalClient(false)
-    fetchClients()
+    fetchData(true)
   }
 
   const handleHideModalProduct = () => {
@@ -376,13 +345,13 @@ const GuideInvoicePage = (props) => {
     }
 
     setDisableButton(true)
-    setDisplayLoading(true)
+    //setDisplayLoading(true)
     axios.put(API_URL+'invoice_by_guide/'+props.match.params.id,object_post).then(result => {
 
       toast.success('Guía facturada con éxito')
       let invoice_word = result.data.length > 1 ? "Facturas" : "Factura"
       //toast.success(invoice_word+' realizada con éxito')
-      setDisplayLoading(false)
+      //setDisplayLoading(false)
       setDisableButton(false)
       toast.info('Generando pdf de la '+invoice_word+', espere por favor...')
 
@@ -394,13 +363,8 @@ const GuideInvoicePage = (props) => {
 
     }).catch(err => {
       setDisableButton(false)
-      setDisplayLoading(false)
-      console.log(err);
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      //setDisplayLoading(false)
+      props.tokenExpired(err)
     })
 
   }

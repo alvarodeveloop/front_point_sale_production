@@ -101,7 +101,7 @@ const GuideDispatchSearchPage = props => {
             if(props1.status == 1){
               return (<Badge variant="secondary" className="font-badge">Pendiente</Badge>)
             }else if(props1.status == 2){
-              return (<Badge variant="secondary" className="font-badge">Esperando por Pago</Badge>)
+              return (<Badge variant="secondary" className="font-badge">Vencida</Badge>)
             }else if(props1.status == 3){
               return (<Badge variant="secondary" className="font-badge">Pagada</Badge>)
             }else{
@@ -120,7 +120,7 @@ const GuideDispatchSearchPage = props => {
                     {props1.cell.row.original.products.map((v,i) => (
                       <li className="list-group-item" key={i}>
                         <b>Producto</b>: {v.name_product}<br/>
-                        <b>Precio</b> : {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,v.price)}<br/>
+                        <b>Precio</b> : {props.configGeneral ? props.configGeneral.simbolo_moneda : ""} {showPriceWithDecimals(props.configGeneral,v.price)}<br/>
                         <b>Cantidad</b>: {v.quantity}</li>
                     ))}
                   </ul>
@@ -262,12 +262,7 @@ const GuideDispatchSearchPage = props => {
       }, 1000);
      }).catch(err => {
        setDisplayFilter(1)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+       props.tokenExpired(err)
      })
   }
 
@@ -294,12 +289,7 @@ const GuideDispatchSearchPage = props => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      console.log(err);
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -309,18 +299,7 @@ const GuideDispatchSearchPage = props => {
 
   const printInvoice = original => {
     toast.info('Cargando documento, espere por favor')
-    setDisplayLoading(true)
-    axios.get(API_URL+'guide_print/'+original.id+"/0").then(result => {
-      window.open(API_URL+'documents/guide/files_pdf/'+result.data.name)
-      setDisplayLoading(false)
-    }).catch(err => {
-      setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-    })
+    window.open(original.name_pdf,"_blank")
   }
 
   const handleModalDetail = () => {
@@ -374,12 +353,7 @@ const GuideDispatchSearchPage = props => {
         fetchData()
      }).catch(err => {
       setDisplayLoading(false)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+       props.tokenExpired(err)
     })
   }
 

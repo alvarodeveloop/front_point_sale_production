@@ -5,27 +5,11 @@ import { toast } from 'react-toastify'
 import {
   Row,
   Col,
-  Container,
   Button,
-  Dropdown,
-  DropdownButton,
   Accordion,
-  Card,
-  Form
 } from 'react-bootstrap'
-import { API_URL, FRONT_URL } from 'utils/constants'
-import { FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt, FaUser, FaUsers, FaBook } from 'react-icons/fa'
-import Table from 'components/Table'
-import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
-import { showPriceWithDecimals } from 'utils/functions'
-import * as moment from 'moment-timezone'
+import { API_URL } from 'utils/constants'
 import InputField from 'components/input/InputComponent'
-import { connect } from 'react-redux'
-import styled from 'styled-components'
-import layoutHelpers from 'shared/layouts/helpers'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import TableProductsCotization from 'components/TableProductsCotization'
 import {formatRut} from 'utils/functions'
 import TransmitterInvoiceComponent from 'components/invoice/TransmitterInvoiceComponent'
 import ClientInvoiceComponent from 'components/invoice/ClientInvoiceComponent'
@@ -33,13 +17,12 @@ import TableTotalComponent from 'components/invoice/TableTotalComponent'
 import RefComponent from 'components/invoice/RefComponent'
 import GastosComponent from 'components/invoice/GastosComponent'
 import ProductTableComponent from 'components/invoice/ProductTableComponent'
-
-let DetailCotizacion = null
+import LoadingComponent from 'components/LoadingComponent'
 
 const InvoiceExcentasComponent = (props) => {
 
-  const [displaySection,setDisplaySection] = useState(1)
   const [readonly,setReadonly] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
 
@@ -60,215 +43,208 @@ const InvoiceExcentasComponent = (props) => {
 
   }
 
-  const searchReceptorEmisor = (rut = false) => {
-    let rut_search = rut ? rut : props.cotizationData.rut_client_search
-    if(rut_search){
+  const searchReceptorEmisor = async (rut = false) => {
+    try{
+      let rut_search = rut ? rut : props.cotizationData.rut_client_search
       toast.info('Preparando Facturación')
-       axios.get(API_URL+'get_transmitter_invoice_excenta/'+rut_search).then(result => {
-
+      let emisor = await axios.get(API_URL+"get_transmitter_invoice_excenta")
+      if(rut_search){
+        let receptor = await axios.get(API_URL+"get_receptor_invoice_excenta/"+emisor.data.id+"/"+rut_search)
         props.setCotizationData(oldData => {
           return Object.assign({},oldData,{
             rut_transmitter: props.configStore ? props.configStore.rut : '',
-            business_name_transmitter: result.data.emisor.razon_social,
-            address_transmitter_array : result.data.emisor.direcciones,
-            direccion_seleccionada : result.data.emisor.direccion_seleccionada,
-            comuna_transmitter: result.data.emisor.comuna_seleccionada,
-            city_transmitter: result.data.emisor.ciudad_seleccionada,
-            phone_transmitter : result.data.emisor.numero_telefonico,
-            type_sale_transmitter_array: result.data.emisor.tipos_de_venta,
-            email_transmitter: result.data.emisor.correo,
-            spin_transmitter: result.data.emisor.giro,
-            actividad_economica_transmitter_array: result.data.emisor.actvidades_economicas,
-            actividad_economica_transmitter: result.data.emisor.actividad_economica_seleccionada,
-            rut_client : result.data.receptor.rut +"-"+ result.data.receptor.dv,
-            business_name_client: result.data.receptor.razon_social,
-            address_client_array: result.data.receptor.direcciones,
-            comuna_client: result.data.receptor.comuna_seleccionada,
-            city_client: result.data.receptor.ciudad_seleccionada,
-            spin_client: result.data.receptor.giro_seccionado,
-            spin_client_array: result.data.receptor.giros,
-            name_contact : result.data.receptor.contacto,
-            facturaId: result.data.facturaID
+            business_name_transmitter: emisor.data.emisor.razon_social,
+            address_transmitter_array : emisor.data.emisor.direcciones[0],
+            address_transmitter : emisor.data.emisor.direccion_seleccionada ? emisor.data.emisor.direccion_seleccionada : emisor.data.emisor.direcciones[0].length ? emisor.data.emisor.direcciones[0][0] : "",
+            comuna_transmitter: emisor.data.emisor.comuna_seleccionada,
+            city_transmitter: emisor.data.emisor.ciudad_seleccionada,
+            phone_transmitter : emisor.data.emisor.numero_telefonico,
+            type_sale_transmitter_array: emisor.data.emisor.tipos_de_venta,
+            type_sale_transmitter : emisor.data.emisor.tipos_de_venta.length ? emisor.data.emisor.tipos_de_venta[0][0] : "", 
+            email_transmitter: emisor.data.emisor.correo,
+            spin_transmitter: emisor.data.emisor.giro,
+            actividad_economica_transmitter_array: emisor.data.emisor.actvidades_economicas,
+            actividad_economica_transmitter: emisor.data.emisor.actividad_economica_seleccionada ? emisor.data.emisor.actividad_economica_seleccionada : emisor.data.emisor.actvidades_economicas.length ? emisor.data.emisor.actvidades_economicas[0][0] : "" ,
+            rut_client : receptor.data.receptor.rut +"-"+ receptor.data.receptor.dv,
+            business_name_client: receptor.data.receptor.razon_social,
+            address_client_array: receptor.data.receptor.direcciones[0],
+            address_client: receptor.data.receptor.direccion_seleccionada,
+            comuna_client: receptor.data.receptor.comuna_seleccionada,
+            city_client: receptor.data.receptor.ciudad_seleccionada,
+            spin_client: receptor.data.girosReceptor[0].nombre,
+            spin_client_array: receptor.data.girosReceptor,
+            type_buy_client_array : receptor.data.TipoDeCompra,
+            type_buy_client:  receptor.data.receptor.tipoDeCompraId.toString(),
+            facturaId: emisor.data.id,
           })
         })
-
-        setTimeout(function () {
-          setDisplaySection(2)
-        }, 1000);
-
-       }).catch(err => {
-         if(err.response){
-           toast.error(err.response.data.message)
-         }else{
-           console.log(err);
-           toast.error('Error, contacte con soporte')
-         }
-       })
-    }else{
-      toast.info('Debe ingresar el rut del cliente para cargar la factura')
-      setReadonly(false)
+      }else{
+        props.setCotizationData(oldData => {
+          return Object.assign({},oldData,{
+            rut_transmitter: props.configStore ? props.configStore.rut : '',
+            business_name_transmitter: emisor.data.emisor.razon_social,
+            address_transmitter_array : emisor.data.emisor.direcciones[0],
+            address_transmitter : emisor.data.emisor.direccion_seleccionada ? emisor.data.emisor.direccion_seleccionada : emisor.data.emisor.direcciones[0].length ? emisor.data.emisor.direcciones[0][0] : "",
+            comuna_transmitter: emisor.data.emisor.comuna_seleccionada,
+            city_transmitter: emisor.data.emisor.ciudad_seleccionada,
+            phone_transmitter : emisor.data.emisor.numero_telefonico,
+            type_sale_transmitter_array: emisor.data.emisor.tipos_de_venta,
+            type_sale_transmitter : emisor.data.emisor.tipos_de_venta.length ? emisor.data.emisor.tipos_de_venta[0][0] : "", 
+            email_transmitter: emisor.data.emisor.correo,
+            spin_transmitter: emisor.data.emisor.giro,
+            actividad_economica_transmitter_array: emisor.data.emisor.actvidades_economicas,
+            actividad_economica_transmitter: emisor.data.emisor.actividad_economica_seleccionada ? emisor.data.emisor.actividad_economica_seleccionada : emisor.data.emisor.actvidades_economicas.length ? emisor.data.emisor.actvidades_economicas[0][0] : "" ,
+            facturaId: emisor.data.id,
+          })
+        })
+      }
+      setIsLoading(false)
+    }catch(e){
+      toast.error("Ha ocurrido un error al cargar la factura, intente de nuevo")
+      setTimeout(() => {
+        props.history.goBack()
+      },1500)
+      
     }
   }
 
   return (
     <React.Fragment>
-      {displaySection == 1 ? (
-        <React.Fragment>
-          <Row className="justify-content-center">
-            <InputField
-              type='text'
-              label='Ingrese el rut del cliente'
-              name='rut_client_search'
-              readonly={readonly}
-              required={true}
-              messageErrors={[
-                'Requerido*'
-              ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
-              value={props.cotizationData.rut_client_search}
-              handleChange={onChangeLocal}
+      {
+        isLoading ? (
+          <LoadingComponent />
+        ) : (
+          <>
+            <Row>
+              <Col sm={12} md={12} lg={12}>
+                <Accordion defaultActiveKey="2">
+                  <TransmitterInvoiceComponent
+                    isType="facturacion"
+                    cotizationData={props.cotizationData}
+                    setCotizationData={props.setCotizationData}
+                    onChange={props.onChange}
+                    configGeneral={props.configGeneral}
+                  />
+                  <ClientInvoiceComponent
+                    isType="facturacion"
+                    cotizationData={props.cotizationData}
+                    setCotizationData={props.setCotizationData}
+                    setIsShowModalClient={props.setIsShowModalClient}
+                    handleModalSeller={props.handleModalSeller}
+                    handleModalContacts={props.handleModalContacts}
+                    clients={props.clients}
+                    onChange={props.onChange}
+                    />
+                  <RefComponent
+                    onChangeTableRef={props.onChangeTableRef}
+                    refCotizacion={props.refCotizacion}
+                    removeProductRef={props.removeProductRef}
+                    addRef={props.addRef}
+                    />
+                </Accordion>
+              </Col>
+            </Row>
+            <br/>
+            <ProductTableComponent
+              setDetailProducts={props.setDetailProducts}
+              detailProducts={props.detailProducts}
+              cotizationData={props.cotizationData}
+              setIsShowModalProduct={props.setIsShowModalProduct}
+              setGastosDetail={props.setGastosDetail}
+              onChange={props.onChange}
+              products={props.products}
+              {...props}
+            />
+            {/* ======================================================= */}
+            <hr/>
+            <GastosComponent
+              gastosDetail={props.gastosDetail}
+              setGastosDetail={props.setGastosDetail}
+              configGeneral={props.configGeneral}
+              setIsShowModalGastos={props.setIsShowModalGastos}
               />
-          </Row>
-          <Row className="justify-content-center">
-            <Col sm={3} md={3} lg={3}>
-              <Button variant="danger" block={true} onClick={searchReceptorEmisor} size="sm">Buscar <FaSearch /></Button>
-            </Col>
-            <Col sm={3} md={3} lg={3}>
-              <Button variant="secondary" block={true} onClick={goBackSelection} size="sm">Volver</Button>
-            </Col>
-          </Row>
-        </React.Fragment>
-      ) : (
-        <React.Fragment>
-          <Row>
-            <Col sm={12} md={12} lg={12}>
-              <Accordion defaultActiveKey="2">
-                <TransmitterInvoiceComponent
-                  isType="facturacion"
-                  cotizationData={props.cotizationData}
-                  setCotizationData={props.setCotizationData}
-                  onChange={props.onChange}
-                  configGeneral={props.onChange}
+            <br/>
+            <Row>
+              <InputField
+                type='date'
+                label='Fecha emisión de la factura (MM-DD-YYYY)'
+                name='date_issue_invoice'
+                required={true}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.date_issue_invoice}
+                handleChange={props.onChange}
                 />
-                <ClientInvoiceComponent
-                  isType="facturacion"
-                  cotizationData={props.cotizationData}
-                  setCotizationData={props.setCotizationData}
-                  setIsShowModalClient={props.setIsShowModalClient}
-                  handleModalSeller={props.handleModalSeller}
-                  handleModalContacts={props.handleModalContacts}
-                  clients={props.clients}
-                  onChange={props.onChange}
-                  />
-                <RefComponent
-                  onChangeTableRef={props.onChangeTableRef}
-                  refCotizacion={props.refCotizacion}
-                  removeProductRef={props.removeProductRef}
-                  addRef={props.addRef}
-                  />
-              </Accordion>
-            </Col>
-          </Row>
-          <br/>
-          <ProductTableComponent
-            setDetailProducts={props.setDetailProducts}
-            detailProducts={props.detailProducts}
-            cotizationData={props.cotizationData}
-            setIsShowModalProduct={props.setIsShowModalProduct}
-            setGastosDetail={props.setGastosDetail}
-            onChange={props.onChange}
-            products={props.products}
-            {...props}
-          />
-          {/* ======================================================= */}
-          <hr/>
-          <GastosComponent
-            gastosDetail={props.gastosDetail}
-            setGastosDetail={props.setGastosDetail}
-            configGeneral={props.configGeneral}
-            setIsShowModalGastos={props.setIsShowModalGastos}
-            />
-          <br/>
-          <Row>
-            <InputField
-              type='date'
-              label='Fecha emisión de la factura (MM-DD-YYYY)'
-              name='date_issue_invoice'
-              required={true}
-              messageErrors={[
-                'Requerido*'
-              ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
-              value={props.cotizationData.date_issue_invoice}
-              handleChange={props.onChange}
-              />
-            <InputField
-              type='number'
-              label='Dias de Expiración'
-              name='days_expiration'
-              required={false}
-              messageErrors={[
-                'Requerido*'
-              ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
-              value={props.cotizationData.days_expiration}
-              handleChange={props.onChange}
-              />
-            <InputField
-              type='select'
-              label='Forma de Pago'
-              name='way_of_payment'
-              required={true}
-              messageErrors={[
-                'Requerido*'
-              ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
-              value={props.cotizationData.way_of_payment}
-              handleChange={props.onChange}
-              >
-              <option value="">--Seleccione--</option>
-              <option value={"Contado"}>Contado</option>
-              <option value={"Crédito"}>Crédito</option>
-              <option value={"Sin Costo"}>Sin Costo</option>
-            </InputField>
-          </Row>
-          <Row>
-            <InputField
-              type='number'
-              label='Descuento Global'
-              name='discount_global'
-              required={false}
-              messageErrors={[
+              <InputField
+                type='number'
+                label='Dias de Expiración'
+                name='days_expiration'
+                required={false}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.days_expiration}
+                handleChange={props.onChange}
+                />
+              <InputField
+                type='select'
+                label='Forma de Pago'
+                name='way_of_payment'
+                required={true}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.way_of_payment}
+                handleChange={props.onChange}
+                >
+                <option value="">--Seleccione--</option>
+                <option value={"Contado"}>Contado</option>
+                <option value={"Crédito"}>Crédito</option>
+                <option value={"Sin Costo"}>Sin Costo</option>
+              </InputField>
+            </Row>
+            <Row>
+              <InputField
+                type='number'
+                label='Descuento Global'
+                name='discount_global'
+                required={false}
+                messageErrors={[
 
-              ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
-              value={props.cotizationData.discount_global}
-              handleChange={props.onChange}
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.discount_global}
+                handleChange={props.onChange}
+                />
+            </Row>
+            <TableTotalComponent
+              configGeneral={props.configGeneral}
+              configStore={props.configStore}
+              gastosDetail={props.gastosDetail}
+              detailProducts={props.detailProducts}
+              cotizationData={props.cotizationData}
+              isType={"facturacion"}
               />
-          </Row>
-          <TableTotalComponent
-            configGeneral={props.configGeneral}
-            configStore={props.configStore}
-            gastosDetail={props.gastosDetail}
-            detailProducts={props.detailProducts}
-            cotizationData={props.cotizationData}
-            isType={"facturacion"}
-            />
-          <br/>
-          <Row className="justify-content-center">
-            <Col sm={3} md={3} lg={3}>
-              {props.submitData ? (
-                <Button variant="secondary" size="sm" block={true} type="button" onClick={props.submitData}>Emitir y Facturar</Button>
-              ) : (
-                <Button variant="secondary" size="sm" block={true} type="submit">Emitir y Facturar</Button>
-              )}
-            </Col>
-            <Col sm={3} md={3} lg={3}>
-              <Button variant="danger" size="sm" block={true} type="button" onClick={props.goToDashboard}>Volver a la Tabla</Button>
-            </Col>
-          </Row>
-        </React.Fragment>
-      )}
+            <br/>
+            <Row className="justify-content-center">
+              <Col sm={3} md={3} lg={3}>
+                {props.submitData ? (
+                  <Button variant="secondary" size="sm" block={true} type="button" onClick={props.submitData}>Emitir y Facturar</Button>
+                ) : (
+                  <Button variant="secondary" size="sm" block={true} type="submit">Emitir y Facturar</Button>
+                )}
+              </Col>
+              <Col sm={3} md={3} lg={3}>
+                <Button variant="danger" size="sm" block={true} type="button" onClick={props.goToDashboard}>Volver a la Tabla</Button>
+              </Col>
+            </Row>
+          </>
+        )
+      }
     </React.Fragment>
   )
 }

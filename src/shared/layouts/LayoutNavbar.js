@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-import { Image, Navbar, Nav, FormControl, Dropdown, Badge, ListGroup, Media } from 'react-bootstrap'
+import { Image, Navbar, Nav, Dropdown } from 'react-bootstrap'
 import { setEnterprises, setBranchOffices, setIdEnterprise, setIdBranchOffice} from 'actions/enterpriseSucursal'
 import { setMenu } from 'actions/menu'
 import layoutHelpers from './helpers'
@@ -12,6 +12,7 @@ import {API_URL} from 'utils/constants'
 import {toast} from 'react-toastify'
 import styled from 'styled-components'
 import { setConfigStore, setConfig } from 'actions/configs'
+import { setAuthorizationToken } from 'utils/functions'
 import {FaUser} from 'react-icons/fa'
 
 const Styles = styled.div`
@@ -26,16 +27,22 @@ const LayoutNavbar = (props) => {
 
 
   const [isRTL,setIsRTL] = useState(document.documentElement.getAttribute('dir') === 'rtl')
-  const [displayMessage,setDisplayMessage] = useState(false)
-  const [border_success, setBorderSuccess] = useState(false)
+  const [objectMessage, setObjectMessage] = useState({
+    displayMessage: false,
+    borderSuccess: false
+  })
 
   useEffect(() => {
     if(props.displayMessageNav){
-      setDisplayMessage(true)
-      setBorderSuccess(true)
+      setObjectMessage({
+        displayMessage : true,
+        borderSuccess : true
+      })
     }else{
-      setDisplayMessage(false)
-      setBorderSuccess(false)
+      setObjectMessage({
+        displayMessage : false,
+        borderSuccess : false
+      })
     }
   },[props.displayMessageNav])
   const toggleSidenav = e => {
@@ -46,11 +53,12 @@ const LayoutNavbar = (props) => {
   const handleSelectEnterpriseBranch = async (e,type) => {
     e.persist()
     let val = e.target.value ? e.target.value : false
-    setDisplayMessage(true)
+    setObjectMessage({...objectMessage, displayMessage : true})
     try {
       if(type === "enterprise"){
         let branch = await axios.get(API_URL+'enterprises_branch_office/'+val)
         props.setBranchOffices(branch.data.branchOffices)
+        props.setIdBranchOffice("")
         if(branch.data.menu){
           props.setMenu(branch.data.menu)
         }
@@ -63,10 +71,13 @@ const LayoutNavbar = (props) => {
           props.setConfig({})
         }
         props.setIdEnterprise(val)
-        setDisplayMessage(false)
-        setBorderSuccess(true)
+        if(branch.data.token){
+          localStorage.setItem('token',branch.data.token)
+          setAuthorizationToken(branch.data.token)
+        }
+        setObjectMessage({displayMessage : false,borderSuccess: true})
         setTimeout(function () {
-          setBorderSuccess(false)
+          setObjectMessage({...objectMessage, borderSuccess: false})
         }, 1000);
       }else{
         let branch = await axios.get(API_URL+'enterprises_branch_office/'+null+'/'+val+'/'+1)
@@ -79,22 +90,22 @@ const LayoutNavbar = (props) => {
           props.setConfigStore({})
         }
         props.setIdBranchOffice(val)
-        setDisplayMessage(false)
-        setBorderSuccess(true)
+        setObjectMessage({displayMessage : false,borderSuccess: true})
         setTimeout(function () {
-          setBorderSuccess(false)
+          setObjectMessage({...objectMessage, borderSuccess: false})
         }, 1000);
       }
     } catch (e) {
-      setDisplayMessage(false)
+      setObjectMessage({...objectMessage, displayMessage: false})
+      props.logoutByToken(e)
       console.log(e);
-      toast.error('Error, si este error persiste contacte con soporte')
+      //toast.error('Error, si este error persiste contacte con soporte')
     }
   }
 
   return (
     <Styles>
-      <Navbar bg={props.navbarBg} expand="md" className={!border_success ? "layout-navbar align-items-lg-center container-p-x" : "layout-navbar align-items-lg-center container-p-x border_success"} style={{height: "80px"}}>
+      <Navbar bg={props.navbarBg} expand="md" className={`layout-navbar align-items-lg-center container-p-x ${!objectMessage.borderSuccess ? "" : "border_success"}`} style={{height: "80px"}}>
         {/* Brand */}
         <Navbar.Brand as={NavLink} to="/">
           <Image src={require('../../assets/img/logo/AIDY_01.jpg')}
@@ -118,7 +129,7 @@ const LayoutNavbar = (props) => {
 
         <Navbar.Collapse>
           {
-            displayMessage ? (
+            objectMessage.displayMessage ? (
               <Nav>
                 <Nav.Item>
                   <p style={{color: "rgb(200, 67, 28)"}}>Actualizando el sistema, espere por favor... <Image src={require('../../assets/img/loading.gif')} style={{width: '10px'}} /></p>
@@ -129,7 +140,7 @@ const LayoutNavbar = (props) => {
           <Nav className="align-items-lg-center ml-auto">
             <div className="nav-item d-none d-lg-block text-big font-weight-light line-height-1 opacity-25 mr-3 ml-1">|</div>
             {
-              JSON.parse(localStorage.getItem('user')).id_rol == 2 ? (
+              localStorage.getItem('user')  && JSON.parse(localStorage.getItem('user')).id_rol == 2 ? (
                 <React.Fragment>
                   <Nav.Item className="nav-item nav-link px-0 ml-2 ml-lg-0" style={{width: '200px'}}>
                     <InputField

@@ -235,7 +235,9 @@ const SalePage = (props) => {
 
   const handleSelectClient = data => {
     let data_document = data.split('/')[1]
-    let client = clients.find(v => v.data_document === data_document)
+    console.log(data_document,"aqui la data document");
+    let client = clients.find(v => v.data_document+"-"+v.dv === data_document)
+    console.log(client,"aqui el cliente");
     props.setBuyer(client)
   }
 
@@ -289,12 +291,12 @@ const SalePage = (props) => {
           <Col sm={12} md={12} lg={12}>
             <br/>
             <ul className="">
-              { Object.keys(props.sale.rooms[props.sale.idCartSelected].client).length > 0 ? (
+              { props.sale.rooms[props.sale.idCartSelected].client && Object.keys(props.sale.rooms[props.sale.idCartSelected].client).length > 0 ? (
                 <React.Fragment>
                   <p>
                     <b>Nombre:&nbsp;</b>{props.sale.rooms[props.sale.idCartSelected].client.name_client}
                     <br/>
-                    <b>N°:</b>&nbsp;{props.sale.rooms[props.sale.idCartSelected].client.data_document}
+                    <b>N°:</b>&nbsp;{props.sale.rooms[props.sale.idCartSelected].client.data_document+"-"+props.sale.rooms[props.sale.idCartSelected].client.dv}
                       &nbsp;&nbsp;&nbsp;
                       <a style={{color: 'red'}} href="javascript:void(0)" onClick={handleClientRemove}>
                         <FaTrashAlt />

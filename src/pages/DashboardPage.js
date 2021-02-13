@@ -57,7 +57,7 @@ const DashboardPage = props => {
 
 DashboardPage.propTypes = {
   user: PropTypes.object,
-  id_branch_office: PropTypes.string.isRequired,
+  id_branch_office: PropTypes.string,
   id_enterprise: PropTypes.string,
 }
 

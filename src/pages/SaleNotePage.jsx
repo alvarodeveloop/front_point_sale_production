@@ -7,31 +7,19 @@ import {
   Col,
   Container,
   Button,
-  Dropdown,
-  DropdownButton,
   Accordion,
-  Card,
   Form
 } from 'react-bootstrap'
-import { API_URL, FRONT_URL } from 'utils/constants'
-import { FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt, FaUser, FaUsers, FaBook } from 'react-icons/fa'
-import Table from 'components/Table'
-import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
+import { API_URL } from 'utils/constants'
 import FormClientModal from 'components/modals/FormClientModal'
 import ModalGastosCotizacion from 'components/modals/ModalGastosCotizacion'
-import { showPriceWithDecimals } from 'utils/functions'
 import * as moment from 'moment-timezone'
 import InputField from 'components/input/InputComponent'
 import { connect } from 'react-redux'
-import { ColumnsCotization, GastosCotizacion } from 'utils/columns/cotization'
-import ModalClientCotizacion from 'components/modals/ModalClientCotizacion'
 import ModalContacts from 'components/modals/ModalContacts'
 import ModalSeller from 'components/modals/ModalSeller'
 import styled from 'styled-components'
 import layoutHelpers from 'shared/layouts/helpers'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import TableProductsCotization from 'components/TableProductsCotization'
 import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
 import {formatRut} from 'utils/functions'
 import TransmitterInvoiceComponent from 'components/invoice/TransmitterInvoiceComponent'
@@ -42,8 +30,6 @@ import {OBJECT_COTIZATION} from 'utils/constants'
 import GastosComponent from 'components/invoice/GastosComponent'
 import ProductTableComponent from 'components/invoice/ProductTableComponent'
 import LoadingComponent from 'components/LoadingComponent'
-
-let DetailCotizacion = null
 
 const Styles = styled.div`
 
@@ -99,11 +85,9 @@ const SaleNotePage = (props) => {
   const [products,setProducts] = useState([])
   const [resetValueClient,setResetValueClient] = useState(false)
   const [gastosDetail,setGastosDetail] = useState([])
-  const [openModalClientMail,setOpenModalClientMail] = useState(false)
   const [disableButtons,setDisableButton] = useState(false)
   const [isShowModalContacts,setIsShowModalContacts] = useState(false)
   const [isShowModalSeller,setIsShowModalSeller] = useState(false)
-  const [rutFacturacionClientSearch, setRutFacturacionClientSearch] = useState('')
   const [validated, setValidated] = useState(false)
   const [isOpenModalInvoice, setIsOpenModalInvoice] = useState(false)
   const [cotizationData, setCotizationData] = useState(
@@ -132,14 +116,8 @@ const SaleNotePage = (props) => {
         }, 3000);
       }
     }else{
-      let config_general = props.configGeneral
-      fetchClients()
-      fetchProducts()
-      get_ref()
+      fetchData()
       setDisplayModals(true)
-      setTimeout(() => {
-        setDisplayLoading(false)
-      },3000)
     }
   },[props.id_branch_office])
 
@@ -151,46 +129,36 @@ const SaleNotePage = (props) => {
     }
   },[])
 
+  const fetchData = (onlyClient = false) => {
+    if(!displayLoading){
+      setDisplayLoading(true)
+    }
+    let promises = null
+    if(!onlyClient){
+      promises = [
+        axios.get(API_URL+'client'),
+        axios.get(API_URL+'product'),
+        axios.get(API_URL+'sale_note_get_ref')
+      ]
+    }else if(onlyClient){
+      promises = [axios.get(API_URL+'client')]
+    }
+
+    Promise.all(promises).then(result => {
+      setClients(result[0].data)
+      if(result.length >= 2){
+        setProducts(result[1].data)
+        setCotizationData({...cotizationData, ref: result[2].data.ref})
+      }
+      setDisplayLoading(false)
+    }).catch(err => {
+      setDisplayLoading(false)
+      props.tokenExpired(err)
+    })
+  }
+
   const goToDashboard = () => {
       props.history.replace('/sale_note/sale_note_search')
-  }
-
-
-  const get_ref = () => {
-    axios.get(API_URL+'sale_note_get_ref').then(result => {
-      setCotizationData({...cotizationData, ref: result.data.ref})
-    }).catch(err => {
-      if(err.response){
-       toast.error(err.response.data.message)
-      }else{
-       console.log(err);
-       toast.error('Error, contacte con soporte')
-      }
-    })
-  }
-
-  const fetchClients = () => {
-    axios.get(API_URL+'client').then(result => {
-      setClients(result.data)
-    }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-    })
-  }
-
-  const fetchProducts = () => {
-    axios.get(API_URL+'product').then(result => {
-      setProducts(result.data)
-    }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
-    })
   }
 
   const onChange = e => {
@@ -210,11 +178,7 @@ const SaleNotePage = (props) => {
   }
   const handleHideModalClient = () => {
     setIsShowModalClient(false)
-    fetchClients()
-  }
-
-  const handleHideModalProduct = () => {
-    setIsShowModalProduct(false)
+    fetchData(true)
   }
 
   const handleResetValueClient = () => {
@@ -227,24 +191,6 @@ const SaleNotePage = (props) => {
 
   const handleModalSeller = () => {
     setIsShowModalSeller(!isShowModalSeller)
-  }
-
-  const removeCLient = () => {
-    setClientDetail({})
-    handleResetValueClient()
-    setCotizationData({...cotizationData, rut_client : '', business_name_client: '', address_client: '', city_client: '', comuna_client : '', spin_client: ''})
-  }
-
-  const removeItemDetail = data => {
-    setDetailProducts(detail => {
-      return detail.filter(v => v.name_product !== data.name_product)
-    })
-  }
-
-  const removeGastoDetail = data => {
-    setGastosDetail(gastos =>{
-     return gastos.filter(v => v.description !== data.description)
-    })
   }
 
   const handleSelectContact = dataContact => {
@@ -328,11 +274,7 @@ const SaleNotePage = (props) => {
     }).catch(err => {
       setDisableButton(false)
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
 
   }

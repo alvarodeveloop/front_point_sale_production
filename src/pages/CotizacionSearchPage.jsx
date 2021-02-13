@@ -5,8 +5,6 @@ import {
   Col,
   Container,
   Button,
-  Dropdown,
-  DropdownButton,
   Badge,
   Accordion,
   Card,
@@ -20,8 +18,7 @@ import axios from 'axios'
 import { API_URL } from 'utils/constants'
 import { toast } from 'react-toastify'
 import { showPriceWithDecimals } from 'utils/functions'
-import { FaPlusCircle, FaChartLine, FaArrowCircleLeft} from "react-icons/fa";
-import FileSaver from 'file-saver'
+import { FaPlusCircle, FaChartLine} from "react-icons/fa";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import layoutHelpers from 'shared/layouts/helpers'
@@ -30,8 +27,7 @@ import { formatNumber } from 'utils/functions'
 import 'styles/components/modalComponents.css'
 import { connect } from 'react-redux'
 import {Doughnut,Bar,Line} from 'react-chartjs-2';
-import { ARRAY_COLORS, ARRAY_MONTH } from 'utils/constants'
-import { CSSTransition } from 'react-transition-group';
+import { ARRAY_COLORS } from 'utils/constants'
 import ModalActionsCotization from 'components/modals/ModalActionsCotization'
 import LoadingComponent from 'components/LoadingComponent'
 
@@ -110,6 +106,7 @@ let cotizacionColumns = null
 const CotizacionSearchPage = props => {
 
   const [displayLoading, setDisplayLoading] = useState(true)
+  const [displayLoadingModal, setDisplayLoadingModal] = useState(false)
   const [cotizacionData, setCotizacionData] = useState([])
   const [cotizationDetail, setCotizationDetail] = useState({})
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false)
@@ -193,8 +190,10 @@ const CotizacionSearchPage = props => {
               )
             }else if(original.status >= 3 && original.status < 7){
               return (<Badge variant="primary" className="font-badge">{determinateStatus(original.status)}</Badge>)
-            }else{
+            }else if(original.status == 7){
               return (<Badge variant="danger" className="font-badge">Anulada</Badge>)
+            }else{
+              return (<Badge variant="danger" className="font-badge">vencida</Badge>)
             }
           }
         },
@@ -441,7 +440,7 @@ const CotizacionSearchPage = props => {
   }
 
   const goToGuideDispatch = id => {
-    props.history.replace('/quotitation/guide/'+id)
+    props.history.push('/quotitation/guide/'+id)
   }
 
   const handleDisplayFilter = filter => {
@@ -464,8 +463,12 @@ const CotizacionSearchPage = props => {
         setRedraw(true)
       }, 1000);
       setDisplayLoading(false)
+      if(displayLoadingModal){
+        setDisplayLoadingModal(false)
+      }
     }).catch(err => {
       setDisplayLoading(false)
+      setDisplayLoadingModal(false)
       props.tokenExpired(err)
     })
   }
@@ -474,30 +477,21 @@ const CotizacionSearchPage = props => {
     props.history.replace('/quotitation/create_quotitation/'+id)
   }
 
-  const deleteCotizacion = id => {
-    setDisplayLoading(true)
-    axios.delete(API_URL+'cotizacion/'+id).then(result => {
-      toast.success('Proceso completado')
-      fetchData()
-    }).catch(err => {
-      setDisplayLoading(false)
-      props.tokenExpired(err)
-    })
-  }
-
   const goToForm = () => {
     props.history.replace('/quotitation/create_quotitation')
   }
 
   const printCotizacion = id => {
-
     toast.info('Buscando documento, espere por favor...')
     setDisplayLoading(true)
+    setDisplayLoadingModal(true)
     axios.get(API_URL+'cotizacion_print/'+id+'/0').then(result => {
       window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
       setDisplayLoading(false)
+      setDisplayLoadingModal(false)
     }).catch(err => {
       setDisplayLoading(false)
+      setDisplayLoadingModal(false)
       props.tokenExpired(err)
     })
   }
@@ -505,11 +499,14 @@ const CotizacionSearchPage = props => {
   const printCotizacionNew = id => {
     toast.info('Generando documento, espere por favor...')
     setDisplayLoading(true)
+    setDisplayLoadingModal(true)
     axios.get(API_URL+'cotizacion_print/'+id+'/0/1').then(result => {
       window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
       setDisplayLoading(false)
+      setDisplayLoadingModal(false)
     }).catch(err => {
       setDisplayLoading(false)
+      setDisplayLoadingModal(false)
       props.tokenExpired(err)
     })
   }
@@ -519,17 +516,22 @@ const CotizacionSearchPage = props => {
      status
    }
    toast.info('Cambiando estado, espere por favor...')
+   setDisplayLoadingModal(true)
    setDisplayLoading(true)
-   axios.put(API_URL+'cotizacion_status/'+id,objectStatus).then(result => {
-    toast.success('Status Cambiado')
-    if(Object.keys(cotizationAction).length){
-      setCotizationAction({...cotizationAction, status})
-    }
-    fetchData()
-   }).catch(err => {
-    setDisplayLoading(false)
-    props.tokenExpired(err)
-   })
+   setTimeout(() => {
+      axios.put(API_URL+'cotizacion_status/'+id,objectStatus).then(result => {
+       toast.success('Status Cambiado')
+       if(Object.keys(cotizationAction).length){
+         setCotizationAction({...cotizationAction, status})
+       }
+       setDisplayLoadingModal(false)
+       fetchData()
+      }).catch(err => {
+       setDisplayLoading(false)
+       setDisplayLoadingModal(false)
+       props.tokenExpired(err)
+      })
+   },3000)
   }
 
   const anulateCotization = (id,status) => {
@@ -559,6 +561,7 @@ const CotizacionSearchPage = props => {
 
   const confirmAnulateCotization = (id,status) => {
     setDisplayLoading(true)
+    setDisplayLoadingModal(true)
     axios.delete(API_URL+'cotizacion/'+id).then(result => {
       if(status >= 1 && status <= 2){
         toast.success('Cotización Anulada con éxito')
@@ -570,10 +573,12 @@ const CotizacionSearchPage = props => {
           setCotizationAction({...cotizationAction, status: 2})
         }
         toast.success('Documento anulado con éxito')
+        setDisplayLoadingModal(false)
       }
       fetchData()
      }).catch(err => {
       setDisplayLoading(false)
+      setDisplayLoadingModal(false)
        props.tokenExpired(err)
      })
   }
@@ -599,7 +604,7 @@ const CotizacionSearchPage = props => {
   }
 
   const goToFacturation = id => {
-    props.history.replace('/quotitation/invoicing/'+id)
+    props.history.push('/quotitation/invoicing/'+id)
   }
 
   const goToNoteSale = id => {
@@ -1078,6 +1083,7 @@ const CotizacionSearchPage = props => {
         goToNoteSale={goToNoteSale}
         goToBillOfSale={goToBillOfSale}
         goToGuideDispatch={goToGuideDispatch}
+        displayLoadingModal={displayLoadingModal}
       />
     </Container>
   )

@@ -32,8 +32,6 @@ const ConfigGeneralPage = (props) => {
     clave_sii: '', // firma del sii
     logo: '',
   })
-  const [nuxoConfig,setNuxoConfig] = useState(null)
-
   const [isOpenModal, setIsOpenModal] = useState(false)
 
   useEffect(() => {
@@ -43,7 +41,6 @@ const ConfigGeneralPage = (props) => {
   const fechData = () => {
     let promises = [
       axios.get(API_URL+'config_general'),
-      axios.get(API_URL+'config_nuxo'),
     ]
     Promise.all(promises).then(result => {
       if(result[0].data){
@@ -57,10 +54,11 @@ const ConfigGeneralPage = (props) => {
           clave_login_sii: result[0].data.clave_login_sii, // clave para hacer login en el  sii
           clave_sii: result[0].data.clave_sii, // firma del sii
           logo : result[0].data.logo,
+          is_syncronized : result[0].data.is_syncronized,
         })
       }
-      setNuxoConfig(result[1].data)
       setDisplayLoading(false)
+      console.log(config,"aqui el config menor");
     }).catch(err => {
       setDisplayLoading(false)
       props.tokenExpired(err)
@@ -111,9 +109,12 @@ const ConfigGeneralPage = (props) => {
     setDisplayLoading(true)
     axios.post(API_URL+'config_nuxo',configData).then(result => {
       toast.success('Empresa sincronizada con éxito')
-      setNuxoConfig(result.data.nuxo)
       localStorage.setItem('token',result.data.token)
       setAuthorizationToken(result.data.token)
+      setConfig(currentData => Object.assign({},currentData, {is_syncronized : true }) )
+      let configLocal = JSON.parse(localStorage.getItem("configGeneral"))
+      configLocal.is_syncronized = true
+      localStorage.setItem("configGeneral",JSON.stringify(configLocal))
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
@@ -165,11 +166,11 @@ const ConfigGeneralPage = (props) => {
                 </React.Fragment>
               )}
               <br/>
-              {!nuxoConfig && (config.rut_legal_representative && config.clave_sii && config.clave_login_sii)  ? (
+              {!config.is_syncronized && (config.rut_legal_representative && config.clave_sii && config.clave_login_sii)  ? (
                 <Button variant="danger" size="sm" block={true} onClick={syncSii}>Syncronizar con el SII <FaSyncAlt /></Button>
-              ) : !nuxoConfig && (!config.rut_legal_representative || !config.clave_sii || !config.clave_login_sii) ? (
+              ) : !config.is_syncronized && (!config.rut_legal_representative || !config.clave_sii || !config.clave_login_sii) ? (
                 <p className="alert alert-danger text-center"><b>Faltan datos en su configuración para poder sincronizar con el SII</b></p>
-              ) : nuxoConfig && (config.rut_legal_representative && config.clave_sii && config.clave_login_sii) ? (
+              ) : config.is_syncronized && (config.rut_legal_representative && config.clave_sii && config.clave_login_sii) ? (
                 <p className="alert alert-success text-center"><b>Cuenta Sincronizada con el SII <FaCheck /></b></p>
               ) : ''}
             </Col>

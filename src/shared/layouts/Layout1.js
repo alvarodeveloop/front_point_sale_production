@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useEffect,useCallback } from 'react'
 import PropTypes from 'prop-types'
 import LayoutNavbar from './LayoutNavbar'
 import LayoutSidenav from './LayoutSidenav'
@@ -7,64 +7,63 @@ import layoutHelpers from './helpers'
 import PaymentViewComponent from 'components/PaymentViewComponent'
 import { connect } from 'react-redux'
 
-class Layout1 extends Component {
+const Layout1 = props => {
 
-  
-  closeSidenav(e) {
-    e.preventDefault()
-    layoutHelpers.setCollapsed(true)
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     layoutHelpers.init()
     layoutHelpers.update()
     layoutHelpers.setAutoUpdate(true)
+    return () => {
+      layoutHelpers.destroy()
+    }
+  },[])
+  
+  const closeSidenav = (e) => {
+    e.preventDefault()
+    layoutHelpers.setCollapsed(true)
   }
+  
+  const frontChildren = (
+    <div className="layout-container">
+      <LayoutSidenav {...props} />
 
-  componentWillUnmount() {
-    layoutHelpers.destroy()
-  }
-
-  frontChildren(){
-    return(
-      <div className="layout-container">
-        <LayoutSidenav {...this.props} />
-
-        <div className="layout-content">
-          <div className="container-fluid flex-grow-1 container-p-y" style={{backgroundColor: 'white'}}>
-            {this.props.children}
-          </div>
-          <LayoutFooter {...this.props} />
+      <div className="layout-content">
+        <div className="container-fluid flex-grow-1 container-p-y" style={{backgroundColor: 'white'}}>
+          {props.children}
         </div>
+        <LayoutFooter {...props} />
       </div>
-    )
-  }
+    </div>
+  )
 
-  render() {
-    return (
-      <div className="layout-wrapper layout-1">
-        <div className="layout-inner">
-          <LayoutNavbar {...this.props} />
-          {this.props.enterpriseSucursal.enterprises.length ? this.props.enterpriseSucursal.enterprises.find(v => v.id === parseFloat(this.props.enterpriseSucursal.id_enterprise)).need_payment ? (
-            <div className="layout-container">
-              <div className="layout-content">
-                <PaymentViewComponent {...this.props} />
-              </div>
+  const renderLayout = useCallback(() => {
+      if(props.enterpriseSucursal.enterprises.length){
+      let enterprise =  props.enterpriseSucursal.enterprises.find(v => v.id === parseFloat(props.enterpriseSucursal.id_enterprise))
+      if(enterprise && enterprise.need_payment){
+        return (
+          <div className="layout-container">
+            <div className="layout-content">
+              <PaymentViewComponent {...props} />
             </div>
-          ) : (
-            <>
-              {this.frontChildren()}
-            </>
-          ) : (
-            <>
-              {this.frontChildren()}
-            </>
-          )}
-        </div>
-        <div className="layout-overlay" onClick={this.closeSidenav}></div>
+          </div>
+        )
+      }else{
+        return frontChildren
+      }
+      }else{
+        return frontChildren
+      } 
+    },[props.enterpriseSucursal.id_enterprise])
+
+  return (
+    <div className="layout-wrapper layout-1">
+      <div className="layout-inner">
+        <LayoutNavbar {...props} />
+        {renderLayout()}
       </div>
-    )
-  }
+      <div className="layout-overlay" onClick={closeSidenav}></div>
+    </div>
+  )
 }
 
 Layout1.propTypes = {

@@ -5,8 +5,6 @@ import {
   Col,
   Container,
   Button,
-  Dropdown,
-  DropdownButton,
   Badge,
   Modal,
   Tab,
@@ -16,9 +14,8 @@ import Table from 'components/Table'
 import axios from 'axios'
 import { API_URL } from 'utils/constants'
 import { toast } from 'react-toastify'
-import { showPriceWithDecimals, base64ToArrayBuffer } from 'utils/functions'
-import { FaPlusCircle, FaChartLine } from "react-icons/fa";
-import FileSaver from 'file-saver'
+import { showPriceWithDecimals } from 'utils/functions'
+import { FaPlusCircle } from "react-icons/fa";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import layoutHelpers from 'shared/layouts/helpers'
@@ -108,7 +105,7 @@ const InvoiceSearchPage = props => {
         },
         {
           Header: 'Fecha-Emisión',
-          accessor: props1 => [moment(props1.date_issue_invoice).tz('America/Santiago').format('DD-MM-YYYY')],
+          accessor: props1 => [moment(props1.date_issue_invoice).format('DD-MM-YYYY')],
         },
         {
           Header: 'Días de Vencimiento',
@@ -187,7 +184,7 @@ const InvoiceSearchPage = props => {
         },
         {
           Header: 'Descuento Global',
-          accessor: 'discount_global_total',
+          accessor: 'discount_global_amount',
           Cell: props1 => {
             return (
               <OverlayTrigger placement={'left'} overlay={
@@ -283,7 +280,7 @@ const InvoiceSearchPage = props => {
       },
       {
         Header: 'Tipo',
-        accessor: props1 => props1.type_invoicing == 1 ? ['Afecta'] : ['Excento'],
+        accessor: props1 => props1.type == 4 ? ['Crédito'] : ['Debito'],
       },
       {
         Header: 'Fecha-Emisión',
@@ -339,7 +336,7 @@ const InvoiceSearchPage = props => {
       },
       {
         Header: 'Descuento Global',
-        accessor: 'discount_global_total',
+        accessor: 'discount_global_amount',
         Cell: props1 => {
           return (
             <OverlayTrigger placement={'left'} overlay={
@@ -424,12 +421,7 @@ const InvoiceSearchPage = props => {
       }, 1000);
      }).catch(err => {
        setDisplayFilter(1)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+       props.tokenExpired(err)
      })
   }
 
@@ -456,12 +448,7 @@ const InvoiceSearchPage = props => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      console.log(err);
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -472,12 +459,7 @@ const InvoiceSearchPage = props => {
     Promise.all(promises).then(result => {
       setInvoiceNotes(result[0].data)
     }).catch(err => {
-      console.log(err);
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -488,19 +470,6 @@ const InvoiceSearchPage = props => {
   const printInvoice = original => {
     toast.info('Cargando documento, espere por favor')
     window.open(original.name_pdf,"_target")
-    /*let route = API_URL+'get_invoice_pdf/'+original.ref_api
-    axios.get(route,{responseType: "arraybuffer"}).then(result => {
-      const blob = new Blob([result.data],{type : 'application/pdf'})
-      const url  = window.URL.createObjectURL(blob);
-      window.open(url,"_target")
-    }).catch(err => {
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err,'aqui');
-        toast.error('Error, contacte con soporte')
-      }
-    })*/
   }
 
   const handleModalDetail = () => {
@@ -558,12 +527,7 @@ const InvoiceSearchPage = props => {
         fetchData()
      }).catch(err => {
       setDisplayLoading(false)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+       props.tokenExpired(err)
     })
   }
 

@@ -95,15 +95,9 @@ export const returnTypePayment = payment => {
   if(payment == 1){
     return 'Efectivo'
   }else if(payment == 2){
-    return 'Tarjeta'
+    return 'Debito'
   }else if(payment == 3){
-    return 'Sumup'
-  }else if(payment == 4){
-    return 'Cheque'
-  }else if(payment == 5){
-    return 'Otros'
-  }else if(payment == 6){
-    return 'Multiple'
+    return 'Crédito'
   }
 }
 

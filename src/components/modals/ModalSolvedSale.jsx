@@ -7,14 +7,13 @@ import {
   Form,
   Button,
   Badge,
-  Dropdown,
-  DropdownButton
 } from 'react-bootstrap'
 import { showPriceWithDecimals } from 'utils/functions'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import InputField from 'components/input/InputComponent'
 import axios from 'axios'
+import LoadingComponent from 'components/LoadingComponent'
 
 const ModalSolvedSale = ({dataToPay, ...props}) => {
 
@@ -35,6 +34,7 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
 
   const [isOpenMultiple,setIsOpenMultiple] = useState(false)
   const [isReadOnlyPayment,setIsReadOnlyPayment] = useState(false)
+  const [isLoading,setIsLoading] = useState(false)
 
   const handleOnHide = () => {
     props.onHide()
@@ -91,16 +91,30 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
     if(paymentTotal < total_to_pay){
       toast.error('El monto pagado es inferior al total por pagar')
     }else{
+      setIsLoading(true)
       let cartSale = Object.assign({},dataToPay,{
         payment
       })
       let route = props.isDispatch ? 'sale_dispatch_payment' : 'sale_fiao'
-      axios.post(API_URL+route,cartSale).then(result => {
-
+      axios.post(API_URL+route,cartSale).then(async result => {
         toast.success('Proceso Completado')
-        props.onHide()
+        if(cartSale.payment.voucher){
+          toast.success('Proceso completado, espere mientras se genera el documento de factura')
+          await Promise.all(result.data.map( async  (v,i) => {
+            let invoice_response = await axios.get(API_URL+'invoice_print/'+v.id+"/3/2")
+            window.open(API_URL+'documents/sale_note/files_pdf/'+invoice_response.data.name)
+          }))
+        }else{
+          toast.success('Proceso completado, espere mientras se genera el documento de factura')
+          result.data.forEach((v,i) => {
+            window.open(v.url,"_blank")
+          })
+        }
+        setIsLoading(false)
+        props.onHide(true)
 
       }).catch(err => {
+        setIsLoading(false)
         if(err.response){
           toast.error(err.response.data.message)
         }else{
@@ -163,143 +177,149 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
           Pagar Factura
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        {!isOpenMultiple ? (
-          <React.Fragment>
-            <div className="containerDiv" style={{ marginLeft: '-8px'}}>
+      {isLoading ? (
+        <Modal.Body>
+          <LoadingComponent />
+        </Modal.Body>
+      ) : (
+        <Modal.Body>
+          {!isOpenMultiple ? (
+            <React.Fragment>
+              <div className="containerDiv" style={{ marginLeft: '-8px'}}>
+                <Col sm={12} md={12} lg={12} xs={12}>
+                  <h4 className="text-center">Factura N° {dataToPay.ref}</h4>
+                  <Row>
+                    <Col sm={4} md={4} lg={4} xs={12} className="text-center">
+                      <h4>Sub Total: <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,dataToPay.sub_total) } </Badge></h4>
+                    </Col>
+                    <Col sm={4} md={4} lg={4} xs={12} className="text-center">
+                      <h4>Tax: <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,dataToPay.tax) }</Badge></h4>
+                    </Col>
+                    <Col sm={4} md={4} lg={4} xs={12} className="text-center">
+                      <h4>Total: <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,dataToPay.total) }</Badge></h4>
+                    </Col>
+                  </Row>
+                </Col>
+              </div>
+              <div className="containerDiv" style={{ marginLeft: '-8px'}}>
+                <Row className="justify-content-center">
+                  <InputField
+                    {...props.inputPayment}
+                    handleChange={onChange}
+                    value={payment.payment}
+                    handleKeyUp={onKeyUp}
+                    readonly={isReadOnlyPayment}
+                    />
+                </Row>
+                <Row className="justify-content-center">
+                  <InputField
+                    {...props.inputTurned}
+                    handleChange={onChange}
+                    value={payment.turned}
+                    />
+                </Row>
+              </div>
+              <Row className="justify-content-center">
+                <Col sm={4} md={4} lg={4}>
+                  <Form.Group>
+                    <Form.Check type="checkbox"
+                      custom
+                      id={'voucherCheckbox'}
+                      label={'Venta sin Boleta'}
+                      value={payment.voucher}
+                      checked={payment.voucher}
+                      onChange={onChange} />
+                  </Form.Group>
+                </Col>
+                <Col sm={4} md={4} lg={4}>
+                  <b>Metodo de Pago: </b>{payment.type === 1 ? (
+                      <Badge variant="danger" className="font-badge">Efectivo</Badge>
+                    ) : payment.type === 2 ? (
+                      <Badge variant="danger" className="font-badge">Débito</Badge>
+                    ) : (
+                      <Badge variant="danger" className="font-badge">Crédito</Badge>
+                    )}
+                </Col>
+              </Row>
+              <Row className="containerDiv justify-content-center" style={{ marginLeft: '-8px'}}>
+                <Col sm={4} md={4} lg={4} xs={12}>
+                  <Button size="sm" onClick={() => setTypePayment(1)} variant="dark" block="true">Efectivo</Button>
+                </Col>
+                <Col sm={4} md={4} lg={4} xs={12}>
+                  <Button size="sm" onClick={() => setTypePayment(2)} variant="dark" block="true">Tarjeta Debito</Button>
+                </Col>
+                <Col sm={4} md={4} lg={4} xs={12}>
+                  <Button size="sm" onClick={() => setTypePayment(3)} variant="dark" block="true">Tarjeta Crédito</Button>
+                </Col>
+                <br/><br/>
+                {/*
+                <Col sm={4} md={4} lg={4} xs={12}>
+                  <Button size="sm" onClick={() => setTypePayment(4)} variant="dark" block="true">Cheque</Button>
+                </Col>
+                <Col sm={4} md={4} lg={4} xs={12}>
+                  <Button size="sm" onClick={() => setTypePayment(5)} variant="dark" block="true">Otros</Button>
+                </Col>
+                <Col sm={4} md={4} lg={4} xs={12}>
+                  <Button size="sm" onClick={() => setTypePayment(6)} variant="dark" block="true">Pago multiple</Button>
+                </Col>
+                <div className="clearfix"></div>
+                */}
+                <br/><br/>
+                <Col sm={6} md={6} lg={6} xs={12}>
+                  <Button size="sm" variant="secondary" block="true" onClick={handleFinishPayment}>Finalizar</Button>
+                </Col>
+              </Row>
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <div className="containerDiv">
               <Col sm={12} md={12} lg={12} xs={12}>
-                <h4 className="text-center">Factura N° {dataToPay.ref}</h4>
                 <Row>
-                  <Col sm={4} md={4} lg={4} xs={12} className="text-center">
-                    <h4>Sub Total: <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,dataToPay.sub_total) } </Badge></h4>
+                  <InputField
+                    {...props.inputEfectivo}
+                    value={payment.multiple_payment.efectivo}
+                    handleChange={onChangeMultiple}
+                  />
+                  <InputField
+                    {...props.inputTarjeta}
+                    value={payment.multiple_payment.tarjeta}
+                    handleChange={onChangeMultiple}
+                  />
+                </Row>
+                <Row>
+                  <InputField
+                    {...props.inputSumup}
+                    value={payment.multiple_payment.sumup}
+                    handleChange={onChangeMultiple}
+                  />
+                  <InputField
+                    {...props.inputCheque}
+                    value={payment.multiple_payment.cheque}
+                    handleChange={onChangeMultiple}
+                  />
+                </Row>
+                <Row>
+                  <InputField
+                    {...props.inputOtros}
+                    value={payment.multiple_payment.otros}
+                    handleChange={onChangeMultiple}
+                  />
+                </Row>
+                <Row className="justify-content-center">
+                  <Col sm={4} md={4} lg={4}>
+                    <Button size="md" variant="secondary" block={true} onClick={handlePaymentMultiple}>Procesar</Button>
                   </Col>
-                  <Col sm={4} md={4} lg={4} xs={12} className="text-center">
-                    <h4>Tax: <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,dataToPay.tax) }</Badge></h4>
-                  </Col>
-                  <Col sm={4} md={4} lg={4} xs={12} className="text-center">
-                    <h4>Total: <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,dataToPay.total) }</Badge></h4>
+                  <Col sm={4} md={4} lg={4}>
+                    <Button size="md" variant="danger" block={true} onClick={()=> setIsOpenMultiple(false)}>Mostrar Sección de Pagos</Button>
                   </Col>
                 </Row>
               </Col>
             </div>
-            <div className="containerDiv" style={{ marginLeft: '-8px'}}>
-              <Row className="justify-content-center">
-                <InputField
-                  {...props.inputPayment}
-                  handleChange={onChange}
-                  value={payment.payment}
-                  handleKeyUp={onKeyUp}
-                  readonly={isReadOnlyPayment}
-                  />
-              </Row>
-              <Row className="justify-content-center">
-                <InputField
-                  {...props.inputTurned}
-                  handleChange={onChange}
-                  value={payment.turned}
-                  />
-              </Row>
-            </div>
-            <Row className="justify-content-center">
-              <Col sm={4} md={4} lg={4}>
-                <Form.Group>
-                  <Form.Check type="checkbox"
-                    custom
-                    id={'voucherCheckbox'}
-                    label={'Venta sin Boleta'}
-                    value={payment.voucher}
-                    checked={payment.voucher}
-                    onChange={onChange} />
-                </Form.Group>
-              </Col>
-              <Col sm={4} md={4} lg={4}>
-                <b>Metodo de Pago: </b>{payment.type === 1 ? (
-                    <Badge variant="danger" className="font-badge">Efectivo</Badge>
-                  ) : payment.type === 2 ? (
-                    <Badge variant="danger" className="font-badge">Débito</Badge>
-                  ) : (
-                    <Badge variant="danger" className="font-badge">Crédito</Badge>
-                  )}
-              </Col>
-            </Row>
-            <Row className="containerDiv justify-content-center" style={{ marginLeft: '-8px'}}>
-              <Col sm={4} md={4} lg={4} xs={12}>
-                <Button size="sm" onClick={() => setTypePayment(1)} variant="dark" block="true">Efectivo</Button>
-              </Col>
-              <Col sm={4} md={4} lg={4} xs={12}>
-                <Button size="sm" onClick={() => setTypePayment(2)} variant="dark" block="true">Tarjeta Debito</Button>
-              </Col>
-              <Col sm={4} md={4} lg={4} xs={12}>
-                <Button size="sm" onClick={() => setTypePayment(3)} variant="dark" block="true">Tarjeta Crédito</Button>
-              </Col>
-              <br/><br/>
-              {/*
-              <Col sm={4} md={4} lg={4} xs={12}>
-                <Button size="sm" onClick={() => setTypePayment(4)} variant="dark" block="true">Cheque</Button>
-              </Col>
-              <Col sm={4} md={4} lg={4} xs={12}>
-                <Button size="sm" onClick={() => setTypePayment(5)} variant="dark" block="true">Otros</Button>
-              </Col>
-              <Col sm={4} md={4} lg={4} xs={12}>
-                <Button size="sm" onClick={() => setTypePayment(6)} variant="dark" block="true">Pago multiple</Button>
-              </Col>
-              <div className="clearfix"></div>
-              */}
-              <br/><br/>
-              <Col sm={6} md={6} lg={6} xs={12}>
-                <Button size="sm" variant="secondary" block="true" onClick={handleFinishPayment}>Finalizar</Button>
-              </Col>
-            </Row>
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <div className="containerDiv">
-            <Col sm={12} md={12} lg={12} xs={12}>
-              <Row>
-                <InputField
-                  {...props.inputEfectivo}
-                  value={payment.multiple_payment.efectivo}
-                  handleChange={onChangeMultiple}
-                />
-                <InputField
-                  {...props.inputTarjeta}
-                  value={payment.multiple_payment.tarjeta}
-                  handleChange={onChangeMultiple}
-                />
-              </Row>
-              <Row>
-                <InputField
-                  {...props.inputSumup}
-                  value={payment.multiple_payment.sumup}
-                  handleChange={onChangeMultiple}
-                />
-                <InputField
-                  {...props.inputCheque}
-                  value={payment.multiple_payment.cheque}
-                  handleChange={onChangeMultiple}
-                />
-              </Row>
-              <Row>
-                <InputField
-                  {...props.inputOtros}
-                  value={payment.multiple_payment.otros}
-                  handleChange={onChangeMultiple}
-                />
-              </Row>
-              <Row className="justify-content-center">
-                <Col sm={4} md={4} lg={4}>
-                  <Button size="md" variant="secondary" block={true} onClick={handlePaymentMultiple}>Procesar</Button>
-                </Col>
-                <Col sm={4} md={4} lg={4}>
-                  <Button size="md" variant="danger" block={true} onClick={()=> setIsOpenMultiple(false)}>Mostrar Sección de Pagos</Button>
-                </Col>
-              </Row>
-            </Col>
-          </div>
-          </React.Fragment>
-        )}
+            </React.Fragment>
+          )}
 
-      </Modal.Body>
+        </Modal.Body>
+      )}
       <Modal.Footer>
           <Button size="md" onClick={handleOnHide}>Cerrar</Button>
       </Modal.Footer>

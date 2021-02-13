@@ -177,7 +177,7 @@ const EnterpriseFormPage = (props) => {
           localStorage.setItem('configGeneral',JSON.stringify(branch.data.config))
           props.setConfig(branch.data.config)
           props.setIdEnterprise(result.data.enterprises[0].id)
-
+          setDisplayLoading(false)
           setTimeout(function () {
             props.setDisplayMessage(false)
             handleOpenModalAdd()

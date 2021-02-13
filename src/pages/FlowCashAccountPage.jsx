@@ -39,13 +39,16 @@ const FlowCashAccountPage = (props) => {
   const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
+    if(displayLoading){
+      setDisplayLoading(false)
+    }
     return () => {
       columns_account = []
     }
-  },[])
+  },[props.accounts])
 
-  useMemo(() => {
-    columns_account = [
+  columns_account = useMemo(() => {
+     return [
           {
             Header: 'Nombre',
             accessor: 'account_name'

@@ -5,8 +5,6 @@ import {
   Col,
   Container,
   Button,
-  Dropdown,
-  DropdownButton,
   Badge,
   Modal
 } from 'react-bootstrap'
@@ -15,8 +13,7 @@ import axios from 'axios'
 import { API_URL } from 'utils/constants'
 import { toast } from 'react-toastify'
 import { showPriceWithDecimals } from 'utils/functions'
-import { FaPlusCircle, FaChartLine } from "react-icons/fa";
-import FileSaver from 'file-saver'
+import { FaPlusCircle } from "react-icons/fa";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import layoutHelpers from 'shared/layouts/helpers'
@@ -286,12 +283,7 @@ const SaleNoteSearchPage = props => {
       }, 1000);
      }).catch(err => {
        setDisplayFilter(1)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+      props.tokenExpired(err)
      })
   }
 
@@ -318,12 +310,7 @@ const SaleNoteSearchPage = props => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      console.log(err);
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -334,16 +321,14 @@ const SaleNoteSearchPage = props => {
   const printInvoice = (original,type = 0) => {
     toast.info('Cargando documento, espere por favor')
     setDisplayLoading(true)
+    setIsOpenModalAction(false)
     axios.get(API_URL+'invoice_print/'+original.id+"/"+type+"/2").then(result => {
       window.open(API_URL+'documents/sale_note/files_pdf/'+result.data.name)
       setDisplayLoading(false)
+      setIsOpenModalAction(true)
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -402,12 +387,7 @@ const SaleNoteSearchPage = props => {
         fetchData()
      }).catch(err => {
       setDisplayLoading(false)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+      props.tokenExpired(err)
     })
   }
   return (

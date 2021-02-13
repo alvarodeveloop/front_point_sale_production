@@ -321,12 +321,7 @@ const BillSearchPage = props => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      console.log(err);
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        toast.error('Error, contacte con soporte')
-      }
+      props.tokenExpired(err)
     })
   }
 
@@ -336,14 +331,7 @@ const BillSearchPage = props => {
 
   const printInvoice = original => {
     toast.info('Cargando documento, espere por favor')
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = original.pdf_public_url_bill_64_encode;
-    //a.target = "_blank"
-    a.download = `bill_pdf_${original.ref}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    window.open(original.pdf_public_url_bill,"_blank")
   }
 
   const handleModalDetail = () => {
@@ -400,12 +388,7 @@ const BillSearchPage = props => {
         fetchData()
      }).catch(err => {
       setDisplayLoading(false)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
+       props.tokenExpired(err)
     })
   }
   return (
