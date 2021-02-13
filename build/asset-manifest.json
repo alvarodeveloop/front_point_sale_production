@@ -24,8 +24,8 @@
     "static/js/9.174a41f0.chunk.js": "https://app.aidy.cl/static/js/9.174a41f0.chunk.js",
     "static/js/9.174a41f0.chunk.js.map": "https://app.aidy.cl/static/js/9.174a41f0.chunk.js.map",
     "main.css": "https://app.aidy.cl/static/css/main.7b438f60.chunk.css",
-    "main.js": "https://app.aidy.cl/static/js/main.9d31017b.chunk.js",
-    "main.js.map": "https://app.aidy.cl/static/js/main.9d31017b.chunk.js.map",
+    "main.js": "https://app.aidy.cl/static/js/main.d20f4631.chunk.js",
+    "main.js.map": "https://app.aidy.cl/static/js/main.d20f4631.chunk.js.map",
     "runtime-main.js": "https://app.aidy.cl/static/js/runtime-main.b7e53ffd.js",
     "runtime-main.js.map": "https://app.aidy.cl/static/js/runtime-main.b7e53ffd.js.map",
     "static/css/12.07b7d53c.chunk.css": "https://app.aidy.cl/static/css/12.07b7d53c.chunk.css",
@@ -177,7 +177,7 @@
     "static/js/68.facfa801.chunk.js": "https://app.aidy.cl/static/js/68.facfa801.chunk.js",
     "static/js/68.facfa801.chunk.js.map": "https://app.aidy.cl/static/js/68.facfa801.chunk.js.map",
     "index.html": "https://app.aidy.cl/index.html",
-    "precache-manifest.b145dad741e66fc8c0e566c143a260d8.js": "https://app.aidy.cl/precache-manifest.b145dad741e66fc8c0e566c143a260d8.js",
+    "precache-manifest.f822ef3e511dbecf24c423c9c0732543.js": "https://app.aidy.cl/precache-manifest.f822ef3e511dbecf24c423c9c0732543.js",
     "service-worker.js": "https://app.aidy.cl/service-worker.js",
     "static/css/12.07b7d53c.chunk.css.map": "https://app.aidy.cl/static/css/12.07b7d53c.chunk.css.map",
     "static/css/13.1d012768.chunk.css.map": "https://app.aidy.cl/static/css/13.1d012768.chunk.css.map",
@@ -233,6 +233,6 @@
     "static/css/12.07b7d53c.chunk.css",
     "static/js/12.81622492.chunk.js",
     "static/css/main.7b438f60.chunk.css",
-    "static/js/main.9d31017b.chunk.js"
+    "static/js/main.d20f4631.chunk.js"
   ]
 }
