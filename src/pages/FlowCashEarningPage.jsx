@@ -399,7 +399,7 @@ const FlowCashEarningPage = (props) => {
                             Header: 'Monto',
                             accessor: 'amount',
                             Cell : props1 => {
-                              return <Badge variant="danger" className="font_badge">{formatNumber(props1.cell.row.original.amount,2,',','.')}</Badge>
+                              return <Badge variant="danger" className="font_badge">{formatNumber(props1.cell.row.original.amount,2,',','.')}$</Badge>
                             }
                           },
                           {

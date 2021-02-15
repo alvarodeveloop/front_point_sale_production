@@ -304,7 +304,7 @@ const SaleNoteBondPage = (props) => {
     <Container fluid>
       <Row>
         <Col sm={7} md={7} lg={7}>
-          <h4 className="title_principal">Historial de Pagos de la Nota {invoice  ? (<Badge variant="danger" className="font-badge">{invoice.ref}</Badge>) : ''}</h4>
+          <h4 className="title_principal">Historial de Pagos de la Nota {invoice  ? (<Badge variant="danger" className="font-badge">{invoice.folio_bill}</Badge>) : ''}</h4>
         </Col>
         <Col sm={5} md={5} lg={5}>
           <Button variant="primary" block={true} type="button" onClick={goToInvoice} size="sm">Volver a las Notas</Button>
