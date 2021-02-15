@@ -230,7 +230,7 @@ const GuideDispatchPage = (props) => {
       toast.info('Generando pdf de la guía espere por favor...')
 
       result.data.forEach((item, i) => {
-        window.open(item.pdf_public_url,'_blank')
+        if(item) window.open(item.pdf_public_url,'_blank')
       });
 
       goToDashboard()
@@ -359,7 +359,6 @@ const GuideDispatchPage = (props) => {
           address_transmitter:  emisor.data.emisor.direccion_seleccionada,
           address_transmitter_array: emisor.data.emisor.direcciones[0],
           business_name_transmitter : emisor.data.emisor.razon_social,
-          //rut_transmitter : emisor.data.emisor.rut+"-"+emisor.data.emisor.dv,  
           rut_transmitter : props.configGeneral.enterprise.rut,
           spin_transmitter: emisor.data.emisor.giro,
           type_transfer_trasmitter_array: API_FACTURACION ? emisor.data.tipos_de_traslado : emisor.data.tipos_de_venta,

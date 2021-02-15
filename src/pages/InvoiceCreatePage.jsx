@@ -267,7 +267,7 @@ const InvoiceCreatePage = (props) => {
 
     setDisableButton(true)
     setDisplayLoadingModal(true)
-
+    
     axios.post(API_URL+'invoice',object_post).then(result => {
       let invoice_word = result.data.length > 1 ? "Facturas" : "Factura"
       toast.success(invoice_word+' realizada con éxito')

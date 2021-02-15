@@ -26,9 +26,8 @@ import {
 
 const FormProductSale = (props) => {
 
-  const [dataProduct,setDataStore] = useState({
+  const [dataProduct,setDataProduct] = useState({
     name_product: '',
-    cost: '',
     code_ean: '',
     description: '',
     is_neto: true,
@@ -43,6 +42,10 @@ const FormProductSale = (props) => {
     pack: '',
     categoryNames: '',
     minimun_stock: 0,
+    quantity : '',
+    cost : '',
+    cost_details : '',
+    id_provider : []
   })
 
 
@@ -61,10 +64,12 @@ const FormProductSale = (props) => {
   const [isSubmit, setIsSubmit] = useState(false)
   const [galleryFromUpdate, setGalleryFromUpdate] = useState([])
   const [isShowPackField, setIsShowPackField] = useState(false)
-  const [ imgComponent, setImgComponent ] = useState(
+  const [imgComponent, setImgComponent] = useState(
     <Image src={  require('../assets/img/utils/empty_logo.jpg') }
       id="imagen_logo" style={{ width: '100px' }} roundedCircle />
   )
+  const [inventarySection,setInventarySection] = useState(false)
+  const [providers,setProviders] = useState([])
 
   const inputRef = useRef(null)
 
@@ -88,23 +93,24 @@ const FormProductSale = (props) => {
       }else{
         setIsShowPackField(false)
       }
-      await setDataStore({...dataProduct, [e.target.name] : e.target.value})
+      await setDataProduct({...dataProduct, [e.target.name] : e.target.value})
     }else if(e.target.name === "is_neto" || e.target.name === "is_auto_sale"){
       let val = e.target.value === "true" ? true : false
-      await setDataStore({...dataProduct, [e.target.name] : val})
+      await setDataProduct({...dataProduct, [e.target.name] : val})
     }else{
-      await setDataStore({...dataProduct, [e.target.name] : e.target.value})
+      await setDataProduct({...dataProduct, [e.target.name] : e.target.value})
     }
   }
 
   const onChangeSelect = val => {
-    setDataStore({...dataProduct, id_category : val})
+    setDataProduct({...dataProduct, id_category : val})
   }
 
   const fetchData = () => {
     let promise = [
       axios.get(API_URL+'category'),
-      axios.get(API_URL+'config_general')
+      axios.get(API_URL+'config_general'),
+      axios.get(API_URL+'provider'),
     ]
 
     if(props.match.params.id){
@@ -125,42 +131,42 @@ const FormProductSale = (props) => {
       }else{
         toast.warning('Debe realizar su configuración general')
       }
-
       setConfig(result[1].data)
-      if(result.length > 2){
+      setProviders(result[2].data)
+
+      if(result.length > 3){
         if(props.isInventary){
-          setDataStore({
-            name_product: result[2].data.name_product,
-            cost: result[2].data.cost,
-            code_ean: result[2].data.code_ean,
-            description: result[2].data.description,
-            is_neto: result[2].data.is_neto,
-            id_category: result[2].data.categories.map(v => { return {value: v.categories.id, label : v.categories.name_category} }),
-            is_auto_sale: result[2].data.is_auto_sale,
-            img_product: result[2].data.img_product,
-            method_sale: result[2].data.method_sale,
-            price:result[2].data.price,
-            qr_image:result[2].data.qr_image,
-            sticker_color: result[2].data.sticker_color,
-            detailCost: result[2].data.cost_details,
-            pack: result[2].data.pack,
-            minimun_stock: result[2].data.inventary[0].minimun_stock,
+          setDataProduct({
+            name_product: result[3].data.name_product,
+            code_ean: result[3].data.code_ean,
+            description: result[3].data.description,
+            is_neto: result[3].data.is_neto,
+            id_category: result[3].data.categories.map(v => { return {value: v.categories.id, label : v.categories.name_category} }),
+            is_auto_sale: result[3].data.is_auto_sale,
+            img_product: result[3].data.img_product,
+            method_sale: result[3].data.method_sale,
+            price:result[3].data.price,
+            qr_image:result[3].data.qr_image,
+            sticker_color: result[3].data.sticker_color,
+            detailCost: result[3].data.cost_details,
+            pack: result[3].data.pack,
+            minimun_stock: result[3].data.inventary[0].minimun_stock,
           })
           
-          if(result[2].data.method_sale == 2){
+          if(result[3].data.method_sale == 2){
             setIsShowPackField(true)
           }
           setIsUpdate(true)
 
-          if(result[2].data.img_product){
+          if(result[3].data.img_product){
             setImgComponent(
-              <Image src={  API_URL+'images/product/principal/'+ result[2].data.img_product}
-                id="imagen_logo" style={{ width: '150px' }} thumbnail />
+              <Image src={  API_URL+'images/product/principal/'+ result[3].data.img_product}
+                id="imagen_logo" style={{ width: '80px' }} thumbnail />
             )
           }
 
-          if(result[2].data.gallery.length > 0){
-            setGalleryImgUpdate(result[2].data.gallery)
+          if(result[3].data.gallery.length > 0){
+            setGalleryImgUpdate(result[3].data.gallery)
           }
         }
 
@@ -207,7 +213,6 @@ const FormProductSale = (props) => {
           formData.append('name_categories',name_categories)
         }else{
           formData.append(v,dataProduct[v])
-
         }
       })
 
@@ -284,7 +289,7 @@ const FormProductSale = (props) => {
 
   const cleanForm = () => {
 
-    setDataStore({
+    setDataProduct({
       name_product: '',
       cost: '',
       code_ean: '',
@@ -313,7 +318,7 @@ const FormProductSale = (props) => {
         id="img_show" style={{ width: '80px' }} roundedCircle />
     )
 
-    document.getElementById('code_ean').setAttribute('readonly',true)
+    //document.getElementById('code_ean').setAttribute('readonly',true)
 
   }
 
@@ -435,6 +440,24 @@ const FormProductSale = (props) => {
     props.history.replace('/inventary')
   }
 
+  const showInventariSection = () => {
+    if(!inventarySection){
+      if(!dataProduct.name_product || !dataProduct.price){
+        setValidate(true)
+        return
+      }else{
+        if(validate){
+          setValidate(false)
+        }
+      }
+    }
+    setInventarySection(!inventarySection)
+  }
+
+  const onChangeSelectProvider = val => {
+    setDataProduct({...dataProduct, id_provider : val})
+  }
+
   return (
     <Container fluid={true}>
       <Row>
@@ -443,182 +466,257 @@ const FormProductSale = (props) => {
         </Col>
       </Row>
       <Form onSubmit={() => {}} noValidate validated={validate} ref={inputRef}>
-        <Row className="">
-          <Col sm={12} md={12} lg={12} xs={12} className="">
-            <Row className="justify-content-center align-items-center">
-              <Col sm={4} md={4} lg={4} xs={12}>
-                <br/>
-                <Button size="sm" onClick={pickLogo} variant="success" block="true" size="sm">
-                  Escoger Imagen Producto <FaImage />
-                </Button>
-                <input type="file" id="file_product" style={{display: 'none'}} onChange={readImgProduct} />
-              </Col>
-              <Col sm={4} md={4} lg={4} xs={12} className="text-center">
-                {imgComponent}
-              </Col>
-            </Row>
-            <br/>
+        {inventarySection ? (
+          <>
             <Row>
               <InputField
-                {...props.inputNameProduct}
+                type="number"
+                label="Cantidad"
+                name="quantity"
+                required={true}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols="col-md-4 col-lg-4 col-sm-4"
+                value={dataProduct.quantity}
                 handleChange={onChange}
-                value={dataProduct.name_product}
-                placeholder="Nombre del Producto"
               />
               <InputField
-                {...props.inputPrice}
+                type="text"
+                label="Detalle Costo"
+                name="detail"
+                required={false}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols="col-md-4 col-lg-4 col-sm-4"
+                value={dataProduct.detail}
                 handleChange={onChange}
-                value={dataProduct.price}
               />
-             <Form.Group className={props.isInventary ? 'col-md-4 col-sm-4 col-lg-4' : 'col-md-3 col-sm-3 col-lg-3'}>
-                <Form.Label className="fontBold">Categorías</Form.Label>
+              <InputField
+                type="number"
+                step="any"
+                label="Costo"
+                name="cost"
+                required={true}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols="col-md-4 col-lg-4 col-sm-4"
+                value={dataProduct.cost}
+                handleChange={onChange}
+              />
+            </Row>
+            <Row>
+              <Form.Group className={'col-md-4 col-sm-4 col-lg-4'}>
+                <Form.Label className="fontBold">Proveedores</Form.Label>
                 <Select
-                  value={dataProduct.id_category}
-                  onChange={onChangeSelect}
+                  value={dataProduct.id_provider}
+                  onChange={onChangeSelectProvider}
                   isMulti={true}
-                  options={category.map((v,i) => {
-                    return {value: v.id, label: v.name_category}
+                  options={providers.map((v,i) => {
+                    return {value: v.id, label: v.social_razon}
                   })}
                 />
               </Form.Group>
             </Row>
-            <Row>
-              <InputField
-                {...props.inputDescription}
-                handleChange={onChange}
-                value={dataProduct.description}
-              />
-            </Row>
-            <Accordion>
-              <Card>
-                <Accordion.Toggle as={Card.Header} eventKey="0" className="header_card">
-                  <b>Datos de Personalización</b> (hacer click para desplegar campos)
-                </Accordion.Toggle>
-                <Accordion.Collapse eventKey="0">
-                  <Card.Body>
-                    <Row>
-                      <InputField
-                        {...props.inputCodeEan}
-                        handleChange={onChange}
-                        value={dataProduct.code_ean}
-                        />
-                      <Col sm={4} md={4} lg={4}>
-                        <br/>
-                        <Button size="sm" variant='dark' size="sm" onClick={unlockEanInput} block={true}>Escribir EAN</Button>
-                      </Col>
-                      <Col sm={4} md={4} lg={4}>
-                        <br/>
-                        <Button size="sm" variant='dark' size="sm" onClick={scannEan} block={true}>Scannear EAN</Button>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col sm={6} md={6} lg={6} xs={12}>
-                        <label className="form-control-label">Es Neto</label>
-                        <br/>
-                        <Row>
-                          <Col sm={6} md={6} lg={6} xs={12}>
-                            <label className="checkbox-inline">
-                              Si &nbsp;&nbsp;&nbsp;
-                              <input type="checkbox" name="is_neto" checked={dataProduct.is_neto ? true : false} value={true} onChange={onChange} />
-                            </label>
-                          </Col>
-                          <Col sm={6} md={6} lg={6} xs={12}>
-                            <label className="checkbox-inline">
-                              No &nbsp;&nbsp;&nbsp;
-                              <input type="checkbox" name="is_neto" checked={dataProduct.is_neto ? false : true} value={false} onChange={onChange}/>
-                            </label>
-                          </Col>
-                        </Row>
-                      </Col>
-                      <Col sm={6} md={6} lg={6} xs={12}>
-                        <label className="form-control-label">Es Auto Venta</label>
-                        <br/>
-                        <Row>
-                          <Col sm={6} md={6} lg={6} xs={12}>
-                            <label className="checkbox-inline">
-                              Si &nbsp;&nbsp;&nbsp;
-                              <input type="checkbox" name="is_auto_sale" checked={dataProduct.is_auto_sale ? true : false} value={true} onChange={onChange} />
-                            </label>
-                          </Col>
-                          <Col sm={6} md={6} lg={6} xs={12}>
-                            <label className="checkbox-inline">
-                              No &nbsp;&nbsp;&nbsp;
-                              <input type="checkbox" name="is_auto_sale" checked={dataProduct.is_auto_sale ? false : true} value={false} onChange={onChange} />
-                            </label>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
-                    <br/>
-                    <Row>
-                      <InputField
-                        {...props.inputSticker}
-                        handleChange={onChange}
-                        value={dataProduct.sticker_color}
-                        />
-                      <InputField
-                        {...props.inputMethodSale}
-                        handleChange={onChange}
-                        value={dataProduct.method_sale}
-                        >
-                        <option value=''>--Seleccione--</option>
-                        <option value={1}>Unidad</option>
-                        <option value={2}>Mayorista</option>
-                        <option value={3}>(Kilo, Litros, Metros, Entre Otros...)</option>
-                      </InputField>
-                      {isShowPackField ? (
-                        <InputField
-                          {...props.inputPack}
-                          handleChange={onChange}
-                          value={dataProduct.pack}
-                          />
-                      ) : ''}
-                    </Row>
-                    <Row>
-                      <InputField
-                       type='number'
-                       label='Stock minimo'
-                       name='minimun_stock'
-                       required={false}
-                       messageErrors={[
-                       ''
-                       ]}
-                       cols='col-md-4 col-lg-4 col-sm-4'
-                       value={dataProduct.minimun_stock}
-                       handleChange={onChange}
-                      />
-                    </Row>
-                    <Row className="justify-content-center">
-                      <Col sm={6} md={6} lg={6} xs={12}>
-                        <Button size="sm" variant="secondary" onClick={displayInputGallery} block="true">Imagénes de Galeria <FaImage /></Button>
-                        <input type="file" id="galleryImg" style={{display: 'none'}} multiple={true} accept=".jpg, .png, .jpeg" onChange={galleryImgHandle} />
-                      </Col>
-                    </Row>
-                    <br/>
-                    <Row className="justify-content-center">
-                      <Col sm={8} md={8} lg={8}>
-                        <Carousel activeIndex={indexCarrousel} onSelect={handleSelectCarrousel}>
-                          {htmlImgGallery}
-                        </Carousel>
-                      </Col>
-                    </Row>
-                  </Card.Body>
-                </Accordion.Collapse>
-              </Card>
-            </Accordion>
-            <br/>
             <Row className="justify-content-center">
-              <Col md={4} sm={4} lg={4}>
+              <Col sm={4} md={4} lg={4}>
                 <Button size="sm" type="button" onClick={onSubmit} disabled={isSubmit} variant="danger" block={true}>{ textButton } <FaPlusCircle /> </Button>
               </Col>
-              {props.isInventary ? (
-                <Col md={4} sm={4} lg={4}>
-                  <Button size="sm" type="button" onClick={goToTable} variant="secondary" block={true}>Volver</Button>
-                </Col>
-              ) : ''}
+              <Col sm={4} md={4} lg={4}>
+                <Button size="sm" type="button" onClick={showInventariSection} variant="secondary" block={true}>Atrás</Button>
+              </Col>
             </Row>
-          </Col>
-        </Row>
+          </>
+        ) : (
+          <Row className="">
+            <Col sm={12} md={12} lg={12} xs={12} className="">
+              <Row className="justify-content-center align-items-center">
+                <Col sm={4} md={4} lg={4} xs={12}>
+                  <br/>
+                  <Button size="sm" onClick={pickLogo} variant="success" block="true" size="sm">
+                    Escoger Imagen Producto <FaImage />
+                  </Button>
+                  <input type="file" id="file_product" style={{display: 'none'}} onChange={readImgProduct} />
+                </Col>
+                <Col sm={4} md={4} lg={4} xs={12} className="text-center">
+                  {imgComponent}
+                </Col>
+              </Row>
+              <br/>
+              <Row>
+                <InputField
+                  {...props.inputNameProduct}
+                  handleChange={onChange}
+                  value={dataProduct.name_product}
+                  placeholder="Nombre del Producto"
+                />
+                <InputField
+                  {...props.inputPrice}
+                  handleChange={onChange}
+                  value={dataProduct.price}
+                />
+               <Form.Group className={props.isInventary ? 'col-md-4 col-sm-4 col-lg-4' : 'col-md-3 col-sm-3 col-lg-3'}>
+                  <Form.Label className="fontBold">Categorías</Form.Label>
+                  <Select
+                    value={dataProduct.id_category}
+                    onChange={onChangeSelect}
+                    isMulti={true}
+                    options={category.map((v,i) => {
+                      return {value: v.id, label: v.name_category}
+                    })}
+                  />
+                </Form.Group>
+              </Row>
+              <Row>
+                <InputField
+                  {...props.inputDescription}
+                  handleChange={onChange}
+                  value={dataProduct.description}
+                />
+              </Row>
+              <Accordion>
+                <Card>
+                  <Accordion.Toggle as={Card.Header} eventKey="0" className="header_card">
+                    <b>Datos de Personalización</b> (hacer click para desplegar campos)
+                  </Accordion.Toggle>
+                  <Accordion.Collapse eventKey="0">
+                    <Card.Body>
+                      <Row>
+                        <InputField
+                          {...props.inputCodeEan}
+                          handleChange={onChange}
+                          value={dataProduct.code_ean}
+                          />
+                        <Col sm={4} md={4} lg={4}>
+                          <br/>
+                          <Button size="sm" variant='dark' size="sm" onClick={unlockEanInput} block={true}>Escribir EAN</Button>
+                        </Col>
+                        <Col sm={4} md={4} lg={4}>
+                          <br/>
+                          <Button size="sm" variant='dark' size="sm" onClick={scannEan} block={true}>Scannear EAN</Button>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col sm={6} md={6} lg={6} xs={12}>
+                          <label className="form-control-label">Es Neto</label>
+                          <br/>
+                          <Row>
+                            <Col sm={6} md={6} lg={6} xs={12}>
+                              <label className="checkbox-inline">
+                                Si &nbsp;&nbsp;&nbsp;
+                                <input type="checkbox" name="is_neto" checked={dataProduct.is_neto ? true : false} value={true} onChange={onChange} />
+                              </label>
+                            </Col>
+                            <Col sm={6} md={6} lg={6} xs={12}>
+                              <label className="checkbox-inline">
+                                No &nbsp;&nbsp;&nbsp;
+                                <input type="checkbox" name="is_neto" checked={dataProduct.is_neto ? false : true} value={false} onChange={onChange}/>
+                              </label>
+                            </Col>
+                          </Row>
+                        </Col>
+                        <Col sm={6} md={6} lg={6} xs={12}>
+                          <label className="form-control-label">Es Auto Venta</label>
+                          <br/>
+                          <Row>
+                            <Col sm={6} md={6} lg={6} xs={12}>
+                              <label className="checkbox-inline">
+                                Si &nbsp;&nbsp;&nbsp;
+                                <input type="checkbox" name="is_auto_sale" checked={dataProduct.is_auto_sale ? true : false} value={true} onChange={onChange} />
+                              </label>
+                            </Col>
+                            <Col sm={6} md={6} lg={6} xs={12}>
+                              <label className="checkbox-inline">
+                                No &nbsp;&nbsp;&nbsp;
+                                <input type="checkbox" name="is_auto_sale" checked={dataProduct.is_auto_sale ? false : true} value={false} onChange={onChange} />
+                              </label>
+                            </Col>
+                          </Row>
+                        </Col>
+                      </Row>
+                      <br/>
+                      <Row>
+                        <InputField
+                          {...props.inputSticker}
+                          handleChange={onChange}
+                          value={dataProduct.sticker_color}
+                          />
+                        <InputField
+                          {...props.inputMethodSale}
+                          handleChange={onChange}
+                          value={dataProduct.method_sale}
+                          >
+                          <option value=''>--Seleccione--</option>
+                          <option value={1}>Unidad</option>
+                          <option value={2}>Mayorista</option>
+                          <option value={3}>(Kilo, Litros, Metros, Entre Otros...)</option>
+                        </InputField>
+                        {isShowPackField ? (
+                          <InputField
+                            {...props.inputPack}
+                            handleChange={onChange}
+                            value={dataProduct.pack}
+                            />
+                        ) : ''}
+                      </Row>
+                      <Row>
+                        <InputField
+                         type='number'
+                         label='Stock minimo'
+                         name='minimun_stock'
+                         required={false}
+                         messageErrors={[
+                         ''
+                         ]}
+                         cols='col-md-4 col-lg-4 col-sm-4'
+                         value={dataProduct.minimun_stock}
+                         handleChange={onChange}
+                        />
+                      </Row>
+                      <Row className="justify-content-center">
+                        <Col sm={6} md={6} lg={6} xs={12}>
+                          <Button size="sm" variant="secondary" onClick={displayInputGallery} block="true">Imagénes de Galeria <FaImage /></Button>
+                          <input type="file" id="galleryImg" style={{display: 'none'}} multiple={true} accept=".jpg, .png, .jpeg" onChange={galleryImgHandle} />
+                        </Col>
+                      </Row>
+                      <br/>
+                      <Row className="justify-content-center">
+                        <Col sm={8} md={8} lg={8}>
+                          <Carousel activeIndex={indexCarrousel} onSelect={handleSelectCarrousel}>
+                            {htmlImgGallery}
+                          </Carousel>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Accordion.Collapse>
+                </Card>
+              </Accordion>
+              <br />
+              {
+                !isUpdate ? (
+                  <Row className="justify-content-center">
+                    <Col sm={4} md={4} lg={4}>
+                      <Button variant="danger" size="sm" onClick={showInventariSection} block={true}>Datos de Inventario</Button>
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row className="justify-content-center">
+                    <Col md={4} sm={4} lg={4}>
+                      <Button size="sm" type="button" onClick={onSubmit} disabled={isSubmit} variant="danger" block={true}>{ textButton } <FaPlusCircle /> </Button>
+                    </Col>
+                    {props.isInventary ? (
+                      <Col md={4} sm={4} lg={4}>
+                        <Button size="sm" type="button" onClick={goToTable} variant="secondary" block={true}>Volver</Button>
+                      </Col>
+                    ) : ''}
+                  </Row>
+                )
+              }
+            </Col>
+          </Row>
+        )}
       </Form>
       <ScanEanModal
         show={isOpenScan}

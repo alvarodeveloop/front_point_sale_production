@@ -569,8 +569,27 @@ const CotizacionSearchPage = props => {
           setCotizationAction({...cotizationAction, status: 7})
         }
       }else if(status >= 3 && status <= 6){
-        if(Object.keys(cotizationAction).length){
-          setCotizationAction({...cotizationAction, status: 2})
+        if(status === 3){
+          let validate = true;
+          result.data.forEach((v,i) => { 
+            if(!v.status){
+              validate = false
+              toast.error(`Factura ${v.folio} no ha podido ser anulada`) 
+            }else{
+              window.open(v.pdf_public_url,"_blank");
+            }
+          })
+          if(validate){
+            if(Object.keys(cotizationAction).length){
+              setCotizationAction({...cotizationAction, status: 2})
+            }  
+          }else{
+            toast.error("La cotización no ha podido ser anulada debido a que 1 o más facturas no fueron anuladas")
+          }
+        }else{
+          if(Object.keys(cotizationAction).length){
+            setCotizationAction({...cotizationAction, status: 2})
+          }
         }
         toast.success('Documento anulado con éxito')
         setDisplayLoadingModal(false)

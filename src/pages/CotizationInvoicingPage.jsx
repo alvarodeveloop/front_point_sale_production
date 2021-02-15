@@ -112,6 +112,7 @@ const CotizationInvoicingPage = (props) => {
   }))
   const [displayModals,setDisplayModals] = useState(false)
   const [refCotizacion, setRefCotizacion] = useState([])
+  const [displayLoadingModal, setDisplayLoadingModal] = useState(false)
   const inputRef = useRef(null)
 
   useEffect(() => {
@@ -353,12 +354,10 @@ const CotizationInvoicingPage = (props) => {
       status: 2
     }
 
-    setDisableButton(true)
-    //setDisplayLoading(true)
+    setDisplayLoadingModal(true)
     axios.put(API_URL+'cotizacion_facturar/'+props.match.params.id,object_post).then(result => {
       toast.success('Cotización facturada con éxito')
-      setDisableButton(false)
-      //setDisplayLoading(false)
+      setDisplayLoadingModal(false)
       handleModalInvoice()
       toast.info('Generando pdf de la Factura, espere por favor...')
       result.data.response.forEach((item, i) => {
@@ -367,7 +366,7 @@ const CotizationInvoicingPage = (props) => {
        goToDashboard()
 
     }).catch(err => {
-      //setDisplayLoading(false)
+      setDisplayLoadingModal(false)
       setDisableButton(false)
       props.tokenExpired(err)
     })
@@ -539,6 +538,7 @@ const CotizationInvoicingPage = (props) => {
                   setDetailProducts={setDetailProducts}
                   products={detailProducts}
                   disableButtons={disableButtons}
+                  isLoading={displayLoadingModal}
                 />
               </React.Fragment>
             ) : ''}

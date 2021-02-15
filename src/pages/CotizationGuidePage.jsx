@@ -241,51 +241,69 @@ const CotizationGuidePage = (props) => {
     try {
       let rut_value = rutSearch ? rutSearch : cotizationData.rut_client_search
       let emisor = await axios.get(API_URL+"search_emisor_guide")
+      console.log(emisor,"aqui el emisor");
       if(rut_value){
         toast.info('Buscando datos, espere por favor...')
         if(!displayLoading){
           setDisplayLoading(true)
         }
         let receptor = await axios.get(API_URL+'search_receptor_guide/'+emisor.data.id+"/"+rut_value)
+        console.log(receptor,"aqui el receptor");
         setCotizationData(oldData => {
           return Object.assign({},oldData,{
   
             actividad_economica_transmitter_array: emisor.data.emisor.actvidades_economicas,
-            actividad_economica_transmitter : emisor.data.emisor.actividad_economica_seleccionada,
+            actividad_economica_transmitter : emisor.data.emisor.actividad_economica_seleccionada ? emisor.data.emisor.actividad_economica_seleccionada : emisor.data.emisor.actvidades_economicas[0][0],
             city_transmitter : emisor.data.emisor.ciudad_seleccionada,
             email_transmitter: emisor.data.emisor.correo,
             comuna_transmitter: emisor.data.emisor.comuna_seleccionada,
             address_transmitter:  emisor.data.emisor.direccion_seleccionada,
             address_transmitter_array: emisor.data.emisor.direcciones[0],
             business_name_transmitter : emisor.data.emisor.razon_social,
-            rut_transmitter : emisor.data.emisor.rut+"-"+emisor.data.emisor.dv,  
+            rut_transmitter : props.configGeneral.enterprise.rut,  
             spin_transmitter: emisor.data.emisor.giro,
-  
-            //type_transfer_trasmitter_array: API_FACTURACION ? emisor.data.emisor.tipos_de_traslado : emisor.data.emisor.tipos_de_venta,
-            //type_transfer_trasmitter: API_FACTURACION ? emisor.data.emisor.tipos_de_traslado.length > 0 ? emisor.data.emisor.tipos_de_traslado[0].tipo1 : result.data.emisor.tipos_de_venta.length > 0 ? result.data.emisor.tipos_de_venta[0].tipo1 : '' : result.data.emisor.tipos_de_venta.length > 0 ? result.data.emisor.tipos_de_venta[0].tipo1 : '',
+            type_transfer_trasmitter_array: API_FACTURACION ? emisor.data.tipos_de_traslado : emisor.data.tipos_de_venta,
+            type_transfer_trasmitter: API_FACTURACION ? emisor.data.tipos_de_traslado.length > 0 ? emisor.data.tipos_de_traslado[0].id : "" : "",
             facturaId: API_FACTURACION ? emisor.data.id : "",//result.data.facturaID,
-  
             type_sale_transmitter_array: emisor.data.emisor.tipos_de_venta,
-            type_sale_transmitter: emisor.data.emisor.tipos_de_venta.length > 0 ? emisor.data.emisor.tipos_de_venta[0][1] : '',
-            //type_sale_transmitter_array : [],
-            //type_sale_transmitter : '',
+            type_sale_transmitter: emisor.data.emisor.tipos_de_venta.length > 0 ? emisor.data.emisor.tipos_de_venta[0][0] : '',
+            facturaId : emisor.data.id,
   
-            /*rut_client: result.data.receptor.rut+"-"+result.data.receptor.dv,
-            business_name_client: result.data.receptor.razon_social,
-            address_client_array: result.data.receptor.direcciones[0],
-            address_client: result.data.receptor.direccion_seleccionada,
-            comuna_client: result.data.receptor.comuna_seleccionada,
-            city_client: result.data.receptor.ciudad_seleccionada,
-            spin_client_array: result.data.receptor.giros,
-            spin_client: result.data.receptor.giro_seccionado,
-            type_buy_client_array: [],
-            type_buy_client: '1',
-            name_contact: result.data.receptor.contacto,*/
+            rut_client: receptor.data.receptor.rut+"-"+receptor.data.receptor.dv,
+            business_name_client: receptor.data.receptor.razon_social,
+            address_client_array: receptor.data.receptor.direcciones[0],
+            address_client: receptor.data.receptor.direccion_seleccionada,
+            comuna_client: receptor.data.receptor.comuna_seleccionada,
+            city_client: receptor.data.receptor.ciudad_seleccionada,
+            spin_client_array: Array.isArray(receptor.data.girosReceptor) ? receptor.data.girosReceptor : [receptor.data.girosReceptor],
+            spin_client: Array.isArray(receptor.data.girosReceptor) ? receptor.data.girosReceptor[0].nombre : receptor.data.girosReceptor.nombre,
+            type_buy_client_array: Array.isArray(receptor.data.TipoDeCompra) ? receptor.data.TipoDeCompra : [receptor.data.TipoDeCompra] ,
+            type_buy_client: receptor.data.receptor.tipoDeCompraId.toString(),
           })
         })
         setDisplayLoading(false)
       }else{
-        
+        setCotizationData(oldData => {
+          return Object.assign({},oldData,{
+            actividad_economica_transmitter_array: emisor.data.emisor.actvidades_economicas,
+            actividad_economica_transmitter : emisor.data.emisor.actividad_economica_seleccionada ? emisor.data.emisor.actividad_economica_seleccionada : emisor.data.emisor.actvidades_economicas[0][0],
+            city_transmitter : emisor.data.emisor.ciudad_seleccionada,
+            email_transmitter: emisor.data.emisor.correo,
+            comuna_transmitter: emisor.data.emisor.comuna_seleccionada,
+            address_transmitter:  emisor.data.emisor.direccion_seleccionada,
+            address_transmitter_array: emisor.data.emisor.direcciones[0],
+            business_name_transmitter : emisor.data.emisor.razon_social,
+            rut_transmitter : props.configGeneral.enterprise.rut,  
+            spin_transmitter: emisor.data.emisor.giro,
+            type_transfer_trasmitter_array: API_FACTURACION ? emisor.data.tipos_de_traslado : emisor.data.tipos_de_venta,
+            type_transfer_trasmitter: API_FACTURACION ? emisor.data.tipos_de_traslado.length > 0 ? emisor.data.tipos_de_traslado[0].id : "" : "",
+            facturaId: API_FACTURACION ? emisor.data.id : "",//result.data.facturaID,
+            type_sale_transmitter_array: emisor.data.emisor.tipos_de_venta,
+            type_sale_transmitter: emisor.data.emisor.tipos_de_venta.length > 0 ? emisor.data.emisor.tipos_de_venta[0][0] : '',
+            facturaId : emisor.data.id,
+          })
+        })
+        setDisplayLoading(false)
       }
     } catch (error) {
       console.log(error,"aqui ========================");
@@ -332,7 +350,7 @@ const CotizationGuidePage = (props) => {
       toast.success('Guía guardada con éxito')
       toast.info('Generando pdf de la Guía, espere por favor...')
       result.data.forEach((item, i) => {
-        window.open(item.pdf_public_url,'_blank')
+        if(item) window.open(item.pdf_public_url,'_blank')
       });
       goToDashboard()
 

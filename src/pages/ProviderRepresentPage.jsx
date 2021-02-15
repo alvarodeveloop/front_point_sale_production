@@ -41,8 +41,13 @@ const ProviderRepresentPage = (props) => {
 
   useEffect(() => {
     fetchData()
-    inputRef.current.focus()
   },[])
+
+  useEffect(() => {
+    if(inputRef.current){
+      inputRef.current.focus()
+    }
+  },[inputRef.current])
 
   useMemo(() => {
 

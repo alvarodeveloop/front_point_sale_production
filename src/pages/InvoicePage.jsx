@@ -56,12 +56,12 @@ const InvoiceSearchPage = props => {
     cotizacionColumns = [
         {
           Header: 'Referencia',
-          accessor: 'ref',
+          accessor: 'folio_bill',
           Cell: props1 => {
             const {original} = props1.cell.row
             return (
               <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para acceder a las acciones de la factura</Tooltip>}>
-                <Button variant="link" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>{ original.ref }</Button>
+                <Button variant="link" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>{ original.folio_bill }</Button>
               </OverlayTrigger>
             )
           }
@@ -247,7 +247,7 @@ const InvoiceSearchPage = props => {
     noteCreditColumns = [
       {
         Header: 'Referencia',
-        accessor: 'ref',
+        accessor: 'folio_bill',
       },
       {
         Header: 'Ref Factura',
@@ -361,6 +361,17 @@ const InvoiceSearchPage = props => {
           )
         }
       },
+      {
+        Header: 'Documento',
+        Cell: props1 => {
+          const original = props1.cell.row.original
+          return (
+            <Button variant="primary" block={true} size="sm" onClick={() =>{
+              window.open(original.name_pdf,"_blank")
+            }}>Visualizar</Button>
+          )
+        }
+      }
     ]
   },[])
 
@@ -523,8 +534,10 @@ const InvoiceSearchPage = props => {
     setDisplayLoading(true)
     axios.put(API_URL+'invoice_status/'+id).then(result => {
         toast.success('Factura anulada con éxito')
+        window.open(result.data.pdf_public_url,"_blank")
         setInvoiceAction({...invoiceAction,status: 4})
         fetchData()
+        fetchNoteCredit()
      }).catch(err => {
       setDisplayLoading(false)
        props.tokenExpired(err)
@@ -890,6 +903,7 @@ const InvoiceSearchPage = props => {
         anulateInvoice={anulateInvoice}
         seeDetailCotization={seeDetailCotization}
         isInvoice={true}
+        isLoading={displayLoading}
       />
     </Container>
   )
