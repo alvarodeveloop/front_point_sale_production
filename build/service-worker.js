@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "https://app.aidy.cl/precache-manifest.4675dfe8d804d98d27cc3490e7ab139b.js"
+  "https://app.aidy.cl/precache-manifest.4813ae387066d7a985cbaddacc688ad0.js"
 );
 
 self.addEventListener('message', (event) => {
