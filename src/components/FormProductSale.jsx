@@ -41,7 +41,7 @@ const FormProductSale = (props) => {
     detailCost: [],
     pack: '',
     categoryNames: '',
-    minimun_stock: 0,
+    minimun_stock: 10,
     quantity : '',
     cost : '',
     cost_details : '',
@@ -598,44 +598,6 @@ const FormProductSale = (props) => {
                           <Button size="sm" variant='dark' size="sm" onClick={scannEan} block={true}>Scannear EAN</Button>
                         </Col>
                       </Row>
-                      <Row>
-                        <Col sm={6} md={6} lg={6} xs={12}>
-                          <label className="form-control-label">Es Neto</label>
-                          <br/>
-                          <Row>
-                            <Col sm={6} md={6} lg={6} xs={12}>
-                              <label className="checkbox-inline">
-                                Si &nbsp;&nbsp;&nbsp;
-                                <input type="checkbox" name="is_neto" checked={dataProduct.is_neto ? true : false} value={true} onChange={onChange} />
-                              </label>
-                            </Col>
-                            <Col sm={6} md={6} lg={6} xs={12}>
-                              <label className="checkbox-inline">
-                                No &nbsp;&nbsp;&nbsp;
-                                <input type="checkbox" name="is_neto" checked={dataProduct.is_neto ? false : true} value={false} onChange={onChange}/>
-                              </label>
-                            </Col>
-                          </Row>
-                        </Col>
-                        <Col sm={6} md={6} lg={6} xs={12}>
-                          <label className="form-control-label">Es Auto Venta</label>
-                          <br/>
-                          <Row>
-                            <Col sm={6} md={6} lg={6} xs={12}>
-                              <label className="checkbox-inline">
-                                Si &nbsp;&nbsp;&nbsp;
-                                <input type="checkbox" name="is_auto_sale" checked={dataProduct.is_auto_sale ? true : false} value={true} onChange={onChange} />
-                              </label>
-                            </Col>
-                            <Col sm={6} md={6} lg={6} xs={12}>
-                              <label className="checkbox-inline">
-                                No &nbsp;&nbsp;&nbsp;
-                                <input type="checkbox" name="is_auto_sale" checked={dataProduct.is_auto_sale ? false : true} value={false} onChange={onChange} />
-                              </label>
-                            </Col>
-                          </Row>
-                        </Col>
-                      </Row>
                       <br/>
                       <Row>
                         <InputField
@@ -660,8 +622,6 @@ const FormProductSale = (props) => {
                             value={dataProduct.pack}
                             />
                         ) : ''}
-                      </Row>
-                      <Row>
                         <InputField
                          type='number'
                          label='Stock minimo'
