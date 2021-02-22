@@ -141,7 +141,7 @@ function DataTable({ columns, data, menuTop, headerColor, headerFontColor }) {
   // Render the UI for your table
 
   return (
-    <div className="table-responsive">
+    <div className="table_responsive_eddit">
       {menuTop ? (
         <div className="pagination">
           <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
@@ -222,7 +222,7 @@ function DataTable({ columns, data, menuTop, headerColor, headerFontColor }) {
               prepareRow(row) || (
                 <tr {...row.getRowProps()}>
                   {row.cells.map(cell => {
-                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                    return <td style={{position: "relative"}} {...cell.getCellProps()}>{cell.render('Cell')}</td>
                   })}
                 </tr>
               )

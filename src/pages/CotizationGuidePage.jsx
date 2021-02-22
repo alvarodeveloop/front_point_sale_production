@@ -98,13 +98,13 @@ const CotizationGuidePage = (props) => {
   }))
   const [displayModals,setDisplayModals] = useState(false)
   const [refCotizacion, setRefCotizacion] = useState([])
-  const [displaySection,setDisplaySection] = useState(1)
   const inputRef = useRef(null)
   const [optionalFields,setOptionalFields] = useState({
     check_ref : false,
     check_transfer: false
   })
   const [displayLoading, setDisplayLoading] = useState(true)
+  const [listData, setListData] = useState([])
 
   useEffect(() => {
     if(!props.configStore || !props.configGeneral){
@@ -159,7 +159,8 @@ const CotizationGuidePage = (props) => {
       promises = [
         axios.get(API_URL+'client'),
         axios.get(API_URL+'product'),
-        axios.get(API_URL+'cotizacion/'+props.match.params.id)
+        axios.get(API_URL+'cotizacion/'+props.match.params.id),
+        axios.get(API_URL+'listProduct'),
       ]
     }else if(onlyClient){
       promises = [axios.get(API_URL+'client')]
@@ -171,7 +172,7 @@ const CotizationGuidePage = (props) => {
         setProducts(result[1].data)
         setGastosDetail(result[2].data.gastos)
         setDetailProducts(result[2].data.products)
-
+        setListData(result[3].data)
         setCotizationData(oldData => {
           return Object.assign({},oldData,{
             type_api: result[2].data.type_api,
@@ -370,7 +371,7 @@ const CotizationGuidePage = (props) => {
   const addRef = () => {
     setRefCotizacion([...refCotizacion,{
       ind: 'ind',
-      type_document: 'Hoja Entrada de Servicio',
+      type_document: 'HES',
       ref_cotizacion: cotizationData.ref,
       date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
       reason_ref: 'Cotización',
@@ -566,6 +567,8 @@ const CotizationGuidePage = (props) => {
                 setGastosDetail={setGastosDetail}
                 onChange={onChange}
                 products={products}
+                listData={listData}
+                setProducts={setProducts}
                 {...props}
               />
               {/* ======================================================= */}

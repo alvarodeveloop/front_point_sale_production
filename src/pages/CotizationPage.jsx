@@ -17,7 +17,6 @@ import {FaPlusCircle, FaMailBulk, FaUser } from 'react-icons/fa'
 import { MdPrint } from 'react-icons/md'
 import FormClientModal from 'components/modals/FormClientModal'
 import ModalGastosCotizacion from 'components/modals/ModalGastosCotizacion'
-import { showPriceWithDecimals } from 'utils/functions'
 import * as moment from 'moment-timezone'
 import InputField from 'components/input/InputComponent'
 import ModalClientCotizacion from 'components/modals/ModalClientCotizacion'
@@ -25,8 +24,6 @@ import ModalContacts from 'components/modals/ModalContacts'
 import ModalSeller from 'components/modals/ModalSeller'
 import styled from 'styled-components'
 import layoutHelpers from 'shared/layouts/helpers'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
 import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
 import {formatRut} from 'utils/functions'
 import { connect } from 'react-redux'
@@ -112,7 +109,7 @@ const CotizationPage = (props) => {
   const [displayModals,setDisplayModals] = useState(false)
   const [isOpenModalInvoice, setIsOpenModalInvoice] = useState(false)
   const [refCotizacion, setRefCotizacion] = useState([])
-  const [isShowModalStoreCotizacion, setShowModalStoreCotizacion] = useState(false)
+  const [listData, setListData] = useState([]);
   const inputRef = useRef(null)
 
   useEffect(() => {
@@ -172,7 +169,8 @@ const CotizationPage = (props) => {
       promises = [
         axios.get(API_URL+'client'),
         axios.get(API_URL+'product'),
-        axios.get(API_URL+'cotizacion_get_ref')
+        axios.get(API_URL+'cotizacion_get_ref'),
+        axios.get(API_URL+'listProduct')
       ]
     }else if(onlyClient){
       promises = [axios.get(API_URL+'client')]
@@ -180,7 +178,8 @@ const CotizationPage = (props) => {
       promises = [
         axios.get(API_URL+'client'),
         axios.get(API_URL+'product'),
-        axios.get(API_URL+'cotizacion/'+props.match.params.id)
+        axios.get(API_URL+'cotizacion/'+props.match.params.id),
+        axios.get(API_URL+'listProduct')
       ]
     }
 
@@ -188,6 +187,7 @@ const CotizationPage = (props) => {
       setClients(result[0].data)
       if(result.length >= 2){
         setProducts(result[1].data)
+        setListData(result[3].data)
         if(isUpdate){
 
           setGastosDetail(result[2].data.gastos)
@@ -252,7 +252,7 @@ const CotizationPage = (props) => {
   const addRef = () => {
     setRefCotizacion([...refCotizacion,{
       ind: 'ind',
-      type_document: 'Hoja Entrada de Servicio',
+      type_document: 'HES',
       ref_cotizacion: cotizationData.ref,
       date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
       reason_ref: 'Cotización',
@@ -561,6 +561,8 @@ const CotizationPage = (props) => {
                     setIsShowModalProduct={setIsShowModalProduct}
                     setGastosDetail={setGastosDetail}
                     onChange={onChange}
+                    listData={listData}
+                    setProducts={setProducts}
                     {...props}
                   />
                   {/* ======================================================= */}
@@ -729,6 +731,8 @@ const CotizationPage = (props) => {
                       addRef={addRef}
                       submitData={handleModalInvoice}
                       goToDashboard={goToDashboard}
+                      listData={listData}
+                      setProducts={setProducts}
                     />
                   ) : cotizationData.type_invoicing === false ? (
                     <React.Fragment>
@@ -759,6 +763,8 @@ const CotizationPage = (props) => {
                         addRef={addRef}
                         submitData={handleModalInvoice}
                         goToDashboard={goToDashboard}
+                        listData={listData}
+                        setProducts={setProducts}
                       />
                     </React.Fragment>
                   ) : ''}

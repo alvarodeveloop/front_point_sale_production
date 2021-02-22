@@ -27,13 +27,11 @@ const InputField = props => {
           autoComplete={props.autoComplete ? props.autoComplete : 'xxx'}
           />
         <Form.Control.Feedback type="invalid">
-          (
-            {
-              props.messageErrors.map((v,i) => {
-                return <span key={i} className="error-input">{v}</span>
-              })
-            }
-          )
+          {
+            props.messageErrors.map((v,i) => {
+              return <span key={i} className="error-input">{v.replace(/[*]$/g,"")}</span>
+            })
+          }
         </Form.Control.Feedback>
       </Form.Group>
     )
@@ -58,13 +56,11 @@ const InputField = props => {
           {props.children}
         </Form.Control>
         <Form.Control.Feedback type="invalid">
-          (
-            {
-              props.messageErrors.map((v,i) => {
-                return <span key={i} className="error-input">{v}</span>
-              })
-            }
-          )
+          {
+            props.messageErrors.map((v,i) => {
+              return <span key={i} className="error-input">{v.replace(/[*]$/g,"")}</span>
+            })
+          }
         </Form.Control.Feedback>
       </Form.Group>
     )
@@ -88,13 +84,11 @@ const InputField = props => {
           autoComplete={props.autoComplete ? props.autoComplete : 'xxx'}
         />
         <Form.Control.Feedback type="invalid">
-          (
-            {
-              props.messageErrors.map((v,i) => {
-                return <span key={i} className="error-input">{v}</span>
-              })
-            }
-          )
+          {
+            props.messageErrors.map((v,i) => {
+              return <span key={i} className="error-input">{v.replace(/[*]$/g,"")}</span>
+            })
+          }
         </Form.Control.Feedback>
       </Form.Group>
     )

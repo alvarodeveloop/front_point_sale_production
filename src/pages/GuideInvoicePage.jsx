@@ -95,6 +95,7 @@ const GuideInvoicePage = (props) => {
   }))
   const [displayModals,setDisplayModals] = useState(false)
   const [refCotizacion, setRefCotizacion] = useState([])
+  const [listData, setListData] = useState([])
   const inputRef = useRef(null)
 
   useEffect(() => {
@@ -149,7 +150,8 @@ const GuideInvoicePage = (props) => {
       promises = [
         axios.get(API_URL+'client'),
         axios.get(API_URL+'product'),
-        axios.get(API_URL+'guide/'+props.match.params.id)
+        axios.get(API_URL+'guide/'+props.match.params.id),
+        axios.get(API_URL+'listProduct'),
       ]
     }else if(onlyClient){
       promises = [axios.get(API_URL+'client')]
@@ -162,7 +164,7 @@ const GuideInvoicePage = (props) => {
         setProducts(result[1].data)
         setGastosDetail(result[2].data.gastos)
         setDetailProducts(result[2].data.products)
-
+        setListData(result[3].data)
         setCotizationData(oldData => {
           return Object.assign({},oldData,{
             id_guide: props.match.params.id,
@@ -372,7 +374,7 @@ const GuideInvoicePage = (props) => {
   const addRef = () => {
     setRefCotizacion([...refCotizacion,{
       ind: 'ind',
-      type_document: 'Hoja Entrada de Servicio',
+      type_document: 'HES',
       ref_cotizacion: cotizationData.ref,
       date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
       reason_ref: 'Cotización',
@@ -472,6 +474,8 @@ const GuideInvoicePage = (props) => {
                 submitData={handleSubmitInvoice}
                 goToDashboard={goToDashboard}
                 products={products}
+                listData={listData}
+                setProducts={setProducts}
                 {...props}
               />
             ) : cotizationData.type_invoicing === false ? (
@@ -498,6 +502,8 @@ const GuideInvoicePage = (props) => {
                 submitData={handleSubmitInvoice}
                 goToDashboard={goToDashboard}
                 products={products}
+                listData={listData}
+                setProducts={setProducts}
                 {...props}
               />
             ) : (

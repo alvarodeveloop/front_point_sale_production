@@ -101,6 +101,14 @@ export const routes = [
     component: lazy(() => import('./pages/ProductFormPage'))
   },
   {
+    path: '/product/listProduct',
+    component: lazy(() => import('./pages/ListProductPage'))
+  },
+  {
+    path: '/product/listProduct/:id',
+    component: lazy(() => import('./pages/ProductListDetailPage'))
+  },
+  {
     path: '/provider/list',
     component: lazy(() => import('./pages/ProviderPage'))
   },

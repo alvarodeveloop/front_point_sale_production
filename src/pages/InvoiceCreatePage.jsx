@@ -89,6 +89,7 @@ const InvoiceCreatePage = (props) => {
   const inputRef = useRef(null)
   const [displayLoading, setDisplayLoading] = useState(true)
   const [displayLoadingModal, setDisplayLoadingModal] = useState(false)
+  const [listData, setlistData] = useState([])
 
   useEffect(() => {
     if(!props.configStore || !props.configGeneral){
@@ -136,6 +137,7 @@ const InvoiceCreatePage = (props) => {
       promises = [
         axios.get(API_URL+'client'),
         axios.get(API_URL+'product'),
+        axios.get(API_URL+'listProduct'),
       ]
     }else if(onlyClient){
       promises = [axios.get(API_URL+'client')]
@@ -145,6 +147,7 @@ const InvoiceCreatePage = (props) => {
       setClients(result[0].data)
       if(result.length >= 2){
         setProducts(result[1].data)
+        setlistData(result[2].data)
       }
       setDisplayLoading(false)
     }).catch(err => {
@@ -291,7 +294,7 @@ const InvoiceCreatePage = (props) => {
   const addRef = () => {
     setRefCotizacion([...refCotizacion,{
       ind: 'ind',
-      type_document: 'Hoja Entrada de Servicio',
+      type_document: 'HES',
       ref_cotizacion: cotizationData.ref,
       date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
       reason_ref: 'Cotización',
@@ -390,6 +393,8 @@ const InvoiceCreatePage = (props) => {
                 addRef={addRef}
                 goToDashboard={goToDashboard}
                 products={products}
+                listData={listData}
+                setProducts={setProducts}
                 {...props}
               />
             ) : cotizationData.type_invoicing === false ? (
@@ -415,6 +420,8 @@ const InvoiceCreatePage = (props) => {
                 addRef={addRef}
                 goToDashboard={goToDashboard}
                 products={products}
+                listData={listData}
+                setProducts={setProducts}
                 {...props}
               />
             ) : (

@@ -7,30 +7,19 @@ import {
   Col,
   Container,
   Button,
-  Dropdown,
-  DropdownButton,
   Accordion,
-  Card,
   Form,
-  Modal
 } from 'react-bootstrap'
 import { API_URL, FRONT_URL } from 'utils/constants'
-import { FaBook, FaMoneyBill,FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt, FaUser, FaUsers } from 'react-icons/fa'
-import { MdPrint } from 'react-icons/md'
-import Table from 'components/Table'
+import { FaPlusCircle } from 'react-icons/fa'
 import FormClientModal from 'components/modals/FormClientModal'
 import ModalGastosCotizacion from 'components/modals/ModalGastosCotizacion'
-import { showPriceWithDecimals } from 'utils/functions'
 import * as moment from 'moment-timezone'
 import InputField from 'components/input/InputComponent'
-import ModalClientCotizacion from 'components/modals/ModalClientCotizacion'
 import ModalContacts from 'components/modals/ModalContacts'
 import ModalSeller from 'components/modals/ModalSeller'
 import styled from 'styled-components'
 import layoutHelpers from 'shared/layouts/helpers'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
 import {formatRut} from 'utils/functions'
 import { connect } from 'react-redux'
 import TransmitterInvoiceComponent from 'components/invoice/TransmitterInvoiceComponent'
@@ -95,13 +84,10 @@ const BillPage = (props) => {
   const [isShowModalProduct, setIsShowModalProduct] = useState(false)
   const [products,setProducts] = useState([])
   const [gastosDetail,setGastosDetail] = useState([])
-  const [openModalClientMail,setOpenModalClientMail] = useState(false)
   const [disableButtons,setDisableButton] = useState(false)
   const [isShowModalContacts,setIsShowModalContacts] = useState(false)
   const [isShowModalSeller,setIsShowModalSeller] = useState(false)
   const [validated, setValidated] = useState(false)
-  const [displayDataInvoice, setDisplayDataInvoice] = useState(1)
-  const [requireInvoice, setRequireInvoice] = useState(false)
   const [detailBonds, setDetailBonds] = useState([])
   const [cotizationData, setCotizationData] = useState(Object.assign({},OBJECT_COTIZATION,{
     business_name_transmitter: props.configStore ? props.configStore.name_store : '',
@@ -126,6 +112,7 @@ const BillPage = (props) => {
   const [isShowModalStoreCotizacion, setShowModalStoreCotizacion] = useState(false)
   const [typeBond,setTypeBond] = useState([])
   const [displayLoading, setDisplayLoading] = useState(true)
+  const [listData, setListData] = useState([])
   const inputRef = useRef(null)
 
   useEffect(() => {
@@ -190,6 +177,7 @@ const BillPage = (props) => {
         axios.get(API_URL+'product'),
         axios.get(API_URL+'type_bond'),
         axios.get(API_URL+'search_receptor/'+rut+'/'+dv),
+        axios.get(API_URL+'listProduct'),
       ]
     }else if(onlyClient){
       promises = [axios.get(API_URL+'client')]
@@ -202,7 +190,7 @@ const BillPage = (props) => {
       if(result.length >= 2){
         setProducts(result[1].data)
         if(result.length > 2){
-
+          setListData(result[4].data);
           setTypeBond(result[2].data)
           setCotizationData(oldData => {
             return Object.assign({},oldData,{
@@ -230,6 +218,7 @@ const BillPage = (props) => {
             setProducts(result[1].data)
             if(result.length > 2){
               setTypeBond(result[2].data)
+              setListData(result[3].data);
             }
           }
           setDisplayLoading(false)
@@ -254,7 +243,7 @@ const BillPage = (props) => {
   const addRef = () => {
     setRefCotizacion([...refCotizacion,{
       ind: 'ind',
-      type_document: 'Hoja Entrada de Servicio',
+      type_document: 'HES',
       ref_cotizacion: cotizationData.ref,
       date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
       reason_ref: 'Cotización',
@@ -428,14 +417,6 @@ const BillPage = (props) => {
     fetchData(true)
   }
 
-  const handleHideModalStoreCotizacion = () => {
-    setShowModalStoreCotizacion(!isShowModalStoreCotizacion)
-  }
-
-  const handleHideModalProduct = () => {
-    setIsShowModalProduct(false)
-  }
-
   const handleModalContacts = () => {
     setIsShowModalContacts(!isShowModalContacts)
   }
@@ -443,19 +424,6 @@ const BillPage = (props) => {
   const handleModalSeller = () => {
     setIsShowModalSeller(!isShowModalSeller)
   }
-
-  const removeItemDetail = data => {
-    setDetailProducts(detail => {
-      return detail.filter(v => v.name_product !== data.name_product)
-    })
-  }
-
-  const removeGastoDetail = data => {
-    setGastosDetail(gastos =>{
-     return gastos.filter(v => v.description !== data.description)
-    })
-  }
-
 
   const handleSelectContact = dataContact => {
     setCotizationData(oldData => {
@@ -477,10 +445,6 @@ const BillPage = (props) => {
       })
     })
     setIsShowModalSeller(false)
-  }
-
-  const handleModalInvoice = () => {
-    setIsOpenModalInvoice(!isOpenModalInvoice)
   }
 
   return (
@@ -552,6 +516,8 @@ const BillPage = (props) => {
                 setIsShowModalProduct={setIsShowModalProduct}
                 setGastosDetail={setGastosDetail}
                 onChange={onChange}
+                listData={listData}
+                setProducts={setProducts}
                 {...props}
               />
               {/* ======================================================= */}

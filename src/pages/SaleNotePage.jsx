@@ -77,7 +77,6 @@ const SaleNotePage = (props) => {
 
   const [displayLoading, setDisplayLoading] = useState(true)
   const [clients,setClients] = useState([])
-  const [clientDetail,setClientDetail] = useState({})
   const [detailProducts, setDetailProducts] = useState([])
   const [isShowModalClient, setIsShowModalClient] = useState(false)
   const [isShowModalGastos, setIsShowModalGastos] = useState(false)
@@ -99,6 +98,7 @@ const SaleNotePage = (props) => {
     }))
   const [displayModals,setDisplayModals] = useState(false)
   const [refCotizacion, setRefCotizacion] = useState([])
+  const [listData, setListData] = useState([])
 
   const inputRef = useRef(null)
 
@@ -138,7 +138,8 @@ const SaleNotePage = (props) => {
       promises = [
         axios.get(API_URL+'client'),
         axios.get(API_URL+'product'),
-        axios.get(API_URL+'sale_note_get_ref')
+        axios.get(API_URL+'sale_note_get_ref'),
+        axios.get(API_URL+'listProduct'),
       ]
     }else if(onlyClient){
       promises = [axios.get(API_URL+'client')]
@@ -149,6 +150,7 @@ const SaleNotePage = (props) => {
       if(result.length >= 2){
         setProducts(result[1].data)
         setCotizationData({...cotizationData, ref: result[2].data.ref})
+        setListData(result[3].data)
       }
       setDisplayLoading(false)
     }).catch(err => {
@@ -282,7 +284,7 @@ const SaleNotePage = (props) => {
   const addRef = () => {
     setRefCotizacion([...refCotizacion,{
       ind: 'ind',
-      type_document: 'Hoja Entrada de Servicio',
+      type_document: 'HES',
       ref_cotizacion: cotizationData.ref,
       date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
       reason_ref: 'Cotización',
@@ -399,6 +401,8 @@ const SaleNotePage = (props) => {
                 setGastosDetail={setGastosDetail}
                 onChange={onChange}
                 products={products}
+                listData={listData}
+                setProducts={setProducts}
                 {...props}
               />
               {/* ======================================================= */}

@@ -9,7 +9,6 @@ import layoutHelpers from './helpers'
 import InputField from 'components/input/InputComponent'
 import axios from 'axios'
 import {API_URL} from 'utils/constants'
-import {toast} from 'react-toastify'
 import styled from 'styled-components'
 import { setConfigStore, setConfig } from 'actions/configs'
 import { setAuthorizationToken } from 'utils/functions'
@@ -20,6 +19,18 @@ const Styles = styled.div`
     border: 1px solid rgb(76, 138, 233);
     box-shadow: 0px 0px 5px 5px rgb(76, 138, 233);
     color: white;
+  }
+
+  .imageRotateHorizontal{
+    -moz-animation: spinHorizontal 13s infinite linear;
+    -o-animation: spinHorizontal 13s infinite linear;    
+    -webkit-animation: spinHorizontal 13s infinite linear;
+    animation: spinHorizontal 13s infinite linear;
+  }
+
+  @keyframes spinHorizontal {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(360deg); }
   }
 `
 
@@ -107,7 +118,7 @@ const LayoutNavbar = (props) => {
     <Styles>
       <Navbar bg={props.navbarBg} expand="md" className={`layout-navbar align-items-lg-center container-p-x ${!objectMessage.borderSuccess ? "" : "border_success"}`} style={{height: "80px"}}>
         {/* Brand */}
-        <Navbar.Brand as={NavLink} to="/">
+        <Navbar.Brand as={NavLink} to="/" className="imageRotateHorizontal">
           <Image src={require('../../assets/img/logo/AIDY_01.jpg')}
             width="80"
             className="d-inline-block align-top"

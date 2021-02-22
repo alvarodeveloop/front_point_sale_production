@@ -7,31 +7,20 @@ import {
   Col,
   Container,
   Button,
-  Dropdown,
-  DropdownButton,
   Accordion,
-  Card,
   Form,
   Image
 } from 'react-bootstrap'
-import { API_URL, FRONT_URL } from 'utils/constants'
-import { FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt, FaUser, FaUsers, FaBook } from 'react-icons/fa'
-import Table from 'components/Table'
-import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
+import { API_URL } from 'utils/constants'
 import FormClientModal from 'components/modals/FormClientModal'
 import ModalGastosCotizacion from 'components/modals/ModalGastosCotizacion'
-import { showPriceWithDecimals } from 'utils/functions'
 import * as moment from 'moment-timezone'
 import InputField from 'components/input/InputComponent'
 import { connect } from 'react-redux'
-import { ColumnsCotization, GastosCotizacion } from 'utils/columns/cotization'
-import ModalClientCotizacion from 'components/modals/ModalClientCotizacion'
 import ModalContacts from 'components/modals/ModalContacts'
 import ModalSeller from 'components/modals/ModalSeller'
 import styled from 'styled-components'
 import layoutHelpers from 'shared/layouts/helpers'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
 import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
 import {formatRut} from 'utils/functions'
 import TransmitterInvoiceComponent from 'components/invoice/TransmitterInvoiceComponent'
@@ -42,8 +31,6 @@ import {OBJECT_COTIZATION} from 'utils/constants'
 import GastosComponent from 'components/invoice/GastosComponent'
 import ProductTableComponent from 'components/invoice/ProductTableComponent'
 import LoadingComponent from 'components/LoadingComponent'
-
-let DetailCotizacion = null
 
 const Styles = styled.div`
 
@@ -99,7 +86,7 @@ const CotizationSaleNotePage = (props) => {
   const [isShowModalProduct, setIsShowModalProduct] = useState(false)
   const [products,setProducts] = useState([])
   const [gastosDetail,setGastosDetail] = useState([])
-  const [openModalClientMail,setOpenModalClientMail] = useState(false)
+  const [listData, setListData] = useState([])
   const [disableButtons,setDisableButton] = useState(false)
   const [isShowModalContacts,setIsShowModalContacts] = useState(false)
   const [isShowModalSeller,setIsShowModalSeller] = useState(false)
@@ -178,7 +165,8 @@ const CotizationSaleNotePage = (props) => {
       promises = [
         axios.get(API_URL+'client'),
         axios.get(API_URL+'product'),
-        axios.get(API_URL+'cotizacion/'+props.match.params.id)
+        axios.get(API_URL+'cotizacion/'+props.match.params.id),
+        axios.get(API_URL+'listProduct'),
       ]
     }else if(onlyClient){
       promises = [axios.get(API_URL+'client')]
@@ -191,46 +179,46 @@ const CotizationSaleNotePage = (props) => {
         setProducts(result[1].data)
         setGastosDetail(result[2].data.gastos)
         setDetailProducts(result[2].data.products)
-
+        setListData(result[3].data)
         setCotizationData(oldData => {
           return Object.assign({},oldData,{
-            business_name_transmitter: result.data.business_name_transmitter,
-            rut_transmitter: result.data.rut_transmitter,
-            address_transmitter: result.data.address_transmitter,
-            country_transmitter: result.data.country_transmitter,
-            email_transmitter: result.data.email_transmitter,
-            phone_transmitter: result.data.phone_transmitter,
-            actividad_economica_transmitter: result.data.actividad_economica_transmitter,
-            city_transmitter : result.data.city_transmitter,
-            comment: result.data.comment,
-            date_issue_invoice: result.data.date_issue_invoice ? moment(result.data.date_issue_invoice).tz('America/Santiago').format('YYYY-MM-DD') : moment().tz('America/Santiago').format('YYYY-MM-DD'),
-            type_api: result.data.type_api,
-            rut_client: result.data.rut_client,
-            business_name_client: result.data.business_name_client,
-            address_client: result.data.address_client,
-            actividad_economica_client: result.data.actividad_economica_client,
-            city_client : result.data.city_client,
-            name_contact: result.data.name_contact,
-            phone_contact: result.data.phone_contact,
-            email_contact: result.data.email_contact,
-            name_seller: result.data.name_seller,
-            phone_seller: result.data.phone_seller,
-            email_seller: result.data.email_seller,
-            total_with_iva : result.data.total_with_iva, // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
+            business_name_transmitter: result[2].data.business_name_transmitter,
+            rut_transmitter: result[2].data.rut_transmitter,
+            address_transmitter: result[2].data.address_transmitter,
+            country_transmitter: result[2].data.country_transmitter,
+            email_transmitter: result[2].data.email_transmitter,
+            phone_transmitter: result[2].data.phone_transmitter,
+            actividad_economica_transmitter: result[2].data.actividad_economica_transmitter,
+            city_transmitter : result[2].data.city_transmitter,
+            comment: result[2].data.comment,
+            date_issue_invoice: result[2].data.date_issue_invoice ? moment(result[2].data.date_issue_invoice).tz('America/Santiago').format('YYYY-MM-DD') : moment().tz('America/Santiago').format('YYYY-MM-DD'),
+            type_api: result[2].data.type_api,
+            rut_client: result[2].data.rut_client,
+            business_name_client: result[2].data.business_name_client,
+            address_client: result[2].data.address_client,
+            actividad_economica_client: result[2].data.actividad_economica_client,
+            city_client : result[2].data.city_client,
+            name_contact: result[2].data.name_contact,
+            phone_contact: result[2].data.phone_contact,
+            email_contact: result[2].data.email_contact,
+            name_seller: result[2].data.name_seller,
+            phone_seller: result[2].data.phone_seller,
+            email_seller: result[2].data.email_seller,
+            total_with_iva : result[2].data.total_with_iva, // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
             price_list: "",
-            status: result.data.status,
-            type_invoicing: result.data.type_effect,
-            ref: result.data.ref,
-            way_of_payment: result.data.way_of_payment ? result.data.way_of_payment : 1,
-            discount_global: result.data.discount_global,
-            days_expiration: result.data.days_expiration,
-            id_branch_office : result.data.id_branch_office,
-            comuna_client: result.data.comuna_client,
-            city_client: result.data.city_client,
-            spin_client: result.data.spin_client,
-            comuna_transmitter: result.data.comuna_transmitter,
-            type_buy_client: result.data.type_buy_client,
-            type_sale_transmitter: result.data.type_sale_transmitter,
+            status: result[2].data.status,
+            type_invoicing: result[2].data.type_effect,
+            ref: result[2].data.ref,
+            way_of_payment: result[2].data.way_of_payment ? result[2].data.way_of_payment : 1,
+            discount_global: result[2].data.discount_global,
+            days_expiration: result[2].data.days_expiration,
+            id_branch_office : result[2].data.id_branch_office,
+            comuna_client: result[2].data.comuna_client,
+            city_client: result[2].data.city_client,
+            spin_client: result[2].data.spin_client,
+            comuna_transmitter: result[2].data.comuna_transmitter,
+            type_buy_client: result[2].data.type_buy_client,
+            type_sale_transmitter: result[2].data.type_sale_transmitter,
             way_of_payment: "Crédito"
           })
         })
@@ -276,28 +264,12 @@ const CotizationSaleNotePage = (props) => {
     fetchData(true)
   }
 
-  const handleHideModalProduct = () => {
-    setIsShowModalProduct(false)
-  }
-
   const handleModalContacts = () => {
     setIsShowModalContacts(!isShowModalContacts)
   }
 
   const handleModalSeller = () => {
     setIsShowModalSeller(!isShowModalSeller)
-  }
-
-  const removeItemDetail = data => {
-    setDetailProducts(detail => {
-      return detail.filter(v => v.name_product !== data.name_product)
-    })
-  }
-
-  const removeGastoDetail = data => {
-    setGastosDetail(gastos =>{
-     return gastos.filter(v => v.description !== data.description)
-    })
   }
 
   const handleSelectContact = dataContact => {
@@ -407,7 +379,7 @@ const CotizationSaleNotePage = (props) => {
   const addRef = () => {
     setRefCotizacion([...refCotizacion,{
       ind: 'ind',
-      type_document: 'Hoja Entrada de Servicio',
+      type_document: 'HES',
       ref_cotizacion: cotizationData.ref,
       date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
       reason_ref: 'Cotización',
@@ -428,253 +400,244 @@ const CotizationSaleNotePage = (props) => {
   return (
     <Styles>
       <Container fluid>
-        {displayLoading  ? (
-          <LoadingComponent />
-        ) : (
-          <Form ref={inputRef} onSubmit={handleSubmit} noValidate validated={validated}>
-            <Row>
-              <Col sm={8} md={8} lg={8}>
-                <h4 className="title_principal">Formulario de notas de ventas</h4>
-              </Col>
-              <Col sm={4} md={4} lg={4}>
-                <InputField
-                type='text'
-                label={(<h5 style={{color: "rgb(153, 31, 31)"}}>Ref. Nota de Venta</h5>)}
-                name='id_cotizacion'
-                required={true}
-                messageErrors={[
+        <Form ref={inputRef} onSubmit={handleSubmit} noValidate validated={validated}>
+          <Row>
+            <Col sm={8} md={8} lg={8}>
+              <h4 className="title_principal">Formulario de notas de ventas</h4>
+            </Col>
+            <Col sm={4} md={4} lg={4}>
+              <InputField
+              type='text'
+              label={(<h5 style={{color: "rgb(153, 31, 31)"}}>Ref. Nota de Venta</h5>)}
+              name='id_cotizacion'
+              required={true}
+              messageErrors={[
 
-                ]}
-                cols='col-md-12 col-lg-12 col-sm-12'
-                readonly={true}
-                value={cotizationData.ref}
-                handleChange={() => {}}
-                />
-              </Col>
-            </Row>
-            <hr/>
-            {displayLoading ? (
-              <React.Fragment>
-                <Row className="justify-content-center">
-                  <Col sm={4} md={4} lg={4}>
-                    <Row>
-                      <Col sm={12} md={12} lg={12} className="text-center">
-                        <b>Tipo de nota de venta</b>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col sm={6} md={6} lg={6}>
-                        <Form.Group>
-                          <Form.Check
-                            name="type_invoicing"
-                            type={'radio'}
-                            id={`radio-5`}
-                            label={`Afecta`}
-                            value={true}
-                            checked={cotizationData.type_invoicing === true}
-                            required={true}
-                            onChange={onChange}
-                            />
-                        </Form.Group>
-                      </Col>
-                      <Col sm={6} md={6} lg={6} className="text-right">
-                        <Form.Group>
-                          <Form.Check
-                            name="type_invoicing"
-                            type={'radio'}
-                            id={`radio-6`}
-                            label={`Excento`}
-                            value={false}
-                            required={true}
-                            checked={cotizationData.type_invoicing === false}
-                            onChange={onChange}
-                            />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                  </Col>
-                </Row>
-                {cotizationData.type_invoicing === true || cotizationData.type_invoicing === false ? (
-                  <React.Fragment>
-                    <Row>
-                      <Col sm={12} md={12} lg={12}>
-                        <Accordion defaultActiveKey="2">
-                          <TransmitterInvoiceComponent
-                            isType="sale_note"
-                            cotizationData={cotizationData}
-                            setCotizationData={setCotizationData}
-                            onChange={onChange}
-                            configGeneral={props.configGeneral}
-                          />
-                          <ClientInvoiceComponent
-                            isType="sale_note"
-                            cotizationData={cotizationData}
-                            setCotizationData={setCotizationData}
-                            setIsShowModalClient={setIsShowModalClient}
-                            handleModalSeller={handleModalSeller}
-                            handleModalContacts={handleModalContacts}
-                            clients={clients}
-                            onChange={onChange}
-                            setIsShowModalClient={setIsShowModalClient}
-                            handleModalSeller={handleModalSeller}
-                            />
-                          <RefComponent
-                            onChangeTableRef={onChangeTableRef}
-                            refCotizacion={refCotizacion}
-                            removeProductRef={removeProductRef}
-                            addRef={addRef}
-                            />
-                        </Accordion>
-                      </Col>
-                    </Row>
-                    <br/>
-                    <ProductTableComponent
-                      setDetailProducts={setDetailProducts}
-                      detailProducts={detailProducts}
-                      cotizationData={cotizationData}
-                      setIsShowModalProduct={setIsShowModalProduct}
-                      setGastosDetail={setGastosDetail}
-                      onChange={onChange}
-                      products={products}
-                      {...props}
-                    />
-                    {/* ======================================================= */}
-                    <hr/>
-                      <GastosComponent
-                        gastosDetail={gastosDetail}
-                        setGastosDetail={setGastosDetail}
-                        configGeneral={props.configGeneral}
-                        setIsShowModalGastos={setIsShowModalGastos}
-                      />
-                      <br/>
-                      <Row>
-                        <InputField
-                          type='date'
-                          label='Fecha emisión de la nota (MM-DD-YYYY)'
-                          name='date_issue_invoice'
-                          required={true}
-                          messageErrors={[
-                            'Requerido*'
-                          ]}
-                          cols='col-md-4 col-lg-4 col-sm-4'
-                          value={cotizationData.date_issue_invoice}
-                          handleChange={onChange}
-                          />
-                        <InputField
-                          type='number'
-                          label='Dias de Expiración'
-                          name='days_expiration'
-                          required={false}
-                          messageErrors={[
-                            'Requerido*'
-                          ]}
-                          cols='col-md-4 col-lg-4 col-sm-4'
-                          value={cotizationData.days_expiration}
-                          handleChange={onChange}
-                          />
-                        <InputField
-                          type='select'
-                          label='Forma de Pago'
-                          name='way_of_payment'
-                          required={true}
-                          messageErrors={[
-                            'Requerido*'
-                          ]}
-                          cols='col-md-4 col-lg-4 col-sm-4'
-                          value={cotizationData.way_of_payment}
-                          handleChange={onChange}
-                          >
-                          <option value="">--Seleccione--</option>
-                          <option value={"Contado"}>Contado</option>
-                          <option value={"Crédito"}>Crédito</option>
-                          <option value={"Sin Costo"}>Sin Costo</option>
-                        </InputField>
-                      </Row>
-                      <Row>
-                        <InputField
-                          type='number'
-                          label='Descuento Global'
-                          name='discount_global'
-                          required={false}
-                          messageErrors={[
-
-                          ]}
-                          cols='col-md-4 col-lg-4 col-sm-4'
-                          value={cotizationData.discount_global}
-                          handleChange={onChange}
-                          />
-                      </Row>
-                      <TableTotalComponent
-                        configGeneral={props.configGeneral}
-                        configStore={props.configStore}
-                        detailProducts={detailProducts}
-                        cotizationData={cotizationData}
-                        gastosDetail={gastosDetail}
-                        isType={"facturacion"}
-                      />
-                      <br/>
-                      <Row className="justify-content-center">
-                        <Col sm={3} md={3} lg={3}>
-                          <Button variant="secondary" size="sm" block={true} type="submit">Emitir y Facturar</Button>
-                        </Col>
-                        <Col sm={3} md={3} lg={3}>
-                          <Button variant="danger" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
-                        </Col>
-                      </Row>
-                    </React.Fragment>
-                ) : (
-                  <Row className="justify-content-center">
-                    <Col sm={4} md={4} lg={4}>
-                      <Button variant="secondary" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
+              ]}
+              cols='col-md-12 col-lg-12 col-sm-12'
+              readonly={true}
+              value={cotizationData.ref}
+              handleChange={() => {}}
+              />
+            </Col>
+          </Row>
+          <hr/>
+          {!displayLoading ? (
+            <React.Fragment>
+              <Row className="justify-content-center">
+                <Col sm={4} md={4} lg={4}>
+                  <Row>
+                    <Col sm={12} md={12} lg={12} className="text-center">
+                      <b>Tipo de nota de venta</b>
                     </Col>
                   </Row>
-                )}
-              </React.Fragment>
-            ) : (
-              <Row>
-                <Col sm={12} md={12} lg={12} className="text-center">
-                  <br/>
-                  <Image src={require('../assets/img/loading.gif')} width="30" />
-                  <br/>
-                  Cargando Documento...
+                  <Row>
+                    <Col sm={6} md={6} lg={6}>
+                      <Form.Group>
+                        <Form.Check
+                          name="type_invoicing"
+                          type={'radio'}
+                          id={`radio-5`}
+                          label={`Afecta`}
+                          value={true}
+                          checked={cotizationData.type_invoicing === true}
+                          required={true}
+                          onChange={onChange}
+                          />
+                      </Form.Group>
+                    </Col>
+                    <Col sm={6} md={6} lg={6} className="text-right">
+                      <Form.Group>
+                        <Form.Check
+                          name="type_invoicing"
+                          type={'radio'}
+                          id={`radio-6`}
+                          label={`Excento`}
+                          value={false}
+                          required={true}
+                          checked={cotizationData.type_invoicing === false}
+                          onChange={onChange}
+                          />
+                      </Form.Group>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
-            )}
+              {cotizationData.type_invoicing === true || cotizationData.type_invoicing === false ? (
+                <React.Fragment>
+                  <Row>
+                    <Col sm={12} md={12} lg={12}>
+                      <Accordion defaultActiveKey="2">
+                        <TransmitterInvoiceComponent
+                          isType="sale_note"
+                          cotizationData={cotizationData}
+                          setCotizationData={setCotizationData}
+                          onChange={onChange}
+                          configGeneral={props.configGeneral}
+                        />
+                        <ClientInvoiceComponent
+                          isType="sale_note"
+                          cotizationData={cotizationData}
+                          setCotizationData={setCotizationData}
+                          setIsShowModalClient={setIsShowModalClient}
+                          handleModalSeller={handleModalSeller}
+                          handleModalContacts={handleModalContacts}
+                          clients={clients}
+                          onChange={onChange}
+                          setIsShowModalClient={setIsShowModalClient}
+                          handleModalSeller={handleModalSeller}
+                          />
+                        <RefComponent
+                          onChangeTableRef={onChangeTableRef}
+                          refCotizacion={refCotizacion}
+                          removeProductRef={removeProductRef}
+                          addRef={addRef}
+                          />
+                      </Accordion>
+                    </Col>
+                  </Row>
+                  <br/>
+                  <ProductTableComponent
+                    setDetailProducts={setDetailProducts}
+                    detailProducts={detailProducts}
+                    cotizationData={cotizationData}
+                    setIsShowModalProduct={setIsShowModalProduct}
+                    setGastosDetail={setGastosDetail}
+                    onChange={onChange}
+                    products={products}
+                    listData={listData}
+                    setProducts={setProducts}
+                    {...props}
+                  />
+                  {/* ======================================================= */}
+                  <hr/>
+                    <GastosComponent
+                      gastosDetail={gastosDetail}
+                      setGastosDetail={setGastosDetail}
+                      configGeneral={props.configGeneral}
+                      setIsShowModalGastos={setIsShowModalGastos}
+                    />
+                    <br/>
+                    <Row>
+                      <InputField
+                        type='date'
+                        label='Fecha emisión de la nota (MM-DD-YYYY)'
+                        name='date_issue_invoice'
+                        required={true}
+                        messageErrors={[
+                          'Requerido*'
+                        ]}
+                        cols='col-md-4 col-lg-4 col-sm-4'
+                        value={cotizationData.date_issue_invoice}
+                        handleChange={onChange}
+                        />
+                      <InputField
+                        type='number'
+                        label='Dias de Expiración'
+                        name='days_expiration'
+                        required={false}
+                        messageErrors={[
+                          'Requerido*'
+                        ]}
+                        cols='col-md-4 col-lg-4 col-sm-4'
+                        value={cotizationData.days_expiration}
+                        handleChange={onChange}
+                        />
+                      <InputField
+                        type='select'
+                        label='Forma de Pago'
+                        name='way_of_payment'
+                        required={true}
+                        messageErrors={[
+                          'Requerido*'
+                        ]}
+                        cols='col-md-4 col-lg-4 col-sm-4'
+                        value={cotizationData.way_of_payment}
+                        handleChange={onChange}
+                        >
+                        <option value="">--Seleccione--</option>
+                        <option value={"Contado"}>Contado</option>
+                        <option value={"Crédito"}>Crédito</option>
+                        <option value={"Sin Costo"}>Sin Costo</option>
+                      </InputField>
+                    </Row>
+                    <Row>
+                      <InputField
+                        type='number'
+                        label='Descuento Global'
+                        name='discount_global'
+                        required={false}
+                        messageErrors={[
+
+                        ]}
+                        cols='col-md-4 col-lg-4 col-sm-4'
+                        value={cotizationData.discount_global}
+                        handleChange={onChange}
+                        />
+                    </Row>
+                    <TableTotalComponent
+                      configGeneral={props.configGeneral}
+                      configStore={props.configStore}
+                      detailProducts={detailProducts}
+                      cotizationData={cotizationData}
+                      gastosDetail={gastosDetail}
+                      isType={"facturacion"}
+                    />
+                    <br/>
+                    <Row className="justify-content-center">
+                      <Col sm={3} md={3} lg={3}>
+                        <Button variant="secondary" size="sm" block={true} type="submit">Emitir y Facturar</Button>
+                      </Col>
+                      <Col sm={3} md={3} lg={3}>
+                        <Button variant="danger" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
+                      </Col>
+                    </Row>
+                  </React.Fragment>
+              ) : (
+                <Row className="justify-content-center">
+                  <Col sm={4} md={4} lg={4}>
+                    <Button variant="secondary" size="sm" block={true} type="button" onClick={goToDashboard}>Volver a la Tabla</Button>
+                  </Col>
+                </Row>
+              )}
+            </React.Fragment>
+          ) : (
+            <LoadingComponent />
+          )}
 
 
-            {displayModals ? (
-              <React.Fragment>
-                <FormClientModal
-                  isShow={isShowModalClient}
-                  onHide={handleHideModalClient}
-                  />
-                <ModalGastosCotizacion
-                  isShow={isShowModalGastos}
-                  onHide={() => setIsShowModalGastos(false)}
-                  handleGastoSubmit={handleGastoSubmit}
-                  />
-                <ModalContacts
-                  isShow={isShowModalContacts}
-                  onHide={handleModalContacts}
-                  handleSelectContact={handleSelectContact}
-                  />
-                <ModalSeller
-                  isShow={isShowModalSeller}
-                  onHide={handleModalSeller}
-                  handleSelectContact={handleSelectSeller}
+          {displayModals ? (
+            <React.Fragment>
+              <FormClientModal
+                isShow={isShowModalClient}
+                onHide={handleHideModalClient}
                 />
-                <ModalInvoiceCotization
-                  isShow={isOpenModalInvoice}
-                  onHide={handleModalInvoice}
-                  handleSubmit={handleSubmitInvoice}
-                  setDetailProducts={setDetailProducts}
-                  products={detailProducts}
-                  disableButtons={disableButtons}
+              <ModalGastosCotizacion
+                isShow={isShowModalGastos}
+                onHide={() => setIsShowModalGastos(false)}
+                handleGastoSubmit={handleGastoSubmit}
                 />
-              </React.Fragment>
-            ) : ''}
-          </Form>
-        )}
+              <ModalContacts
+                isShow={isShowModalContacts}
+                onHide={handleModalContacts}
+                handleSelectContact={handleSelectContact}
+                />
+              <ModalSeller
+                isShow={isShowModalSeller}
+                onHide={handleModalSeller}
+                handleSelectContact={handleSelectSeller}
+              />
+              <ModalInvoiceCotization
+                isShow={isOpenModalInvoice}
+                onHide={handleModalInvoice}
+                handleSubmit={handleSubmitInvoice}
+                setDetailProducts={setDetailProducts}
+                products={detailProducts}
+                disableButtons={disableButtons}
+              />
+            </React.Fragment>
+          ) : ''}
+        </Form>
       </Container>
     </Styles>
   )

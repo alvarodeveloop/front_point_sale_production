@@ -106,7 +106,7 @@ const GuideDispatchPage = (props) => {
   })
   const [displayLoading, setDisplayLoading] = useState(true)
   const [isLoadingModalInvoice, setIsLoadingModalInvoice] = useState(false)
-  
+  const [listData, setListData] = useState([])
 
   useEffect(() => {
     if(localStorage.getItem('configStore') === "null"){
@@ -136,7 +136,7 @@ const GuideDispatchPage = (props) => {
       promises = [
         axios.get(API_URL+'client'),
         axios.get(API_URL+'product'),
-        axios.get(API_URL+'guide_get_ref')
+        axios.get(API_URL+'listProduct'),
       ]
     }else if(onlyClient){
       promises = [axios.get(API_URL+'client')]
@@ -146,7 +146,7 @@ const GuideDispatchPage = (props) => {
       setClients(result[0].data)
       if(result.length >= 2){
         setProducts(result[1].data)
-        setCotizationData({...cotizationData, ref: result[2].data.ref})
+        setListData(result[2].data)
         searchClientReceptor()
       }else{
         setDisplayLoading(false)
@@ -250,7 +250,7 @@ const GuideDispatchPage = (props) => {
   const addRef = () => {
     setRefCotizacion([...refCotizacion,{
       ind: 'ind',
-      type_document: 'Hoja Entrada de Servicio',
+      type_document: 'HES',
       ref_cotizacion: cotizationData.ref,
       date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
       reason_ref: 'Cotización',
@@ -492,6 +492,8 @@ const GuideDispatchPage = (props) => {
                 setIsShowModalProduct={setIsShowModalProduct}
                 setGastosDetail={setGastosDetail}
                 onChange={onChange}
+                listData={listData}
+                setProducts={setProducts}
               />
               {/* ======================================================= */}
               <hr/>

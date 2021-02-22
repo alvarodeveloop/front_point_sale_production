@@ -259,7 +259,7 @@ const EnterpriseDashboardComponent = (props) => {
               </Col>
             </Row>
             <br/>
-            <Row>
+            <Row className="animate__animated animate__fadeInLeft">
               <CardStatusComponent value={dataDh.cardStadistics.total_cotizacion} styleInline={"lnr lnr-book"} colorFont={"success"} title={"Cotizaciones"} />
               <CardStatusComponent value={dataDh.cardStadistics.total_invoice} styleInline={"lnr lnr-book"} colorFont={"warning"} title={"Facturacion"} />
               <CardStatusComponent value={dataDh.cardStadistics.total_sale_note} styleInline={"lnr lnr-book"} colorFont={"danger"} title={"Notas de Ventas"} />
@@ -293,7 +293,7 @@ const EnterpriseDashboardComponent = (props) => {
                 </table>
               </Col>
             </Row>
-            <Row>
+            <Row className="animate__animated animate__fadeInRight">
               <Col>
                 <table className="table table-striped">
                   <thead>
@@ -345,7 +345,7 @@ const EnterpriseDashboardComponent = (props) => {
                 </table>
               </Col>
             </Row>
-            <Row>
+            <Row className="animate__animated animate__fadeInLeft">
               <Col style={{height: "200px"}}>
                 <Line data={data_line_by_year} options={options_line} />
               </Col>

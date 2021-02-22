@@ -7,39 +7,24 @@ import {
   Col,
   Container,
   Button,
-  Dropdown,
-  DropdownButton,
-  Accordion,
-  Card,
   Form
 } from 'react-bootstrap'
-import { API_URL, FRONT_URL } from 'utils/constants'
-import { FaTrash, FaSearch,FaLocationArrow, FaPlusCircle, FaMailBulk, FaTrashAlt, FaUser, FaUsers, FaBook } from 'react-icons/fa'
-import Table from 'components/Table'
-import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
+import { API_URL } from 'utils/constants'
 import FormClientModal from 'components/modals/FormClientModal'
 import ModalGastosCotizacion from 'components/modals/ModalGastosCotizacion'
-import { showPriceWithDecimals } from 'utils/functions'
 import * as moment from 'moment-timezone'
 import InputField from 'components/input/InputComponent'
 import { connect } from 'react-redux'
-import { ColumnsCotization, GastosCotizacion } from 'utils/columns/cotization'
-import ModalClientCotizacion from 'components/modals/ModalClientCotizacion'
 import ModalContacts from 'components/modals/ModalContacts'
 import ModalSeller from 'components/modals/ModalSeller'
 import styled from 'styled-components'
 import layoutHelpers from 'shared/layouts/helpers'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import TableProductsCotization from 'components/TableProductsCotization'
 import ModalInvoiceCotization from 'components/modals/ModalInvoiceCotization'
 import {formatRut} from 'utils/functions'
 import {OBJECT_COTIZATION} from 'utils/constants'
 import InvoiceExcentasComponent from 'components/invoice/InvoiceExcentasComponent'
 import InvoiceAfectaComponent from 'components/invoice/InvoiceAfectaComponent'
 import LoadingComponent from 'components/LoadingComponent'
-
-let DetailCotizacion = null
 
 const Styles = styled.div`
 
@@ -95,7 +80,7 @@ const CotizationInvoicingPage = (props) => {
   const [isShowModalProduct, setIsShowModalProduct] = useState(false)
   const [products,setProducts] = useState([])
   const [gastosDetail,setGastosDetail] = useState([])
-  const [openModalClientMail,setOpenModalClientMail] = useState(false)
+  const [listData, setListData] = useState([])
   const [disableButtons,setDisableButton] = useState(false)
   const [isShowModalContacts,setIsShowModalContacts] = useState(false)
   const [isShowModalSeller,setIsShowModalSeller] = useState(false)
@@ -168,7 +153,8 @@ const CotizationInvoicingPage = (props) => {
       promises = [
         axios.get(API_URL+'client'),
         axios.get(API_URL+'product'),
-        axios.get(API_URL+'cotizacion/'+props.match.params.id)
+        axios.get(API_URL+'cotizacion/'+props.match.params.id),
+        axios.get(API_URL+"listProduct")
       ]
     }else if(onlyClient){
       promises = [axios.get(API_URL+'client')]
@@ -181,7 +167,7 @@ const CotizationInvoicingPage = (props) => {
         setProducts(result[1].data)
         setGastosDetail(result[2].data.gastos)
         setDetailProducts(result[2].data.products)
-
+        setListData(result[3].data)
         setCotizationData(oldData => {
           return Object.assign({},oldData,{
             business_name_transmitter: result[2].data.business_name_transmitter,
@@ -263,10 +249,6 @@ const CotizationInvoicingPage = (props) => {
   const handleHideModalClient = () => {
     setIsShowModalClient(false)
     fetchData(true)
-  }
-
-  const handleHideModalProduct = () => {
-    setIsShowModalProduct(false)
   }
 
   const handleModalContacts = () => {
@@ -376,7 +358,7 @@ const CotizationInvoicingPage = (props) => {
   const addRef = () => {
     setRefCotizacion([...refCotizacion,{
       ind: 'ind',
-      type_document: 'Hoja Entrada de Servicio',
+      type_document: 'HES',
       ref_cotizacion: cotizationData.ref,
       date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
       reason_ref: 'Cotización',
@@ -475,6 +457,8 @@ const CotizationInvoicingPage = (props) => {
                 addRef={addRef}
                 goToDashboard={goToDashboard}
                 products={products}
+                listData={listData}
+                setProducts={setProducts}
                 {...props}
               />
             ) : cotizationData.type_invoicing === false ? (
@@ -500,6 +484,8 @@ const CotizationInvoicingPage = (props) => {
                 addRef={addRef}
                 goToDashboard={goToDashboard}
                 products={products}
+                listData={listData}
+                setProducts={setProducts}
                 {...props}
               />
             ) : (

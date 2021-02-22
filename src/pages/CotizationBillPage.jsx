@@ -92,14 +92,12 @@ const CotizationBillPage = (props) => {
   const [isShowModalProduct, setIsShowModalProduct] = useState(false)
   const [products,setProducts] = useState([])
   const [gastosDetail,setGastosDetail] = useState([])
-  const [openModalClientMail,setOpenModalClientMail] = useState(false)
   const [disableButtons,setDisableButton] = useState(false)
   const [isShowModalContacts,setIsShowModalContacts] = useState(false)
   const [isShowModalSeller,setIsShowModalSeller] = useState(false)
   const [validated, setValidated] = useState(false)
-  const [displayDataInvoice, setDisplayDataInvoice] = useState(1)
-  const [requireInvoice, setRequireInvoice] = useState(false)
   const [detailBonds, setDetailBonds] = useState([])
+  const [listData, setListData] = useState([])
   const [cotizationData, setCotizationData] = useState(
     Object.assign({},OBJECT_COTIZATION,{
       date_issue: moment().tz('America/Santiago').format('YYYY-MM-DD'),
@@ -150,10 +148,12 @@ const CotizationBillPage = (props) => {
         }else{
           fetchData(false,true)
         }
+        setDisplayModals(true)
       }else{
-        fetchData()
+        setTimeout(function () {
+          props.history.replace('/dashboard')
+        }, 3000);
       }
-      setDisplayModals(true)
     }
   },[props.id_branch_office,props.id_enterprise])
 
@@ -200,14 +200,7 @@ const CotizationBillPage = (props) => {
     let promises = null
     let rut = props.configGeneral.enterprise.rut.split('-')[0]
     let dv  = props.configGeneral.enterprise.rut.split('-')[1]
-    if(!onlyClient && !isUpdate){
-      promises = [
-        axios.get(API_URL+'client'),
-        axios.get(API_URL+'product'),
-        axios.get(API_URL+'type_bond'),
-        axios.get(API_URL+'search_receptor/'+rut+'/'+dv),
-      ]
-    }else if(onlyClient){
+    if(onlyClient){
       promises = [axios.get(API_URL+'client')]
     }else if(isUpdate){
       promises = [
@@ -215,7 +208,8 @@ const CotizationBillPage = (props) => {
         axios.get(API_URL+'product'),
         axios.get(API_URL+'type_bond'),
         axios.get(API_URL+'search_receptor/'+rut+'/'+dv),
-        axios.get(API_URL+'cotizacion/'+props.match.params.id)
+        axios.get(API_URL+'cotizacion/'+props.match.params.id),
+        axios.get(API_URL+'listProduct'),
       ]
     }
 
@@ -226,7 +220,7 @@ const CotizationBillPage = (props) => {
         setTypeBond(result[2].data)
 
         if(isUpdate){
-          
+          setListData(result[5].data);
           setGastosDetail(result[4].data.gastos)
           setDetailProducts(result[4].data.products)
           setCotizationData(oldData => {
@@ -290,7 +284,11 @@ const CotizationBillPage = (props) => {
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      props.tokenExpired(err)
+      if(err.response && err.response.status !== 400){
+        props.history.replace("/quotitation/search_quotitation");
+      }else{
+        props.tokenExpired(err)
+      }
     })
 
   }
@@ -304,7 +302,7 @@ const CotizationBillPage = (props) => {
   const addRef = () => {
     setRefCotizacion([...refCotizacion,{
       ind: 'ind',
-      type_document: 'Hoja Entrada de Servicio',
+      type_document: 'HES',
       ref_cotizacion: cotizationData.ref,
       date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
       reason_ref: 'Cotización',
@@ -597,6 +595,8 @@ const CotizationBillPage = (props) => {
                   setIsShowModalProduct={setIsShowModalProduct}
                   setGastosDetail={setGastosDetail}
                   onChange={onChange}
+                  listData={listData}
+                  setProducts={setProducts}
                   {...props}
                 />
               {/* ======================================================= */}

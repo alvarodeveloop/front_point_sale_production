@@ -28,13 +28,11 @@ const InputFieldRef = React.forwardRef( (props,ref) => {
           autoComplete={props.autoComplete ? props.autoComplete : 'xxx'}
           />
         <Form.Control.Feedback type="invalid">
-          (
-            {
-              props.messageErrors.map((v,i) => {
-                return <span key={i} className="error-input">{v}</span>
-              })
-            }
-          )
+          {
+            props.messageErrors.map((v,i) => {
+              return <span key={i} className="error-input">{v.replace(/[*]$/g,'')}</span>
+            })
+          }
         </Form.Control.Feedback>
       </Form.Group>
     )
@@ -60,13 +58,11 @@ const InputFieldRef = React.forwardRef( (props,ref) => {
           {props.children}
         </Form.Control>
         <Form.Control.Feedback type="invalid">
-          (
-            {
-              props.messageErrors.map((v,i) => {
-                return <span key={i} className="error-input">{v}</span>
-              })
-            }
-          )
+          {
+            props.messageErrors.map((v,i) => {
+              return <span key={i} className="error-input">{v.replace(/[*]$/g,'')}</span>
+            })
+          }
         </Form.Control.Feedback>
       </Form.Group>
     )
@@ -91,13 +87,11 @@ const InputFieldRef = React.forwardRef( (props,ref) => {
           autoComplete={props.autoComplete ? props.autoComplete : 'xxx'}
         />
         <Form.Control.Feedback type="invalid">
-          (
-            {
-              props.messageErrors.map((v,i) => {
-                return <span key={i} className="error-input">{v}</span>
-              })
-            }
-          )
+          {
+            props.messageErrors.map((v,i) => {
+              return <span key={i} className="error-input">{v.replace(/[*]$/g,'')}</span>
+            })
+          }
         </Form.Control.Feedback>
       </Form.Group>
     )

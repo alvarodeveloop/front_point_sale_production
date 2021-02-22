@@ -13,10 +13,15 @@ import TableProductsCotization from 'components/TableProductsCotization'
 import InputField from 'components/input/InputComponent'
 import {FaPlusCircle} from 'react-icons/fa'
 import ModalCotizacionProduct from 'components/modals/ModalCotizacionProduct'
+import axios from 'axios'
+import { API_URL } from 'utils/constants';
+import { toast } from 'react-toastify'
+import LoadingComponent from 'components/LoadingComponent'
 
 const ProductTableComponent = (props) => {
 
   const [isShowModalProduct,setIsShowModalProduct] = useState(false)
+  const [displayLoading, setDisplayLoading] = useState(false)
   useEffect(() => {
     document.querySelector(".button_product > button").className = document.querySelector(".button_product > button").className.replace('dropdown-toggle','')
   },[])
@@ -62,6 +67,23 @@ const ProductTableComponent = (props) => {
       props.setDetailProducts([...props.detailProducts, product])
     }
     setIsShowModalProduct(false)
+  }
+
+  const changeListProductHandler = (e) => {
+    e.persist();
+    setDisplayLoading(true)
+    axios.get(API_URL+"productByListProduct/"+e.target.value).then(result => {
+      props.setProducts(result.data)
+      setDisplayLoading(false)
+    }).catch(err => {
+      setDisplayLoading(false)
+      if(err.response){
+        toast.error(err.response.data.message)
+      }else{
+        console.log(err);
+        toast.error("Error, contacte con soporte")
+      }
+    })
   }
 
   return (
@@ -111,7 +133,6 @@ const ProductTableComponent = (props) => {
               </Col>
             </Row>
           </Col>
-          {/*
           <Col sm={6} md={6} lg={6}>
             <Row>
               <InputField
@@ -123,32 +144,37 @@ const ProductTableComponent = (props) => {
                   'Requerido*'
                 ]}
                 cols='col-md-12 col-lg-12 col-sm-12'
-                value={props.cotizationData.price_list}
-                handleChange={props.onChange}
+                handleChange={changeListProductHandler}
               >
                 <option value="">--Seleccione--</option>
+                {props.listData.map((v,i) => <option key={i} value={v.id}>{v.name}</option>)}
               </InputField>
             </Row>
           </Col>
-          */}
         </Row>
-        <TableProductsCotization
-          setDetailProducts={props.setDetailProducts}
-          detailProducts={props.detailProducts}
-          isShowIva={props.cotizationData.total_with_iva}
-          setGastosDetail={props.setGastosDetail}
-        />
-        <Row className="justify-content-center">
-          <Col sm={1} md={1} lg={1}>
-            <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Producto a la Cotización</Tooltip>}>
-              <DropdownButton size="sm" variant="danger" id={'dropdown_product'} title={(<FaPlusCircle />)} className="button_product">
-                <Dropdown.Item onClick={() => setIsShowModalProduct(true) }>Agregar Producto desde Inventario</Dropdown.Item>
-                {/*<Dropdown.Item onClick={() => addNewProductIrregular(true)}>Agregar producto (valor neto) </Dropdown.Item>*/}
-                <Dropdown.Item onClick={() => addNewProductIrregular(false)}>Agregar producto</Dropdown.Item>
-              </DropdownButton>
-            </OverlayTrigger>
-          </Col>
-        </Row>
+        {displayLoading ? (
+          <LoadingComponent />
+        ) : (
+          <>
+            <TableProductsCotization
+              setDetailProducts={props.setDetailProducts}
+              detailProducts={props.detailProducts}
+              isShowIva={props.cotizationData.total_with_iva}
+              setGastosDetail={props.setGastosDetail}
+            />
+            <Row className="justify-content-center">
+              <Col sm={1} md={1} lg={1}>
+                <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Producto a la Cotización</Tooltip>}>
+                  <DropdownButton size="sm" variant="danger" id={'dropdown_product'} title={(<FaPlusCircle />)} className="button_product">
+                    <Dropdown.Item onClick={() => setIsShowModalProduct(true) }>Agregar Producto desde Inventario</Dropdown.Item>
+                    {/*<Dropdown.Item onClick={() => addNewProductIrregular(true)}>Agregar producto (valor neto) </Dropdown.Item>*/}
+                    <Dropdown.Item onClick={() => addNewProductIrregular(false)}>Agregar producto</Dropdown.Item>
+                  </DropdownButton>
+                </OverlayTrigger>
+              </Col>
+            </Row>
+          </>
+        )}
       </Col>
       <Col sm={12} md={12} lg={12}>
         <ModalCotizacionProduct
@@ -171,6 +197,8 @@ ProductTableComponent.propTypes = {
   setIsShowModalProduct: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   setGastosDetail: PropTypes.func.isRequired,
+  listData : PropTypes.array,
+  setProducts : PropTypes.func,
 }
 
 export default ProductTableComponent

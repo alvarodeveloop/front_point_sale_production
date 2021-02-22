@@ -340,7 +340,7 @@ const AuthPageTemplate = props => {
                     </Col>
                   </Row>
                   <br/><br/>
-                  <Row className="justify-content-center alto_sucursal">
+                  <Row className="justify-content-center align-items-center alto_sucursal">
                     {branchOffices.map((v,i) => (
                       <Col sm={3} lg={3} md={3} className="text-center" key={i}>
                         <h4 style={{color: 'rgb(180, 55, 33)', textTransform: 'uppercase'}}>{v.name}</h4>
@@ -373,7 +373,7 @@ const AuthPageTemplate = props => {
                    </Col>
                  </Row>
                  <br/><br/>
-                 <Row className="justify-content-center alto_sucursal">
+                 <Row className="justify-content-center align-items-center alto_sucursal">
                    {enterprises.map((v,i) => (
                      <Col sm={3} lg={3} md={3} className="text-center" key={i}>
                        <h4 style={{color: 'rgb(180, 55, 33)', textTransform: 'uppercase'}}>{v.bussines_name}</h4>

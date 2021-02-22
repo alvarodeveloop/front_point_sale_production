@@ -473,7 +473,7 @@ const FormProductSale = (props) => {
                 type="number"
                 label="Cantidad"
                 name="quantity"
-                required={true}
+                required={false}
                 messageErrors={[
                   'Requerido*'
                 ]}
@@ -498,7 +498,7 @@ const FormProductSale = (props) => {
                 step="any"
                 label="Costo"
                 name="cost"
-                required={true}
+                required={false}
                 messageErrors={[
                   'Requerido*'
                 ]}

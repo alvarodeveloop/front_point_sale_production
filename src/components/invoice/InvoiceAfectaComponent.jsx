@@ -117,6 +117,8 @@ const InvoiceAfectaComponent = (props) => {
             setGastosDetail={props.setGastosDetail}
             onChange={props.onChange}
             products={props.products}
+            listData={props.listData}
+            setProducts={props.setProducts}
             {...props}
           />
           {/* ======================================================= */}
@@ -237,6 +239,8 @@ InvoiceAfectaComponent.propTypes = {
   addRef: PropTypes.func.isRequired,
   submitData : PropTypes.func,
   products: PropTypes.array.isRequired,
+  listData : PropTypes.array,
+  setProducts : PropTypes.func,
 }
 
 export default InvoiceAfectaComponent
