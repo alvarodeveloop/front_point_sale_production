@@ -805,7 +805,7 @@ const CotizationPage = (props) => {
                       <Col sm={3} md={3} lg={3}>
                         <DropdownButton size="sm" id={'drop'} title={disableButtons ? 'Guardando' : "Compartir"}  className="dropdown_block" disabled={disableButtons} variant="secondary">
                           <Dropdown.Item onClick={() => setOpenModalClientMail(true) }>Enviar por Mail</Dropdown.Item>
-                          <Dropdown.Item onClick={ copyLinkOfCotizacion } >Copiar Link</Dropdown.Item>
+                          {/*<Dropdown.Item onClick={ copyLinkOfCotizacion } >Copiar Link</Dropdown.Item>*/}
                         </DropdownButton>
                       </Col>
                       <Col sm={3} md={3} lg={3}>

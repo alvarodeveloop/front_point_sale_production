@@ -4,31 +4,21 @@ import {
   Row,
   Col,
   Container,
-  Card,
-  Form,
   Button,
   Badge,
   DropdownButton,
   Dropdown
 } from 'react-bootstrap'
-import InputField from 'components/input/InputComponent'
 import CardProductSale from 'components/CardProductSale'
 import ModalDescriptionSaleProduct from 'components/modals/ModalDescriptionSaleProduct'
 import ModalRechargeProduct from 'components/modals/ModalRechargeProduct'
 import ModalDiscountProduct from 'components/modals/ModalDiscountProduct'
-import { toast } from 'react-toastify'
-import axios from 'axios'
-import { API_URL } from 'utils/constants'
-import { FaPlusCircle,FaShoppingCart} from 'react-icons/fa'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import { FaShoppingCart } from 'react-icons/fa'
 import { showPriceWithDecimals } from 'utils/functions'
 
 const SaleSecondPartPage = (props) => {
 
   const [isRegisteredUpdate, setIsRegisteredUpdate] = useState(false)
-  const [isActiveRechargeTotal, setIsActiveRechargeTotal] = useState(false)
-  const [isActiveDiscountTotal, setIsActiveDiscountTotal] = useState(false)
   const [openModalDescription, setOpenModalDescription] = useState(false)
   const [openModalRecharge, setOpenModalRecharge] = useState(false)
   const [openModalDiscount, setOpenModalDiscount] = useState(false)
@@ -37,9 +27,6 @@ const SaleSecondPartPage = (props) => {
   const [productDescription, setProductDescription] = useState({})
   const [valueRechargeTotal, setValueRechargeTotal] = useState('')
   const [valueDiscountTotal, setValueDiscountTotal] = useState('')
-  //const [isDispatch, setIsDispatch] = useState(false)
-  const [validated, setValidated] = useState(false)
-  const [readFields, setReadFields] = useState(true)
 
   const catchDescriptionProduct = description => {
     setOpenModalDescription(!openModalDescription)
@@ -48,18 +35,6 @@ const SaleSecondPartPage = (props) => {
       description: description,
       typeProduct: Object.assign({},{},{isRegister: isRegisteredUpdate}).isRegister
     })
-  }
-
-  const handleAdvaceToPayment = () => {
-      props.handleChangeView(3)
-  }
-
-  const handleChangeDiscountRechargeTotal = e => {
-    if(e.target.dataset.type === "recharge"){
-      setValueRechargeTotal(e.target.value)
-    }else{
-      setValueDiscountTotal(e.target.value)
-    }
   }
 
   const handleDiscountProduct = discount => {
@@ -151,9 +126,10 @@ const SaleSecondPartPage = (props) => {
           return (
             <div style={{widh: "100%"}} className="text-center">
               <Badge variant="danger" className="font-badge">
-                {props.config.simbolo_moneda+props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.amount}
+                {props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.percentajeFixed === "percentaje" ? "%" : props.config.simbolo_moneda}{props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.amount}
               </Badge>
               <br/>
+              
               <span style={{fontWeight: "bold"}}>
                 Tipo : { props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.percentajeFixed === "percentaje" ? 'porcentaje' : 'fijo' }
               </span>
@@ -171,7 +147,7 @@ const SaleSecondPartPage = (props) => {
           return (
             <div style={{widh: "100%"}} className="text-center">
               <Badge variant="danger" className="font-badge">
-                {props.config.simbolo_moneda+props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.amount}
+              {props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.percentajeFixed === "percentaje" ? "%" : props.config.simbolo_moneda}{props.config.simbolo_moneda+props.sale.rooms[props.sale.idCartSelected].total_recharge_discount.amount}
               </Badge>
               <br/>
               <span style={{fontWeight: "bold"}}>
@@ -205,9 +181,9 @@ const SaleSecondPartPage = (props) => {
               <hr/>
               <Row>
                 <Col sm={12} md={12} lg={12}>
-                  <h4 className="font-title">Neto: {showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.neto)}</h4>
-                  <h4 className="font-title">Tax: {showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.tax)}</h4>
-                  <h4 className="font-title">Total: {showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.total)}</h4>
+                  <h4 className="font-title">Neto: { props.config.simbolo_moneda }{showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.neto)}</h4>
+                  <h4 className="font-title">Tax: { props.config.simbolo_moneda }{showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.tax)}</h4>
+                  <h4 className="font-title">Total: { props.config.simbolo_moneda }{showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.total)}</h4>
                 </Col>
               </Row>
               <hr/>

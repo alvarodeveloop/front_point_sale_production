@@ -23,13 +23,9 @@ function calculateTax(products,config){
     let total_each = 0
     let array_merge = products.registered.concat(products.not_registered)
     array_merge.forEach((v,i) => {
-      if(v.is_neto !== undefined && v.is_neto !== true ){
-        total_each = parseFloat(v.cantidad) * parseFloat(v.price)
-        result = (total_each * parseFloat(config.tax)) / 100
-        total = result + total
-      }else{
-        total+= 0
-      }
+      total_each = parseFloat(v.cantidad) * parseFloat(v.price)
+      result = (total_each * parseFloat(config.tax)) / 100
+      total = result + total
     })
 
     return total

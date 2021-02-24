@@ -8,7 +8,7 @@ import {
   Row,
   Col
 } from 'react-bootstrap'
-import { FaUserCircle, FaSave } from 'react-icons/fa';
+import { FaUserCircle, FaSave, FaSearch } from 'react-icons/fa';
 import { API_URL } from 'utils/constants'
 import 'styles/components/modalComponents.css'
 import axios from 'axios'
@@ -25,7 +25,7 @@ const FormClientModal = (props) => {
   const [client,setClient] = useState({
     name_client: '',
     email: '',
-    type_document: '',
+    type_document: 'Rut',
     data_document: '',
     phone: '',
     address: '',
@@ -117,7 +117,7 @@ const FormClientModal = (props) => {
     setClient({
       name_client: '',
       email: '',
-      type_document: '',
+      type_document: 'Rut',
       data_document: '',
       phone: '',
       address: '',
@@ -129,6 +129,37 @@ const FormClientModal = (props) => {
       actividad_economica: ''
     })
     props.onHide(create)
+  }
+
+  const searchClient = async () => {
+    if(client.data_document){
+      setDisplayLoading(true);
+      try {
+        let rut = Object.assign({},client).data_document;
+        let dv = rut.split('-')[1];
+        rut = rut.split("-")[0];
+        let result = await axios.get(API_URL+"search_user_simple/"+rut+"/"+dv);
+        setClient(currentData => {
+          return Object.assign({},currentData, {
+            city: result.data.receptor.ciudad_seleccionada,
+            comuna : result.data.receptor.comuna_seleccionada,
+            address: result.data.receptor.direccion_seleccionada,
+          })
+        })
+        setDisplayLoading(false);
+      } catch (error) {
+        setDisplayLoading(false);
+        if(error.response){
+          toast.error(error.response.data.message);
+        }else{
+          console.log(error);
+          toast.error("Error, contacte con soporte");
+        }
+      }
+
+    }else{
+      toast.info("Introduzca un rut para buscar los datos del cliente");
+    }
   }
 
   return (
@@ -155,16 +186,6 @@ const FormClientModal = (props) => {
             <Col sm={12} md={12} lg={12} xs={12}>
                 <Row>
                   <InputField
-                    {...props.inputName}
-                    handleChange={handleOnChange}
-                    value={client.name_client}
-                  />
-                  <InputField
-                    {...props.inputEmail}
-                    handleChange={handleOnChange}
-                    value={client.email}
-                  />
-                  <InputField
                     {...props.inputTypeDocument}
                     handleChange={handleOnChange}
                     value={client.type_document}
@@ -174,12 +195,31 @@ const FormClientModal = (props) => {
                     <option value={'Id'}>Id</option>
                     <option value={'Nro pasaporte'}>N° pasaporte</option>
                   </InputField>
-                </Row>
-                <Row>
                   <InputField
                     {...props.inputDataDocument}
                     handleChange={handleOnChange}
                     value={client.data_document}
+                  />
+                  {client.type_document === "Rut" ? (
+                    <Col sm={4} md={4} lg={4}>
+                      <br/>
+                      <Button block={true} variant="secondary" type="button" size="sm" onClick={searchClient}>Buscar cliente <FaSearch/></Button>
+                    </Col>
+                  ) : ""}
+                </Row>
+                <Row>
+                  <InputField
+                    {...props.inputName}
+                    handleChange={handleOnChange}
+                    value={client.name_client}
+                  />
+                </Row>
+                <Row>
+                  <InputField
+                    {...props.inputEmail}
+                    handleChange={handleOnChange}
+                    placeholder="opcional"
+                    value={client.email}
                   />
                   <InputField
                     {...props.inputPhone}
@@ -261,8 +301,8 @@ const FormClientModal = (props) => {
         </Modal.Body>
       )}
       <Modal.Footer>
-        <Button size="md" variant="success" type="button" onClick={onSubmit}>Guardar <FaSave /></Button>
-        <Button size="md" onClick={handleOnHide}>Cerrar</Button>
+        <Button size="md" variant="danger" type="button" onClick={onSubmit}>Guardar</Button>
+        <Button size="md" variant="secondary" onClick={handleOnHide}>Cerrar</Button>
       </Modal.Footer>
       </Form>
     </Modal>
@@ -305,12 +345,12 @@ FormClientModal.defaultProps = {
     messageErrors: [],
   },
   inputAddress: {
-    type: 'textarea',
+    type: 'text',
     required: false,
     name: 'address',
     label : 'Dirección',
     cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6",
-    rows: 2,
+
     messageErrors: [],
   },
   inputTypeDocument: {

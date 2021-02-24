@@ -14,14 +14,10 @@ import {
 } from 'react-bootstrap'
 import { showPriceWithDecimals } from 'utils/functions'
 import ModalPaymentMultiple from 'components/modals/ModalPaymentMultiple'
-import ModalFactura from 'components/modals/ModalFactura'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import axios from 'axios'
 import {FaUser,FaPencilAlt} from 'react-icons/fa'
-
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
 import LoadingComponent from 'components/LoadingComponent'
 
 let status = 1
@@ -50,12 +46,9 @@ const SaleThirdPartPage = (props) => {
     type_address: 3
   })
 
-  const [lastSale,setLastSale] = useState({})
   const [displayAddress,setDisplayAddress] = useState(false)
   const [isOpenMultiple, setIsOpenMultiple] = useState(false)
-  const [isOpenInvoice, setIsOpenInvoice] = useState(false)
   const [isReadOnlyPayment, setIsReadOnlyPayment] = useState(false)
-  const [showButtonInvoice,setShowButtonInvoice] = useState(false)
   const [readFields, setReadFields] = useState(false)
   const [validatedDispatch, setValidatedDispatch] = useState(false)
   const [isOpenModalDispatch, setIsOpenModalDispatch] = useState(false)
@@ -401,15 +394,15 @@ const SaleThirdPartPage = (props) => {
             <Row>
               <Col sm={4} md={4} lg={4} xs={12} className="text-center">
                 <h4>Sub Total:</h4>
-                <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.neto) } </Badge>
+                <Badge variant="primary" style={{fontSize: '18px'}}>{ props.config.simbolo_moneda }{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.neto) } </Badge>
               </Col>
               <Col sm={4} md={4} lg={4} xs={12} className="text-center">
                 <h4>Tax:</h4>
-                <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.tax) }</Badge>
+                <Badge variant="primary" style={{fontSize: '18px'}}>{ props.config.simbolo_moneda }{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.tax) }</Badge>
               </Col>
               <Col sm={4} md={4} lg={4} xs={12} className="text-center">
                 <h4>Total:</h4>
-                <Badge variant="primary" style={{fontSize: '18px'}}>{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.total) }</Badge>
+                <Badge variant="primary" style={{fontSize: '18px'}}>{ props.config.simbolo_moneda }{ showPriceWithDecimals(props.config,props.sale.rooms[props.sale.idCartSelected].totales.total) }</Badge>
               </Col>
             </Row>
             <Row className="justify-content-center">

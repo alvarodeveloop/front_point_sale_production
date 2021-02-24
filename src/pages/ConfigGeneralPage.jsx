@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
-import { FaCheck,FaPlusCircle, FaSyncAlt,FaEdit, FaTrash } from "react-icons/fa";
+import { FaCheck,FaPlusCircle, FaSyncAlt,FaEdit } from "react-icons/fa";
 import { connect } from 'react-redux'
 import { API_URL } from 'utils/constants'
 import { setAuthorizationToken } from 'utils/functions'
@@ -58,7 +58,6 @@ const ConfigGeneralPage = (props) => {
         })
       }
       setDisplayLoading(false)
-      console.log(config,"aqui el config menor");
     }).catch(err => {
       setDisplayLoading(false)
       props.tokenExpired(err)
@@ -137,16 +136,16 @@ const ConfigGeneralPage = (props) => {
           <Row className="justify-content-center align-items-center">
             <Col md={7} sm={7} lg={7} xs={7}>
               <ul>
-                <li className="str d-flex" style={{justifyContent: 'space-between'}}>
+                <li className="d-flex" style={{justifyContent: 'space-between'}}>
                   <b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Simbolo de moneda: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">{config.simbolo_moneda}</Badge></li>
-                <li className="str d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Mostrar decimales en los precios: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">{config.active_price_decimals}</Badge></li>
-                <li className="str d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Cerrar Sesión: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} variant="secondary" className="font-badge">{config.close_session}</Badge></li>
-                <li className="str d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Actividad Económica: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">{config.actividad_economica}</Badge></li>
-                <li className="str d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Giro: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">{config.giro}</Badge></li>
-                <li className="str d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Rut del representante legal: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">{config.rut_legal_representative}</Badge></li>
-                <li className="str d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Clave del representante legal: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">***********</Badge></li>
-                <li className="str d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Firma: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">***************</Badge></li>
-                <li className="str d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Logo: </b>{config.logo ? (
+                <li className="d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Mostrar decimales en los precios: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">{config.active_price_decimals}</Badge></li>
+                <li className="d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Cerrar Sesión: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} variant="secondary" className="font-badge">{config.close_session}</Badge></li>
+                <li className="d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Actividad Económica: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">{config.actividad_economica}</Badge></li>
+                <li className="d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Giro: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">{config.giro}</Badge></li>
+                <li className="d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Rut del representante legal: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">{config.rut_legal_representative}</Badge></li>
+                <li className="d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Clave del representante legal: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">***********</Badge></li>
+                <li className="d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Firma: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">***************</Badge></li>
+                <li className="d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Logo: </b>{config.logo ? (
                   <Image src={API_URL+"images/enterprise/logo/"+config.logo} width="100px" />
                 ) : "No ha cargado el logo de su empresa"}</li>
               </ul>

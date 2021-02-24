@@ -4,6 +4,11 @@
   font-weight: bold;
 }
 
-.fontBold{
-  /*font-size: '7px';*/
+.mainBorder{
+  border-style: none !important;
+  border-bottom: 2px solid #e6e0e0  !important;
+}
+
+.mainBorder:focus{
+  border-bottom: 2px solid #284fa9 !important;
 }

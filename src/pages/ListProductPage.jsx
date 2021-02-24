@@ -13,7 +13,9 @@ import { showPriceWithDecimals, formatNumber } from 'utils/functions'
 import 'styles/components/modalComponents.css'
 
 let listColumns = [];
-let productArrayCopy = []
+let productArrayCopy = []; // array para limpiar la data cuando haga post y los productos vuelvan a ser los productos originales
+let productArrayCopy2 = []; // arreglo para modificar los precios y usarlos en el forEach del post
+
 const ListProductPage = (props) =>{
   const [listData, setListData] = useState([]);
   const [displayLoading, setDisplayLoading] = useState(true)
@@ -98,10 +100,12 @@ const ListProductPage = (props) =>{
         accessor : props1 => [props1.price],
         Cell : props1 => {
           const original = props1.cell.row.original;
+          let price1 = original.price
           return (
             <input 
             className="form-control text-center" 
-            type="text" value={props.configGeneral,props1.cell.row.original.price} 
+            type="text" 
+            value={price1}
             onChange={(e) => onChangePriceTableHandler(props1.row.id,e,original.id)} />
           ) 
         }
@@ -147,6 +151,7 @@ const ListProductPage = (props) =>{
       if(type){
         setProducts(result[1].data);
         productArrayCopy = result[1].data;
+        productArrayCopy2 = result[1].data;
         setConfigStore(result[2].data)
       }
       setDisplayLoading(false);
@@ -277,11 +282,12 @@ const ListProductPage = (props) =>{
 
   const onChangePriceTableHandler = (index,e,id) => {
     let val = e.target.value.replace(/[^0-9 .]/g,"");
-    setProducts(currentData => {
+    productArrayCopy2[index].price = val;
+    /*setProducts(currentData => {
       let currentArray = [...currentData]
       currentArray[index].price = val
       return currentArray
-    })
+    })*/
   }
 
   const onChangeProductDetailHadler = e => {
@@ -356,7 +362,7 @@ const ListProductPage = (props) =>{
                   </Row>
                   <Row className="justify-content-center">
                     <Col sm={4} md={4} lg={4}>
-                      <Button variant="danger" block={true} size="sm" type="submit">Guardar <FaSave /></Button>
+                      <Button variant="danger" block={true} size="sm" type="submit">Crear Lista <FaSave /></Button>
                     </Col>
                     {dataForm.id ? (
                       <Col sm={4} md={4} lg={4}>
@@ -401,13 +407,13 @@ const ListProductPage = (props) =>{
           </Row>
           <Row>
             <Col>
-              <Table columns={productColumns} data={products} />
+              <Table columns={productColumns} data={products} pageSizeHandler={[500,1000]} />
             </Col>
           </Row>
           <br/>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="danger" size="md" onClick={props.onHide}>Cerrar</Button>
+          <Button variant="danger" size="md" onClick={onHideModalHandler}>Cerrar</Button>
         </Modal.Footer>
       </Modal>
     </Container>

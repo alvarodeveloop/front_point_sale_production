@@ -79,7 +79,7 @@ function fuzzyTextFilterFn(rows, id, filterValue) {
 // Let the table remove the filter if the string is empty
 fuzzyTextFilterFn.autoRemove = val => !val
 
-function DataTable({ columns, data, menuTop, headerColor, headerFontColor }) {
+function DataTable({ columns, data, menuTop, headerColor, headerFontColor, pageSizeHandler }) {
   // Use the state and functions returned from useTable to build your UI
 
   const filterTypes = React.useMemo(
@@ -131,7 +131,7 @@ function DataTable({ columns, data, menuTop, headerColor, headerFontColor }) {
       data,
       defaultColumn, // Be sure to pass the defaultColumn option
       filterTypes,
-      initialState: { pageIndex: 0 },
+      initialState: { pageIndex: 0, pageSize : pageSizeHandler[0] },
     },
     useFilters,
     useSortBy,
@@ -186,7 +186,7 @@ function DataTable({ columns, data, menuTop, headerColor, headerFontColor }) {
             }}
             className="inputPage"
           >
-            {[10, 20, 30, 40, 50].map(pageSize => (
+            {pageSizeHandler.map(pageSize => (
               <option key={pageSize} value={pageSize}>
                 Mostrar {pageSize}
               </option>
@@ -272,7 +272,7 @@ function DataTable({ columns, data, menuTop, headerColor, headerFontColor }) {
           }}
           className="inputPage"
         >
-          {[10, 20, 30, 40, 50].map(pageSize => (
+          {pageSizeHandler.map(pageSize => (
             <option key={pageSize} value={pageSize}>
               Mostrar {pageSize}
             </option>
@@ -284,11 +284,11 @@ function DataTable({ columns, data, menuTop, headerColor, headerFontColor }) {
   )
 }
 
-const Table = ({data,columns,menuTop,headerColor,headerFontColor}) => {
-
+const Table = ({data,columns,menuTop,headerColor,headerFontColor,pageSizeHandler}) => {
+  pageSizeHandler = pageSizeHandler ? pageSizeHandler : [10, 20, 30, 40, 50]; 
   return (
     <Styles>
-      <DataTable data={data} columns={columns} menuTop={menuTop} headerFontColor={headerFontColor} headerColor={headerColor}  />
+      <DataTable pageSizeHandler={pageSizeHandler} data={data} columns={columns} menuTop={menuTop} headerFontColor={headerFontColor} headerColor={headerColor}  />
     </Styles>
   )
 }
@@ -299,6 +299,7 @@ Table.propTypes = {
   menuTop: PropTypes.bool,
   headerColor: PropTypes.string,
   headerFontColor: PropTypes.string,
+  pageSizeHandler : PropTypes.array,
 }
 
 export default Table

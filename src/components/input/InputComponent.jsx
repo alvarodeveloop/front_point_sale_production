@@ -19,10 +19,9 @@ const InputField = props => {
           placeholder={props.placeholder ? props.placeholder : ''}
           required={props.required}
           readOnly={props.readonly ? props.readonly : false}
-          className={props.className ? props.className : ''}
           step={props.step ? props.step : ''}
           onKeyUp={ props.handleKeyUp ? props.handleKeyUp : () => {} }
-          className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
+          className={props.className ? props.className+" form-control-sm mainBorder" : "form-control-sm mainBorder"}
           style={props.style ? props.style : {}}
           autoComplete={props.autoComplete ? props.autoComplete : 'xxx'}
           />
@@ -49,7 +48,7 @@ const InputField = props => {
           readOnly={props.readonly ? props.readonly : false}
           required={props.required}
           multiple={props.multiple ? props.multiple : false}
-          className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
+          className={props.className ? props.className+" form-control-sm mainBorder" : "form-control-sm mainBorder"}
           style={props.style ? props.style : {}}
           autoComplete={props.autoComplete ? props.autoComplete : 'xxx'}
         >
@@ -79,7 +78,7 @@ const InputField = props => {
           rows={props.rows ? props.rows : 2}
           readOnly={props.readonly ? props.readonly : false}
           onKeyUp={ props.handleKeyUp ? props.handleKeyUp : () => {} }
-          className={props.className ? props.className+" form-control-sm" : "form-control-sm"}
+          className={props.className ? props.className+" form-control-sm mainBorder" : "form-control-sm mainBorder"}
           style={props.style ? props.style : {}}
           autoComplete={props.autoComplete ? props.autoComplete : 'xxx'}
         />

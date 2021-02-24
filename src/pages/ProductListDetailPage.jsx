@@ -129,15 +129,20 @@ export const ProductListDetailPage = (props) => {
         element  = selectOption.options[i]
       }
     }
-    
-    let objectDetailNew = {
-      id_product_list : objectList.id,
-      id_product : dataForm.id_product,
-      price : dataForm.price,
-      products : products[element.attributes.dataindex.value]
-    }
-    setListDetails(currentData => [...currentData,objectDetailNew])
-    clearData()
+    let productObject = products[element.attributes.dataindex.value];
+    let validate = listDetails.find(v => v.id_product === productObject.id);
+    if(!validate){
+      let objectDetailNew = {
+        id_product_list : objectList.id,
+        id_product : dataForm.id_product,
+        price : dataForm.price,
+        products : productObject 
+      }
+      setListDetails(currentData => [...currentData,objectDetailNew])
+      clearData()
+    }else{
+      toast.error("Producto repetido, por favor agregue otro....")
+    } 
   }
   
   const removeProductDetailHandler = dataRemove => {

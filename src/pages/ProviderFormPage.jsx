@@ -168,107 +168,98 @@ const ProviderFormPage = (props) => {
           {displayLoading ? (
             <LoadingComponent />
           ) : (
-
-            <Row className="justify-content-center align-items-center">
-              <Col sm={7} md={7} lg={7} xs={12} className="containerDivSeparated">
-                <h3 className="text-center title_principal">Formulario de Proveedores</h3>
-                <br/>
-                <Row>
-                  <InputField
-                    {...props.inputSocialRazon}
-                    handleChange={onChange}
-                    value={dataProvider.social_razon}
-                  />
-                  <InputField
-                    {...props.inputTypeId}
-                    handleChange={onChange}
-                    value={dataProvider.type_id}
-                  >
-                    <option value="">--Seleccione--</option>
-                    <option value={1}>Rut</option>
-                    <option value={2}>Identificación Fiscal</option>
-                  </InputField>
-                </Row>
-                <Row>
-                  {dataProvider.type_id && dataProvider.type_id == 1 ? (
-                      <Form.Group className="col-md-6 col-sm-6 col-lg-6 col-12">
-                        <Form.Label className="fontBold">Rut</Form.Label>
-                        {/*<InputMask onChange={onChange} value={dataProvider.rut_provider} {...props.maskInput} {...props.inputRut}>
-                          { (inputProps) => <Form.Control {...inputProps} /> }
-                        </InputMask> */}
-                        <Form.Control onChange={onChange} value={dataProvider.rut_provider} {...props.inputRut} />
-                        <Form.Control.Feedback type="invalid">
-                          <span className="error-input">Requerido*</span>
-                        </Form.Control.Feedback>
-                      </Form.Group>
-                  ) : dataProvider.type_id && dataProvider.type_id == 2 ? (
-                      <InputField
-                        {...props.inputId}
-                        handleChange={onChange}
-                        value={dataProvider.rut_provider}
-                      />
-                  ) : ''}
-                  <InputField
-                    {...props.inputNameFantasy}
-                    handleChange={onChange}
-                    value={dataProvider.name_fantasy}
-                  />
-                </Row>
-                <Row>
-                  <InputField
-                    {...props.inputCountry}
-                    handleChange={onChange}
-                    value={dataProvider.id_country}
-                  >
-                    <option value=''>--Seleccione--</option>
-                    {paises.map((v,i) => (
-                      <option value={v.id} key={i}>{v.nombre}</option>
-                    ))}
-                  </InputField>
-                  <InputField
-                    {...props.inputComuna}
-                    handleChange={onChange}
-                    value={dataProvider.comuna}
-                  />
-                </Row>
-                <Row>
-                  <InputField
-                    {...props.inputCity}
-                    handleChange={onChange}
-                    value={dataProvider.city}
-                  />
-                  <InputField
-                    {...props.inputPhone}
-                    handleChange={onChange}
-                    value={dataProvider.phone}
-                  />
-                </Row>
-                <Row>
-                  <InputField
-                    {...props.inputSpin}
-                    handleChange={onChange}
-                    value={dataProvider.spin}
-                  />
-                </Row>
-                <Row>
-                  <InputField
-                    {...props.inputAddress}
-                    handleChange={onChange}
-                    value={dataProvider.address}
-                  />
-                </Row>
-              </Col>
-              <Col sm={3} md={3} lg={3} xs={6} className="containerDivSeparated justify-content-center align-items-center">
-                {isCreated ? (
-                  <Button size="sm" type="button" onClick={registerAnotherOne} variant="secondary" block={true}>Crear otro <FaPlusCircle /></Button>
-                ) : (
-                  <Button size="sm" type="submit" variant="primary" block={true}>Guardar <FaPlusCircle /></Button>
-                )}
-                <br/>
-                <p className="text-center">O</p>
-                <Button size="sm" type="button" onClick={goToProvider} variant="danger" block={true}>Volver a los Proveedores</Button>
-              </Col>
-            </Row>
+            <>
+              <Row className="justify-content-center align-items-center">
+                <Col sm={12} md={12} lg={12} xs={12} className="containerDivSeparated">
+                  <h4 className="title_principal">Formulario de Proveedores</h4>
+                  <br/>
+                  <Row>
+                    <InputField
+                      {...props.inputSocialRazon}
+                      handleChange={onChange}
+                      value={dataProvider.social_razon}
+                    />
+                    <InputField
+                      {...props.inputTypeId}
+                      handleChange={onChange}
+                      value={dataProvider.type_id}
+                    >
+                      <option value="">--Seleccione--</option>
+                      <option value={1}>Rut</option>
+                      <option value={2}>Identificación Fiscal</option>
+                    </InputField>
+                    {dataProvider.type_id && dataProvider.type_id == 1 ? (
+                        <InputField
+                          onChange={onChange} value={dataProvider.rut_provider} {...props.inputRut} 
+                        />
+                    ) : dataProvider.type_id && dataProvider.type_id == 2 ? (
+                        <InputField
+                          {...props.inputId}
+                          handleChange={onChange}
+                          value={dataProvider.rut_provider}
+                        />
+                    ) : ''}
+                    <InputField
+                      {...props.inputNameFantasy}
+                      handleChange={onChange}
+                      value={dataProvider.name_fantasy}
+                    />
+                  </Row>
+                  <Row>
+                    <InputField
+                      {...props.inputCountry}
+                      handleChange={onChange}
+                      value={dataProvider.id_country}
+                    >
+                      <option value=''>--Seleccione--</option>
+                      {paises.map((v,i) => (
+                        <option value={v.id} key={i}>{v.nombre}</option>
+                      ))}
+                    </InputField>
+                    <InputField
+                      {...props.inputComuna}
+                      handleChange={onChange}
+                      value={dataProvider.comuna}
+                    />
+                    <InputField
+                      {...props.inputCity}
+                      handleChange={onChange}
+                      value={dataProvider.city}
+                    />
+                  </Row>
+                  <Row>
+                    <InputField
+                      {...props.inputPhone}
+                      handleChange={onChange}
+                      value={dataProvider.phone}
+                    />
+                    <InputField
+                      {...props.inputSpin}
+                      handleChange={onChange}
+                      value={dataProvider.spin}
+                    />
+                    <InputField
+                      {...props.inputAddress}
+                      handleChange={onChange}
+                      value={dataProvider.address}
+                    />
+                  </Row>
+                </Col>
+              </Row>
+              <br/>
+              <Row className="justify-content-center">
+                <Col sm={4} md={4} lg={4} xs={6}>
+                  {isCreated ? (
+                    <Button size="sm" type="button" onClick={registerAnotherOne} variant="primary" block={true}>Crear otro <FaPlusCircle /></Button>
+                  ) : (
+                    <Button size="sm" type="submit" variant="danger" block={true}>Guardar <FaPlusCircle /></Button>
+                  )}
+                </Col>
+                <Col sm={4} md={4} lg={4} xs={6}>
+                  <Button size="sm" type="button" onClick={goToProvider} variant="secondary" block={true}>Volver a los Proveedores</Button>
+                </Col>
+              </Row>
+            </>
           )}
         </>
       </Form>
@@ -283,7 +274,7 @@ ProviderFormPage.defaultProps ={
     required: false,
     name: 'name_fantasy',
     label : 'Nombre Fantasia',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6",
     messageErrors: [
       'Requerido*'
     ],
@@ -293,6 +284,11 @@ ProviderFormPage.defaultProps ={
     required: true,
     name: 'rut_provider',
     placeholder: 'Introduzca su información',
+    label : 'Rut',
+    messageErrors: [
+      'Requerido*'
+    ],
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
   },
   inputCountry: {
     type: 'select',
@@ -302,7 +298,7 @@ ProviderFormPage.defaultProps ={
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
   },
   inputComuna: {
     type: 'text',
@@ -312,7 +308,7 @@ ProviderFormPage.defaultProps ={
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
   },
   inputCity: {
     type: 'text',
@@ -322,18 +318,18 @@ ProviderFormPage.defaultProps ={
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
   },
   inputSpin: {
     type: 'textarea',
     required: false,
     name: 'spin',
     label : 'Giro',
-    rows: 2,
+    rows: 1,
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
   },
   inputPhone: {
     type: 'number',
@@ -343,7 +339,7 @@ ProviderFormPage.defaultProps ={
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
   },
   inputSocialRazon: {
     type: 'text',
@@ -353,18 +349,18 @@ ProviderFormPage.defaultProps ={
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
   },
   inputAddress: {
     type: 'textarea',
     required: false,
     name: 'address',
     label : 'Dirección',
-    rows: 2,
+    rows: 1,
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
   },
   inputTypeId: {
     type: 'select',
@@ -374,7 +370,7 @@ ProviderFormPage.defaultProps ={
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
   },
   inputId: {
     type: 'number',
@@ -385,7 +381,7 @@ ProviderFormPage.defaultProps ={
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
   },
   maskInput : {
     formatChars: {

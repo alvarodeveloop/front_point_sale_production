@@ -135,13 +135,13 @@ const CardProductSale = (props) => {
             <br/>
             <input ref={quantityPrice} style={{ display: isUpdatePrice ? 'block' : 'none' }} type="number" step="any" className="form-control" placeholder="Presione enter para enviar" onKeyUp={setUpdate} value={priceValue} onChange={handleChangePrice} />
               {isUpdatePrice ? '' : (
-                <h6 className="text-center">{showPriceWithDecimals(props.config,props.product.price)}</h6>
+                <h6 className="text-center">{ props.config.simbolo_moneda }{showPriceWithDecimals(props.config,props.product.price)}</h6>
               )}
           </Col>
           <Col sm={2} md={2} lg={2}>
             <h6 className="text-center">Total</h6>
             <br/>
-            <h6 className="text-center">{showPriceWithDecimals(props.config,props.product.price * props.product.cantidad)}</h6>
+            <h6 className="text-center">{ props.config.simbolo_moneda }{showPriceWithDecimals(props.config,props.product.price * props.product.cantidad)}</h6>
           </Col>
           <Col sm={2} md={2} lg={2}>
             <h6 className="text-center">Remover</h6>

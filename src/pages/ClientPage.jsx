@@ -83,7 +83,7 @@ const ClientPage = (props) => {
           Cell: props1 => {
             const id = props1.cell.row.original.id
             return(
-              <DropdownButton size="sm" id={'drop'+id} title="Seleccione"  block="true">
+              <DropdownButton size="sm" id={'drop'+id} title="Seleccione" drop="left"  block="true">
                 <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
                 <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
               </DropdownButton>
