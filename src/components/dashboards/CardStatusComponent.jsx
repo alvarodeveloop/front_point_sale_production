@@ -25,6 +25,7 @@ CardStatusComponent.propTypes = {
   colorFont : PropTypes.string,
   title: PropTypes.string.isRequired,
   value: PropTypes.number.isRequired,
+  config : PropTypes.object,
 }
 
 export default CardStatusComponent

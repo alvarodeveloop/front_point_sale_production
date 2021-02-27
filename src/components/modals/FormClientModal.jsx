@@ -32,6 +32,7 @@ const FormClientModal = (props) => {
     observation: '',
     picture: '',
     city: '',
+    bussines_name: "",
     comunda: '',
     spin: '',
     actividad_economica: ''
@@ -52,6 +53,7 @@ const FormClientModal = (props) => {
         observation: updateClient.observation,
         picture: updateClient.picture,
         city: updateClient.city,
+        bussines_name: updateClient.bussines_name,
         comuna: updateClient.comuna,
         spin: updateClient.spin,
         actividad_economica: updateClient.actividad_economica,
@@ -126,6 +128,7 @@ const FormClientModal = (props) => {
       city: '',
       comuna: '',
       spin: '',
+      bussines_name: "",
       actividad_economica: ''
     })
     props.onHide(create)
@@ -144,6 +147,8 @@ const FormClientModal = (props) => {
             city: result.data.receptor.ciudad_seleccionada,
             comuna : result.data.receptor.comuna_seleccionada,
             address: result.data.receptor.direccion_seleccionada,
+            bussines_name : result.data.receptor.razon_social,
+            name_client : currentData.name_client ?  currentData.name_client : result.data.receptor.razon_social,
           })
         })
         setDisplayLoading(false);
@@ -212,6 +217,17 @@ const FormClientModal = (props) => {
                     {...props.inputName}
                     handleChange={handleOnChange}
                     value={client.name_client}
+                  />
+                  <InputField
+                    type="text"
+                    required={false}
+                    cols="col-md-4 col-sm-4 col-lg-4 col-xs-6"
+                    handleChange={handleOnChange}
+                    value={client.bussines_name}
+                    name="bussines_name"
+                    label="Razon Social"
+                    placeholder="opcional"
+                    messageErrors={[]}
                   />
                 </Row>
                 <Row>

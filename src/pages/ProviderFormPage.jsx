@@ -29,7 +29,7 @@ const ProviderFormPage = (props) => {
     spin: '',
     social_razon: '',
     address: '',
-    type_id: '',
+    type_id: 1,
   })
 
   const [paises, setPaises] = useState([])
@@ -148,7 +148,7 @@ const ProviderFormPage = (props) => {
       spin: '',
       social_razon: '',
       address: '',
-      type_id: '',
+      type_id: 1,
     })
     setValidate(false)
   }
@@ -190,7 +190,7 @@ const ProviderFormPage = (props) => {
                     </InputField>
                     {dataProvider.type_id && dataProvider.type_id == 1 ? (
                         <InputField
-                          onChange={onChange} value={dataProvider.rut_provider} {...props.inputRut} 
+                          onChange={onChange} value={dataProvider.rut_provider} {...props.inputRut} handleChange={onChange}
                         />
                     ) : dataProvider.type_id && dataProvider.type_id == 2 ? (
                         <InputField

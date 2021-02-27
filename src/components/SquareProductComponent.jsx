@@ -11,8 +11,8 @@ import { showPriceWithDecimals } from 'utils/functions'
 
 const SquareProductComponent = (props) => {
 
-  const calculateIvaAndNeto = (price,iva) => {
-    if(!props.product.is_neto){
+  const calculateIvaAndNeto = (price,iva,type) => {
+    if(type){
       price = parseFloat(price)
       iva = parseFloat(iva)
       let percentaje = (iva * price) / 100;
@@ -43,9 +43,20 @@ const SquareProductComponent = (props) => {
             <br/>
           </React.Fragment>
         ) : ''}
-        <Row className="d-flex align-items-center">
-          <Col sm={12} md={12} lg={12}>
-            { props.config ? props.config.simbolo_moneda : '$' } { calculateIvaAndNeto(props.product.price,props.configStore.tax) } { props.config ? props.config.simbolo_moneda : '$' }
+        <Row>
+          <Col className="text-center">
+            Precio neto:
+          </Col>
+          <Col className="text-center">
+            Precio iva:
+          </Col>
+        </Row>
+        <Row className="align-items-center">
+          <Col>
+            { props.config ? props.config.simbolo_moneda : '$' } { calculateIvaAndNeto(props.product.price,props.configStore.tax,false) }
+          </Col>
+          <Col>
+          { props.config ? props.config.simbolo_moneda : '$' } { calculateIvaAndNeto(props.product.price,props.configStore.tax,true) }
           </Col>
         </Row>
       </div>

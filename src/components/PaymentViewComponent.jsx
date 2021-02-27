@@ -24,20 +24,27 @@ const Styles = styled.div`
 
 export default function PaymentViewComponent(props) {
 
-  const [isLoading, setIsLoading] = useState(true)
-  const [plan, setPlan] = useState(null)
+  const [objectState, setObjectState] = useState({
+    isLoading : true,
+    plan : null,
+    enterprise : null,
+    invoice : null
+  })
   
   useEffect(() => {
     fetchData()
   },[])
 
   const fetchData = () =>{
-    let enterprise = props.enterpriseSucursal.enterprises.find(v => v.id === parseFloat(props.enterpriseSucursal.id_enterprise))
-    axios.get(API_URL+"plans/"+enterprise.id_plan).then(result => {
-      setPlan(result.data)
-      setIsLoading(false)
+    axios.get(API_URL+"payment_pending_invoice/"+props.enterpriseSucursal.id_enterprise).then(result => {
+      setObjectState(currentData => Object.assign({},currentData, {
+        plan : result.data.plan,
+        enterprise :  result.data.enterprise,
+        invoice : result.data,
+        isLoading: false
+      }))
     }).catch(err => {
-      setIsLoading(false)
+      setObjectState(currentData => Object.assign({},currentData, {isLoading: false}))
       if(err.response){
         toast.error(err.response.data.message)
       }else{
@@ -48,12 +55,12 @@ export default function PaymentViewComponent(props) {
   }
 
   const paymentPlan = () => {
-    setIsLoading(true)
+    setObjectState(currentData => Object.assign({},currentData, {isLoading: true}))
     axios.post(API_URL+"payment_plan").then(result => {
       //setIsLoading(false)
       window.location.replace(result.data.url+"?token="+result.data.token)
     }).catch(err => {
-      setIsLoading(false)
+      setObjectState(currentData => Object.assign({},currentData, {isLoading: false}))
       console.log(err)
     })
   }
@@ -62,7 +69,7 @@ export default function PaymentViewComponent(props) {
     <Styles>
       <Container className="containerDiv animate__animated animate__zoomIn">
         <Row className="bg_white align-items-center">
-          {isLoading ? (
+          {objectState.isLoading ? (
             <Col>
               <LoadingComponent text="cargando..." />
             </Col>
@@ -70,13 +77,13 @@ export default function PaymentViewComponent(props) {
             <Col>
               <Row className="justify-content-center">
                 <Col>
-                  <h4 className="title_principal text-center">Renovación de Plan {plan ? plan.name : ""}</h4>
+                  <h4 className="title_principal text-center">Renovación de Plan {objectState.plan ? objectState.name : ""}</h4>
                 </Col>
               </Row>
               <Row>
                 <Col className="text-center">
                   <p>Su empresa ya caduco el tiempo de uso de su plan, por favor renueve su plan para seguir disfrutando del servicio.</p>
-                  <p className=""><Badge variant="danger" className="font-badge">${plan ? plan.price : ""}</Badge></p>
+                  <p className=""><Badge variant="danger" className="font-badge">${objectState.invoice ? objectState.invoice.amount : ""}</Badge></p>
                 </Col>
               </Row>
               <Row className="justify-content-center">
