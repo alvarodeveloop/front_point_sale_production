@@ -256,4 +256,8 @@ export const routes = [
     path: '/days_extended',
     component: lazy(() => import('./pages/ExtendendedDaysPage'))
   },
+  {
+    path: '/payments_invoice',
+    component: lazy(() => import('./pages/PaymentAdminPage'))
+  },
 ]

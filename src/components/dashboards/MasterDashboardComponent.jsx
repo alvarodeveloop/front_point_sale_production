@@ -4,9 +4,6 @@ import {Row,Col,Badge,Container,Image,Accordion,Card} from 'react-bootstrap'
 import Table from 'components/Table'
 import axios from 'axios'
 import { API_URL, ARRAY_COLORS } from 'utils/constants'
-import { toast } from 'react-toastify'
-import * as moment from 'moment-timezone'
-import {FaUsers} from 'react-icons/fa'
 import layoutHelpers from 'shared/layouts/helpers'
 import {Doughnut, HorizontalBar,Line} from 'react-chartjs-2';
 
