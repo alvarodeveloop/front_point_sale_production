@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "ea1bc20b484c0b116dc6403149267827",
+    "revision": "7e3379fc7c0744ba3279f91d0bfea011",
     "url": "https://app.aidy.cl/index.html"
   },
   {
@@ -160,7 +160,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://app.aidy.cl/static/css/8.5478fb5b.chunk.css"
   },
   {
-    "revision": "692fcf0d746e28f4bd5d",
+    "revision": "6b0411fe16cf348122b6",
     "url": "https://app.aidy.cl/static/css/main.fe8db81d.chunk.css"
   },
   {
@@ -460,8 +460,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "https://app.aidy.cl/static/js/9.25fe9340.chunk.js"
   },
   {
-    "revision": "692fcf0d746e28f4bd5d",
-    "url": "https://app.aidy.cl/static/js/main.00fcf41d.chunk.js"
+    "revision": "6b0411fe16cf348122b6",
+    "url": "https://app.aidy.cl/static/js/main.48423e9b.chunk.js"
   },
   {
     "revision": "9f912f96be79f6c51ca0",
