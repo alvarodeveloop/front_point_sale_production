@@ -6,7 +6,8 @@ import {
   Form,
   Button,
   Container,
-  Image
+  Image,
+  Card
 } from 'react-bootstrap'
 import { FaTrash,FaImage,FaCheckCircle,FaCogs } from "react-icons/fa";
 import { connect } from 'react-redux'
@@ -100,6 +101,7 @@ const ConfigGeneralFormPage = (props) => {
       axios.put(API_URL+'config_general/'+props.match.params.id,newFormData).then(result => {
         toast.success('Configuración General Modificada')
         localStorage.setItem('configGeneral',JSON.stringify(result.data))
+        setConfig(result.data);
         setTimeout(() => {
           props.history.push('/config/config_general')
         },1500)
@@ -257,70 +259,82 @@ const ConfigGeneralFormPage = (props) => {
                 </Col>
               </Row>
               <Row>
-                <Col sm={4} md={4} lg={4}>
-                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled4">
-                    Rut del representante legal de la empresa en el Sii
-                  </Tooltip>}
-                  >
-                    <Row>
-                      <InputField
-                      type='text'
-                      label='Rut Representante Legal'
-                      name='rut_legal_representative'
-                      required={false}
-                      messageErrors={[
-                      'Requerido*'
-                      ]}
-                      cols='col-md-12 col-lg-12 col-sm-12'
-                      value={configData.rut_legal_representative}
-                      handleChange={onChange}
-                      />
-                    </Row>
-                  </OverlayTrigger>
-                </Col>
-                <Col sm={4} md={4} lg={4}>
-                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled5">
-                    Clave del representate legal de la empresa en el Sii
-                  </Tooltip>}
-                  >
-                    <Row>
-                      <InputField
-                      type='text'
-                      label='Clave Sii'
-                      name='clave_login_sii'
-                      required={false}
-                      messageErrors={[
-                      'Requerido*'
-                      ]}
-                      cols='col-md-12 col-lg-12 col-sm-12'
-                      value={configData.clave_login_sii}
-                      handleChange={onChange}
-                      />
-                    </Row>
-                  </OverlayTrigger>
-                </Col>
-                <Col sm={4} md={4} lg={4}>
-                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled6">
-                    Firma del representate legal en el Sii
-                  </Tooltip>}
-                  >
-                    <Row>
-                      <InputField
-                      type='text'
-                      label='Firma Sii'
-                      name='clave_sii'
-                      required={false}
-                      messageErrors={[
-                      'Requerido*'
-                      ]}
-                      cols='col-md-12 col-lg-12 col-sm-12'
-                      value={configData.clave_sii}
-                      handleChange={onChange}
-                      />
-                    </Row>
-                  </OverlayTrigger>
+                <Col>
+                  <Card bg="dark">
+                    <Card.Header style={{color: "white"}}>
+                      <h5>Datos requeridos para realizar la sincronización con el SII</h5>
+                    </Card.Header>
+                    <Card.Body style={{backgroundColor : "white"}}>
+                      <Row>
+                        <Col sm={4} md={4} lg={4}>
+                          <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled4">
+                            Rut del representante legal de la empresa en el Sii
+                          </Tooltip>}
+                          >
+                            <Row>
+                              <InputField
+                              type='text'
+                              label='Rut Representante Legal'
+                              name='rut_legal_representative'
+                              required={false}
+                              messageErrors={[
+                              'Requerido*'
+                              ]}
+                              cols='col-md-12 col-lg-12 col-sm-12'
+                              value={configData.rut_legal_representative}
+                              handleChange={onChange}
+                              />
+                            </Row>
+                          </OverlayTrigger>
+                        </Col>
+                        <Col sm={4} md={4} lg={4}>
+                          <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled5">
+                            Clave del representate legal de la empresa en el Sii
+                          </Tooltip>}
+                          >
+                            <Row>
+                              <InputField
+                              type='text'
+                              label='Clave Sii'
+                              name='clave_login_sii'
+                              required={false}
+                              messageErrors={[
+                              'Requerido*'
+                              ]}
+                              cols='col-md-12 col-lg-12 col-sm-12'
+                              value={configData.clave_login_sii}
+                              handleChange={onChange}
+                              />
+                            </Row>
+                          </OverlayTrigger>
+                        </Col>
+                        <Col sm={4} md={4} lg={4}>
+                          <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled6">
+                            Firma del representate legal en el Sii
+                          </Tooltip>}
+                          >
+                            <Row>
+                              <InputField
+                              type='text'
+                              label='Firma Sii'
+                              name='clave_sii'
+                              required={false}
+                              messageErrors={[
+                              'Requerido*'
+                              ]}
+                              cols='col-md-12 col-lg-12 col-sm-12'
+                              value={configData.clave_sii}
+                              handleChange={onChange}
+                              />
+                            </Row>
+                          </OverlayTrigger>
+                        </Col>
+                      </Row>
+                    </Card.Body>
+                  </Card>
                 </Col>
               </Row>
+              <br/>
               <Row className="justify-content-center">
                 <Col sm={4} md={4} lg={4}>
                   <Button size="sm" type="submit" variant="danger" block="true">
@@ -394,4 +408,4 @@ function mapStateToProps(state){
   }
 }
 
-export default connect(mapStateToProps,{})(ConfigGeneralFormPage)
+export default connect(mapStateToProps,mapDispatchToProps)(ConfigGeneralFormPage)

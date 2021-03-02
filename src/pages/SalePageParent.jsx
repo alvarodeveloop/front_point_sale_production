@@ -69,7 +69,14 @@ const SalePageParent = (props) => {
 
   useEffect(() => {
     layoutHelpers.toggleCollapsed()
-    fetchConfig()
+    if(props.configGeneral.is_syncronized){
+      fetchConfig()
+    }else{
+      toast.error("Debe sincronizar su cuenta en la configuración general para utilizar este módulo")
+      setTimeout(() => {
+        props.history.replace("/config/config_general"); 
+      },4000)
+    }
     return () => {
       props.resetCart()
       layoutHelpers.toggleCollapsed()
@@ -397,6 +404,7 @@ function mapStateToProps(state){
     sale: state.sale.sale,
     id_branch_office : state.enterpriseSucursal.id_branch_office,
     id_enterprise : state.enterpriseSucursal.id_enterprise,
+    configGeneral: state.configs.config,
   }
 }
 
@@ -419,6 +427,7 @@ SalePageParent.propTypes = {
   handleResetTotal: PropTypes.func.isRequired,
   id_branch_office: PropTypes.string.isRequired,
   id_enterprise : PropTypes.string.isRequired,
+  configGeneral: PropTypes.object,
 }
 
 export default connect(mapStateToProps,mapDispatchToProps())(SalePageParent)

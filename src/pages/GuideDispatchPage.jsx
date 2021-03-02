@@ -109,14 +109,30 @@ const GuideDispatchPage = (props) => {
   const [listData, setListData] = useState([])
 
   useEffect(() => {
-    if(localStorage.getItem('configStore') === "null"){
-      toast.error('Debe hacer su configuración de tienda primero')
-      setTimeout(function () {
-        props.history.replace('/config/config_store')
-      }, 1500);
+
+    if(!props.configStore || !props.configGeneral){
+      if(!props.configStore){
+        toast.error('Debe hacer su configuración de tienda o seleccionar una sucursal para usar este módulo')
+        setTimeout(function () {
+          props.history.replace('/dashboard')
+        }, 3000);
+      }else if(!props.configGeneral){
+        toast.error('Debe hacer su configuración general para usar este módulo')
+        setTimeout(function () {
+          props.history.replace('/config/config_general')
+        }, 3000);
+      }
     }else{
-      fetchData()
-      setDisplayModals(true)
+      if(!props.configGeneral.is_syncronized){
+        toast.error('Su cuenta no esta sincronizada con el SII, complete su configuración general para usar este módulo')
+        setTimeout(function () {
+          props.history.replace('/config/config_general')
+        }, 3000);
+        return
+      }else{
+        fetchData()
+        setDisplayModals(true)
+      }
     }
   },[props.id_branch_office])
 

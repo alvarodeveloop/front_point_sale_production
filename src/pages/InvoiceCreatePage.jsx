@@ -101,7 +101,7 @@ const InvoiceCreatePage = (props) => {
       }else if(!props.configGeneral){
         toast.error('Debe hacer su configuración general para usar este módulo')
         setTimeout(function () {
-          props.history.replace('/dashboard')
+          props.history.replace('/config/config_general')
         }, 3000);
       }
     }else{
@@ -109,7 +109,7 @@ const InvoiceCreatePage = (props) => {
       if(!config_general.is_syncronized){
         toast.error('Su cuenta no esta sincronizada con el SII, complete su configuración general para usar este módulo')
         setTimeout(function () {
-          props.history.replace('/dashboard')
+          props.history.replace('/config/config_general')
         }, 3000);
         return
       }
