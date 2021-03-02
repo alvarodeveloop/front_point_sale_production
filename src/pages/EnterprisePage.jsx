@@ -123,6 +123,7 @@ const EnterprisePage = (props) => {
           <Row className="">
             <Col sm={6} md={6} lg={6}>
               <h4 className="title_principal">Empresas Registradas</h4>
+              <Button size="sm" variant="success" block={true} type="button" onClick={goToForm}>Crear Empresa <FaPlusCircle /></Button>
             </Col>
             <Col sm={6} md={6} lg={6} className="text-center">
               <h4 className="title_principal">Total Empresas</h4>
@@ -131,14 +132,10 @@ const EnterprisePage = (props) => {
           </Row>
           <hr/>
           <Row className="justify-content-center">
-            <Col sm={6} md={6} lg={6}>
-              <Button size="sm" variant="success" block={true} type="button" onClick={goToForm}>Crear Empresa <FaPlusCircle /></Button>
-              <br/>
-            </Col>
             <Col sm={12} md={12} lg={12}>
               <Row className="justify-content-center">
                 {enterprises.map((v,i) => (
-                  <Col sm={4} md={4} lg={4} key={i} className="text-center">
+                  <Col sm={4} md={4} lg={4} key={i} className="text-center mb-4">
                     <EnterpriseCardComponent
                       enterprise={v}
                       modifyRegister={modifyRegister}

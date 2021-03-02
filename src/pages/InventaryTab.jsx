@@ -181,7 +181,7 @@ const InventaryTab = (props) => {
             </Col>
             <Col sm={6} md={6} lg={6} className="text-right">
               <br/>
-              <h4 className="title_principal">Cantidad Productos: <Badge variant="danger" className="title_badge">{inventary.length}</Badge></h4>
+              <h4 className="title_principal">Cantidad Productos: <Badge variant="danger" className="font-badge">{inventary.length}</Badge></h4>
             </Col>
             <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
               <hr/>

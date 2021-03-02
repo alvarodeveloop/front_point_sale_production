@@ -1,9 +1,10 @@
 .divTitleShow{
   height: 60px;
   color: white;
-  font-size: 20px;
+  font-size: 15px;
   background-color: rgb(254, 199, 4);
   width: 100%;
+  padding: 10px;
 }
 
 .divTitleShowImg{

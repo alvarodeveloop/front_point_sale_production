@@ -18,8 +18,8 @@ const EnterpriseCardComponent = ({enterprise,...props}) => {
       <br/><br/>
       <DropdownButton size="sm" id={'drop'+enterprise.id} title="Acciones" style={{width: "100%"}}>
         <Dropdown.Item onClick={() => props.modifyRegister(enterprise)}>Modificar</Dropdown.Item>
-        <Dropdown.Item onClick={() => props.deleteRegister(enterprise.id)}>Eliminar</Dropdown.Item>
         <Dropdown.Item onClick={() => props.displayDetails(enterprise)}>Ver detalles</Dropdown.Item>
+        <Dropdown.Item onClick={() => props.deleteRegister(enterprise.id)}>Eliminar</Dropdown.Item>
       </DropdownButton>
     </React.Fragment>
   )

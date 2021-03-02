@@ -282,12 +282,11 @@ const ListProductPage = (props) =>{
 
   const onChangePriceTableHandler = (index,e,id) => {
     let val = e.target.value.replace(/[^0-9 .]/g,"");
-    productArrayCopy2[index].price = val;
-    /*setProducts(currentData => {
+    setProducts(currentData => {
       let currentArray = [...currentData]
       currentArray[index].price = val
       return currentArray
-    })*/
+    })
   }
 
   const onChangeProductDetailHadler = e => {

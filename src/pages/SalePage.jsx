@@ -29,10 +29,12 @@ import { MdPersonAdd } from 'react-icons/md';
 import { AiOutlineQrcode, AiFillTag, AiOutlineBarcode } from "react-icons/ai";
 import QuaggaScanner from 'components/QuaggaScanner'
 
+let count = 0;
 const SalePage = (props) => {
 
   const [categorys,setCategorys] = useState([])
   const [clients,setClients] = useState([])
+  const [listProducts, setListProducts] = useState([])
   const [isShowModalClient, setIsShowModalClient] = useState(false)
   const [isShowModalEan, setIsShowModalEan] = useState(false)
   const [isShowModalQr, setIsShowModalQr] = useState(false)
@@ -46,14 +48,17 @@ const SalePage = (props) => {
   const [showList,setShowList] = useState(false)
   const [isEanScaner, setIsEanScaner] = useState(false)
 
+  count++;
+
   useEffect(() => {
-    fetchCategorys()
-    fetchClients()
-    fetchAllProductsAdviable()
+    fetchData(true);
+    return () => {
+      count = 0;
+    }
   },[])
 
   useEffect(() => {
-    if(props.sale.rooms.length !== 1){
+    if(props.sale.rooms.length !== 1 && count > 1){
       toast.success('Proceso Completado')
     }
   },[props.sale.rooms.length])
@@ -66,35 +71,41 @@ const SalePage = (props) => {
     })
   }
 
+  const fetchData = async (isBeggining = false) => {
+    let promises = [];
+
+    if(!isBeggining){
+      promises.push(axios.get(API_URL+'client'));
+    }else{
+      promises = [
+        axios.get(API_URL+'client'),
+        axios.get(API_URL+'category'),
+        axios.get(API_URL+'productByCategory/todos/0'),
+        axios.get(API_URL+"listProduct"),
+      ];
+    }
+    try {
+      let results = await Promise.all(promises);
+      setClients(results[0].data)
+      if(isBeggining){
+        setCategorys(results[1].data);
+        setProductsAll(results[2].data);
+        setProducts(results[2].data);
+        setProductsBackup(results[2].data);
+        setListProducts(results[3].data);
+      }
+    } catch (error) {
+      if(error.response){
+        toast.error(error.response.data.message);
+      }else{
+        console.log(error);
+        toast.error("Error, contacte con soporte");
+      }
+    }
+  }
+
   const catchQr = codeQr => {
     console.log(codeQr)
-  }
-
-  const fetchAllProductsAdviable = () => {
-    axios.get(API_URL+'productByCategory/todos').then(result => {
-      setProductsAll(result.data)
-      setProducts(result.data)
-      setProductsBackup(result.data)
-    }).catch(err => {
-     props.tokenExpired(err)
-    })
-  }
-
-  const fetchClients = () => {
-    axios.get(API_URL+'client').then(result => {
-      setClients(result.data)
-    }).catch(err => {
-     props.tokenExpired(err)
-    })
-  }
-
-  const fetchCategorys = () => {
-    axios.get(API_URL+'category').then(result => {
-      setCategorys(result.data)
-    }).catch(err => {
-     props.tokenExpired(err)
-
-    })
   }
 
   const handleAddToCart = data => {
@@ -187,7 +198,7 @@ const SalePage = (props) => {
       break;
       case 'client':
         setIsShowModalClient(false)
-        fetchClients()
+        fetchData()
       break;
       case 'not_registered':
         setIsShowModalNotRegistered(false)
@@ -232,7 +243,7 @@ const SalePage = (props) => {
   const handleResetValueClient = () => {
     setResetValueClient(false)
   }
-
+  
   const handleSelectClient = data => {
     let data_document = data.split('/')[1]
     console.log(data_document,"aqui la data document");
@@ -256,13 +267,30 @@ const SalePage = (props) => {
 
   const searchByCategory = category => {
     if(category){
-      axios.get(API_URL+'productByCategory/'+category).then(result => {
+      let listP = document.getElementById("select_list_product").value;
+      axios.get(API_URL+'productByCategory/'+category+"/"+listP).then(result => {
         setProducts(result.data)
         setProductsBackup(result.data)
       }).catch(err => {
         props.tokenExpired(err)
       })
     }
+  }
+
+  const listProductHandler = (e) => {
+    axios.get(API_URL+'productByCategory/todos/'+e.target.value).then(results => {
+      setProductsAll(results.data);
+      setProducts(results.data);
+      setProductsBackup(results.data);
+    }).catch(err => {
+      console.log(err);
+      if(err.response){
+        toast.error(err.response.data.message);
+      }else{
+        console.log(err);
+        toast.error("Ha ocurrido un error, contacte con soporte");
+      }
+    })
   }
 
   return (
@@ -393,8 +421,9 @@ const SalePage = (props) => {
       {
         !isEanScaner ? (
           <Col sm={8} md={8} lg={8} xs={8} style={{ border: '1px solid white', borderRadius:'15px',boxShadow:'10px 5px 5px lightgray'}}>
-            <Row className="justify-content-center">
-              <Col sm={7} md={7} lg={7} xs={7}>
+            <Row className="justify-content-center" style={{paddingLeft: "10px", paddingRight: "10px"}}>
+              <Col sm={6} md={6} lg={6} xs={6}>
+                <label className="form-control-label">Seleccione por Categoria</label>
                 <select className="form-control" onChange={handleChangeCategoryProduct} defaultValue="mas_vendidos" id="select_category">
                   <option value='todos'>Todos</option>
                   {categorys.map((v,i) => (
@@ -402,9 +431,17 @@ const SalePage = (props) => {
                   ))}
                 </select>
               </Col>
-              <Col sm={4} md={4} lg={4} xs={4}>
-                <label className="form-control-label">Seleccione por Categoria</label>
+              <Col sm={6} md={6} lg={6} xs={6}>
+                <label className="form-control-label">Lista de Productos</label>
+                <select className="form-control" onChange={listProductHandler} id="select_list_product">
+                  <option value='0'>-- Default --</option>
+                  {listProducts.map((v,i) => (
+                    <option key={i} value={v.id}>{v.name}</option>
+                  ))}
+                </select>
               </Col>
+            </Row>
+            <Row>
               <Col sm={12} md={12} lg={12} xs={12} onClick={() => handleOpenModals('product')}>
                 <br/>
                 <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled">Nuevo Producto</Tooltip>}>

@@ -13,20 +13,18 @@ import {
   Modal,
   Image,
   Badge,
-  Carousel
+  Carousel,
+  OverlayTrigger,
+  Tooltip
 } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import FileSaver from 'file-saver'
 import * as XLSX from 'xlsx';
 
 import 'styles/components/modalComponents.css'
 import 'styles/pages/productStyle.css'
-import CategoyPage from 'pages/CategoryPage'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
 import {formatNumber} from 'utils/functions'
 import layoutHelpers from 'shared/layouts/helpers'
 import LoadingComponent from 'components/LoadingComponent'
@@ -193,10 +191,6 @@ const ProductPage = (props) => {
     props.history.replace('/product/form')
   }
 
-  const createRepresent = data => {
-    props.history.replace('/product/represent/'+data.id)
-  }
-
   const onHide = () => {
     setIsOpen(false)
   }
@@ -220,7 +214,7 @@ const ProductPage = (props) => {
         const wb = XLSX.read(bstr, {type:'binary'});
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
-        const data = XLSX.utils.sheet_to_json(ws, {header:1});
+        const data = XLSX.utils.sheet_to_json(ws, {header:0});
         handleRequestExcel(data)
     };
     reader.readAsBinaryString(f);

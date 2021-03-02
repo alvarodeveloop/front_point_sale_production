@@ -7,19 +7,23 @@ import {
   Button,
   Dropdown,
   DropdownButton,
-  Badge
+  Badge,
+  OverlayTrigger,
+  Tooltip
 } from 'react-bootstrap'
 import axios from 'axios'
 import { API_URL } from 'utils/constants'
 import { toast } from 'react-toastify'
+import {s2ab} from 'utils/functions'
 import Table from 'components/Table'
 import FormClientModal from 'components/modals/FormClientModal'
 import { confirmAlert } from 'react-confirm-alert'; // Import
-import {FaPlusCircle} from 'react-icons/fa'
+import {FaFileExcel, FaPlusCircle} from 'react-icons/fa'
 import layoutHelpers from 'shared/layouts/helpers'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
 import LoadingComponent from 'components/LoadingComponent'
+import * as XLSX from "xlsx";
+import * as moment from "moment-timezone";
+import FileSaver from 'file-saver'
 
 import { connect } from 'react-redux'
 
@@ -68,15 +72,35 @@ const ClientPage = (props) => {
         },
         {
           Header:'Dirección',
-          accessor: 'address'
+          accessor: props1 => [props1.city+" "+props1.comuna+" "+props1.address],
+          Cell : props1 => {
+            const original = props1.cell.row.original;
+            return (
+              <OverlayTrigger placement={'right'} overlay={
+                <Tooltip id={"tooltip-right"}>
+                  <ul className="list-group">
+                      <li className="list-group-item"><b>Ciudad</b>: {original.city}</li>
+                      <li className="list-group-item"><b>Comuna</b>: {original.comuna}</li>
+                      <li className="list-group-item"><b>Dirección</b>: {original.address}</li>
+                  </ul>
+                </Tooltip>
+              }>
+                <Button sm="sm" type="button" variant="link" block={true}>Dirección</Button>
+              </OverlayTrigger>
+            )
+          }
         },
         {
           Header:'Id',
-          accessor: props1 => [props1.type_document+' '+props1.data_document],
-        },
-        {
-          Header:'Observación',
-          accessor: 'observation'
+          accessor: props1 => [props1.type_document+' '+props1.data_document+""],
+          Cell : props1 => {
+            const original = props1.cell.row.original;
+            return (<span>
+                    {original.type_document} 
+                    <br/>
+                    {original.data_document}{original.type_document === "Rut" ? "-"+original.dv : ""}
+                </span>)
+          }
         },
         {
           Header: 'Acciones',
@@ -153,6 +177,90 @@ const ClientPage = (props) => {
     })
   }
 
+  const importClientsHandlder = () => {
+    document.getElementById("input_hidden").click()
+  }
+
+  const onChangeFileInputHandler = e => {
+    setDisplayLoading(true)
+    let f = e.target.files[0]
+    var name = f.name;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+        const bstr = evt.target.result;
+        const wb = XLSX.read(bstr, {type:'binary'});
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_json(ws, {header:0});
+        handleRequestExcel(data)
+    };
+    reader.readAsBinaryString(f);
+  }
+
+  const handleRequestExcel = (data) => {
+    axios.post(API_URL+"uploadClientExcel",data).then(result => {
+      setDisplayLoading(false);
+      toast.success("Números de clientes importados con éxito: "+result.data.cantidad);
+      fetchData();
+    }).catch(err => {
+      setDisplayLoading(false);
+      if(err.response){
+        toast.error(err.response.data.message);
+      }else{
+        console.log(err);
+        toast.error("Error, contacte con soporte");
+      }
+    })
+  }
+
+  const downloadExcelUploadTemplate = () => {
+    window.open(API_URL+"documents/client/upload_client.xlsx","_blank");
+  }
+
+  const exportClientsHandler = () => {
+    if(!clients.length){
+      toast.error('Error, no hay datos para realizar el excel')
+    }else{
+      let enterprise = props.enterpriseSucursal.enterprises.find(v => v.id == props.id_enterprise);
+      let brachOffice = props.enterpriseSucursal.branchOffices.find(v => v.id == props.id_branch_office);
+      
+      let wb = XLSX.utils.book_new()
+      let bodyTable = [['Tipo documento','Número documento','Nombre cliente','Razon social','Email','Teléfono','Dirección','Ciudad','Comuna','Giro','Observación','Actividad Económica']]
+      let nameTitle  = `Clientes de la empresa (${enterprise.bussines_name}) - Sucursal (${brachOffice.name})`;
+      wb.Props = {
+        Title: nameTitle,
+        Subject: "Exportación de Clientes",
+        Author: 'Aidy tecnology',
+        CreatedDate: moment().format('YYYY-MM-DD')
+      };
+      wb.SheetNames.push("Clientes");
+
+      clients.forEach((item, i) => {
+        let number_document = item.type_document === "Rut" ? item.data_document+"-"+item.dv : item.data_document;
+        bodyTable.push([
+          item.type_document,
+          number_document,
+          item.name_client,
+          item.bussines_name,
+          item.email,
+          item.phone,
+          item.address,
+          item.city,
+          item.comuna,
+          item.spin,
+          item.actividad_economica,
+        ])
+      });
+
+      var ws = XLSX.utils.aoa_to_sheet(bodyTable);
+      wb.Sheets["Clientes"] = ws;
+      var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+      let datos = s2ab(wbout)
+      FileSaver.saveAs(new Blob([datos],{type:"application/octet-stream"}), nameTitle+"/"+moment().format('DD-MM-YYYY')+'.xlsx')
+    }
+
+  }
+
   return (
     <>
       {displayLoading ? (
@@ -171,11 +279,23 @@ const ClientPage = (props) => {
             </Col>
           </Row>
           <Row>
-            <Col sm={6} md={6} lg={6}>
+            <Col sm={3} md={3} lg={3}>
               <Button variant="success" block={true} size="sm" onClick={handleModalHide} type="button">Crear Cliente <FaPlusCircle /></Button>
+            </Col>
+            <Col sm={3} md={3} lg={3}>
+              <DropdownButton size="sm" id={'drop_excel'} variant="success" title={(<span>Acciones de Excel <FaFileExcel /></span>)} drop="down"  style={{width: "100%"}}>
+                <Dropdown.Item onClick={downloadExcelUploadTemplate}>Descargar plantilla para importar</Dropdown.Item>
+                <Dropdown.Item onClick={importClientsHandlder}>Importar Clientes</Dropdown.Item>
+                <Dropdown.Item onClick={exportClientsHandler}>Exportar Clientes</Dropdown.Item>
+              </DropdownButton>
             </Col>
           </Row>
           <hr/>
+          <Row>
+            <Col>
+              <input type="file" id="input_hidden" accept=".xlsx, .xls" onChange={onChangeFileInputHandler} style={{display : "none"}} />
+            </Col>
+          </Row>
           <Row className="">
             <Col sm={12} md={12} lg={12}>
               <Table data={clients} columns={columns_client} />
@@ -196,12 +316,14 @@ function mapStateToProps(state){
   return {
     id_branch_office : state.enterpriseSucursal.id_branch_office,
     id_enterprise : state.enterpriseSucursal.id_enterprise,
+    enterpriseSucursal: state.enterpriseSucursal
   }
 }
 
 ClientPage.propTypes ={
   id_branch_office: PropTypes.string.isRequired,
   id_enterprise : PropTypes.string.isRequired,
+  enterpriseSucursal : PropTypes.object,
 }
 
 export default connect(mapStateToProps,{})(ClientPage)
