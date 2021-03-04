@@ -63,6 +63,10 @@ const ClientPage = (props) => {
           }
         },
         {
+          Header:'Razón Social',
+          accessor: 'bussines_name'
+        },
+        {
           Header:'Email',
           accessor: 'email'
         },

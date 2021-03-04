@@ -24,17 +24,12 @@ const MainContainer = props => {
         if(props.isLogin){
           if(props.menu.length === 0){
             setIsLoading(true)
-            axios.get(API_URL+'menu_user').then(result => {
-              props.setMenu(result.data)
-            }).catch(err => {
-              const { response } = err
-              if(response){
-                toast.error(response.data.message,'Error')
-              }else{
-                toast.error('No se pudo cargar el menú, contacte con soporte')
-              }
-            })
-
+            let menuResult = await axios.get(API_URL+'menu_user');
+            if(!menuResult.status && menuResult.status !== 200){
+              logoutUserByTokenExpired(menuResult);
+              return
+            }
+            props.setMenu(menuResult.data);
             let promises = [
               axios.get(API_URL+'config_general/'+1),
               axios.get(API_URL+'config_store'),
@@ -70,9 +65,10 @@ const MainContainer = props => {
               }
               setIsLoading(false)
             } catch (e) {
-              setIsLoading(false)
+              logoutUserByTokenExpired(e)
+              /*setIsLoading(false)
               console.log(e,e.response);
-              toast.error('Error, contacte con soporte si este error persiste')
+              toast.error('Error, contacte con soporte si este error persiste')*/
             }
           }
         }
@@ -100,6 +96,7 @@ const MainContainer = props => {
     },[props.isLogin])
 
     const handleLogoutUser = async () => {
+      console.log("aqui sa mamageuebada");
       props.logout()
       localStorage.removeItem('user')
       localStorage.removeItem('token')

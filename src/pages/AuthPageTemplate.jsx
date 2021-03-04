@@ -268,15 +268,7 @@ const AuthPageTemplate = props => {
   let displayImgSection = useMemo(() =>{
     return (
     <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: !imgLogin ? `url('${process.env.PUBLIC_URL}/background_1920-16.jpg'}` : `url('${API_URL}images/aidy/${imgLogin}')` }}>
-      <div className="ui-bg-overlay bg-dark opacity-50"></div>
-
       {/* Text */}
-      <div className="w-100 text-white px-5">
-        <h1 className="display-2 font-weight-bolder mb-4">BIENVENIDO A AIDY</h1>
-        <div className="text-large font-weight-light">
-          Sistema de administración, gestión de ventas e inventario
-        </div>
-      </div>
       {/* /.Text */}
     </div>)
   },[imgLogin])
@@ -530,6 +522,9 @@ const AuthPageTemplate = props => {
                     {/* Form */}
                     <Form className="my-5" onSubmit={() => {}} noValidate validated={false}>
                       <Form.Group>
+                        Te enviaremos un correo con un link para reestablecer tu contraseña
+                      </Form.Group>
+                      <Form.Group>
                         <Form.Label className="d-flex justify-content-between align-items-end">
                           <div>Email</div>
                           {/*<a href="#d" onClick={prevent} className="d-block small">Forgot password?</a>*/}
@@ -541,7 +536,7 @@ const AuthPageTemplate = props => {
                       </div>
                       <br/>
                       <div className="d-flex justify-content-center align-items-center m-0">
-                        <Button type="button" block={true} size="sm" variant="secondary" disabled={disabledButton} onClick={() =>  showRecoverSection()}>Mostrar Formulario</Button>
+                        <Button type="button" block={true} size="sm" variant="secondary" disabled={disabledButton} onClick={() =>  showRecoverSection()}>Volver</Button>
                       </div>
                     </Form>
                 </div>

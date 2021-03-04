@@ -266,7 +266,7 @@ const EnterpriseFormPage = (props) => {
             props.setIdBranchOffice(result[0].data[0].id)
             toast.info('Sucursal seleccionada para trabajar')
             setTimeout(function () {
-              goToTable()
+              props.history.replace("/config/config_general");
             }, 1000);
           }
         }

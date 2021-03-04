@@ -110,7 +110,8 @@ export default (state = initialState, action = {}) => {
         cartStoreAddCart.push(action.cartNew)
         return {
           sale: Object.assign({},state.sale, {
-            rooms: cartStoreAddCart
+            rooms: cartStoreAddCart,
+            idCartSelected: cartStoreAddCart.length - 1
           })
         };
 
@@ -418,6 +419,7 @@ export default (state = initialState, action = {}) => {
             v.amount = parseFloat(action.discount.amount)
             v.discountOrRecharge = false
             v.type =  action.discount.type
+            v.amount_calculate = action.discount.type !== "fijo" ? (action.product.price * parseFloat(action.discount.amount)) / 100 : parseFloat(action.discount.amount) 
             return v
           }else{
             return v
@@ -426,11 +428,12 @@ export default (state = initialState, action = {}) => {
       }else{
         rechargesAdd = [...rechargesAdd, Object.assign({},{},{
           idCart: stateRecharge.idCartSelected,
-          amount: action.discount.amount,
+          amount: parseFloat(action.discount.amount),
           type: action.discount.type,
           id_product: action.product.id,
           typeRegister: action.typeRegister,
           discountOrRecharge: false,
+          amount_calculate : action.discount.type !== "fijo" ? (action.product.price * parseFloat(action.discount.amount)) / 100 : parseFloat(action.discount.amount) 
         })]
       }
 
@@ -486,6 +489,7 @@ export default (state = initialState, action = {}) => {
             v.amount = parseFloat(action.discount.amount)
             v.discountOrRecharge = true
             v.type = action.discount.type
+            v.amount_calculate = action.discount.type !== "fijo" ? (action.product.price * parseFloat(action.discount.amount)) / 100 : parseFloat(action.discount.amount) 
             return v
           }else{
             return v
@@ -499,6 +503,7 @@ export default (state = initialState, action = {}) => {
           id_product: action.product.id,
           typeRegister: action.typeRegister,
           discountOrRecharge : true,
+          amount_calculate : action.discount.type !== "fijo" ? (action.product.price * parseFloat(action.discount.amount)) / 100 : parseFloat(action.discount.amount) 
         })]
       }
 

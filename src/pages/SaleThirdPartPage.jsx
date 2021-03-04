@@ -78,7 +78,6 @@ const SaleThirdPartPage = (props) => {
         let cartSale = Object.assign({},props.sale.rooms[props.sale.idCartSelected],{
           payment,
           status,
-          id_cash_register: JSON.parse(localStorage.getItem('cash_register')).id_cash_register
         })
 
         setDisplayLoading(true)
@@ -417,8 +416,8 @@ const SaleThirdPartPage = (props) => {
             <Row className="justify-content-center">
               <InputField
                 {...props.inputTurned}
-                handleChange={onChange}
-                value={payment.turned}
+                handleChange={onChange}text
+                value={showPriceWithDecimals(props.config,payment.turned)}
                 />
             </Row>
             <Row className="justify-content-center">
@@ -573,7 +572,7 @@ SaleThirdPartPage.defaultProps = {
     ],
   },
   inputTurned: {
-    type: 'number',
+    type: 'text',
     required: true,
     name: 'turned',
     label : '',

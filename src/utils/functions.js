@@ -74,7 +74,7 @@ export const readerImg = file => {
 export const showPriceWithDecimals = (config,price) => {
   if(config){
     if(config.active_price_decimals === "Desactivado" || config.active_price_decimals === undefined){
-      return parseFloat(formatNumber(price,0,'',''))
+      return formatNumber(price,0,'','.')
     }else{
       return formatNumber(price,2,',','.')
     }

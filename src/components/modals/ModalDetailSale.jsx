@@ -45,7 +45,7 @@ const ModalDetailSale = ({dataSale, ...props}) => {
   }
 
   const displayTotal = datos => {
-    let amount_descuento = datos.discount_recharge.length > 0 ? parseFloat(datos.discount_recharge[0].amount) : 0
+    let amount_descuento = datos.discount_recharge.length > 0 ? parseFloat(datos.discount_recharge[0].amount_calculate) : 0
     let total = (parseFloat(datos.price) * datos.quantity) - amount_descuento
     return showPriceWithDecimals(props.config,total)
   }
@@ -70,6 +70,7 @@ const ModalDetailSale = ({dataSale, ...props}) => {
           <thead>
             <tr style={{ backgroundColor: 'lightblue', color: 'black' }}>
               <th className="text-center">Nombre</th>
+              <th className="text-center">Razón Social</th>
               <th className="text-center">Fono</th>
               <th className="text-center">Dirección</th>
               <th className="text-center">Documento</th>
@@ -78,9 +79,10 @@ const ModalDetailSale = ({dataSale, ...props}) => {
           <tbody className="text-center">
             <tr>
               <td>{dataSale.client ? dataSale.client.name_client : ''}</td>
+              <td>{dataSale.client ? dataSale.client.bussines_name : ''}</td>
               <td>{dataSale.client ? dataSale.client.phone : ''}</td>
               <td>{dataSale.client ? dataSale.client.address : ''}</td>
-              <td>{dataSale.client ? dataSale.client.type_document : ''} <br/> {dataSale.data_document}</td>
+              <td>{dataSale.client ? (<>{dataSale.client.type_document} <br/> {dataSale.client.data_document}</>) : ''}</td>
             </tr>
           </tbody>
         </table>
@@ -102,12 +104,15 @@ const ModalDetailSale = ({dataSale, ...props}) => {
               {dataSale.products ? dataSale.products.map((v,i) => (
                 <tr key={i}>
                   <td>{v.product.name_product}</td>
-                  <td>{props.config.simbolo_moneda+showPriceWithDecimals(props.config,v.price)}</td>
+                  <td>{props.config.simbolo_moneda+showPriceWithDecimals(props.config,v.product.price * v.quantity)}</td>
                   <td>{v.quantity}</td>
                   <td>{v.description}</td>
                   <td>{methodSaleHandle(v.method_sale)}</td>
-                  <td>{ v.discount_recharge.length > 0 ? v.discount_recharge[0].discount_or_recharge ? 'Descuento' : 'Recargo' : 'No posee' }</td>
-                  <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+displayTotal(v) }</Badge></td>
+                  <td>{ v.discount_recharge.length > 0 ? v.discount_recharge[0].discount_or_recharge 
+                  ? (<>Descuento<br/>{props.config.simbolo_moneda+v.discount_recharge[0].amount_calculate}</>)
+                  : (<>Recargo<br/>{props.config.simbolo_moneda+v.discount_recharge[0].amount_calculate}</>)
+                  : "No posee" }</td>
+                  <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+showPriceWithDecimals(props.config,v.price) }</Badge></td>
                 </tr>
               )) : ''}
             </tbody>
@@ -135,18 +140,18 @@ const ModalDetailSale = ({dataSale, ...props}) => {
           <table className="table table-bordered">
             <thead>
               <tr style={{ backgroundColor: 'lightblue', color: 'black' }}>
-                <th className="text-center">Total</th>
-                <th className="text-center">Tax</th>
                 <th className="text-center">Subtotal</th>
+                <th className="text-center">Tax</th>
+                <th className="text-center">Total</th>
                 <th className="text-center">Monto Pagado</th>
                 <th className="text-center">Vuelto</th>
               </tr>
             </thead>
             <tbody className="text-center">
               <tr>
-                <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+showPriceWithDecimals(props.config,dataSale.total) }</Badge></td>
-                <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+dataSale.tax }</Badge></td>
                 <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+dataSale.sub_total }</Badge></td>
+                <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+dataSale.tax }</Badge></td>
+                <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+showPriceWithDecimals(props.config,dataSale.total) }</Badge></td>
                 <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+showPriceWithDecimals(props.config,dataSale.payment) }</Badge></td>
                 <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+showPriceWithDecimals(props.config,dataSale.turned) }</Badge></td>
               </tr>

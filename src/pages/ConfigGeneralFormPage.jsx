@@ -141,7 +141,7 @@ const ConfigGeneralFormPage = (props) => {
 
       setImgComponent(
         <Image src={ event.target.result }
-          id="img_show" style={{ width: '100%' }} thumbnail/>
+          id="img_show" style={{ width: '160px', height: "160px", objectFit : "cover" }} roundedCircle />
       )
 
       setConfigData({...configData,file})
@@ -166,7 +166,7 @@ const ConfigGeneralFormPage = (props) => {
             <h4 className="title_principal">Formulario de Configuración General</h4>
             <br/>
             <Form onSubmit={onSubmit} noValidate validated={validated} className="">
-              <Row>
+              {/*<Row>
                 <Col md={4} lg={4} sm={4}>
                   <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled1">Este campo contendrá el simbolo con el que se mostraran los precios en el sistema</Tooltip>}>
                     <Row>
@@ -233,31 +233,20 @@ const ConfigGeneralFormPage = (props) => {
                 cols='col-md-4 col-lg-4 col-sm-4'
                 value={configData.giro}
                 handleChange={onChange}
-                />
-                <Col sm={4} md={4} lg={4}>
-                  {imgComponent ? (
-                    <React.Fragment>
-                      <Row className="justify-content-center">
-                        <Col sm={8} md={8} lg={8}>
-                          {imgComponent}
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col sm={12} md={12} lg={12} className="text-center">
-                          <br/>
-                          <Button variant="dark" size="sm" onClick={removeLogo} type="button"><FaTrash /></Button>
-                        </Col>
-                      </Row>
-                    </React.Fragment>
-                  ) : (
-                    <React.Fragment>
-                      <br/>
-                      <Button block={true} size="sm" type="button" variant="primary" onClick={openFileInput}>Logo Empresa <FaImage /></Button>
-                      <input type="file" id="file_input" style={{display: 'none'}} onChange={readFileImg} />
-                    </React.Fragment>
-                  )}
+              />*/}
+              <Row className="align-items-center">
+                <Col>
+                    <Button block={true} size="sm" type="button" variant="primary" onClick={openFileInput}>Logo Empresa <FaImage /></Button>
+                    <input type="file" id="file_input" style={{display: 'none'}} onChange={readFileImg} />
+                </Col>
+                <Col className="text-center">
+                  {imgComponent}
+                </Col>
+                <Col>
+                  {imgComponent && (<Button block={true} variant="dark" size="sm" onClick={removeLogo} type="button"><FaTrash /></Button>)}
                 </Col>
               </Row>
+                <br/><br/>
               <Row>
                 <Col>
                   <Card bg="dark">

@@ -215,7 +215,7 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
                   <InputField
                     {...props.inputTurned}
                     handleChange={onChange}
-                    value={payment.turned}
+                    value={showPriceWithDecimals(props.config,payment.turned)}
                     />
                 </Row>
               </div>
@@ -349,7 +349,7 @@ ModalSolvedSale.defaultProps = {
     ],
   },
   inputTurned: {
-    type: 'number',
+    type: 'text',
     required: true,
     name: 'turned',
     label : '',

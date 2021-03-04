@@ -40,6 +40,7 @@ import {
 import InputFieldRef from 'components/input/InputComponentRef'
 import { MdSend } from 'react-icons/md'
 import {FaPlusCircle} from 'react-icons/fa'
+import { showPriceWithDecimals } from 'utils/functions'
 let count = 0
 const SalePageParent = (props) => {
 
@@ -69,14 +70,15 @@ const SalePageParent = (props) => {
 
   useEffect(() => {
     layoutHelpers.toggleCollapsed()
-    if(props.configGeneral.is_syncronized){
-      fetchConfig()
+    /*if(props.configGeneral.is_syncronized){
+      
     }else{
       toast.error("Debe sincronizar su cuenta en la configuración general para utilizar este módulo")
       setTimeout(() => {
         props.history.replace("/config/config_general"); 
       },4000)
-    }
+    }*/
+    fetchConfig()
     return () => {
       props.resetCart()
       layoutHelpers.toggleCollapsed()
@@ -88,12 +90,8 @@ const SalePageParent = (props) => {
     let promises = [
       axios.get(API_URL+'config_store'),
       axios.get(API_URL+'config_general'),
-    ]
-    if(!localStorage.getItem('cash_register')){
-      promises.push(
-        axios.get(API_URL+'cash_register_by_user')
-      )
-    }
+      axios.get(API_URL+'cash_register_by_user')
+    ];
 
     Promise.all(promises).then(result => {
 
@@ -101,7 +99,11 @@ const SalePageParent = (props) => {
         setConfig(result[1].data)
         setConfigStore(result[0].data)
         if(promises.length > 2){
-          if(result[2].data.cash_user){
+          console.log("aqui4");
+          if(result[2].data.cashOpen){
+            setShowCashRegister(false)  
+          }else if(result[2].data.cash_user){
+            console.log("aqui3");
             setCashRegisterUser({
               id_cash_register : result[2].data.cash_user.id,
               amount_cash_default : result[2].data.cash_user.amount_cash_default,
@@ -113,17 +115,19 @@ const SalePageParent = (props) => {
               inputRef.current.focus()
             }, 300);
           }else{
+            console.log("aqui1");
             setCashRegisters(result[2].data.cash_free)
             setShowCashRegister(true)
           }
         }else{
+          console.log("aqui");
           setShowCashRegister(false)
         }
       }else{
         if(!result[1].data){
-          toast.error('Error la empresa no ha hecho la configuración general, ponganse en contacto con el dueño de las sucursales')
+          toast.error('Error la empresa no ha hecho la configuración general')
           setTimeout(function () {
-            props.history.replace('/dashboard')
+            props.history.replace('/config/config_general')
           }, 2000);
         }else if(!result[0].data){
           toast.error('Error, debe hacer su configuración de la tienda primero')
@@ -175,7 +179,7 @@ const SalePageParent = (props) => {
             Productos: { calculateTotalProducts() }
           </Col>
           <Col sm={6} md={6} lg={6} xs={6}>
-            Total: { props.sale.rooms[props.sale.idCartSelected].totales.total }
+            Total: { showPriceWithDecimals(props.configGeneral,props.sale.rooms[props.sale.idCartSelected].totales.total) }
           </Col>
         </Row>
         <br/>
@@ -217,7 +221,6 @@ const SalePageParent = (props) => {
 
     axios.post(API_URL+'cash_register_open_close',data).then(result => {
       toast.success('Caja Abierta')
-      localStorage.setItem('cash_register',JSON.stringify(data))
       setShowCashRegister(false)
       setShowCashRegisterForm(false)
       setCashRegisterUser({
@@ -292,7 +295,7 @@ const SalePageParent = (props) => {
               <Col sm={12} md={12} lg={12}>
                 <Row className="justify-content-center">
                   <Col sm={12} md={12} lg={12}>
-                    <h4 className="title_principal">Escoja la Caja con la que realizara la venta</h4>
+                    <h4 className="title_principal">Escoja la Caja con la que trabajará</h4>
                   </Col>
                 </Row>
                 <hr/>

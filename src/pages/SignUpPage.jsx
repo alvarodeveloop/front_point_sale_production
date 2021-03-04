@@ -113,16 +113,8 @@ const SignUpPage = (props) => {
           </div>
         ) : (
           <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: `url('${API_URL}images/aidy/${imgLogin}')` }}>
-            <div className="ui-bg-overlay bg-dark opacity-50"></div>
+            <div className=""></div>
 
-            {/* Text */}
-            <div className="w-100 text-white px-5">
-              <h1 className="display-2 font-weight-bolder mb-4">REGISTRO DE CUENTA</h1>
-              <div className="text-large font-weight-light">
-                Crea tu usuario nivel empresa para empezar el manejo de negocio en aidy
-              </div>
-            </div>
-            {/* /.Text */}
           </div>
         )}
         {/* / Side container */}
@@ -185,7 +177,7 @@ const SignUpPage = (props) => {
                   </Row>
                   <Row className="justify-content-center">
                     <Col sm={12} md={12} lg={12}>
-                      <Button size="sm" variant="primary" block={true} type="submit">Enviar</Button>
+                      <Button size="sm" variant="primary" block={true} type="submit">Registrar Usuario</Button>
                     </Col>
                   </Row>
                   <br/>

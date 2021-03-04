@@ -155,6 +155,10 @@ const CashRegisterPage = (props) => {
     handleOpenModalAdd()
   }
 
+  const seeDetails = data => {
+    props.history.push("/cashBox/"+data.id);
+  }
+
   return (
     <>
       {displayLoading ? (
@@ -174,13 +178,14 @@ const CashRegisterPage = (props) => {
           <hr/>
           <Row className="justify-content-center">
             {dataCashRegister.map((v,i) => (
-              <Col sm={3} lg={3} md={3} className="text-center" key={i}>
-                <h5 style={{color: 'rgb(180, 55, 33)'}}>CAJA N° {v.nro_caja}</h5>
-                <Image src={require('../assets/img/caja_registradora.jpg')} style={{width: '100%'}}/>
+              <Col sm={3} lg={3} md={3} className="text-center mb-4" key={i}>
+                <h5 style={{color: 'darkred'}}>CAJA N° {v.nro_caja}</h5>
+                <Image src={require('../assets/img/caja_registradora.jpg')} style={{width: '70%'}}/><br/>
                 Estado : {v.status ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
                 <br/><br/>
-                <DropdownButton size="md" id={'fila'+i} title="Acciones" style={{width: '100%'}} variant="primary">
+                <DropdownButton block={true} id={'fila'+i} title="Acciones" style={{width: '100%'}} size="sm"  variant="primary">
                   <Dropdown.Item onClick={() => updateRegister(v) }>Modificar</Dropdown.Item>
+                  <Dropdown.Item onClick={() => seeDetails(v) }>Ver Detalle</Dropdown.Item>
                   <Dropdown.Item onClick={() => {}}>Eliminar</Dropdown.Item>
                 </DropdownButton>
               </Col>
