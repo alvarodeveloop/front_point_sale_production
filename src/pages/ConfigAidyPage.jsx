@@ -47,6 +47,9 @@ const ConfigAidyPage = (props) => {
         api_key_nuxo : result.data.api_key_nuxo,
         rut_nuxo : result.data.rut_nuxo+"-"+result.data.dv_nuxo,
         password_nuxo : result.data.password_nuxo,
+        bussines_name : result.data.bussines_name,
+        address : result.data.address,
+        email : result.data.email
       })
       setDisplayLoading(false)
     }).catch(err => {

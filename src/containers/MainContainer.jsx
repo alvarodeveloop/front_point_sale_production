@@ -36,7 +36,7 @@ const MainContainer = props => {
               axios.get(API_URL+'refreshTokenNuxo'),
             ]
 
-            if( parseInt(JSON.parse(localStorage.getItem('user')).id_rol,10) === 2 || parseInt(JSON.parse(localStorage.getItem('user')).id_rol,10) === 8){
+            if( props.userSession.id_rol === 2 || props.userSession.id_rol === 9){
               promises.push(
                 axios.get(API_URL+'enterprises_branch_office') // petición para traer las empresas y las sucursales a los dueños de empresas
               )
@@ -169,6 +169,7 @@ MainContainer.propTypes = {
 function mapStateToProps(state){
   return {
     isLogin : state.auth.isAuthenticated,
+    userSession : state.auth.user,
     menu: state.menu.modules,
     configs: state.configs,
     enterpriseSucursal: state.enterpriseSucursal

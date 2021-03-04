@@ -110,7 +110,7 @@ const UserListPage = (props) => {
           <h4 className="title_principal">Usuarios</h4>
         </Col>
         <Col sm={6} md={6} lg={6} className="text-right">
-          <h4 className="title_principal">Total Usuarios Registrados: <Badge variant="danger">{users.length}</Badge></h4>
+          <h4 className="title_principal">Total usuarios registrados: <Badge variant="danger" className="font-badge">{users.length}</Badge></h4>
         </Col>
       </Row>
       <hr/>

@@ -33,7 +33,7 @@ const ModalHistoryInventary = (props) => {
 
   const [costUpdate,setCostUpdate] = useState(null)
   const [validated,setValidated] = useState(null)
-  const [displayLoading, setDisplayLoading] = useState(true)
+  const [displayLoading, setDisplayLoading] = useState(false)
 
   useEffect(() => {
 

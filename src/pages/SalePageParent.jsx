@@ -70,14 +70,14 @@ const SalePageParent = (props) => {
 
   useEffect(() => {
     layoutHelpers.toggleCollapsed()
-    /*if(props.configGeneral.is_syncronized){
+    if(props.configGeneral.is_syncronized){
       
     }else{
       toast.error("Debe sincronizar su cuenta en la configuración general para utilizar este módulo")
       setTimeout(() => {
         props.history.replace("/config/config_general"); 
       },4000)
-    }*/
+    }
     fetchConfig()
     return () => {
       props.resetCart()
@@ -99,11 +99,9 @@ const SalePageParent = (props) => {
         setConfig(result[1].data)
         setConfigStore(result[0].data)
         if(promises.length > 2){
-          console.log("aqui4");
           if(result[2].data.cashOpen){
             setShowCashRegister(false)  
           }else if(result[2].data.cash_user){
-            console.log("aqui3");
             setCashRegisterUser({
               id_cash_register : result[2].data.cash_user.id,
               amount_cash_default : result[2].data.cash_user.amount_cash_default,
@@ -115,12 +113,10 @@ const SalePageParent = (props) => {
               inputRef.current.focus()
             }, 300);
           }else{
-            console.log("aqui1");
             setCashRegisters(result[2].data.cash_free)
             setShowCashRegister(true)
           }
         }else{
-          console.log("aqui");
           setShowCashRegister(false)
         }
       }else{

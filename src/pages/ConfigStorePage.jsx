@@ -128,7 +128,7 @@ const ConfigStorePage = (props) => {
               <br/><br/>
               <Row className="justify-content-center">
                 <Col sm={5} lg={5} md={5} xs={12} className="containerDivSeparated">
-                  <h4 className="text-center font-title">Datos de la Tienda</h4>
+                  <h4 className="text-center font-title">Datos de la Sucursal</h4>
                   <br/>
                   <ul className="list-group">
                     <li className="list-group-item melon_y_melames"><b>País: </b> <br/> { dataStore.country.nombre }</li>

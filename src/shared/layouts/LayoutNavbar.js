@@ -151,7 +151,7 @@ const LayoutNavbar = (props) => {
           <Nav className="align-items-lg-center ml-auto">
             <div className="nav-item d-none d-lg-block text-big font-weight-light line-height-1 opacity-25 mr-3 ml-1">|</div>
             {
-              localStorage.getItem('user')  && JSON.parse(localStorage.getItem('user')).id_rol == 2 ? (
+              props.userConnect  && (props.userConnect.id_rol == 2 || props.userConnect.id_rol == 9) ? (
                 <React.Fragment>
                   <Nav.Item className="nav-item nav-link px-0 ml-2 ml-lg-0" style={{width: '200px'}}>
                     <InputField

@@ -167,7 +167,7 @@ const ConfigGeneralPage = (props) => {
               {!config.is_syncronized && (config.rut_legal_representative && config.clave_sii && config.clave_login_sii)  ? (
                 <Button variant="danger" size="sm" block={true} onClick={syncSii}>Syncronizar con el SII <FaSyncAlt /></Button>
               ) : !config.is_syncronized && (!config.rut_legal_representative || !config.clave_sii || !config.clave_login_sii) ? (
-                <p className="alert alert-danger text-center"><b>Faltan datos en su configuración para poder sincronizar con el SII</b></p>
+                <p className="alert alert-danger text-center"><b>Modifique la configuración general y agregue los datos del representante legal para sincronizar con el SII</b></p>
               ) : config.is_syncronized && (config.rut_legal_representative && config.clave_sii && config.clave_login_sii) ? (
                 <p className="alert alert-success text-center"><b>Cuenta Sincronizada con el SII <FaCheck /></b></p>
               ) : ''}

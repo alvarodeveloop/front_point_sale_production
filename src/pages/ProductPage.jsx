@@ -109,7 +109,7 @@ const ProductPage = (props) => {
             Cell: props1 => {
               const id = props1.cell.row.original.id
               return(
-                <DropdownButton size="sm" id={'drop'+props1.cell.row.original.id} title="Seleccione"  block="true">
+                <DropdownButton size="sm" id={'drop'+props1.cell.row.original.id} title="Seleccione" drop="left"  block="true">
                   <Dropdown.Item onClick={() => seeAllInformation(props1.cell.row.original)}>Ver Detalle</Dropdown.Item>
                   <Dropdown.Item onClick={() => modifyRegister(id)}>Modificar</Dropdown.Item>
                   <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
