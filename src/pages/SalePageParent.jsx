@@ -41,6 +41,8 @@ import InputFieldRef from 'components/input/InputComponentRef'
 import { MdSend } from 'react-icons/md'
 import {FaPlusCircle} from 'react-icons/fa'
 import { showPriceWithDecimals } from 'utils/functions'
+import LoadingComponent from 'components/LoadingComponent';
+
 let count = 0
 const SalePageParent = (props) => {
 
@@ -56,7 +58,7 @@ const SalePageParent = (props) => {
     amount_cash_default: 0
   })
   const [validated,setValidated] = useState(false)
-
+  const [displayLoading, setDisplayLoading] = useState(true)
   const inputRef = useRef(null)
 
   useEffect(() => {
@@ -70,15 +72,14 @@ const SalePageParent = (props) => {
 
   useEffect(() => {
     layoutHelpers.toggleCollapsed()
-    if(props.configGeneral.is_syncronized){
-      
+    if(!props.configGeneral.is_syncronized){
+      fetchConfig() 
     }else{
       toast.error("Debe sincronizar su cuenta en la configuración general para utilizar este módulo")
       setTimeout(() => {
         props.history.replace("/config/config_general"); 
       },4000)
     }
-    fetchConfig()
     return () => {
       props.resetCart()
       layoutHelpers.toggleCollapsed()
@@ -87,6 +88,9 @@ const SalePageParent = (props) => {
   },[])
 
   const fetchConfig = () => {
+    if(!displayLoading){
+      setDisplayLoading(true);
+    }
     let promises = [
       axios.get(API_URL+'config_store'),
       axios.get(API_URL+'config_general'),
@@ -119,6 +123,7 @@ const SalePageParent = (props) => {
         }else{
           setShowCashRegister(false)
         }
+        setDisplayLoading(false);
       }else{
         if(!result[1].data){
           toast.error('Error la empresa no ha hecho la configuración general')
@@ -132,6 +137,9 @@ const SalePageParent = (props) => {
           }, 2000);
         }
       }
+    }).catch(err => {
+      setDisplayLoading(false);
+      props.tokenExpired(err);
     })
   }
 
@@ -241,6 +249,10 @@ const SalePageParent = (props) => {
     props.history.replace('/cashRegister')
   }
 
+  if(displayLoading){
+    return (<LoadingComponent />)
+  }
+  
   return (
     <React.Fragment>
       {showCashRegister ? (

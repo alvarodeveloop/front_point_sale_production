@@ -321,6 +321,7 @@ SaleSecondPartPage.propTypes = {
   showIndexCart: PropTypes.func.isRequired,
   resetDiscountRecharge: PropTypes.func.isRequired,
   handleResetTotal: PropTypes.func.isRequired,
+  removeProduct : PropTypes.func,
 }
 
 export default SaleSecondPartPage

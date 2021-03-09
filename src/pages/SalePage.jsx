@@ -28,6 +28,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { MdPersonAdd } from 'react-icons/md';
 import { AiOutlineQrcode, AiFillTag, AiOutlineBarcode } from "react-icons/ai";
 import QuaggaScanner from 'components/QuaggaScanner'
+import LoadingComponent from 'components/LoadingComponent';
 
 let count = 0;
 const SalePage = (props) => {
@@ -47,6 +48,7 @@ const SalePage = (props) => {
   const [resetValueClient,setResetValueClient] = useState(false)
   const [showList,setShowList] = useState(false)
   const [isEanScaner, setIsEanScaner] = useState(false)
+  const [displayLoading, setDisplayLoading] = useState(true)
 
   count++;
 
@@ -73,7 +75,9 @@ const SalePage = (props) => {
 
   const fetchData = async (isBeggining = false) => {
     let promises = [];
-
+    if(!displayLoading){
+      setDisplayLoading(true);
+    }
     if(!isBeggining){
       promises.push(axios.get(API_URL+'client'));
     }else{
@@ -94,7 +98,9 @@ const SalePage = (props) => {
         setProductsBackup(results[2].data);
         setListProducts(results[3].data);
       }
+      setDisplayLoading(false)
     } catch (error) {
+      setDisplayLoading(false)
       if(error.response){
         toast.error(error.response.data.message);
       }else{
@@ -266,23 +272,29 @@ const SalePage = (props) => {
   }
 
   const searchByCategory = category => {
+    setDisplayLoading(true);
     if(category){
       let listP = document.getElementById("select_list_product").value;
       axios.get(API_URL+'productByCategory/'+category+"/"+listP).then(result => {
-        setProducts(result.data)
-        setProductsBackup(result.data)
+        setProducts(result.data);
+        setProductsBackup(result.data);
+        setDisplayLoading(false);
       }).catch(err => {
+        setDisplayLoading(false);
         props.tokenExpired(err)
       })
     }
   }
 
   const listProductHandler = (e) => {
+    setDisplayLoading(true);
     axios.get(API_URL+'productByCategory/todos/'+e.target.value).then(results => {
       setProductsAll(results.data);
       setProducts(results.data);
       setProductsBackup(results.data);
+      setDisplayLoading(false);
     }).catch(err => {
+      setDisplayLoading(false);
       console.log(err);
       if(err.response){
         toast.error(err.response.data.message);
@@ -450,25 +462,29 @@ const SalePage = (props) => {
               </Col>
             </Row>
             <hr/>
-            <Row>
-              <Col sm={12} md={12} lg={12} style={{overflow:'auto' , height:'100%', maxHeight:'520px'}}>
-                {showList ? (
-                  <TableProductComponent data={products} addToCart={handleAddToCart} configStore={props.configStore} config={props.config} />
-                ) : (
-                  <Row style={{ overflowY: 'auto'}}>
-                    {products.map((v,i) => (
-                      <Col sm={3} md={3} lg={3} xs={3} key={i} onClick={() => handleAddToCart(v)} className="separatedBlockProducts">
-                        <SquareProductComponent
-                          product={v}
-                          config={props.config}
-                          configStore={props.configStore}
-                          />
-                      </Col>
-                    ))}
-                  </Row>
-                )}
-              </Col>
-            </Row>
+            {displayLoading ? (
+              <LoadingComponent />
+            ) : (
+              <Row>
+                <Col sm={12} md={12} lg={12} style={{overflow:'auto' , height:'100%', maxHeight:'520px'}}>
+                  {showList ? (
+                    <TableProductComponent data={products} addToCart={handleAddToCart} configStore={props.configStore} config={props.config} />
+                  ) : (
+                    <Row style={{ overflowY: 'auto'}}>
+                      {products.map((v,i) => (
+                        <Col sm={3} md={3} lg={3} xs={3} key={i} onClick={() => handleAddToCart(v)} className="separatedBlockProducts">
+                          <SquareProductComponent
+                            product={v}
+                            config={props.config}
+                            configStore={props.configStore}
+                            />
+                        </Col>
+                      ))}
+                    </Row>
+                  )}
+                </Col>
+              </Row>
+            )}
           </Col>
         ) : (
           <Col sm={8} md={8} lg={8} style={{ border: '1px solid white', borderRadius:'15px',boxShadow:'10px 5px 5px lightgray'}}>
@@ -487,34 +503,33 @@ const SalePage = (props) => {
           </Col>
         )
       }
-
     </Row>
-      <FormClientModal
-        isShow={isShowModalClient}
-        onHide={() => handleOnHideModals('client')}
-      />
-      <ScanEanModal
-        show={isShowModalEan}
-        onHide={() => handleOnHideModals('ean')}
-        catchCode={catchBarCodeEan}
-      />
-      <ScanQrModal
-        show={isShowModalQr}
-        onHide={() => handleOnHideModals('qr')}
-        catchQrCode={catchQr}
-      />
-      <FormProductModal
-        show={isShowModalProduct}
-        onHide={() => handleOnHideModals('product')}
-        handleSubmitProduct={handleRegisterNewProduct}
-        {...props}
-      />
-      <ModalProductsNotRegistered
-        isShow={isShowModaNotRegistered}
-        onHide={() => handleOnHideModals('not_registered')}
-        handleAddProduct={handleAddProductNotRegistered}
-      />
-    </Container>
+    <FormClientModal
+      isShow={isShowModalClient}
+      onHide={() => handleOnHideModals('client')}
+    />
+    <ScanEanModal
+      show={isShowModalEan}
+      onHide={() => handleOnHideModals('ean')}
+      catchCode={catchBarCodeEan}
+    />
+    <ScanQrModal
+      show={isShowModalQr}
+      onHide={() => handleOnHideModals('qr')}
+      catchQrCode={catchQr}
+    />
+    <FormProductModal
+      show={isShowModalProduct}
+      onHide={() => handleOnHideModals('product')}
+      handleSubmitProduct={handleRegisterNewProduct}
+      {...props}
+    />
+    <ModalProductsNotRegistered
+      isShow={isShowModaNotRegistered}
+      onHide={() => handleOnHideModals('not_registered')}
+      handleAddProduct={handleAddProductNotRegistered}
+    />
+  </Container>
   )
 
 }

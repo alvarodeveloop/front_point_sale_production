@@ -77,7 +77,8 @@ export const removeProduct = data => {
     return {
       type: 'removeProduct',
       product: data.product,
-      typeProduct: data.typeProduct
+      typeProduct: data.typeProduct,
+      configStore : data.configStore
     }
 }
 

@@ -140,7 +140,7 @@ const HistorySalePage = (props) => {
           Header: 'Acciones',
           Cell: props1 =>{
             return(
-              <DropdownButton size="sm" id={'drop'+props1.cell.row.original.id} title="Seleccione"  block="true">
+              <DropdownButton size="sm" id={'drop'+props1.cell.row.original.id} title="Seleccione" drop="left" block="true">
                 {props1.cell.row.original.status === 2 ? (
                   <React.Fragment>
                     <Dropdown.Item onClick={() => solvedSale(props1.cell.row.original)}>Pagar Pedido</Dropdown.Item>

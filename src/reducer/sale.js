@@ -298,6 +298,7 @@ export default (state = initialState, action = {}) => {
       break;
 
       case 'removeProduct':
+        console.log("aqui pasa esto",action);
         let stateRemove = Object.assign({},state.sale)
         let idCartRemove = stateRemove.idCartSelected
         let cartStoreRemove = stateRemove.rooms[idCartRemove].carts

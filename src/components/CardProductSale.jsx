@@ -109,7 +109,8 @@ const CardProductSale = (props) => {
   const removeProduct = () => {
     props.removeProduct({
       product: Object.assign({},props.product),
-      typeProduct: props.isRegistered ? 'registered' : 'not_registered'
+      typeProduct: props.isRegistered ? 'registered' : 'not_registered',
+      configStore : props.configStore,
     })
   }
 
