@@ -24,6 +24,7 @@ const ModalStockInventary = (props) => {
     quantity: '',
     id_inventary: '',
     id_provider: [],
+    type_operation: "suma",
   })
   const [validate, setValidate] = useState(false)
   const [provider, setProvider] = useState([])
@@ -35,9 +36,7 @@ const ModalStockInventary = (props) => {
   },[])
 
   useEffect(() => {
-    setInventary({
-      id_inventary: props.product.id,
-    })
+    setInventary( currentData => Object.assign({},currentData,{id_inventary: props.product.id}) )
   },[props.product])
 
   const handleChange = e => {
@@ -125,17 +124,17 @@ const ModalStockInventary = (props) => {
                   handleChange={handleChange}
                   />
                   <InputField
-                  type='number'
-                  step="any"
-                  label='Costo'
-                  name='cost'
-                  required={true}
-                  messageErrors={[
-                  'Requerido*'
-                  ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
-                  value={inventary.cost}
-                  handleChange={handleChange}
+                    type='number'
+                    step="any"
+                    label='Costo'
+                    name='cost'
+                    required={ inventary.type_operation === "resta" ? false : true }
+                    messageErrors={[
+                    'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={inventary.cost}
+                    handleChange={handleChange}
                   />
                 </Row>
                 <Row>
@@ -149,7 +148,23 @@ const ModalStockInventary = (props) => {
                         return {value: v.id, label: v.social_razon}
                       })}
                     />
-                </Form.Group>
+                  </Form.Group>
+                  <InputField
+                    type='select'
+                    label='Tipo de Operación'
+                    name='type_operation'
+                    required={true}
+                    messageErrors={[
+                    'Requerido*'
+                    ]}
+                    cols='col-md-4 col-lg-4 col-sm-4'
+                    value={inventary.type_operation}
+                    handleChange={handleChange}
+                  >
+                      <option value="">--Seleccione--</option>
+                      <option value="suma">Ingresar</option>
+                      <option value="resta">Sacar</option>
+                  </InputField>
                 </Row>
               </Col>
             </Row>

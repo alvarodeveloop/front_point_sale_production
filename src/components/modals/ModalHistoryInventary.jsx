@@ -55,9 +55,13 @@ const ModalHistoryInventary = (props) => {
         Cell: props1 => {
           const {original} = props1.cell.row
           return (
-            <Badge variant="danger" className="font-badge">{formatNumber(original.cost,2,',','.')}</Badge>
+            <Badge variant="danger" className="font-badge">{props.configGeneral ? props.configGeneral.simbolo_moneda : ""}{formatNumber(original.cost,2,',','.')}</Badge>
           )
         }
+      },
+      {
+        Header: 'Tipo Operación',
+        accessor: props1 => props1.type_operation === "suma" ? ["Ingreso"] : ["Egreso"],
       },
       {
         Header: 'Proveedores',
@@ -323,6 +327,7 @@ ModalHistoryInventary.propTypes = {
   onHide : PropTypes.func.isRequired,
   handleSubmitStock: PropTypes.func.isRequired,
   providers: PropTypes.array.isRequired,
+  configGeneral: PropTypes.object,
 }
 
 export default ModalHistoryInventary

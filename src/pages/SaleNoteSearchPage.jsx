@@ -122,20 +122,21 @@ const SaleNoteSearchPage = props => {
           Header: 'Total Productos',
           accessor: 'total_product',
           Cell: props1 => {
+            const original = props1.cell.row.original;
             return (
               <OverlayTrigger placement={'left'} overlay={
-                <Tooltip id={"tooltip-total_pagar"+props1.cell.row.original.id}>
+                <Tooltip id={"tooltip-total_pagar"+original.id}>
                   <ul className="list-group">
-                    {props1.cell.row.original.products.map((v,i) => (
+                    {original.products.map((v,i) => (
                       <li className="list-group-item" key={i}>
                         <b>Producto</b>: {v.name_product}<br/>
-                        <b>Precio</b> : {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,v.price)}<br/>
+                        <b>Precio</b> : {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,original.total_with_iva ? v.price : v.total)}<br/>
                         <b>Cantidad</b>: {v.quantity}</li>
                     ))}
                   </ul>
                 </Tooltip>}>
                   <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                    {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_product)}
+                    {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,original.total_product)}
                   </Badge>
               </OverlayTrigger>
             )
@@ -577,7 +578,7 @@ const SaleNoteSearchPage = props => {
                           <td>{v.name_product}</td>
                           <td>{v.description}</td>
                           <td>{v.quantity}</td>
-                          <td>{props.configGeneral.simbolo_moneda}{formatNumber(v.price,2,',','.')}</td>
+                          <td>{props.configGeneral.simbolo_moneda}{ formatNumber(saleNoteDetail.total_with_iva ? v.price : v.total,2,',','.')}</td>
                           <td>{v.discount}</td>
                           <td>{displayMehotdSale(v.method_sale)}</td>
                           <td>{v.is_neto ? 'Neto' : "Iva"}</td>

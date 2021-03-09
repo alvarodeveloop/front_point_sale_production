@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 import {
   Container,
@@ -7,10 +7,11 @@ import {
   Button,
   DropdownButton,
   Dropdown,
-  Badge
+  Badge,
+  Modal,
+  Form
 } from 'react-bootstrap'
 import axios from 'axios'
-import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
 import ModalStockInventary from 'components/modals/ModalStockInventary'
@@ -19,6 +20,8 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { connect } from 'react-redux'
 import LoadingComponent from 'components/LoadingComponent'
+import InputFieldRef from 'components/input/InputComponentRef'
+import { toast } from 'react-toastify'
 
 let inventaryColumns = []
 
@@ -31,6 +34,11 @@ const InventaryTab = (props) => {
   const [costs, setCosts] = useState([])
   const [providers, setProviders] = useState([])
   const [displayLoading, setDisplayLoading] = useState(true)
+  const [displayLoadingModal, setDisplayLoadingModal] = useState(false);
+  const [isOpenModalJustify, setIsOpenModalJustify] = useState(false)
+  const [validated, setValidated] = useState(false);
+
+  const inputRef = useRef(null);
 
   useEffect(() => {
     fetchData()
@@ -76,7 +84,7 @@ const InventaryTab = (props) => {
             accessor: 'minimun_stock',
             Cell: props1 => {
               const stock = props1.cell.row.original.minimun_stock
-              return (<Badge variant="danger" className="font_badge">{stock}</Badge>)
+              return (<Badge variant="danger" className="font-badge">{stock}</Badge>)
             }
           },
           {
@@ -84,7 +92,7 @@ const InventaryTab = (props) => {
             accessor: 'stock',
             Cell: props1 => {
               const stock = props1.cell.row.original.stock
-              return (<Badge variant="danger" className="font_badge">{stock}</Badge>)
+              return (<Badge variant="danger" className="font-badge">{stock}</Badge>)
             }
           },
           {
@@ -113,7 +121,8 @@ const InventaryTab = (props) => {
               const id = props1.cell.row.original.id
               return(
                 <DropdownButton size="sm" id={'drop'+id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => handleUpdateStock(props1.cell.row.original) }>Agregar Stock</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleUpdateStock(props1.cell.row.original) }>Entrada y Salida de Stock</Dropdown.Item>
+                  <Dropdown.Item onClick={() => justifyStockHandler(props1.cell.row.original) }>Ajustar Inventario</Dropdown.Item>
                   <Dropdown.Item onClick={() => showHistoryModal(props1.cell.row.original) }>Ver Historial</Dropdown.Item>
                 </DropdownButton>
               )
@@ -131,6 +140,9 @@ const InventaryTab = (props) => {
   }
 
   const fetchData = () => {
+    if(!displayLoading){
+      setDisplayLoading(true);
+    }
     let promises = [
       axios.get(API_URL+'provider'),
       axios.get(API_URL+'inventary')
@@ -165,6 +177,45 @@ const InventaryTab = (props) => {
     fetchData()
   }
 
+  const justifyStockHandler = (data = false) => {
+    setIsOpenModalJustify(!isOpenModalJustify);
+    if(data){
+      console.log(data);
+      setProduct(data);
+      setTimeout(() => {
+        if(inputRef.current){
+          inputRef.current.focus()
+        }
+      },500)
+    }
+  }
+
+  const onSubmitJustifyStockHandler = (e) => {
+    const form = e.currentTarget;
+    e.preventDefault();
+    if (form.checkValidity() === false) {
+      e.stopPropagation();
+      setValidated(true);
+      return
+    }
+
+    let stock = document.getElementById("stockJustify").value;
+    let objectPut = Object.assign({},product,{
+      stock
+    })
+    setDisplayLoadingModal(true)
+    axios.put(API_URL+"inventary_justify/"+product.id,objectPut).then(result => {
+      toast.success("Stock ajustado con éxito");
+      setDisplayLoadingModal(false);
+      justifyStockHandler();
+      setProduct({});
+      fetchData();
+    }).catch(err => {
+      setDisplayLoadingModal(false)
+      props.tokenExpired(err)
+    })
+  }
+
   return (
     <> 
       {displayLoading ? (
@@ -188,6 +239,51 @@ const InventaryTab = (props) => {
               <Table columns={ inventaryColumns } data={ inventary } />
             </Col>
           </Row>
+          <Modal
+            show={isOpenModalJustify}
+            onHide={justifyStockHandler}
+            size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header closeButton className="header_dark">
+              <Modal.Title id="contained-modal-title-vcenter">
+                Ajustar el Stock del Producto {Object.keys(product).length ? product.products.name_product : ""}
+              </Modal.Title>
+            </Modal.Header>
+            <Form onSubmit={onSubmitJustifyStockHandler} noValidate validated={validated}>
+              {displayLoadingModal ? (
+                <Modal.Body>
+                  <LoadingComponent />
+                </Modal.Body>
+              ) : (
+                <Modal.Body>
+                  <Row className="justify-content-center">
+                    <InputFieldRef
+                      ref={inputRef}
+                      type="number"
+                      required={true}
+                      name="stockJustify"
+                      handleChange={() => {}}
+                      label="Stock"
+                      messageErrors={[
+                        "Requerido"
+                      ]}
+                      cols="col-sm-10 col-md-8 col-lg-8 col-xl-8 col-xs-12"
+                    />
+                  </Row>
+                  <Row className="justify-content-center">
+                    <Col sm={6} md={4} lg={4} xl={4} xs={12}>
+                        <Button variant="danger" block={true} type="submit" size="sm">Enviar</Button>
+                    </Col>
+                  </Row>
+                </Modal.Body>
+              )}
+            </Form>
+            <Modal.Footer>
+              <Button variant="secondary" type="button" onClick={justifyStockHandler}>Cerrar</Button>
+            </Modal.Footer>
+          </Modal>
           <ModalStockInventary
             isShow={isOpenStock}
             onHide={handleOnHideModalStock}
@@ -202,6 +298,7 @@ const InventaryTab = (props) => {
             fetchData={fetchData}
             handleSubmitStock={handleSubmit}
             providers={providers}
+            configGeneral={props.configGeneral}
           />
         </Container>
       )}
@@ -213,12 +310,14 @@ function mapStateToProps(state){
   return {
     id_branch_office : state.enterpriseSucursal.id_branch_office,
     id_enterprise : state.enterpriseSucursal.id_enterprise,
+    configGeneral : state.configs.config
   }
 }
 
 InventaryTab.propTypes ={
   id_branch_office: PropTypes.string.isRequired,
   id_enterprise : PropTypes.string.isRequired,
+  configGeneral: PropTypes.object,
 }
 
 export default connect(mapStateToProps,{})(InventaryTab)

@@ -69,7 +69,7 @@ const ProductPage = (props) => {
             accessor: 'price',
             Cell: props1 => {
               const price = props1.cell.row.original.price
-              return ( <Badge variant="danger">{formatNumber(price,2,',','.')}</Badge>)
+              return ( <Badge variant="danger" className="font-badge">{props.configGeneral ? props.configGeneral.simbolo_moneda : ""}{formatNumber(price,2,',','.')}</Badge>)
             }
           },
           {
@@ -345,12 +345,14 @@ function mapStateToProps(state){
   return {
     id_branch_office : state.enterpriseSucursal.id_branch_office,
     id_enterprise : state.enterpriseSucursal.id_enterprise,
+    configGeneral : state.configs.config,
   }
 }
 
 ProductPage.propTypes ={
   id_branch_office: PropTypes.string.isRequired,
   id_enterprise : PropTypes.string.isRequired,
+  configGeneral : PropTypes.object,
 }
 
 export default connect(mapStateToProps,{})(ProductPage)

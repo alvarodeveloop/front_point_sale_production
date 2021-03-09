@@ -106,7 +106,6 @@ let cotizacionColumns = null
 const CotizacionSearchPage = props => {
 
   const [displayLoading, setDisplayLoading] = useState(true)
-  const [displayLoadingModal, setDisplayLoadingModal] = useState(false)
   const [cotizacionData, setCotizacionData] = useState([])
   const [cotizationDetail, setCotizationDetail] = useState({})
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false)
@@ -201,14 +200,15 @@ const CotizacionSearchPage = props => {
           Header: 'Total Productos',
           accessor: 'total_product',
           Cell: props1 => {
+            const original = props1.cell.row.original;
             return (
               <OverlayTrigger placement={'left'} overlay={
-                <Tooltip id={"tooltip-total_pagar"+props1.cell.row.original.id}>
+                <Tooltip id={"tooltip-total_pagar"+original.id}>
                   <ul className="list-group">
-                    {props1.cell.row.original.products.map((v,i) => (
+                    {original.products.map((v,i) => (
                       <li className="list-group-item" key={i}>
                         <b>Producto</b>: {v.name_product}<br/>
-                        <b>Precio</b> : {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,v.price)}<br/>
+                        <b>Precio</b> : {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,original.total_with_iva ? v.price : v.total)}<br/>
                         <b>Cantidad</b>: {v.quantity}<br/>
                         <b>Status</b>: {v.status == 1 ? 'Pendiente' : v.status == 2 ? 'Pagado' : 'Anulado'}
                       </li>
@@ -216,7 +216,7 @@ const CotizacionSearchPage = props => {
                   </ul>
                 </Tooltip>}>
                   <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                    {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_product)}
+                    {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,original.total_product)}
                   </Badge>
               </OverlayTrigger>
             )
@@ -463,12 +463,8 @@ const CotizacionSearchPage = props => {
         setRedraw(true)
       }, 1000);
       setDisplayLoading(false)
-      if(displayLoadingModal){
-        setDisplayLoadingModal(false)
-      }
     }).catch(err => {
       setDisplayLoading(false)
-      setDisplayLoadingModal(false)
       props.tokenExpired(err)
     })
   }
@@ -484,14 +480,11 @@ const CotizacionSearchPage = props => {
   const printCotizacion = id => {
     toast.info('Buscando documento, espere por favor...')
     setDisplayLoading(true)
-    setDisplayLoadingModal(true)
     axios.get(API_URL+'cotizacion_print/'+id+'/0').then(result => {
       window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
       setDisplayLoading(false)
-      setDisplayLoadingModal(false)
     }).catch(err => {
       setDisplayLoading(false)
-      setDisplayLoadingModal(false)
       props.tokenExpired(err)
     })
   }
@@ -499,14 +492,11 @@ const CotizacionSearchPage = props => {
   const printCotizacionNew = id => {
     toast.info('Generando documento, espere por favor...')
     setDisplayLoading(true)
-    setDisplayLoadingModal(true)
     axios.get(API_URL+'cotizacion_print/'+id+'/0/1').then(result => {
       window.open(API_URL+'documents/cotizacion/files_pdf/'+result.data.name)
       setDisplayLoading(false)
-      setDisplayLoadingModal(false)
     }).catch(err => {
       setDisplayLoading(false)
-      setDisplayLoadingModal(false)
       props.tokenExpired(err)
     })
   }
@@ -516,7 +506,6 @@ const CotizacionSearchPage = props => {
      status
    }
    toast.info('Cambiando estado, espere por favor...')
-   setDisplayLoadingModal(true)
    setDisplayLoading(true)
    setTimeout(() => {
       axios.put(API_URL+'cotizacion_status/'+id,objectStatus).then(result => {
@@ -524,11 +513,9 @@ const CotizacionSearchPage = props => {
        if(Object.keys(cotizationAction).length){
          setCotizationAction({...cotizationAction, status})
        }
-       setDisplayLoadingModal(false)
        fetchData()
       }).catch(err => {
        setDisplayLoading(false)
-       setDisplayLoadingModal(false)
        props.tokenExpired(err)
       })
    },3000)
@@ -561,7 +548,6 @@ const CotizacionSearchPage = props => {
 
   const confirmAnulateCotization = (id,status) => {
     setDisplayLoading(true)
-    setDisplayLoadingModal(true)
     axios.delete(API_URL+'cotizacion/'+id).then(result => {
       if(status >= 1 && status <= 2){
         toast.success('Cotización Anulada con éxito')
@@ -592,12 +578,11 @@ const CotizacionSearchPage = props => {
           }
         }
         toast.success('Documento anulado con éxito')
-        setDisplayLoadingModal(false)
+        setDisplayLoading(false)
       }
       fetchData()
      }).catch(err => {
       setDisplayLoading(false)
-      setDisplayLoadingModal(false)
        props.tokenExpired(err)
      })
   }
@@ -618,6 +603,7 @@ const CotizacionSearchPage = props => {
   }
 
   const seeDetailCotization = data => {
+    console.log(data,"Aqui la data de la cotizacion");
     setCotizationDetail(data)
     handleModalDetail()
   }
@@ -964,12 +950,12 @@ const CotizacionSearchPage = props => {
                   {Object.keys(cotizationDetail).length > 0 ? (
                     <React.Fragment>
                       {cotizationDetail.products.map((v,i) => (
-                        <tr>
+                        <tr key={i}>
                           <td>{v.category}</td>
                           <td>{v.name_product}</td>
                           <td>{v.description}</td>
                           <td>{v.quantity}</td>
-                          <td>{props.configGeneral.simbolo_moneda}{formatNumber(v.price,2,',','.')}</td>
+                          <td>{props.configGeneral.simbolo_moneda}{ formatNumber(cotizationDetail.total_with_iva ? v.price : v.total,2,',','.')}</td>
                           <td>{v.discount}</td>
                           <td>{displayMehotdSale(v.method_sale)}</td>
                           <td>{v.is_neto ? 'Neto' : "Iva"}</td>
@@ -1102,7 +1088,7 @@ const CotizacionSearchPage = props => {
         goToNoteSale={goToNoteSale}
         goToBillOfSale={goToBillOfSale}
         goToGuideDispatch={goToGuideDispatch}
-        displayLoadingModal={displayLoadingModal}
+        displayLoadingModal={displayLoading}
       />
     </Container>
   )

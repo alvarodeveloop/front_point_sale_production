@@ -86,7 +86,7 @@ const TableProductsCotization = (props) => {
             <tbody>
               {props.detailProducts.map((v,i) => (
                 <tr key={i}>
-                  <td>
+                  <td width="5%">
                     <br/>
                     {i + 1}
                   </td>
@@ -108,7 +108,7 @@ const TableProductsCotization = (props) => {
                         />
                     </Row>
                   </td>
-                  <td>
+                  <td width="15%">
                     <Row>
                       <InputField
                         className="letras_grandes"
@@ -120,10 +120,12 @@ const TableProductsCotization = (props) => {
                         messageErrors={[
                           'Requerido*'
                         ]}
+                        className="text-center"
                         cols='col-md-12 col-lg-12 col-sm-12'
-                        value={props.detailProducts[i].name_product}
+                        value={props.detailProducts[i].name_product.substring(0,26)}
+                        rows={3}
                         handleChange={(e) => {onChangeTableProduct(e,i)}}
-                        />
+                      />
                     </Row>
                   </td>
                   <td>
@@ -139,7 +141,7 @@ const TableProductsCotization = (props) => {
 
                         ]}
                         cols='col-md-12 col-lg-12 col-sm-12'
-                        value={props.detailProducts[i].description}
+                        value={props.detailProducts[i].description.substring(0,250)}
                         handleChange={(e) => {onChangeTableProduct(e,i)}}
                         />
                     </Row>
