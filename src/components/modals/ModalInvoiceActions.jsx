@@ -75,8 +75,7 @@ const ModalInvoiceActions = (props) => {
                 </Row>
               )}
               <br/>
-              {props.cotization.status != 2 ? (
-                <Row className="justify-content-center">
+               <Row className="justify-content-center">
                   <Col sm={12} md={12} lg={12}>
                     <h5 className="title_principal">Anular Documento</h5>
                     <hr/>
@@ -85,7 +84,6 @@ const ModalInvoiceActions = (props) => {
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.anulateInvoice(props.cotization)} block={true}>Anular Documento <FaBan /></Button>
                   </Col>
                 </Row>
-              ) : ''}
             </React.Fragment>
           ) : (
             <React.Fragment>

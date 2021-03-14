@@ -296,7 +296,7 @@ const InvoiceSearchPage = props => {
         Cell: props1 => {
           const original = props1.cell.row.original
           if(original.status == 1){
-            return (<Badge variant="secondary" className="font-badge">Facturada</Badge>)
+            return (<Badge variant="secondary" className="font-badge">Generada</Badge>)
           }
         }
       },

@@ -13,7 +13,6 @@ import {
 } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
-import { userColumns } from 'utils/columns'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 
@@ -21,6 +20,7 @@ import 'styles/pages/users.css'
 import {connect} from 'react-redux'
 import LoadingComponent from 'components/LoadingComponent'
 
+let userColumns = [];
 
 const UserListPage = (props) => {
 
@@ -32,24 +32,32 @@ const UserListPage = (props) => {
   },[props.id_branch_office])
 
   useMemo(() => {
-
-    if(userColumns.length > 3){
-      userColumns.pop()
-    }
-
-    userColumns.push({
-      Header: 'Acciones',
-      Cell: props => {
-        const id = props.cell.row.original.id
-        return(
-          <DropdownButton size="sm" id={'drop'+props.cell.row.original.id} title="Seleccione"  block="true">
-            <Dropdown.Item onClick={() => modifyRegister(id)}>Modificar</Dropdown.Item>
-            <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
-          </DropdownButton>
-        )
+    userColumns = [
+      {
+        Header: 'Email',
+        accessor: 'email',
+      },
+      {
+        Header: 'Name',
+        accessor: 'name',
+      },
+      {
+        Header: 'Rol',
+        accessor: "name_role",
+      },
+      {
+        Header: 'Acciones',
+        Cell: props => {
+          const id = props.cell.row.original.id
+          return(
+            <DropdownButton size="sm" id={'drop'+props.cell.row.original.id} title="Seleccione"  block="true">
+              <Dropdown.Item onClick={() => modifyRegister(id)}>Modificar</Dropdown.Item>
+              <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
+            </DropdownButton>
+          )
+        }
       }
-    })
-
+    ]
   },[])
 
   const deleteRegister = id => {

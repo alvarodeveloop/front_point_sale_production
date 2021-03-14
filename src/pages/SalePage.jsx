@@ -6,7 +6,6 @@ import {
   Col,
   Container,
   Button,
-  Image,
   DropdownButton,
   Dropdown
 } from 'react-bootstrap'
@@ -22,15 +21,16 @@ import FormProductModal from 'components/modals/FormProductModal'
 import ModalProductsNotRegistered from 'components/modals/ModalProductsNotRegistered'
 import AutoCompleteComponent from 'components/AutoCompleteComponent'
 import AutoCompleteClientComponent from 'components/AutoCompleteClientComponent'
-
+import InputField from 'components/input/InputComponent';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { MdPersonAdd } from 'react-icons/md';
 import { AiOutlineQrcode, AiFillTag, AiOutlineBarcode } from "react-icons/ai";
-import QuaggaScanner from 'components/QuaggaScanner'
+//import QuaggaScanner from 'components/QuaggaScanner'
 import LoadingComponent from 'components/LoadingComponent';
 
 let count = 0;
+let countEan = 0;
 const SalePage = (props) => {
 
   const [categorys,setCategorys] = useState([])
@@ -67,6 +67,7 @@ const SalePage = (props) => {
 
   const catchBarCodeEan = codeBar => {
     axios.get(API_URL+'productByCodeBar/'+codeBar).then(result => {
+      
       setIsShowModalEan(false)
     }).catch(err => {
      props.tokenExpired(err)
@@ -111,7 +112,10 @@ const SalePage = (props) => {
   }
 
   const catchQr = codeQr => {
-    console.log(codeQr)
+    let idProduct = codeQr.split(",")[1].split(":")[1];
+    let product = productsAll.find(v => v.id == idProduct);
+    handleAddToCart(product);
+    handleOnHideModals("qr");    
   }
 
   const handleAddToCart = data => {
@@ -259,8 +263,12 @@ const SalePage = (props) => {
   }
 
   const handleSelectProduct = data => {
-    let product = productsAll.find(v => v.name_product === data)
-    setProducts([product])
+    let product = productsAll.find(v => v.name_product === data);
+    setProducts([product]);
+  }
+
+  const resetProductsHandler = () => {
+    setProducts(productsBackup);
   }
 
   const handleShowAllCategories = () => {
@@ -303,6 +311,29 @@ const SalePage = (props) => {
         toast.error("Ha ocurrido un error, contacte con soporte");
       }
     })
+  }
+
+  const onChangeEanInputHandler = e => {
+    countEan++;
+    let value = e.target.value;
+    if(countEan < 2 && value){
+      let product = productsAll.find(v => v.code_ean === value);
+      if(product){
+        handleAddToCart(product);
+        countEan = 0;
+        document.getElementById("eanCatchInput").value = "";
+        setIsEanScaner(false);
+      }
+    }
+  }
+
+  const displayEanSectionHandler = () => {
+    if(!isEanScaner){
+      setTimeout(() => {
+        document.getElementById("eanCatchInput").focus();
+      },500)
+    }
+    setIsEanScaner(!isEanScaner);
   }
 
   return (
@@ -357,7 +388,7 @@ const SalePage = (props) => {
               items={productsAll}
               keyName='name_product'
               returnValue={handleSelectProduct}
-              showAllCategories={handleShowAllCategories}
+              showAllCategories={resetProductsHandler}
               titleTooltip="Buscar Producto"
               />
           </Col>
@@ -373,7 +404,7 @@ const SalePage = (props) => {
           </Col>
           <Col sm={3} md={3} lg={3} xs={3}>
             <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled">Buscar Producto por EAN</Tooltip>}>
-              <Button size="sm" size="sm" variant="secondary" block="true" onClick={() => {setIsEanScaner(true) /*handleOpenModals('ean')*/ } }>
+              <Button size="sm" size="sm" variant="secondary" block="true" onClick={displayEanSectionHandler}>
                 <AiOutlineBarcode size='1.3em'/>
               </Button>
             </OverlayTrigger>
@@ -488,18 +519,29 @@ const SalePage = (props) => {
           </Col>
         ) : (
           <Col sm={8} md={8} lg={8} style={{ border: '1px solid white', borderRadius:'15px',boxShadow:'10px 5px 5px lightgray'}}>
-            <Row className="justify-content-center">
-              <Col sm={6} md={6} lg={6}>
-                <Button variant="danger" block={true} type="button" size="sm" onClick={() => { setIsEanScaner(false) } }>Mostrar Productos</Button>
-              </Col>
-            </Row>
-            <br/>
-            <br/>
-            <Row className="justify-content-center">
-              <Col sm={7} md={7} lg={7}>
-                <QuaggaScanner catchCode={catchBarCodeEan}/>
-              </Col>
-            </Row>
+            <div style={{ height: "100%", width: "100%", display : "flex", flexDirection: "column", justifyContent: "center"}}>
+              <Row className="justify-content-center">
+                { /* <QuaggaScanner catchCode={catchBarCodeEan}/> */}
+                <InputField
+                  type="text"
+                  name="eanCatchInput"
+                  readonly={true}
+                  handleChange={onChangeEanInputHandler}
+                  cols="col-md-7 col-sm-7 col-lg-7 col-xs-12 col-xl-7"
+                  messageErrors={[]}
+                />
+              </Row>
+              <Row>
+                <Col>
+                  <p className="text-danger text-center">Escanee el código Ean de su producto con la pistola</p>
+                </Col>
+              </Row>
+              <Row className="justify-content-center">
+                <Col sm={6} md={6} lg={6}>
+                  <Button variant="link" className="text-danger" block={true} type="button" size="sm" onClick={displayEanSectionHandler}>Mostrar Productos</Button>
+                </Col>
+              </Row>
+            </div>
           </Col>
         )
       }
@@ -507,11 +549,6 @@ const SalePage = (props) => {
     <FormClientModal
       isShow={isShowModalClient}
       onHide={() => handleOnHideModals('client')}
-    />
-    <ScanEanModal
-      show={isShowModalEan}
-      onHide={() => handleOnHideModals('ean')}
-      catchCode={catchBarCodeEan}
     />
     <ScanQrModal
       show={isShowModalQr}

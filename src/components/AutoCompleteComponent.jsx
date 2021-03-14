@@ -6,11 +6,11 @@ import 'styles/components/autoComplete.css'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-
+let counter = 0;
 const AutoCompleteComponent = (props) => {
 
   const [value, setValue] = useState('')
-
+  
   return (
     <div style={{width: '100%',position: 'relative', zIndex: '1000'}}>
       <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled">{props.titleTooltip ? props.titleTooltip : ''}</Tooltip>}>
@@ -23,10 +23,14 @@ const AutoCompleteComponent = (props) => {
               return !item[props.keyName].toLowerCase().indexOf(value.toLowerCase())
             } }
 
-            renderItem={ (item, isHighlighted) =>
-              <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} key={item[props.keyName]} >
-                { item[props.keyName] }
-              </div>
+            renderItem={ (item, isHighlighted) =>{
+                counter++;
+                return(
+                  <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} key={item[props.keyName]+"_"+counter} >
+                    { item[props.keyName] }
+                  </div>
+                )
+              }
             }
             value={value}
             onChange={(e) => {

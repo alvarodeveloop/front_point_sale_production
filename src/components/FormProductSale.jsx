@@ -2,7 +2,7 @@ import React, { useMemo, useState,useEffect,useRef } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
 import 'styles/pages/productStyle.css'
-import { FaImage,FaPlusCircle, FaTrash } from "react-icons/fa";
+import { FaImage,FaPlusCircle, FaTrash} from "react-icons/fa";
 import InputField from 'components/input/InputComponent'
 import { toast } from 'react-toastify'
 import { readerImg } from 'utils/functions'
@@ -657,8 +657,13 @@ const FormProductSale = (props) => {
               {
                 !isUpdate ? (
                   <Row className="justify-content-center">
+                    {props.isInventary && (
+                      <Col sm={4} md={4} lg={4}>
+                        <Button variant="danger" size="sm" onClick={onSubmit} block={true}>Guardar <FaPlusCircle /></Button>
+                      </Col>
+                    )}
                     <Col sm={4} md={4} lg={4}>
-                      <Button variant="danger" size="sm" onClick={showInventariSection} block={true}>Datos de Inventario</Button>
+                      <Button variant={props.isInventary ? "secondary" : "danger"} size="sm" onClick={showInventariSection} block={true}>Datos de Inventario</Button>
                     </Col>
                   </Row>
                 ) : (

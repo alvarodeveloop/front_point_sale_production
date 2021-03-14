@@ -165,6 +165,10 @@ export const routes = [
     component: lazy(() => import('./pages/SaleNoteSearchPage'))
   },
   {
+    path: '/sale_note/sale_note_search_by_ref/:ref',
+    component: lazy(() => import('./pages/SaleNoteByRefPage'))
+  },
+  {
     path: '/sale_note/sale_note_create/:id?',
     component: lazy(() => import('./pages/SaleNotePage'))
   },
@@ -185,6 +189,10 @@ export const routes = [
     component: lazy(() => import('./pages/InvoicePage'))
   },
   {
+    path: '/invoice/invoice_search_by_ref/:ref',
+    component: lazy(() => import('./pages/InvoiceByRefPage'))
+  },
+  {
     path: '/invoice/create_invoice',
     component: lazy(() => import('./pages/InvoiceCreatePage'))
   },
@@ -203,6 +211,10 @@ export const routes = [
   {
     path: '/bill/bill_search',
     component: lazy(() => import('./pages/BillSearchPage'))
+  },
+  {
+    path: '/bill/bill_search_by_ref/:ref',
+    component: lazy(() => import('./pages/BillSearchByRefPage'))
   },
   {
     path: '/bill/bill_create',
@@ -227,6 +239,10 @@ export const routes = [
   {
     path: '/guide/guide_search',
     component: lazy(() => import('./pages/GuideDispatchSearchPage'))
+  },
+  {
+    path: '/guide/guide_search_by_ref/:ref',
+    component: lazy(() => import('./pages/GuideDispatchSearchByRefPage'))
   },
   {
     path: '/guide/guide_bond/:id',

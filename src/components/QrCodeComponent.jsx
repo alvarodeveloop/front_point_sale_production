@@ -4,24 +4,21 @@ import{
   Row,
   Col
 } from 'react-bootstrap'
-//simport * as Instascan from 'instascan'
+import QrReader from 'react-qr-scanner'
 import { toast } from 'react-toastify'
 let localStream = null
-
+let find = false;
 const QrCodeComponent = (props) => {
 
   useEffect(() => {
-
-    const videoEl = document.getElementById('preview')
+    const videoEl = document.querySelector('video')
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia
 
     if(navigator.getUserMedia){
       navigator.getUserMedia(
         { video: true },
         stream => {
-          videoEl.srcObject = stream
           localStream = stream
-
         },
         err => toast.error('Error, debe enceder su cámara')
       )
@@ -30,26 +27,41 @@ const QrCodeComponent = (props) => {
     }
 
     return () => {
-      let vid = document.getElementById('preview')
-      vid.pause();
-      vid.src = "";
       if(localStream){
         localStream.getTracks()[0].stop();
-        localStream= null
+        localStream= null;
       }
+      find = false;
     }
   },[])
+  const errorScannerHandler = error =>{
+    console.log(error);
+  }
+
+  const successScanHandler = data => {
+    if(data && !find){
+      find = true;
+      props.catchQrCode(data);
+    }
+  }
 
   return (
     <Row className="align-items-center justify-content-center">
       <Col sm={12} md={12} lg={12} xs={12}>
-        <video id="preview" width="500px" height="300px" autoPlay muted></video>
-        <canvas id="my_canvas" style={{ position:'absolute', top: '0px', left: '120px'}} width="500px" height="300px"></canvas>
-        <div className="line" id="line" style={{visibility: 'hidden'}}></div>
-        <div className="line1" id="line1" style={{visibility: 'hidden'}}></div>
+        <QrReader
+          delay={300}
+          style={{height: 320,width: 400}}
+          onError={errorScannerHandler}
+          onScan={successScanHandler}
+        />
       </Col>
     </Row>
   )
 }
 
+QrCodeComponent.propTypes = {
+  catchQrCode : PropTypes.func,
+}
+
 export default QrCodeComponent
+

@@ -106,17 +106,14 @@ const ModalActionCotization = (props) => {
           ) : props.cotization.status >= 3 && props.cotization.status < 7 ? (
             <React.Fragment>
               <Row>
-                <Col sm={3} md={3} lg={3}>
+                <Col sm={4} md={4} lg={4}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col sm={4} md={4} lg={4}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printCotizacion(props.cotization.id)} block={true}>Imprimir <FaFilePdf /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col sm={4} md={4} lg={4}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printCotizacionNew(props.cotization.id)} block={true}>Imprimir nuevo pdf <FaFilePdf /></Button>
-                </Col>
-                <Col sm={3} md={3} lg={3}>
-                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.anulateCotization(props.cotization.id,props.cotization.status)} block={true}>Anular Documento <FaBan /></Button>
                 </Col>
               </Row>
             </React.Fragment>

@@ -364,13 +364,23 @@ const SaleNoteSearchPage = props => {
           <div className='custom-ui-edit'>
             <h1>¿Esta seguro?</h1>
             <p className="font-alert">¿Desea realmente anular este registro?</p>
+            {datos.bonds.length > 0 && (
+              <button className="button-alert"
+                onClick={() => {
+                  confirmAnulateInvoice(datos.id,true);
+                  onClose();
+                }}
+              >
+                Borrar pagos y anular
+              </button>  
+            )}
             <button className="button-alert"
               onClick={() => {
-                confirmAnulateInvoice(datos.id);
+                confirmAnulateInvoice(datos.id,false);
                 onClose();
               }}
             >
-              Si, Aceptar
+              Anular
             </button>
             <button className="button-alert" onClick={onClose}>No</button>
           </div>
@@ -379,10 +389,13 @@ const SaleNoteSearchPage = props => {
     }); 
   }
 
-  const confirmAnulateInvoice = id => {
+  const confirmAnulateInvoice = (id,type) => {
     toast.info('Anulando nota, esto podría tardar algunos segundos... espere por favor')
     setDisplayLoading(true)
-    axios.put(API_URL+'invoice_status/'+id).then(result => {
+    let objectUpdate = {
+      type
+    }
+    axios.put(API_URL+'invoice_status/'+id,objectUpdate).then(result => {
         toast.success('Nota de venta anulada con éxito')
         setInvoiceAction({...invoiceAction,status: 4})
         fetchData()

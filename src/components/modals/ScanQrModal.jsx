@@ -23,7 +23,7 @@ const ScanQrModal = (props) => {
         </Modal.Header>
         <Modal.Body>
           <div className="d-flex align-items-center justify-content-center">
-            <QrCodeComponent />
+            <QrCodeComponent catchQrCode={props.catchQrCode} />
           </div>
         </Modal.Body>
         <Modal.Footer>

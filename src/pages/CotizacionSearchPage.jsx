@@ -188,7 +188,13 @@ const CotizacionSearchPage = props => {
                 </OverlayTrigger>
               )
             }else if(original.status >= 3 && original.status < 7){
-              return (<Badge variant="primary" className="font-badge">{determinateStatus(original.status)}</Badge>)
+              return (
+                <OverlayTrigger placement={'bottom'} overlay={
+                  <Tooltip id="tooltip-disabled2">Hacer click para ver el documento</Tooltip>}
+                >
+                  <Badge variant="primary" className="font-badge" onClick={() => goToDocument(original)}>{determinateStatus(original.status)}</Badge>
+                </OverlayTrigger>
+              )
             }else if(original.status == 7){
               return (<Badge variant="danger" className="font-badge">Anulada</Badge>)
             }else{
@@ -386,6 +392,18 @@ const CotizacionSearchPage = props => {
       return 'Guía Despacho'
     }else{
       return 'Anulada'
+    }
+  }
+
+  const goToDocument = data => {
+    if(data.status === 3){
+      props.history.push("/invoice/invoice_search_by_ref/"+data.ref);
+    }else if(data.status === 4){
+      props.history.push("/sale_note/sale_note_search_by_ref/"+data.ref);
+    }else if(data.status === 5){
+      props.history.push("/bill/bill_search_by_ref/"+data.ref);
+    }else if(data.status === 6){
+      props.history.push("/guide/guide_search_by_ref/"+data.ref);
     }
   }
 

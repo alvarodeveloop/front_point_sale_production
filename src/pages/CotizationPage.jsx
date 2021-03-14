@@ -442,34 +442,38 @@ const CotizationPage = (props) => {
   const saveCotizacion = type => {
     //
     if(type == 3){
-      setDisplayDataInvoice(2)
-      setRefCotizacion(oldData => {
-        if(oldData.length === 0){
-          return [
-            {
-              ind: 'ind',
-              type_document: 'Hoja Entrada de Servicio',
-              ref_cotizacion: cotizationData.ref,
-              date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-              reason_ref: 'Cotización',
-              type_code: '',
-              id_invoice: ''
-            }
-          ]
-        }else{
-          return oldData
+      if(props.configGeneral.is_syncronized){
+        setDisplayDataInvoice(2)
+        setRefCotizacion(oldData => {
+          if(oldData.length === 0){
+            return [
+              {
+                ind: 'ind',
+                type_document: 'HES',
+                ref_cotizacion: cotizationData.ref,
+                date_ref: moment().tz('America/Santiago').format('YYYY-MM-DD'),
+                reason_ref: 'Cotización',
+                type_code: '',
+                id_invoice: ''
+              }
+            ]
+          }else{
+            return oldData
+          }
+        })
+
+        if(cotizationData.type_effect === true){
+          setCotizationData({...cotizationData, type_invoicing : true})
+        }else if(cotizationData.type_effect === false){
+          setCotizationData({...cotizationData, type_invoicing : false})
         }
-      })
 
-      if(cotizationData.type_effect === true){
-        setCotizationData({...cotizationData, type_invoicing : true})
-      }else if(cotizationData.type_effect === false){
-        setCotizationData({...cotizationData, type_invoicing : false})
+        setTimeout(function () {
+          window.scrollTo(0, 0);
+        }, 500);
+      }else{
+        toast.error("Su cuenta no esta sincronizada con el sii, en configuración general puede sincronizar su cuenta para poder facturar");
       }
-
-      setTimeout(function () {
-        window.scrollTo(0, 0);
-      }, 500);
     }else{
       handleDisplayCotizacionField(3)
     }
@@ -656,7 +660,7 @@ const CotizationPage = (props) => {
                   <br/>
                   <Row className="justify-content-center">
                     <Col sm={4} md={4} lg={4}>
-                      <Button type="button" size="sm" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => saveCotizacion(3)}>{disableButtons ? 'Guardando...' : 'Guardar y Facturar'} <MdPrint /></Button>
+                      <Button type="button" size="sm" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => saveCotizacion(3)}>{disableButtons ? 'Guardando...' : 'Facturar'} <MdPrint /></Button>
                     </Col>
                     <Col sm={4} md={4} lg={4}>
                       <Button type="button" size="sm" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => saveCotizacion(2)}>{disableButtons ? 'Guardando...' : 'Datos de emisor y receptor ( paso 2 )'} <FaUser /></Button>

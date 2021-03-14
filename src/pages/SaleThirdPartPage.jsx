@@ -275,11 +275,9 @@ const SaleThirdPartPage = (props) => {
     let cartSale = Object.assign({},props.sale.rooms[props.sale.idCartSelected],{
       payment,
       status,
-      id_cash_register: JSON.parse(localStorage.getItem('cash_register')).id_cash_register
     })
     setDisplayLoading(true)
     axios.post(API_URL+'sale_by_dispatch',cartSale).then(result => {
-
       toast.success('Proceso Completado')
       clearForm()
       props.removeCart()
@@ -459,90 +457,94 @@ const SaleThirdPartPage = (props) => {
           </Modal.Title>
         </Modal.Header>
         <Form onSubmit={onSubmitDispatch} noValidate validated={validatedDispatch}>
-        <Modal.Body>
-          <Row style={{borderRadius:'15px',boxShadow:'10px 5px 5px lightgray', paddingTop: '20px', paddingBottom: '20px'}}>
-            <Col sm={12} md={12} lg={12}>
-              <Row>
-                <Col sm={4} md={4} lg={4}>
-                  <Button variant="dark" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(1)}>Usar Datos del Cliente <FaUser /></Button>
-                </Col>
-                <Col sm={4} md={4} lg={4}>
-                  <Button variant="dark" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(2)}>Usar datos del cliente pero con otra dirección <FaUser /></Button>
-                </Col>
-                <Col sm={4} md={4} lg={4}>
-                  <Button variant="dark" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(3)}>Ingresar Datos <FaPencilAlt /></Button>
-                </Col>
-              </Row>
-              <hr/>
+        {displayLoading ? (
+          <LoadingComponent />
+        ) : (
+          <Modal.Body>
+            <Row style={{borderRadius:'15px',boxShadow:'10px 5px 5px lightgray', paddingTop: '20px', paddingBottom: '20px'}}>
+              <Col sm={12} md={12} lg={12}>
                 <Row>
-                  <InputField
-                    type="text"
-                    name="address1_dispatch"
-                    required={true}
-                    label="Dirección"
-                    value={payment.address1_dispatch}
-                    handleChange={onChange}
-                    messageErrors={[
-                      'Requerido*'
-                    ]}
-                    cols="col-sm-4 col-md-4 col-sm-4"
-                    readonly={readFields}
-                  />
-                  <InputField
-                    type="number"
-                    name="phone_dispatch"
-                    required={true}
-                    label="Teléfono"
-                    value={payment.phone_dispatch}
-                    handleChange={onChange}
-                    messageErrors={[
-                      'Requerido*'
-                    ]}
-                    cols="col-sm-4 col-md-4 col-sm-4"
-                    readonly={readFields}
-                  />
-                  <InputField
-                    type="text"
-                    name="note_dispatch"
-                    required={true}
-                    label="Nota"
-                    value={payment.note_dispatch}
-                    handleChange={onChange}
-                    messageErrors={[
-                      'Requerido*'
-                    ]}
-                    cols="col-sm-4 col-md-4 col-sm-4"
-                  />
+                  <Col sm={4} md={4} lg={4}>
+                    <Button variant="dark" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(1)}>Usar Datos del Cliente <FaUser /></Button>
+                  </Col>
+                  <Col sm={4} md={4} lg={4}>
+                    <Button variant="dark" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(2)}>Usar datos del cliente pero con otra dirección <FaUser /></Button>
+                  </Col>
+                  <Col sm={4} md={4} lg={4}>
+                    <Button variant="dark" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(3)}>Ingresar Datos <FaPencilAlt /></Button>
+                  </Col>
                 </Row>
-                {!displayAddress ? '' : (
+                <hr/>
                   <Row>
                     <InputField
                       type="text"
-                      name="address2_dispatch"
+                      name="address1_dispatch"
                       required={true}
-                      label="Dirección2"
-                      value={payment.address2_dispatch}
+                      label="Dirección"
+                      value={payment.address1_dispatch}
                       handleChange={onChange}
                       messageErrors={[
                         'Requerido*'
                       ]}
                       cols="col-sm-4 col-md-4 col-sm-4"
-                      />
+                      readonly={readFields}
+                    />
+                    <InputField
+                      type="number"
+                      name="phone_dispatch"
+                      required={true}
+                      label="Teléfono"
+                      value={payment.phone_dispatch}
+                      handleChange={onChange}
+                      messageErrors={[
+                        'Requerido*'
+                      ]}
+                      cols="col-sm-4 col-md-4 col-sm-4"
+                      readonly={readFields}
+                    />
+                    <InputField
+                      type="text"
+                      name="note_dispatch"
+                      required={true}
+                      label="Nota"
+                      value={payment.note_dispatch}
+                      handleChange={onChange}
+                      messageErrors={[
+                        'Requerido*'
+                      ]}
+                      cols="col-sm-4 col-md-4 col-sm-4"
+                    />
                   </Row>
-                )}
-                <br/>
-              </Col>
-            </Row>
-            <br/>
-            <Row className="justify-content-center">
-              <Col sm={4} md={4} lg={4}>
-                <Button variant="danger" size="sm" type="submit" block={true}>Enviar para Guardar</Button>
-              </Col>
-              <Col sm={4} md={4} lg={4}>
-                <Button variant="secondary" size="sm" onClick={handleOnHideModalDispatch} block={true} type="button">Cerrar</Button>
-              </Col>
-            </Row>
-        </Modal.Body>
+                  {!displayAddress ? '' : (
+                    <Row>
+                      <InputField
+                        type="text"
+                        name="address2_dispatch"
+                        required={true}
+                        label="Dirección2"
+                        value={payment.address2_dispatch}
+                        handleChange={onChange}
+                        messageErrors={[
+                          'Requerido*'
+                        ]}
+                        cols="col-sm-4 col-md-4 col-sm-4"
+                        />
+                    </Row>
+                  )}
+                  <br/>
+                </Col>
+              </Row>
+              <br/>
+              <Row className="justify-content-center">
+                <Col sm={4} md={4} lg={4}>
+                  <Button variant="danger" size="sm" type="submit" block={true}>Enviar para Guardar</Button>
+                </Col>
+                <Col sm={4} md={4} lg={4}>
+                  <Button variant="secondary" size="sm" onClick={handleOnHideModalDispatch} block={true} type="button">Cerrar</Button>
+                </Col>
+              </Row>
+          </Modal.Body>
+        )}
         </Form>
       </Modal>
     </Container>

@@ -206,6 +206,14 @@ const BillBondsPage = (props) => {
         detail: "",
         date_payment_bond: moment().tz('America/Santiago').format('YYYY-MM-DD')
       })
+    }else{
+      setFormBond({
+        notify_client: false,
+        amount: invoice.debit_balance,
+        id_type_bond: 1,
+        detail: "",
+        date_payment_bond: moment().tz('America/Santiago').format('YYYY-MM-DD')
+      })
     }
     setIsShow(!isShow)
 
