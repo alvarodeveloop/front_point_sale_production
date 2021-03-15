@@ -112,7 +112,8 @@ const SalePage = (props) => {
   }
 
   const catchQr = codeQr => {
-    let idProduct = 1;//codeQr.split(",")[1].split(":")[1];
+    console.log(codeQr,"aqui es");
+    let idProduct = codeQr.split(",")[1].split(":")[1];
     let product = productsAll.find(v => v.id == idProduct);
     handleAddToCart(product);
     //handleOnHideModals("qr");    
