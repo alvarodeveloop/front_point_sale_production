@@ -72,7 +72,7 @@ const SalePageParent = (props) => {
 
   useEffect(() => {
     layoutHelpers.toggleCollapsed()
-    if(!props.configGeneral.is_syncronized){
+    if(props.configGeneral.is_syncronized){
       fetchConfig() 
     }else{
       toast.error("Debe sincronizar su cuenta en la configuración general para utilizar este módulo")

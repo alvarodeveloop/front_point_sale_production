@@ -113,7 +113,7 @@ const SalePage = (props) => {
 
   const catchQr = codeQr => {
     console.log(codeQr,"aqui es");
-    let idProduct = codeQr.split(",")[1].split(":")[1];
+    let idProduct = codeQr.text.split(",")[1].split(":")[1];
     let product = productsAll.find(v => v.id == idProduct);
     handleAddToCart(product);
     //handleOnHideModals("qr");    
@@ -316,17 +316,16 @@ const SalePage = (props) => {
 
   const onChangeEanInputHandler = e => {
     if(e.keyCode === 13){
-      countEan++;
       let value = e.target.value;
-      if(countEan < 2 && value){
+      if(value){
         let product = productsAll.find(v => v.code_ean === value);
         if(product){
           handleAddToCart(product);
-          countEan = 0;
+          document.getElementById("eanCatchInput").value = "";
+        }else{
+          toast.info("No se encuentran productos con ese código Ean");
           document.getElementById("eanCatchInput").value = "";
         }
-      }else{
-        toast.info("No se encuentran productos con ese código Ean");
       }
     }
   }
