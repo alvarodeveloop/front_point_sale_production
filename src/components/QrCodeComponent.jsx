@@ -42,6 +42,9 @@ const QrCodeComponent = (props) => {
     if(data && !find){
       find = true;
       props.catchQrCode(data);
+      setTimeout(() => {
+        find = false;
+      },500);
     }
   }
 

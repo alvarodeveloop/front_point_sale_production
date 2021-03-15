@@ -112,10 +112,10 @@ const SalePage = (props) => {
   }
 
   const catchQr = codeQr => {
-    let idProduct = codeQr.split(",")[1].split(":")[1];
+    let idProduct = 1;//codeQr.split(",")[1].split(":")[1];
     let product = productsAll.find(v => v.id == idProduct);
     handleAddToCart(product);
-    handleOnHideModals("qr");    
+    //handleOnHideModals("qr");    
   }
 
   const handleAddToCart = data => {
@@ -314,15 +314,18 @@ const SalePage = (props) => {
   }
 
   const onChangeEanInputHandler = e => {
-    countEan++;
-    let value = e.target.value;
-    if(countEan < 2 && value){
-      let product = productsAll.find(v => v.code_ean === value);
-      if(product){
-        handleAddToCart(product);
-        countEan = 0;
-        document.getElementById("eanCatchInput").value = "";
-        setIsEanScaner(false);
+    if(e.keyCode === 13){
+      countEan++;
+      let value = e.target.value;
+      if(countEan < 2 && value){
+        let product = productsAll.find(v => v.code_ean === value);
+        if(product){
+          handleAddToCart(product);
+          countEan = 0;
+          document.getElementById("eanCatchInput").value = "";
+        }
+      }else{
+        toast.info("No se encuentran productos con ese código Ean");
       }
     }
   }
@@ -525,8 +528,8 @@ const SalePage = (props) => {
                 <InputField
                   type="text"
                   name="eanCatchInput"
-                  readonly={true}
-                  handleChange={onChangeEanInputHandler}
+                  readonly={false}
+                  handleKeyUp={onChangeEanInputHandler}
                   cols="col-md-7 col-sm-7 col-lg-7 col-xs-12 col-xl-7"
                   messageErrors={[]}
                 />

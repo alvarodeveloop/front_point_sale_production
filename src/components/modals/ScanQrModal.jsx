@@ -27,7 +27,7 @@ const ScanQrModal = (props) => {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button size="sm" onClick={props.onHide}>Cerrar</Button>
+          <Button size="md" onClick={props.onHide}>Cerrar</Button>
         </Modal.Footer>
     </Modal>
   )
