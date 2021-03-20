@@ -295,7 +295,10 @@ const ProductPage = (props) => {
                 ) : (
                   <li className="str"><b>Sin imagen de Presentación</b></li>
                 )}
-                <li className="str"><b>Qr Imagen:</b><br/> <Image src={API_URL+'images/product/qr/'+productDetail.qr_image} thumbnail style={{width: '50%'}}/>
+                <li className="str"><b>Qr Imagen:</b><br/> 
+                <OverlayTrigger placement={'bottom'} overlay={<Tooltip id={"tooltip-qrImg"}>Hacer click para abrir la imagen en otra ventana</Tooltip>}>
+                  <a href={API_URL+'images/product/qr/'+productDetail.qr_image} target="_blank"><Image src={API_URL+'images/product/qr/'+productDetail.qr_image} thumbnail style={{width: '50%'}}/></a>  
+                </OverlayTrigger>
               </li>
             </ul>
           ) : ''}

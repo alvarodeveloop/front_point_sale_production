@@ -974,7 +974,7 @@ const CotizacionSearchPage = props => {
                           <td>{v.description}</td>
                           <td>{v.quantity}</td>
                           <td>{props.configGeneral.simbolo_moneda}{ formatNumber(cotizationDetail.total_with_iva ? v.price : v.total,2,',','.')}</td>
-                          <td>{v.discount}</td>
+                          <td>{v.discount ? v.discount+"%" : ""}</td>
                           <td>{displayMehotdSale(v.method_sale)}</td>
                           <td>{v.is_neto ? 'Neto' : "Iva"}</td>
                           <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(v.total,2,',','.')}</Badge></td>

@@ -61,12 +61,6 @@ const CardProductSale = (props) => {
 
       if(productRegistered){
         if(props.configStore.handle_stock){
-          if( cantidadValue >  productToAdd.inventary[0].stock ){
-            toast.error('No existe cantidad en el inventario para satisfacer el pedido')
-            setCantidadValue(productRegistered.cantidad)
-            setIsUpdateCantidad(false)
-            setIsUpdatePrice(false)
-          }else{
             props.updateProduct({
               cantidad: cantidadValue ? cantidadValue : 0,
               price: priceValue,
@@ -77,7 +71,6 @@ const CardProductSale = (props) => {
             })
             setIsUpdateCantidad(false)
             setIsUpdatePrice(false)
-          }
         }else{
           props.updateProduct({
             cantidad: cantidadValue ? cantidadValue : 0,

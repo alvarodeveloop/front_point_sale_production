@@ -7,15 +7,15 @@ import {
   Container,
   Button,
   DropdownButton,
-  Dropdown
+  Dropdown,
+  Modal
 } from 'react-bootstrap'
-import { FaSearch, FaList, FaRegImages, FaPlusCircle, FaTrash, FaTrashAlt, FaShoppingCart } from 'react-icons/fa'
+import { FaList, FaRegImages, FaPlusCircle, FaTrash, FaTrashAlt, FaShoppingCart } from 'react-icons/fa'
 import SquareProductComponent from 'components/SquareProductComponent'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import TableProductComponent from 'components/TableProductComponent'
 import FormClientModal from 'components/modals/FormClientModal'
-import ScanEanModal from 'components/modals/ScanEanModal'
 import ScanQrModal from 'components/modals/ScanQrModal'
 import FormProductModal from 'components/modals/FormProductModal'
 import ModalProductsNotRegistered from 'components/modals/ModalProductsNotRegistered'
@@ -31,6 +31,8 @@ import LoadingComponent from 'components/LoadingComponent';
 
 let count = 0;
 let countEan = 0;
+let productAddTemporally = null;
+
 const SalePage = (props) => {
 
   const [categorys,setCategorys] = useState([])
@@ -49,6 +51,7 @@ const SalePage = (props) => {
   const [showList,setShowList] = useState(false)
   const [isEanScaner, setIsEanScaner] = useState(false)
   const [displayLoading, setDisplayLoading] = useState(true)
+  const [isOpenModalMeasurement, setIsOpenModalMeasurement] = useState(false);
 
   count++;
 
@@ -112,11 +115,9 @@ const SalePage = (props) => {
   }
 
   const catchQr = codeQr => {
-    console.log(codeQr,"aqui");
-    let idProduct = codeQr.split(",")[1].split(":")[1];
+    let idProduct = codeQr.text.split(",")[1].split(":")[1];
     let product = productsAll.find(v => v.id == idProduct);
     handleAddToCart(product);
-    //handleOnHideModals("qr");    
   }
 
   const handleAddToCart = data => {
@@ -126,20 +127,11 @@ const SalePage = (props) => {
 
     if(productRegistered){
       if(props.configStore.handle_stock){
-        if(productToAdd.method_sale === 2){
-          if( (productRegistered.cantidad + productToAdd.pack) >  productToAdd.inventary[0].stock ){
-            toast.error('No existe cantidad en el inventario para satisfacer el pedido')
-          }else{
-            props.addProduct({product: productToAdd, configStore: props.configStore })
-            toast.success('Proceso Completado')
-          }
+        if(productToAdd.method_sale === 3){
+          handleOpenModalMeasurement(productToAdd);
         }else{
-          if( (productRegistered.cantidad + 1) >  productToAdd.inventary[0].stock ){
-            toast.error('No existe cantidad en el inventario para satisfacer el pedido')
-          }else{
-            props.addProduct({product: productToAdd, configStore: props.configStore })
-            toast.success('Proceso Completado')
-          }
+          props.addProduct({product: productToAdd, configStore: props.configStore })
+          toast.success('Proceso Completado')
         }
       }else{
         props.addProduct({product: productToAdd, configStore: props.configStore })
@@ -147,39 +139,15 @@ const SalePage = (props) => {
       }
     }else{
       if(props.configStore.handle_stock){
-        if(productToAdd.method_sale === 2){
-          // si es producto mayorista
-          if(productRegistered){
-            // si el producto esta registrado
-            if( (productRegistered.cantidad + productToAdd.pack) >  productToAdd.inventary[0].stock ){
-              toast.error('No existe cantidad en el inventario para satisfacer el pedido')
-            }else{
-              props.addProduct({product: productToAdd, configStore: props.configStore })
-              toast.success('Proceso Completado')
-            }
-          }else{
-            // si el producto es mayorista pero no esta registrado
-            if( productToAdd.pack >  productToAdd.inventary[0].stock ){
-              toast.error('No existe cantidad en el inventario para satisfacer el pedido')
-            }else{
-              props.addProduct({product: productToAdd, configStore: props.configStore })
-              toast.success('Proceso Completado')
-            }
-          }
+        if(productToAdd.method_sale === 3){
+          handleOpenModalMeasurement(productToAdd);
         }else{
-          //si no es mayorista y se maneja inventario
           if(productRegistered){
-            // si el producto esta registrado
-            if( (productRegistered.cantidad + 1) >  productToAdd.inventary[0].stock ){
-              toast.error('No existe cantidad en el inventario para satisfacer el pedido')
-            }else{
-              props.addProduct({product: productToAdd, configStore: props.configStore })
-              toast.success('Proceso Completado')
-            }
+            props.addProduct({product: productToAdd, configStore: props.configStore })
+            toast.success('Proceso Completado')
           }else{
-            // si el producto no es mayorista y no esta registrado
-              props.addProduct({product: productToAdd, configStore: props.configStore })
-              toast.success('Proceso Completado')
+            props.addProduct({product: productToAdd, configStore: props.configStore })
+            toast.success('Proceso Completado')
           }
         }
       }else{
@@ -272,10 +240,6 @@ const SalePage = (props) => {
     setProducts(productsBackup);
   }
 
-  const handleShowAllCategories = () => {
-    searchByCategory('todos')
-  }
-
   const handleShowProducts = () => {
     setShowList(state => !state)
   }
@@ -316,17 +280,16 @@ const SalePage = (props) => {
 
   const onChangeEanInputHandler = e => {
     if(e.keyCode === 13){
-      countEan++;
       let value = e.target.value;
-      if(countEan < 2 && value){
+      if(value){
         let product = productsAll.find(v => v.code_ean === value);
         if(product){
           handleAddToCart(product);
-          countEan = 0;
+          document.getElementById("eanCatchInput").value = "";
+        }else{
+          toast.info("No se encuentran productos con ese código Ean");
           document.getElementById("eanCatchInput").value = "";
         }
-      }else{
-        toast.info("No se encuentran productos con ese código Ean");
       }
     }
   }
@@ -340,6 +303,25 @@ const SalePage = (props) => {
     setIsEanScaner(!isEanScaner);
   }
 
+  const addCartMeasurementProduct = () => {
+    let value = document.getElementById("measurement_quantity").value;
+    if(!value) return toast.error("Debe introducir una cantidad para continuar");
+    productAddTemporally.quantityMeasurement = parseFloat(value);
+    props.addProduct({product: productAddTemporally, configStore: props.configStore });
+    toast.success("Producto agregado con éxito");
+    productAddTemporally = null;
+    handleOpenModalMeasurement();
+  }
+
+  const handleOpenModalMeasurement = (productMeasurement = false) => {
+    if(!isOpenModalMeasurement){
+      productAddTemporally = productMeasurement;
+      setTimeout(() => {
+        document.getElementById("measurement_quantity").focus();
+      },500)
+    }
+    setIsOpenModalMeasurement(!isOpenModalMeasurement);
+  }
   return (
   <Container fluid='true'>
     <Row>
@@ -550,6 +532,42 @@ const SalePage = (props) => {
         )
       }
     </Row>
+    <Modal
+      show={isOpenModalMeasurement}
+      onHide={handleOpenModalMeasurement}
+      size="xl"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header closeButton className="header_dark">
+        <Modal.Title id="contained-modal-title-vcenter">
+          Introduzca la cantidad de medida del producto
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Row className="justify-content-center">
+          <InputField
+            type="number"
+            step="any"
+            label="Cantidad"
+            name="measurement_quantity"
+            messageErrors={[]}
+            cols="col-sm-6 col-md-6 col-lg-6 col-xl-6"
+            handleChange={() => {}}
+            handleKeyUp={(e) => { if(e.keyCode === 13) document.getElementById("btnMeasurement").click();}}
+          />
+        </Row>
+        <Row className="justify-content-center">
+          <Col sm={4} md={4} lg={4} xl={4}>
+            <Button variant="danger" id="btnMeasurement" block={true} onClick={addCartMeasurementProduct} size="sm" type="button">Agregar al Carro <FaShoppingCart /></Button>
+          </Col>
+        </Row>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleOpenModalMeasurement}>Cerrar</Button>
+      </Modal.Footer>
+    </Modal>
+
     <FormClientModal
       isShow={isShowModalClient}
       onHide={() => handleOnHideModals('client')}

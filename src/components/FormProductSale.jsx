@@ -1,4 +1,4 @@
-import React, { useMemo, useState,useEffect,useRef } from 'react'
+import React, { useState,useEffect,useRef } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
 import 'styles/pages/productStyle.css'
@@ -8,8 +8,6 @@ import { toast } from 'react-toastify'
 import { readerImg } from 'utils/functions'
 import { API_URL } from 'utils/constants'
 import ScanEanModal from 'components/modals/ScanEanModal'
-import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import Select from 'react-select';
 import {
   Row,
@@ -19,7 +17,6 @@ import {
   Container,
   Image,
   Card,
-  Modal,
   Carousel,
   Accordion,
 } from 'react-bootstrap'
@@ -30,7 +27,7 @@ const FormProductSale = (props) => {
     name_product: '',
     code_ean: '',
     description: '',
-    is_neto: true,
+    is_neto: false,
     id_category: [],
     is_auto_sale: false,
     img_product: '',
@@ -45,6 +42,7 @@ const FormProductSale = (props) => {
     quantity : '',
     cost : '',
     cost_details : '',
+    id_product_detail : "",
     id_provider : []
   })
 
@@ -62,6 +60,7 @@ const FormProductSale = (props) => {
   const [htmlImgGallery, setHtmlImgGallery] = useState('')
   const [textButton, setTextButton] = useState('Guardar')
   const [isSubmit, setIsSubmit] = useState(false)
+  const [products, setProducts] = useState([]);
   const [galleryFromUpdate, setGalleryFromUpdate] = useState([])
   const [isShowPackField, setIsShowPackField] = useState(false)
   const [imgComponent, setImgComponent] = useState(
@@ -93,12 +92,12 @@ const FormProductSale = (props) => {
       }else{
         setIsShowPackField(false)
       }
-      await setDataProduct({...dataProduct, [e.target.name] : e.target.value})
+      setDataProduct({...dataProduct, [e.target.name] : e.target.value})
     }else if(e.target.name === "is_neto" || e.target.name === "is_auto_sale"){
       let val = e.target.value === "true" ? true : false
-      await setDataProduct({...dataProduct, [e.target.name] : val})
+      setDataProduct({...dataProduct, [e.target.name] : val})
     }else{
-      await setDataProduct({...dataProduct, [e.target.name] : e.target.value})
+      setDataProduct({...dataProduct, [e.target.name] : e.target.value})
     }
   }
 
@@ -111,6 +110,7 @@ const FormProductSale = (props) => {
       axios.get(API_URL+'category'),
       axios.get(API_URL+'config_general'),
       axios.get(API_URL+'provider'),
+      axios.get(API_URL+'product'),
     ]
 
     if(props.match.params.id){
@@ -133,40 +133,41 @@ const FormProductSale = (props) => {
       }
       setConfig(result[1].data)
       setProviders(result[2].data)
-
-      if(result.length > 3){
+      setProducts(result[3].data);
+      if(result.length > 4){
         if(props.isInventary){
           setDataProduct({
-            name_product: result[3].data.name_product,
-            code_ean: result[3].data.code_ean,
-            description: result[3].data.description,
-            is_neto: result[3].data.is_neto,
-            id_category: result[3].data.categories.map(v => { return {value: v.categories.id, label : v.categories.name_category} }),
-            is_auto_sale: result[3].data.is_auto_sale,
-            img_product: result[3].data.img_product,
-            method_sale: result[3].data.method_sale,
-            price:result[3].data.price,
-            qr_image:result[3].data.qr_image,
-            sticker_color: result[3].data.sticker_color,
-            detailCost: result[3].data.cost_details,
-            pack: result[3].data.pack,
-            minimun_stock: result[3].data.inventary[0].minimun_stock,
+            name_product: result[4].data.name_product,
+            code_ean: result[4].data.code_ean,
+            description: result[4].data.description,
+            is_neto: result[4].data.is_neto,
+            id_category: result[4].data.categories.map(v => { return {value: v.categories.id, label : v.categories.name_category} }),
+            is_auto_sale: result[4].data.is_auto_sale,
+            img_product: result[4].data.img_product,
+            method_sale: result[4].data.method_sale,
+            price:result[4].data.price,
+            qr_image:result[4].data.qr_image,
+            sticker_color: result[4].data.sticker_color,
+            detailCost: result[4].data.cost_details,
+            pack: result[4].data.pack,
+            id_product_detail : result[4].data.id_product_detail,
+            minimun_stock: result[4].data.inventary[0].minimun_stock,
           })
           
-          if(result[3].data.method_sale == 2){
+          if(result[4].data.method_sale == 2){
             setIsShowPackField(true)
           }
           setIsUpdate(true)
 
-          if(result[3].data.img_product){
+          if(result[4].data.img_product){
             setImgComponent(
-              <Image src={  API_URL+'images/product/principal/'+ result[3].data.img_product}
+              <Image src={  API_URL+'images/product/principal/'+ result[4].data.img_product}
                 id="imagen_logo" style={{ width: '80px' }} thumbnail />
             )
           }
 
-          if(result[3].data.gallery.length > 0){
-            setGalleryImgUpdate(result[3].data.gallery)
+          if(result[4].data.gallery.length > 0){
+            setGalleryImgUpdate(result[4].data.gallery)
           }
         }
 
@@ -205,10 +206,12 @@ const FormProductSale = (props) => {
           }
         }else if( v === 'id_category'){
           let name_categories = ""
-          dataProduct[v].forEach((item, i) => {
-            formData.append('id_category',item.value)
-            name_categories+= item.label+","
-          });
+          if(dataProduct[v]){
+            dataProduct[v].forEach((item, i) => {
+              formData.append('id_category',item.value)
+              name_categories+= item.label+","
+            });
+          }
           name_categories = name_categories.substring(0,name_categories.length - 1)
           formData.append('name_categories',name_categories)
         }else{
@@ -245,7 +248,7 @@ const FormProductSale = (props) => {
       }else{
         let result = await axios.post(API_URL+'product',formData)
 
-        if(galleryImg.length > 0){
+        if( Object.keys(galleryImg).length > 0){
 
           setTextButton('Guardando Galeria de Imagenes...')
 
@@ -616,11 +619,30 @@ const FormProductSale = (props) => {
                           <option value={3}>(Kilo, Litros, Metros, Entre Otros...)</option>
                         </InputField>
                         {isShowPackField ? (
-                          <InputField
-                            {...props.inputPack}
-                            handleChange={onChange}
-                            value={dataProduct.pack}
+                          <>
+                            <InputField
+                              {...props.inputPack}
+                              handleChange={onChange}
+                              value={dataProduct.pack}
                             />
+                            <InputField
+                              label="producto"
+                              type="select"
+                              name="id_product_detail"
+                              required={true}
+                              messageErrors={[
+                                "requerido"
+                              ]}
+                              cols="col-md-4 col-sm-4 col-xl-4 col-lg-4"
+                              value={dataProduct.id_product_detail}
+                              handleChange={onChange} 
+                            >
+                              <option value="">--Seleccione--</option>
+                              {products.map((v,i) => (
+                                <option value={v.id} key={i}>{v.name_product}</option>
+                              ))}
+                            </InputField>
+                          </>
                         ) : ''}
                         <InputField
                          type='number'

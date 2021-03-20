@@ -2,17 +2,10 @@ import React, {useEffect} from 'react'
 import PropTypes from 'prop-types'
 import {
   Modal,
-  Row,
-  Col,
-  Form,
   Button,
-  Image,
   Badge
 } from 'react-bootstrap'
-import { API_URL } from 'utils/constants'
-import * as moment from 'moment-timezone'
 import { showPriceWithDecimals, returnTypePayment } from 'utils/functions'
-import axios from 'axios'
 
 const ModalDetailSale = ({dataSale, ...props}) => {
 
@@ -104,7 +97,7 @@ const ModalDetailSale = ({dataSale, ...props}) => {
               {dataSale.products ? dataSale.products.map((v,i) => (
                 <tr key={i}>
                   <td>{v.product.name_product}</td>
-                  <td>{props.config.simbolo_moneda+showPriceWithDecimals(props.config,v.product.price * v.quantity)}</td>
+                  <td>{props.config.simbolo_moneda+showPriceWithDecimals(props.config,v.price)}</td>
                   <td>{v.quantity}</td>
                   <td>{v.description}</td>
                   <td>{methodSaleHandle(v.method_sale)}</td>
@@ -112,7 +105,7 @@ const ModalDetailSale = ({dataSale, ...props}) => {
                   ? (<>Descuento<br/>{props.config.simbolo_moneda+v.discount_recharge[0].amount_calculate}</>)
                   : (<>Recargo<br/>{props.config.simbolo_moneda+v.discount_recharge[0].amount_calculate}</>)
                   : "No posee" }</td>
-                  <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+showPriceWithDecimals(props.config,v.price) }</Badge></td>
+                  <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+showPriceWithDecimals(props.config,v.price * v.quantity) }</Badge></td>
                 </tr>
               )) : ''}
             </tbody>
@@ -149,8 +142,8 @@ const ModalDetailSale = ({dataSale, ...props}) => {
             </thead>
             <tbody className="text-center">
               <tr>
-                <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+dataSale.sub_total }</Badge></td>
-                <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+dataSale.tax }</Badge></td>
+                <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+ showPriceWithDecimals(props.config,dataSale.sub_total) }</Badge></td>
+                <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+ showPriceWithDecimals(props.config,dataSale.tax) }</Badge></td>
                 <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+showPriceWithDecimals(props.config,dataSale.total) }</Badge></td>
                 <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+showPriceWithDecimals(props.config,dataSale.payment) }</Badge></td>
                 <td><Badge variant="danger" className="font-badge">{ props.config.simbolo_moneda+showPriceWithDecimals(props.config,dataSale.turned) }</Badge></td>

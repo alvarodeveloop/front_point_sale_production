@@ -28,7 +28,7 @@ function calculateTax(products,config){
       total = result + total
     })
 
-    return total
+    return Math.ceil(total)
 }
 
 function calculateNeto(products,discountRecharge = null,descuentos_totales = null,return_recharge_discount_total = false){
@@ -87,14 +87,14 @@ function calculateNeto(products,discountRecharge = null,descuentos_totales = nul
 
   if(return_recharge_discount_total){
     // esto es para obtener el monto del descuento o recargo total y guardarlo
-    return [total,total_r_d_amount]
+    return [Math.ceil(total),Math.ceil(total_r_d_amount)]
   }else{
     return total
   }
 }
 
 function calculateTotal(netoTotal, taxTotal){
-  let total = netoTotal + taxTotal
+  let total = netoTotal + taxTotal;
 
   return total
 }
@@ -193,16 +193,19 @@ export default (state = initialState, action = {}) => {
         let exist = cartStore.registered.find(v => v.id === action.product.id && v.idCart == idCartAdd)
 
         if(!exist){
-          if(action.product.method_sale == 2){
-            action.product.cantidad = action.product.pack
+          if(action.product.method_sale === 3){
+            action.product.cantidad = action.product.quantityMeasurement;
+            action.product.priceBackup = action.product.price;
+            action.product.idCart = idCartAdd
           }else{
             action.product.cantidad = 1
+            action.product.priceBackup = action.product.price
+            action.product.idCart = idCartAdd
           }
-          action.product.priceBackup = action.product.price
-          action.product.idCart = idCartAdd
+
         }else{
-          if(action.product.method_sale == 2){
-            exist.cantidad += action.product.pack
+          if(exist.method_sale === 3){
+            exist.cantidad = exist.cantidad + action.product.quantityMeasurement;
           }else{
             exist.cantidad = exist.cantidad + 1
           }
@@ -298,7 +301,6 @@ export default (state = initialState, action = {}) => {
       break;
 
       case 'removeProduct':
-        console.log("aqui pasa esto",action);
         let stateRemove = Object.assign({},state.sale)
         let idCartRemove = stateRemove.idCartSelected
         let cartStoreRemove = stateRemove.rooms[idCartRemove].carts

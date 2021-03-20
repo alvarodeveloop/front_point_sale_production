@@ -25,8 +25,6 @@ const SaleSecondPartPage = (props) => {
   const [openModalDiscountTotal, setOpenModalDiscountTotal] = useState(false)
   const [openModalRechargeTotal, setOpenModalRechargeTotal] = useState(false)
   const [productDescription, setProductDescription] = useState({})
-  const [valueRechargeTotal, setValueRechargeTotal] = useState('')
-  const [valueDiscountTotal, setValueDiscountTotal] = useState('')
 
   const catchDescriptionProduct = description => {
     setOpenModalDescription(!openModalDescription)

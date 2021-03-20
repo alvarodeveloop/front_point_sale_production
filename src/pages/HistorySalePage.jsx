@@ -5,24 +5,18 @@ import {
   Container,
   Row,
   Col,
-  Button,
   DropdownButton,
   Dropdown,
-  Modal,
   Badge
 } from 'react-bootstrap'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
-import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import
-import { formatNumber } from 'utils/functions'
 import ModalSolvedSale from 'components/modals/ModalSolvedSale'
 import ModalDetailSale from 'components/modals/ModalDetailSale'
 import 'styles/components/modalComponents.css'
 import * as moment from 'moment-timezone'
 import { showPriceWithDecimals } from 'utils/functions'
-import {Doughnut} from 'react-chartjs-2';
 import { ARRAY_COLORS } from 'utils/constants'
 import { connect } from 'react-redux'
 import layoutHelpers from 'shared/layouts/helpers'

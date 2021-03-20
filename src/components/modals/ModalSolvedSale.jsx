@@ -51,7 +51,7 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
     }else{
       if([2,3,4].includes(typePayment)){
         turned = 0
-        paymentValue = dataToPay.total
+        paymentValue = showPriceWithDecimals(props.config,dataToPay.total); 
       }
       setIsReadOnlyPayment(false)
     }
@@ -87,7 +87,7 @@ const ModalSolvedSale = ({dataToPay, ...props}) => {
     }
 
     let total_to_pay = parseFloat(dataToPay.total)
-    let paymentTotal = parseFloat(payment.payment)
+    let paymentTotal = parseFloat(payment.payment.toString().replace(/[^0-9]/g,""));
     if(paymentTotal < total_to_pay){
       toast.error('El monto pagado es inferior al total por pagar')
     }else{

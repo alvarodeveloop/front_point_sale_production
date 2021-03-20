@@ -9,7 +9,7 @@ import {
 
 const TableTotalComponent = (props) => {
 
-  const displayTotalProduct = useCallback(() => {
+  const displayTotalProduct = () => {
     let total = 0
 
     props.detailProducts.forEach((item, i) => {
@@ -32,34 +32,41 @@ const TableTotalComponent = (props) => {
       total+= parseFloat(item1.price) * item1.quantity
     })
     return total
-  },[props.detailProducts])
+  }
 
-  const displayTotalIva = useCallback( () => {
+  const displayTotalIva = () => {
     let total = 0
 
     props.detailProducts.forEach((item, i) => {
       let item1 = Object.assign({},item)
       if(!item1.is_neto){
         if(props.cotizationData.total_with_iva){
-          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
-          item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price
-          total+= parseFloat(((item1.price * props.configStore.tax) / 100))
+          if(item1.method_sale === 3){
+            item1.price = item1.quantity * item1.price;
+          }
+          item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price;
+          item1.price = props.cotizationData.discount_global ? parseFloat(item1.price) - ((item1.price * props.cotizationData.discount_global) / 100) : item1.price;
+          if(item1.method_sale === 3){
+            total+= parseFloat(((item1.price * props.configStore.tax) / 100));
+          }else{
+            total+= parseFloat(((item1.price * props.configStore.tax) / 100)) * item1.quantity;
+          }
         }else{
           total+= 0
         }
       }
     })
     return total
-  },[props.detailProducts])
+  }
 
-  const displayTotalGastos = useCallback( () => {
+  const displayTotalGastos = () => {
     let total = 0
     props.gastosDetail.forEach((item, i) => {
       total += parseFloat(item.amount)
     });
 
     return total
-  },[props.gastosDetail])
+  }
 
 
   const displayTotalTotal = useCallback((sin_gastos = false) => {
@@ -74,11 +81,10 @@ const TableTotalComponent = (props) => {
     }else{
       return (parseFloat(total_product) + parseFloat(total_iva))
     }
-  },[props.detailProducts, props.gastosDetail])
+  },[props.detailProducts, props.gastosDetail, props.cotizationData.discount_global])
 
   const displayTotalDiscount = useCallback(() => {
     let total = 0
-
     props.detailProducts.forEach((item, i) => {
 
       let item1 = Object.assign({},item)
@@ -88,7 +94,6 @@ const TableTotalComponent = (props) => {
         value  = props.cotizationData.discount_global ? ((item1.price * props.cotizationData.discount_global) / 100) : 0
       }else{
         if(props.cotizationData.total_with_iva){
-
           item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
           value = props.cotizationData.discount_global ?  ((item1.price * props.cotizationData.discount_global) / 100) : 0
         }else{
@@ -99,7 +104,7 @@ const TableTotalComponent = (props) => {
       total+= value * item1.quantity
     })
     return total
-  }, [props.detailProducts])
+  }, [props.cotizationData.discount_global])
 
   return (
     <Row>

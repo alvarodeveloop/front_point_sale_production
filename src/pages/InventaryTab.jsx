@@ -120,7 +120,7 @@ const InventaryTab = (props) => {
             Cell: props1 => {
               const id = props1.cell.row.original.id
               return(
-                <DropdownButton size="sm" id={'drop'+id} title="Seleccione"  block="true">
+                <DropdownButton size="sm" id={'drop'+id} title="Seleccione" drop={"left"}  block="true">
                   <Dropdown.Item onClick={() => handleUpdateStock(props1.cell.row.original) }>Entrada y Salida de Stock</Dropdown.Item>
                   <Dropdown.Item onClick={() => justifyStockHandler(props1.cell.row.original) }>Ajustar Inventario</Dropdown.Item>
                   <Dropdown.Item onClick={() => showHistoryModal(props1.cell.row.original) }>Ver Historial</Dropdown.Item>
@@ -180,7 +180,7 @@ const InventaryTab = (props) => {
   const justifyStockHandler = (data = false) => {
     setIsOpenModalJustify(!isOpenModalJustify);
     if(data){
-      console.log(data);
+      console.log("aqui menor");
       setProduct(data);
       setTimeout(() => {
         if(inputRef.current){
@@ -207,7 +207,7 @@ const InventaryTab = (props) => {
     axios.put(API_URL+"inventary_justify/"+product.id,objectPut).then(result => {
       toast.success("Stock ajustado con éxito");
       setDisplayLoadingModal(false);
-      justifyStockHandler();
+      justifyStockHandler(false);
       setProduct({});
       fetchData();
     }).catch(err => {
@@ -241,7 +241,7 @@ const InventaryTab = (props) => {
           </Row>
           <Modal
             show={isOpenModalJustify}
-            onHide={justifyStockHandler}
+            onHide={() => justifyStockHandler()}
             size="xl"
             aria-labelledby="contained-modal-title-vcenter"
             centered
@@ -281,7 +281,7 @@ const InventaryTab = (props) => {
               )}
             </Form>
             <Modal.Footer>
-              <Button variant="secondary" type="button" onClick={justifyStockHandler}>Cerrar</Button>
+              <Button variant="secondary" type="button" onClick={() => justifyStockHandler()}>Cerrar</Button>
             </Modal.Footer>
           </Modal>
           <ModalStockInventary

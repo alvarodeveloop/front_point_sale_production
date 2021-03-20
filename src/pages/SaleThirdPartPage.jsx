@@ -12,7 +12,7 @@ import {
   Form,
   Modal
 } from 'react-bootstrap'
-import { showPriceWithDecimals } from 'utils/functions'
+import { showPriceWithDecimals, formatNumber } from 'utils/functions'
 import ModalPaymentMultiple from 'components/modals/ModalPaymentMultiple'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
@@ -70,8 +70,8 @@ const SaleThirdPartPage = (props) => {
       }
 
       let total_to_pay = parseFloat(props.sale.rooms[props.sale.idCartSelected].totales.total)
-      let paymentTotal = parseFloat(payment.payment)
-
+      let paymentTotal = Math.ceilparseFloat(payment.payment.toString().replace(/[^0-9]/g,""));
+      
       if(paymentTotal < total_to_pay && status === 1){
         toast.error('El monto pagado es inferior al total por pagar')
       }else{
@@ -188,7 +188,7 @@ const SaleThirdPartPage = (props) => {
     }else{
       if([2,3,4].includes(typePayment)){
         turned = 0
-        payment = Object.assign({},props.sale.rooms[props.sale.idCartSelected].totales).total
+        payment =showPriceWithDecimals(props.config,Object.assign({},props.sale.rooms[props.sale.idCartSelected].totales).total);
         setIsReadOnlyPayment(true)
       }else{
         payment = 0
@@ -414,7 +414,7 @@ const SaleThirdPartPage = (props) => {
             <Row className="justify-content-center">
               <InputField
                 {...props.inputTurned}
-                handleChange={onChange}text
+                handleChange={onChange}
                 value={showPriceWithDecimals(props.config,payment.turned)}
                 />
             </Row>
@@ -580,7 +580,6 @@ SaleThirdPartPage.defaultProps = {
     label : '',
     placeholder: 'Vuelto',
     cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
-    step: 'any',
     readonly: true,
     messageErrors: [
       'Requerido*'

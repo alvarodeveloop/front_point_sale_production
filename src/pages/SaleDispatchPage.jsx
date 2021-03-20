@@ -125,7 +125,7 @@ const SaleDispatchPage = (props) => {
           Header: 'Total',
           accessor: 'total',
           Cell: props1 => {
-            return showPriceWithDecimals(props1.config,props1.cell.row.original.total)
+            return props.config ? props.config.simbolo_moneda+showPriceWithDecimals(props.config,props1.cell.row.original.total) : "";
           }
         },
         {

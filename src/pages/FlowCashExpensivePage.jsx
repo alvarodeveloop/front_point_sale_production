@@ -27,7 +27,7 @@ import {
   FaCloudDownloadAlt,
   FaPlusCircle
 } from 'react-icons/fa'
-import {formatNumber} from 'utils/functions'
+import {showPriceWithDecimals} from 'utils/functions'
 import { connect } from 'react-redux'
 import LoadingComponent from 'components/LoadingComponent'
 
@@ -397,7 +397,7 @@ const FlowCashExpensivePage = (props) => {
                             Header: 'Monto',
                             accessor: 'amount',
                             Cell : props1 => {
-                              return <Badge variant="danger" className="font_badge">{formatNumber(props1.cell.row.original.amount,2,',','.')}</Badge>
+                              return <Badge variant="danger" className="font-badge">{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.amount)}</Badge>
                             }
                           },
                           {
@@ -556,6 +556,7 @@ function mapStateToProps(state){
   return {
     id_branch_office : state.enterpriseSucursal.id_branch_office,
     id_enterprise : state.enterpriseSucursal.id_enterprise,
+    configGeneral : state.configs.config,
   }
 }
 
