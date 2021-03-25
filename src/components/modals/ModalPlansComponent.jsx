@@ -1,19 +1,17 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import {
-  Container,
   Row,
   Col,
   Button,
   Form,
-  Badge,
   Modal,
   Accordion,
   Card
 } from 'react-bootstrap'
 import 'styles/components/modalComponents.css'
 import InputField from 'components/input/InputComponent'
-import {FaCheckCircle,FaUser,FaPlusCircle,FaPencilAlt,FaTrash} from 'react-icons/fa'
+import {FaCheckCircle,FaPlusCircle,FaPencilAlt,FaTrash} from 'react-icons/fa'
 import TablePlansComponent from 'components/TablePlansComponent'
 import 'styles/components/tabla_plans.css'
 import 'styles/pages/users.css'
@@ -209,6 +207,20 @@ const ModalPlansComponent  = (props) => {
                value={props.dataForm.day_test}
                handleChange={onChange}
               />
+              <InputField
+               type='number'
+               label='Nº de límite de registros'
+               name='number_limit_registers'
+               required={true}
+               messageErrors={[
+               'Requerido*'
+               ]}
+               cols='col-md-6 col-lg-6 col-sm-6'
+               value={props.dataForm.number_limit_registers}
+               handleChange={onChange}
+              />
+            </Row>
+            <Row>
               <Col sm={6} md={6} lg={6}>
                 <br/>
                 <Form.Group>

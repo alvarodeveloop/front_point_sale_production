@@ -132,6 +132,7 @@ const AuthPageTemplate = props => {
 
   const responseGoogleFail = err => {
     console.log(err)
+    toast.error("Error, conectando con gmail, intente de nuevo o entre con sus credenciales");
   }
 
   const registerUserBySocialMedia = data => {

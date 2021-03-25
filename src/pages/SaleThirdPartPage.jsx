@@ -70,7 +70,7 @@ const SaleThirdPartPage = (props) => {
       }
 
       let total_to_pay = parseFloat(props.sale.rooms[props.sale.idCartSelected].totales.total)
-      let paymentTotal = Math.ceilparseFloat(payment.payment.toString().replace(/[^0-9]/g,""));
+      let paymentTotal = Math.ceil(parseFloat(payment.payment.toString().replace(/[^0-9]/g,"")));
       
       if(paymentTotal < total_to_pay && status === 1){
         toast.error('El monto pagado es inferior al total por pagar')
@@ -309,7 +309,7 @@ const SaleThirdPartPage = (props) => {
       {displayLoading ? (
         <LoadingComponent />
       ) : (
-        <Row>
+        <Row className="justify-content-center">
           <Col sm={4} md={4} lg={4} style={{borderRadius:'15px',boxShadow:'5px 5px 5px lightgray'}}>
             <h4 className="text-center">Métodos de Pago</h4>
             <br/>

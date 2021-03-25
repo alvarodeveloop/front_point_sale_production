@@ -35,6 +35,7 @@ const PlanPage = (props) => {
     day_payment: '',
     especial : false,
     modulesPlan: [],
+    number_limit_registers: 0
   })
 
   useEffect(() => {
@@ -109,6 +110,7 @@ const PlanPage = (props) => {
       day_payment: '',
       especial : false,
       modulesPlan: [],
+      number_limit_registers: 0
     })
   }
 
@@ -126,6 +128,7 @@ const PlanPage = (props) => {
       especial : dataUpdate.especial,
       id: dataUpdate.id,
       modulesPlan: dataUpdate.modules_plan.map(v => v.id_module),
+      number_limit_registers: dataUpdate.number_limit_registers,
     })
     handleModal()
   }
@@ -169,7 +172,7 @@ const PlanPage = (props) => {
         {planes.length > 0 ? (
           <Row className="snip1404 justify-content-center">
             {planes.map((v,i) => (
-              <Col sm={5} md={5} lg={5}>
+              <Col sm={5} md={5} lg={5} key={i}>
                 <TablePlansComponent plan={v} update={true} handleUpdate={handleUpdate}/>
               </Col>
             ))}
