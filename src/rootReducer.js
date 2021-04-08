@@ -5,6 +5,7 @@ import configs from './reducer/configs';
 import menu from './reducer/menu';
 import enterpriseSucursal from './reducer/enterpriseSucursal';
 import theme from './store/reducers/themeStore';
+import videoTutorial from './reducer/videoTutorial';
 
 export default combineReducers({
   auth,
@@ -12,5 +13,6 @@ export default combineReducers({
   configs,
   menu,
   theme,
-  enterpriseSucursal
+  enterpriseSucursal,
+  videoTutorial
 });

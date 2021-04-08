@@ -128,7 +128,7 @@ const SignUpPage = (props) => {
               {/* Logo */}
               <div className="d-flex justify-content-center align-items-center">
                 <div className="position-relative text-center">
-                  <Image src={require('../assets/img/logo/AIDY_01.jpg')} width="150px" />
+                  <Image src={require('../assets/img/logo/AIDY_BETA.jpg')} width="150px" />
                 </div>
               </div>
               {/* / Logo */}

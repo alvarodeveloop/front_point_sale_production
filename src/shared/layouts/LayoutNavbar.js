@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-import { Image, Navbar, Nav, Dropdown } from 'react-bootstrap'
+import { Image, Navbar, Nav, Dropdown, Modal, Button, Row, Col } from 'react-bootstrap'
 import { setEnterprises, setBranchOffices, setIdEnterprise, setIdBranchOffice} from 'actions/enterpriseSucursal'
 import { setMenu } from 'actions/menu'
 import layoutHelpers from './helpers'
@@ -12,7 +12,9 @@ import {API_URL} from 'utils/constants'
 import styled from 'styled-components'
 import { setConfigStore, setConfig } from 'actions/configs'
 import { setAuthorizationToken } from 'utils/functions'
-import {FaUser} from 'react-icons/fa'
+import { FaUser } from 'react-icons/fa'
+import 'styles/components/modalComponents.css';
+
 
 const Styles = styled.div`
   .border_success{
@@ -42,7 +44,7 @@ const LayoutNavbar = (props) => {
     displayMessage: false,
     borderSuccess: false
   })
-
+  const [displayModal, setDisplayModal] = useState(false);
   useEffect(() => {
     if(props.displayMessageNav){
       setObjectMessage({
@@ -114,12 +116,41 @@ const LayoutNavbar = (props) => {
     }
   }
 
+  const displayTutoModalHandler = e =>{
+    if(!e.target.value){
+      return
+    }
+
+    let videoSelected = props.videosTutorial.find(v => +v.id === +e.target.value);
+    displayModalHandler();
+    setTimeout(() => {
+      let videoTag = document.getElementById("containerIframe");
+      let descriptionTag = document.getElementById("descriptionVideoTag");
+      if(videoTag && descriptionTag){
+        videoTag.innerHTML = videoSelected.link;
+        descriptionTag.innerText = videoSelected.description;
+      }else{
+        setTimeout(() => {
+          videoTag = document.getElementById("containerIframe");
+          videoTag.innerHTML = videoSelected.link;
+          descriptionTag = document.getElementById("descriptionVideoTag");
+          descriptionTag.innerText = videoSelected.description;
+        },1500)
+      }
+    },2000)
+  }
+
+  const displayModalHandler = () => {
+    setDisplayModal(!displayModal);
+  }
+
+
   return (
     <Styles>
       <Navbar bg={props.navbarBg} expand="md" className={`layout-navbar align-items-lg-center container-p-x ${!objectMessage.borderSuccess ? "" : "border_success"}`} style={{height: "80px"}}>
         {/* Brand */}
         <Navbar.Brand as={NavLink} to="/" className="imageRotateHorizontal">
-          <Image src={require('../../assets/img/logo/AIDY_01.jpg')}
+          <Image src={require('../../assets/img/logo/AIDY_BETA.jpg')}
             width="80"
             className="d-inline-block align-top"
             alt="React Bootstrap logo"
@@ -146,8 +177,26 @@ const LayoutNavbar = (props) => {
                   <p style={{color: "rgb(200, 67, 28)"}}>Actualizando el sistema, espere por favor... <Image src={require('../../assets/img/loading.gif')} style={{width: '10px'}} /></p>
                 </Nav.Item>
               </Nav>
-            ) : ''
+            ) : ""
           }
+          <Nav style={{paddingLeft: "100px"}}>
+            <Nav.Item className="nav-item nav-link px-0 ml-9 ml-lg-0" style={{width: '200px'}}>
+              <InputField
+                type='select'
+                label={<span style={{color: "rgb(198, 69, 41)"}}>Tutoriales</span>}
+                name='tutoNavbar'
+                required={false}
+                messageErrors={[]}
+                cols='col-12'
+                handleChange={(e) => displayTutoModalHandler(e)}
+                >
+                <option value="">--Seleccione--</option>
+                {props.videosTutorial.map((v,i) => (
+                  <option key={i} value={v.id}>{v.name}</option>
+                ))}
+              </InputField>
+            </Nav.Item>
+          </Nav>
           <Nav className="align-items-lg-center ml-auto">
             <div className="nav-item d-none d-lg-block text-big font-weight-light line-height-1 opacity-25 mr-3 ml-1">|</div>
             {
@@ -210,6 +259,35 @@ const LayoutNavbar = (props) => {
           </Nav>
         </Navbar.Collapse>
       </Navbar>
+      <Modal
+        show={displayModal}
+        onHide={displayModalHandler}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton className="header_dark">
+          <Modal.Title id="contained-modal-title-vcenter">
+            Modal de video
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            <Col className="text-center" id="containerIframe">
+
+            </Col>
+          </Row>
+          <br/>
+          <Row>
+            <Col>
+              <p id="descriptionVideoTag" style={{fontSize: "16px"}} className="text-center"></p>
+            </Col>
+          </Row>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" size="md" onClick={displayModalHandler} type="button">Cerrar</Button>
+        </Modal.Footer>
+      </Modal>
     </Styles>
   )
 }
@@ -222,7 +300,8 @@ LayoutNavbar.propTypes = {
   setIdBranchOffice: PropTypes.func.isRequired,
   setConfig : PropTypes.func.isRequired,
   setConfigStore : PropTypes.func.isRequired,
-  setMenu: PropTypes.func.isRequired
+  setMenu: PropTypes.func.isRequired,
+  videosTutorial: PropTypes.array,
 }
 
 LayoutNavbar.defaultProps = {
@@ -245,5 +324,6 @@ export default connect(store => ({
   navbarBg: store.theme.navbarBg,
   userConnect: store.auth.user,
   enterpriseSucursal: store.enterpriseSucursal,
-  displayMessageNav: store.menu.displayMessageNav
+  displayMessageNav: store.menu.displayMessageNav,
+  videosTutorial : store.videoTutorial.videos
 }),mapDispatchToProps())(LayoutNavbar)

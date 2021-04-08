@@ -78,11 +78,11 @@ const ListProductPage = (props) =>{
         Cell : props1 => {
           const { original } = props1.cell.row
           return ( 
-                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione" drop="left" block="true">
-                  <Dropdown.Item onClick={() => {updateListHandler(original)}}>Modificar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => {addDetailHandler(original)}}>Agregar Detalles</Dropdown.Item>
-                  <Dropdown.Item onClick={() => {destroyListHandler(original)}}>Eliminar</Dropdown.Item>
-                </DropdownButton>
+            <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione" drop="left" block="true">
+              <Dropdown.Item onClick={() => {updateListHandler(original)}}>Modificar</Dropdown.Item>
+              <Dropdown.Item onClick={() => {addDetailHandler(original)}}>Agregar Detalles</Dropdown.Item>
+              <Dropdown.Item onClick={() => {destroyListHandler(original)}}>Eliminar</Dropdown.Item>
+            </DropdownButton>
           )
         }
       }

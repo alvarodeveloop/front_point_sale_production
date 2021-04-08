@@ -48,6 +48,7 @@ const Styles = styled.div`
     padding: 0.5rem;
     display: flex;
     justify-content: center;
+    align-items: center;
   }
 
   .table_responsive_eddit{

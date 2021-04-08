@@ -388,7 +388,6 @@ const GuideDispatchPage = (props) => {
       })
       setDisplayLoading(false)
     } catch (error) {
-      console.log(error,"aqui ========================");
       toast.error("No se ha podido cargar la guía , intentelo de nuevo por favor")
       setTimeout(() => {
         props.history.goBack()

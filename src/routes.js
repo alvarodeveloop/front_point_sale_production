@@ -280,4 +280,8 @@ export const routes = [
     path: '/cashBox/:id',
     component: lazy(() => import('./pages/CashBoxDetailPage'))
   },
+  {
+    path: '/videoTutorials',
+    component: lazy(() => import('./pages/VideoTutorialPage'))
+  },
 ]

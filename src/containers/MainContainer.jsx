@@ -1,20 +1,20 @@
-import React,{ useState,useEffect } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { Redirect } from 'react-router-dom'
-import  'styles/AuthStyle.css'
-import { login,logout } from 'actions/auth'
-import { resetCart } from 'actions/cart'
-import Layout1 from 'shared/layouts/Layout1'
-import { setMenu, removeMenu } from 'actions/menu'
-import { setConfigStore, setConfig, removeConfig } from 'actions/configs'
-
-import { setEnterprises, setBranchOffices, removeData, setIdEnterprise, setIdBranchOffice} from 'actions/enterpriseSucursal'
-import { API_URL } from 'utils/constants'
-import { ToastContainer, toast } from 'react-toastify'
-import { setAuthorizationToken } from 'utils/functions'
-import axios from 'axios'
-import LoadingComponent from "components/LoadingComponent"
+import React,{ useState,useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import  'styles/AuthStyle.css';
+import { login,logout } from 'actions/auth';
+import { resetCart } from 'actions/cart';
+import Layout1 from 'shared/layouts/Layout1';
+import { setMenu, removeMenu } from 'actions/menu';
+import { setConfigStore, setConfig, removeConfig } from 'actions/configs';
+import { setVideos, cleanVideos } from 'actions/videoTutorial';
+import { setEnterprises, setBranchOffices, removeData, setIdEnterprise, setIdBranchOffice} from 'actions/enterpriseSucursal';
+import { API_URL } from 'utils/constants';
+import { ToastContainer, toast } from 'react-toastify';
+import { setAuthorizationToken } from 'utils/functions';
+import axios from 'axios';
+import LoadingComponent from "components/LoadingComponent";
 
 const MainContainer = props => {
     
@@ -34,41 +34,40 @@ const MainContainer = props => {
               axios.get(API_URL+'config_general/'+1),
               axios.get(API_URL+'config_store'),
               axios.get(API_URL+'refreshTokenNuxo'),
-            ]
+              axios.get(API_URL+'videoTutorial'),
+            ];
 
             if( props.userSession.id_rol === 2 || props.userSession.id_rol === 9){
               promises.push(
                 axios.get(API_URL+'enterprises_branch_office') // petición para traer las empresas y las sucursales a los dueños de empresas
-              )
+              );
             }
 
             try {
 
               let response = await Promise.all(promises)
-              localStorage.setItem('configGeneral',JSON.stringify(response[0].data))
-              localStorage.setItem('configStore',JSON.stringify(response[1].data))
-              props.setConfig(response[0].data)
-              props.setConfigStore(response[1].data)
+              localStorage.setItem('configGeneral',JSON.stringify(response[0].data));
+              localStorage.setItem('configStore',JSON.stringify(response[1].data));
+              props.setConfig(response[0].data);
+              props.setConfigStore(response[1].data);
+              props.setVideos(response[3].data);
               if(localStorage.getItem('id_enterprise')){
-                props.setIdEnterprise(localStorage.getItem('id_enterprise'))
+                props.setIdEnterprise(localStorage.getItem('id_enterprise'));
               }
               if(localStorage.getItem('id_branch_office')){
-                props.setIdBranchOffice(localStorage.getItem('id_branch_office'))
+                props.setIdBranchOffice(localStorage.getItem('id_branch_office'));
               }
               if(response[2].data.token){
-                setAuthorizationToken(response[2].data.token)
-                localStorage.setItem("token",response[2].data.token)
+                setAuthorizationToken(response[2].data.token);
+                localStorage.setItem("token",response[2].data.token);
               }
-              if(response.length > 3){
-                props.setEnterprises(response[3].data.enterprises)
-                props.setBranchOffices(response[3].data.branchOffices)
+              if(response.length > 4){
+                props.setEnterprises(response[4].data.enterprises);
+                props.setBranchOffices(response[4].data.branchOffices);
               }
-              setIsLoading(false)
+              setIsLoading(false);
             } catch (e) {
-              logoutUserByTokenExpired(e)
-              /*setIsLoading(false)
-              console.log(e,e.response);
-              toast.error('Error, contacte con soporte si este error persiste')*/
+              logoutUserByTokenExpired(e);
             }
           }
         }
@@ -163,7 +162,9 @@ MainContainer.propTypes = {
     setIdBranchOffice: PropTypes.func.isRequired,
     setConfigStore: PropTypes.func.isRequired,
     setConfig: PropTypes.func.isRequired,
-    removeConfig: PropTypes.func.isRequired
+    removeConfig: PropTypes.func.isRequired,
+    setVideos: PropTypes.func,
+    cleanVideos: PropTypes.func,
 }
 
 function mapStateToProps(state){
@@ -188,7 +189,11 @@ function mapDispatchToProps(){
       removeData,
       setIdEnterprise,
       setIdBranchOffice,
-      setConfigStore, setConfig, removeConfig
+      setConfigStore, 
+      setConfig, 
+      removeConfig,
+      setVideos, 
+      cleanVideos
     }
 }
 

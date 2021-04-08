@@ -415,13 +415,11 @@ const CotizationPage = (props) => {
     // funcion para manejar el submit de los gastos y agglos a la tabla de gastos
     setGastosDetail([...gastosDetail,data])
   }
-  const handleHideModalClient = () => {
+  const handleHideModalClient = (isCreated) => {
     setIsShowModalClient(false)
-    fetchData(true)
-  }
-
-  const handleHideModalProduct = () => {
-    setIsShowModalProduct(false)
+    if(isCreated){
+      fetchData(true)
+    }
   }
 
   const handleModalContacts = () => {
@@ -430,13 +428,6 @@ const CotizationPage = (props) => {
 
   const handleModalSeller = () => {
     setIsShowModalSeller(!isShowModalSeller)
-  }
-
-
-  const removeItemDetail = data => {
-    setDetailProducts(detail => {
-      return detail.filter(v => v.name_product !== data.name_product)
-    })
   }
 
   const saveCotizacion = type => {

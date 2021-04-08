@@ -88,7 +88,7 @@ const ClientInvoiceComponet = (props) => {
               toast.error('Error, contacte con soporte')
             }
           }
-       }else{
+        }else{
           try {
             let receptor = await axios.get(API_URL+'search_receptor/'+val.split('-')[0]+'/'+val.split('-')[1])
             if(receptor.data){
@@ -157,7 +157,6 @@ const ClientInvoiceComponet = (props) => {
   
           }else{
             let receptor = await axios.get(API_URL+"get_receptor_invoice_excenta/"+props.cotizationData.facturaId+"/"+val)
-            console.log(receptor,"aqui el receptor ========================");
             props.setCotizationData(oldData => {
               let objectReturn = Object.assign({},oldData,{
                 rut_client : receptor.data.receptor.rut +"-"+ receptor.data.receptor.dv,
@@ -192,8 +191,26 @@ const ClientInvoiceComponet = (props) => {
   }
 
   const handleSelectClient = data => {
-    let data_document = data.split('/')[1]
-    if(props.isType === "cotizacion" || props.isType === "sale_note"){
+    let id = data.split('/')[1];
+    let lookForClient;
+    if(id.indexOf("-") !== -1){
+      id = id.split("-");
+      lookForClient = props.clients.find(v => v.data_document === id[0] && v.dv.toString() === id[1]);
+    }else{
+      lookForClient = props.clients.find(v => v.data_document === id);
+    }
+    
+    props.setCotizationData(currentData => {
+      return Object.assign({},currentData,{
+        rut_client: Array.isArray(id) ? id.join("-") : id,
+        business_name_client: lookForClient.bussines_name ? lookForClient.bussines_name : lookForClient.name_client,
+        address_client: lookForClient.address,
+        city_client: lookForClient.city,
+        comuna_client: lookForClient.comuna
+      })
+    })
+
+    /*if(props.isType === "cotizacion" || props.isType === "sale_note"){
       searchClientByApiFacturacion(data_document)
     }else{
       if(props.cotizationData.type_invoicing){
@@ -201,7 +218,7 @@ const ClientInvoiceComponet = (props) => {
       }else{
 
       }
-    }
+    }*/
   }
 
   const handleResetValueClient = () => {

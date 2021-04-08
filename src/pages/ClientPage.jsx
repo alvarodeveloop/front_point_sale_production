@@ -35,7 +35,7 @@ const ClientPage = (props) => {
   const [clientUpdate, setClientUpdate] = useState(null)
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [displayLoading, setDisplayLoading] = useState(true)
-
+  
   useEffect(() => {
     fetchData()
   },[props.id_branch_office])
@@ -219,6 +219,10 @@ const ClientPage = (props) => {
 
   const downloadExcelUploadTemplate = () => {
     window.open(API_URL+"documents/client/upload_client.xlsx","_blank");
+    document.getElementById("div_alert").style.display = "block";
+    setTimeout(() => {
+      document.getElementById("div_alert").style.display = "none";
+    },10000);
   }
 
   const exportClientsHandler = () => {
@@ -292,6 +296,12 @@ const ClientPage = (props) => {
                 <Dropdown.Item onClick={importClientsHandlder}>Importar Clientes</Dropdown.Item>
                 <Dropdown.Item onClick={exportClientsHandler}>Exportar Clientes</Dropdown.Item>
               </DropdownButton>
+            </Col>
+          </Row>
+          <Row id="div_alert" style={{display: "none"}} className="animate__animated animate__fadeInLeft">
+            <Col className="text-center">
+              <br/>
+              <p className="text-danger">Si va a ingresar un rut, en el campo número de documento del excel ingrese el rut separado de su dv por un guión.</p>
             </Col>
           </Row>
           <hr/>
