@@ -24,17 +24,12 @@ const MainContainer = props => {
         if(props.isLogin){
           if(props.menu.length === 0){
             setIsLoading(true)
-            let menuResult = await axios.get(API_URL+'menu_user');
-            if(!menuResult.status && menuResult.status !== 200){
-              logoutUserByTokenExpired(menuResult);
-              return
-            }
-            props.setMenu(menuResult.data);
             let promises = [
               axios.get(API_URL+'config_general/'+1),
               axios.get(API_URL+'config_store'),
               axios.get(API_URL+'refreshTokenNuxo'),
               axios.get(API_URL+'videoTutorial'),
+              axios.get(API_URL+'menu_user')
             ];
 
             if( props.userSession.id_rol === 2 || props.userSession.id_rol === 9){
@@ -51,6 +46,7 @@ const MainContainer = props => {
               props.setConfig(response[0].data);
               props.setConfigStore(response[1].data);
               props.setVideos(response[3].data);
+              props.setMenu(response[4].data);
               if(localStorage.getItem('id_enterprise')){
                 props.setIdEnterprise(localStorage.getItem('id_enterprise'));
               }
@@ -61,9 +57,9 @@ const MainContainer = props => {
                 setAuthorizationToken(response[2].data.token);
                 localStorage.setItem("token",response[2].data.token);
               }
-              if(response.length > 4){
-                props.setEnterprises(response[4].data.enterprises);
-                props.setBranchOffices(response[4].data.branchOffices);
+              if(response.length > 5){
+                props.setEnterprises(response[5].data.enterprises);
+                props.setBranchOffices(response[5].data.branchOffices);
               }
               setIsLoading(false);
             } catch (e) {
@@ -95,7 +91,6 @@ const MainContainer = props => {
     },[props.isLogin])
 
     const handleLogoutUser = async () => {
-      console.log("aqui sa mamageuebada");
       props.logout()
       localStorage.removeItem('user')
       localStorage.removeItem('token')
@@ -118,6 +113,8 @@ const MainContainer = props => {
           setTimeout(() => {
             handleLogoutUser()
           },1500)
+        }else{
+          toast.error(err.response.data.message);  
         }
       }else{
         console.log(err);

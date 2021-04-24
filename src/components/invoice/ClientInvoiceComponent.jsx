@@ -16,6 +16,7 @@ import axios from 'axios'
 import {formatRut} from 'utils/functions'
 import {API_URL,API_FACTURACION} from 'utils/constants'
 import LoadingComponent from 'components/LoadingComponent'
+import { arraySaleNote, arrayBoleta, arrayGuide,arrayInvoice } from 'utils/constants';
 
 
 const ClientInvoiceComponet = (props) => {
@@ -25,6 +26,7 @@ const ClientInvoiceComponet = (props) => {
   const [clientDetail,setClientDetail] = useState({})
   const [readonlyRut,setReadonlyRut] = useState(false)
   const [displayLoading, setDisplayLoading] = useState(false)
+  let arrayInvoiceMerge = [...arraySaleNote,...arrayInvoice]; 
 
   useEffect(() => {
     if(props.cotizationData.searchReceptorDefault){
@@ -58,7 +60,7 @@ const ClientInvoiceComponet = (props) => {
      if(val){
        toast.info('Buscando Receptor, espere por favor')
        setDisplayLoading(true)
-        if(props.isType === "guide"){
+        if(arrayGuide.includes(props.isType)){
           try {
             let receptor = await axios.get(API_URL+'search_receptor_guide/'+props.cotizationData.facturaId+"/"+val)
             if(!receptor.data.error){
@@ -132,7 +134,6 @@ const ClientInvoiceComponet = (props) => {
           if(props.cotizationData.type_invoicing === true){
 
             let result = await axios.get(API_URL+'get_client_invoice/'+props.cotizationData.facturaId+'/'+val.split('-')[0]+'/'+val.split('-')[1])
-            console.log(result,"aqui mmgbo");
             let girosReceptor = API_FACTURACION ? result.data.girosReceptor : {"id":1,"nombre":"ACTIVIDADES DE CONSULTORIA DE INFORMATIC"}
             let tipo_compra = API_FACTURACION ? result.data.TipoDeCompra : {"id":1,"valor":"1","nombre":"Del Giro"}
   
@@ -171,7 +172,6 @@ const ClientInvoiceComponet = (props) => {
                 type_buy_client : receptor.data.receptor.tipoDeCompraId.toString(),
                 type_buy_client_array : Array.isArray(receptor.data.TipoDeCompra) ? receptor.data.TipoDeCompra : [receptor.data.TipoDeCompra],
               })
-              console.log(objectReturn,"aqui el objectreturn");
               return objectReturn
             })
             setReadonlyRut(true)
@@ -179,7 +179,7 @@ const ClientInvoiceComponet = (props) => {
           }
         }else{
           // si es nota de venta
-          if(props.isType === "sale_note"){
+          if(arraySaleNote.includes(props.isType)){
             searchClientByApiFacturacion(val)
           }
         }
@@ -199,18 +199,20 @@ const ClientInvoiceComponet = (props) => {
     }else{
       lookForClient = props.clients.find(v => v.data_document === id);
     }
-    
-    props.setCotizationData(currentData => {
-      return Object.assign({},currentData,{
-        rut_client: Array.isArray(id) ? id.join("-") : id,
-        business_name_client: lookForClient.bussines_name ? lookForClient.bussines_name : lookForClient.name_client,
-        address_client: lookForClient.address,
-        city_client: lookForClient.city,
-        comuna_client: lookForClient.comuna
+    if(lookForClient){
+      props.setCotizationData(currentData => {
+        
+        return Object.assign({},currentData,{
+          rut_client: Array.isArray(id) ? id.join("-") : id,
+          business_name_client: lookForClient.bussines_name ? lookForClient.bussines_name : lookForClient.name_client,
+          address_client: lookForClient.address,
+          city_client: lookForClient.city,
+          comuna_client: lookForClient.comuna
+        })
       })
-    })
+    }
 
-    /*if(props.isType === "cotizacion" || props.isType === "sale_note"){
+    /*if(props.isType === "cotizacion" || arraySaleNote.includes(props.isType)
       searchClientByApiFacturacion(data_document)
     }else{
       if(props.cotizationData.type_invoicing){
@@ -241,7 +243,7 @@ const ClientInvoiceComponet = (props) => {
           <LoadingComponent size={75} text="buscando receptor" />
         ) : (
           <>
-            {props.isType === "cotizacion" || props.isType === "boleta" || props.isType === "guide" ? (
+            {props.isType === "cotizacion" || arrayBoleta.includes(props.isType) || arrayGuide.includes(props.isType)  ? (
               <Card.Body>
                 <Row>
                   <Col sm={4} md={4} lg={4}>
@@ -352,7 +354,7 @@ const ClientInvoiceComponet = (props) => {
                       type='select'
                       label='Dirección'
                       name='address_client'
-                      required={props.isType === "guide" ? true : false}
+                      required={arrayGuide.includes(props.isType)  ? true : false}
                       messageErrors={[
                         'Requerido*'
                       ]}
@@ -370,7 +372,7 @@ const ClientInvoiceComponet = (props) => {
                       type='text'
                       label='Dirección'
                       name='address_client'
-                      required={props.isType === "guide" ? true : false}
+                      required={arrayGuide.includes(props.isType)  ? true : false}
                       messageErrors={[
                         'Requerido*'
                       ]}
@@ -385,7 +387,7 @@ const ClientInvoiceComponet = (props) => {
                     type='text'
                     label='Ciudad'
                     name='city_client'
-                    required={props.isType === "guide" ? true : false}
+                    required={arrayGuide.includes(props.isType)  ? true : false}
                     messageErrors={[
                       'Requerido*'
                     ]}
@@ -397,7 +399,7 @@ const ClientInvoiceComponet = (props) => {
                     type='text'
                     label='Comuna'
                     name='comuna_client'
-                    required={props.isType === "guide" ? true : false}
+                    required={arrayGuide.includes(props.isType)  ? true : false}
                     messageErrors={[
                       'Requerido*'
                     ]}
@@ -405,7 +407,7 @@ const ClientInvoiceComponet = (props) => {
                     value={props.cotizationData.comuna_client}
                     handleChange={onChange}
                   />
-                  {props.isType === "guide" ? (
+                  {arrayGuide.includes(props.isType)  ? (
                     <React.Fragment>
                       <InputField
                         type='text'
@@ -422,7 +424,7 @@ const ClientInvoiceComponet = (props) => {
                     </React.Fragment>
                   ) : ''}
                 </Row>
-                {props.isType === "guide" ? (
+                {arrayGuide.includes(props.isType)  ? (
                   <Row>
                     {props.cotizationData.spin_client_array.length > 0 ? (
                       <InputField
@@ -490,10 +492,10 @@ const ClientInvoiceComponet = (props) => {
                       )}
                   </Row>
                 ) : ''}
-                {props.isType !== "boleta" && props.isType !== "guide" ? (
+                {!arrayBoleta.includes(props.isType) && !arrayGuide.includes(props.type) ? (
                   <React.Fragment>
                     <br/>
-                    <Row style={{borderBottom: '1px solid rgb(229, 227, 231)'}}>
+                    <Row>
                       <Col sm={8} md={8} lg={8}>
                         <h4 className="title_principal">Contactos Asignados al Receptor</h4>
                       </Col>
@@ -539,7 +541,7 @@ const ClientInvoiceComponet = (props) => {
                         handleChange={onChange}
                         />
                     </Row>
-                    <Row style={{borderBottom: '1px solid rgb(229, 227, 231)'}}>
+                    <Row>
                       <Col sm={8} md={8} lg={8}>
                         <h4 className="title_principal">Vendedor Asignado</h4>
                       </Col>
@@ -589,7 +591,7 @@ const ClientInvoiceComponet = (props) => {
                   </React.Fragment>
                 ) : ''}
               </Card.Body>
-            ) : props.isType === "facturacion" || props.isType === "sale_note" ? (
+            ) : arrayInvoiceMerge.includes(props.isType) ? (
               <Card.Body>
                 <Row>
                   <Col sm={4} md={4} lg={4}>
@@ -675,7 +677,7 @@ const ClientInvoiceComponet = (props) => {
                   label='Rut'
                   name='rut_client'
                   readonly={readonlyRut}
-                  required={props.isType === "sale_note" ? false : true}
+                  required={arraySaleNote.includes(props.isType) ? false : true}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -687,7 +689,7 @@ const ClientInvoiceComponet = (props) => {
                     type='text'
                     label='Razón Social'
                     name='business_name_client'
-                    required={props.isType === "sale_note" ? false : true}
+                    required={arraySaleNote.includes(props.isType) ? false : true}
                     messageErrors={[
                     'Requerido*'
                     ]}
@@ -700,7 +702,7 @@ const ClientInvoiceComponet = (props) => {
                     type='select'
                     label='Direccion'
                     name='address_client'
-                    required={!props.cotizationData.type_invoicing && props.isType !== "sale_note" ? true : false}
+                    required={!props.cotizationData.type_invoicing && !arraySaleNote.includes(props.isType) ? true : false}
                     messageErrors={[
                       'Requerido*'
                     ]}
@@ -717,7 +719,7 @@ const ClientInvoiceComponet = (props) => {
                     type='text'
                     label={'Direccion'}
                     name='address_client'
-                    required={!props.cotizationData.type_invoicing && props.isType !== "sale_note" ? true : false}
+                    required={!props.cotizationData.type_invoicing && !arraySaleNote.includes(props.isType) ? true : false}
                     messageErrors={[
                       'Requerido*'
                     ]}
@@ -732,7 +734,7 @@ const ClientInvoiceComponet = (props) => {
                   type='text'
                   label='Ciudad'
                   name='city_client'
-                  required={!props.cotizationData.type_invoicing && props.isType !== "sale_note" ? true : false}
+                  required={!props.cotizationData.type_invoicing && !arraySaleNote.includes(props.isType) ? true : false}
                   messageErrors={[
 
                   ]}
@@ -744,7 +746,7 @@ const ClientInvoiceComponet = (props) => {
                     type='text'
                     label='Comuna'
                     name='comuna_client'
-                    required={!props.cotizationData.type_invoicing && props.isType !== "sale_note" ? true : false}
+                    required={!props.cotizationData.type_invoicing && !arraySaleNote.includes(props.isType) ? true : false}
                     messageErrors={[
                     'Requerido*'
                     ]}
@@ -775,7 +777,7 @@ const ClientInvoiceComponet = (props) => {
                       type='text'
                       label='Giro'
                       name='spin_client'
-                      required={!props.cotizationData.type_invoicing && props.isType !== "sale_note" ? true : false}
+                      required={!props.cotizationData.type_invoicing && !arraySaleNote.includes(props.isType) ? true : false}
                       messageErrors={[
                         'Requerido*'
                       ]}
@@ -792,7 +794,7 @@ const ClientInvoiceComponet = (props) => {
                         label='Tipo de Compra'
                         name='type_buy_client'
                         placeholder={props.cotizationData.type_invoicing ? "opcional" : ""}
-                        required={props.cotizationData.type_invoicing && props.isType === "sale_note" ? false : true}
+                        required={props.cotizationData.type_invoicing && arraySaleNote.includes(props.isType) ? false : true}
                         messageErrors={[
                           'Requerido*'
                         ]}
@@ -811,7 +813,7 @@ const ClientInvoiceComponet = (props) => {
                         label='Tipo de Compra'
                         name='type_buy_client'
                         placeholder={props.cotizationData.type_invoicing ? "opcional" : ""}
-                        required={props.cotizationData.type_invoicing && props.isType === "sale_note" ? false : true}
+                        required={props.cotizationData.type_invoicing && arraySaleNote.includes(props.isType) ? false : true}
                         messageErrors={[
                           'Requerido*'
                         ]}
@@ -821,7 +823,7 @@ const ClientInvoiceComponet = (props) => {
                       />
                      )}
                 </Row>
-                <Row style={{borderBottom: '1px solid rgb(229, 227, 231)'}}>
+                <Row>
                   <Col sm={8} md={8} lg={8}>
                     <h4 className="title_principal">Contactos Asignados al Receptor</h4>
                   </Col>
@@ -835,7 +837,7 @@ const ClientInvoiceComponet = (props) => {
                   type='text'
                   label='Nombre Contacto'
                   name='name_contact'
-                  required={props.isType === "sale_note" ? false : true}
+                  required={arraySaleNote.includes(props.isType) ? false : true}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -868,7 +870,7 @@ const ClientInvoiceComponet = (props) => {
                   handleChange={onChange}
                   />
                 </Row>
-                <Row style={{borderBottom: '1px solid rgb(229, 227, 231)'}}>
+                <Row>
                   <Col sm={8} md={8} lg={8}>
                     <h4 className="title_principal">Vendedor Asignado</h4>
                   </Col>

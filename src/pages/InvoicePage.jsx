@@ -75,6 +75,10 @@ const InvoiceSearchPage = props => {
           accessor: 'ref_guide',
         },
         {
+          Header: 'Ref Nota Venta',
+          accessor: 'ref_sale_note',
+        },
+        {
           Header: 'Rut Cliente',
           accessor: 'rut_client',
         },

@@ -57,11 +57,12 @@ const TableBondsBillComponent = (props) => {
 
   return (
     <Styles>
-      <Row>
-        <Col sm={12} md={12} lg={12} className="text-center">
-          <h4 className="title_principal">Agregar pago a la boleta</h4>
+      <Row className="justify-content-center">
+        <Col sm={5} md={5} lg={5} className="text-center">
+          <Button size="sm" variant="danger" block={true} onClick={addPayment}>Agregar pago a la boleta <FaPlusCircle /></Button>
         </Col>
       </Row>
+      <br/>
       <Row className="">
         <Col sm={12} md={12} lg={12} className="table_responsive">
           <table className="table table-bordered">
@@ -151,10 +152,11 @@ const TableBondsBillComponent = (props) => {
         </Col>
       </Row>
       <Row className="justify-content-center">
-        <Col sm={1} md={1} lg={1}>
-          <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Agregar pago a la boleta</Tooltip>}>
-            <Button className="button_product_base" size="sm" variant="danger" block={true} onClick={addPayment}><FaPlusCircle /></Button>
-          </OverlayTrigger>
+        <Col sm={4} md={4} lg={4}>
+          <Button size="sm" block={true} type="button" onClick={() => props.changeSection(5,false)} variant="secondary">Atrás</Button>
+        </Col>
+        <Col sm={4} md={4} lg={4}>
+        <Button size="sm" block={true} type="button" onClick={() => props.changeSection(7,true)} variant="secondary">siguiente</Button>
         </Col>
       </Row>
     </Styles>
@@ -165,6 +167,7 @@ TableBondsBillComponent.propTypes = {
   detailBonds : PropTypes.array.isRequired,
   setDetailBonds: PropTypes.func.isRequired,
   typePayments: PropTypes.array.isRequired,
+  changeSection: PropTypes.func,
 }
 
 TableBondsBillComponent.defaultProps = {

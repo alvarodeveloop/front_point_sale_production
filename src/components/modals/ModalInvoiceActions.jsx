@@ -57,22 +57,33 @@ const ModalInvoiceActions = (props) => {
                   </Col>
                 </Row>
               ) : (
-                <Row className="justify-content-center">
-                  <Col sm={3} md={3} lg={3}>
-                    <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
-                  </Col>
-                  <Col sm={3} md={3} lg={3}>
-                    <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToBond(props.cotization)} block={true}>Pagos <FaFilePdf /></Button>
-                  </Col>
-                  <Col sm={3} md={3} lg={3}>
-                    <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printInvoice(props.cotization)} block={true}>Ver factura pdf <FaFilePdf /></Button>
-                  </Col>
-                  {props.cotization.type == 2 ? (
+                <>
+                  <Row className="justify-content-between">
                     <Col sm={3} md={3} lg={3}>
-                      <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printInvoice(props.cotization,3)} block={true}>Generar nueva factura pdf <FaFilePdf /></Button>
+                      <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
                     </Col>
-                  ) : ''}
-                </Row>
+                    {!props.cotization.is_invoiced ? (
+                      <Col sm={3} md={3} lg={3}>
+                        <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToBond(props.cotization)} block={true}>Pagos <FaFilePdf /></Button>
+                      </Col>
+                    ) : ""}
+                    <Col sm={3} md={3} lg={3}>
+                      <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printInvoice(props.cotization)} block={true}>Ver factura pdf <FaFilePdf /></Button>
+                    </Col>
+                    {props.cotization.type == 2 ? (
+                      <Col sm={3} md={3} lg={3}>
+                        <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printInvoice(props.cotization,3)} block={true}>Generar nueva factura pdf <FaFilePdf /></Button>
+                      </Col>
+                    ) : ''}
+                    {props.cotization.type === 2 && !props.cotization.ref_sale_note ? (
+                        <Col sm={3} md={3} lg={3}>
+                          {!props.cotization.is_invoiced ? <br/> : ""}
+                          <Button size="sm" variant="secondary" type="button" onClick={(e) => props.invoiceBySaleNote(props.cotization,3)} block={true}>Facturar <FaFilePdf /></Button>
+                        </Col>
+                    ) : ""}
+                  </Row>
+                </>
+
               )}
               <br/>
                <Row className="justify-content-center">
@@ -121,6 +132,7 @@ ModalInvoiceActions.propTypes = {
   isInvoice: PropTypes.bool,
   isGuide: PropTypes.bool,
   isLoading : PropTypes.bool,
+  invoiceBySaleNote: PropTypes.func,
 }
 
 export default ModalInvoiceActions

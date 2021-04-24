@@ -210,10 +210,20 @@ export let OBJECT_COTIZATION = {
   name_driver: '',
   type_transfer_trasmitter_array : [],
   type_transfer_trasmitter : "",
+  id_guide : "",
 }
 
+export const arrayInvoice = ["facturacion","facturacionByCotizacion","invoiceByGuide","invoiceBySaleNote"];
+export const arraySaleNote = ["saleNote","saleNoteByCotizacion"];
+export const arrayBoleta = ["boleta","boletaByCotizacion"];
+export const arrayGuide = ["guide","guideByCotizacion"];
+export const arrayById = ["facturacionByCotizacion","saleNoteByCotizacion","guideByCotizacion","boletaByCotizacion","cotizacion","invoiceByGuide","invoiceBySaleNote"];
+export const arrayFacturarInvoice = ["saleNote","facturacion","boleta","invoiceByGuide","invoiceBySaleNote"];
+export const arrayFacturarCotizacion = ["facturacionByCotizacion","saleNoteByCotizacion","boletaByCotizacion","guideByCotizacion"];
+export const arraySearchDefaultInvoiceRecetor = ["facturacion","invoiceByGuide","invoiceBySaleNote"]; 
+
 export const API_FACTURACION = true
-// export const API_URL = 'http://localhost:9000/'
-// export const FRONT_URL = 'http://localhost:3000/quotitation/create_quotitation'
-export const API_URL = 'https://host-aidy.vertragtech.com/'
-export const FRONT_URL = 'https://host-aidy.vertragtech.com/quotitation/create_quotitation'
+export const API_URL = 'http://localhost:9000/'
+export const FRONT_URL = 'http://localhost:3000/quotitation/create_quotitation'
+// export const API_URL = 'https://host-aidy.vertragtech.com/'
+// export const FRONT_URL = 'https://host-aidy.vertragtech.com/quotitation/create_quotitation'

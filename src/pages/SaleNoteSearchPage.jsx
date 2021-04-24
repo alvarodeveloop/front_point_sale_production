@@ -404,6 +404,11 @@ const SaleNoteSearchPage = props => {
       props.tokenExpired(err)
     })
   }
+
+  const invoiceBySaleNoteHandler = (saleNoteData) => {
+    props.history.replace("/invoice/create_invoice_by_sale_note/"+saleNoteData.id);
+  }
+
   return (
 
     <Container fluid>
@@ -453,6 +458,7 @@ const SaleNoteSearchPage = props => {
         goToBond={goToBond}
         anulateInvoice={anulateInvoice}
         seeDetailCotization={seeDetailCotization}
+        invoiceBySaleNote={invoiceBySaleNoteHandler}
       />
     </Container>
   )

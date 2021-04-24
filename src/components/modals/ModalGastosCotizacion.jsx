@@ -14,6 +14,7 @@ import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
 import InputField from 'components/input/InputComponent'
+import InputFieldRef from 'components/input/InputComponentRef'
 
 const ModalGastosCotizacion = (props) => {
 
@@ -82,17 +83,17 @@ const ModalGastosCotizacion = (props) => {
       <Modal.Body>
         <Form onSubmit={handleSubmit} noValidate validated={validateForm}>
           <Row>
-            <Col sm={6} md={6} lg={6}>
-              <label className="form-control-label">Descripción</label>
-              <input className="form-control"
-                {...props.inputDescription}
-                value={gastoNew.description}
-                onChange={onChange}
-                ref={inputElement} />
-                <Form.Control.Feedback type="invalid">
-                  <span className="error-input">'Requerido*'</span>
-                </Form.Control.Feedback>
-            </Col>
+            <InputFieldRef 
+              {...props.inputDescription}
+              value={gastoNew.description}
+              handleChange={onChange}
+              cols="col-6 col-xs-12"
+              messageErrors={[
+                "Requerido"
+              ]}
+              ref={inputElement}
+              label="Descripción"  
+            />
             <InputField
               {...props.inputAmount}
               value={gastoNew.amount}
@@ -110,7 +111,7 @@ const ModalGastosCotizacion = (props) => {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button size="sm" variant="secondary" onClick={handleHide}>Cerrar</Button>
+        <Button size="md" variant="secondary" onClick={handleHide}>Cerrar</Button>
       </Modal.Footer>
     </Modal>
   )

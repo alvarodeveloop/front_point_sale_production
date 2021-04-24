@@ -7,7 +7,8 @@ import {
   DropdownButton,
   Dropdown,
   OverlayTrigger,
-  Tooltip
+  Tooltip,
+  Button
 } from 'react-bootstrap'
 import TableProductsCotization from 'components/TableProductsCotization'
 import InputField from 'components/input/InputComponent'
@@ -23,7 +24,7 @@ const ProductTableComponent = (props) => {
   const [isShowModalProduct,setIsShowModalProduct] = useState(false)
   const [displayLoading, setDisplayLoading] = useState(false)
   useEffect(() => {
-    document.querySelector(".button_product > button").className = document.querySelector(".button_product > button").className.replace('dropdown-toggle','')
+    
   },[])
 
   const addNewProductIrregular = type => {
@@ -87,106 +88,111 @@ const ProductTableComponent = (props) => {
   }
 
   return (
-    <Row className="">
-      <Col sm={12} md={12} lg={12}>
-        <Row className="">
-          <Col sm={12} md={12} lg={12} xs={12}>
-            <h4 className="title_principal text-center">Tabla de Productos</h4>
-          </Col>
-        </Row>
-        <br/>
-        <Row>
-          <Col sm={6} md={6} lg={6}>
-            <Row>
-              <Col sm={12} md={12} lg={12} className="text-center">
-                <b>Configuración para los productos</b>
-              </Col>
-            </Row>
-            <Row className="justify-content-center">
-              <Col sm={4} md={4} lg={4}>
-                <Form.Group>
-                  <Form.Check
-                    name="total_with_iva"
-                    type={'radio'}
-                    id={`radio-3`}
-                    label={`Con Iva`}
-                    value={true}
-                    checked={props.cotizationData.total_with_iva}
-                    onChange={props.onChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row className="justify-content-center">
-              <Col sm={4} md={4} lg={4}>
-                <Form.Group>
-                  <Form.Check
-                    name="total_with_iva"
-                    type={'radio'}
-                    id={`radio-4`}
-                    label={`Solo totales`}
-                    value={false}
-                    checked={!props.cotizationData.total_with_iva}
-                    onChange={props.onChange}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-          </Col>
-          <Col sm={6} md={6} lg={6}>
-            <Row>
-              <InputField
-                type='select'
-                label='Listado de Productos'
-                name='price_list'
-                required={false}
-                messageErrors={[
-                  'Requerido*'
-                ]}
-                cols='col-md-12 col-lg-12 col-sm-12'
-                handleChange={changeListProductHandler}
-              >
-                <option value="">--Seleccione--</option>
-                {props.listData.map((v,i) => <option key={i} value={v.id}>{v.name}</option>)}
-              </InputField>
-            </Row>
-          </Col>
-        </Row>
-        {displayLoading ? (
-          <LoadingComponent />
-        ) : (
-          <>
-            <TableProductsCotization
-              setDetailProducts={props.setDetailProducts}
-              detailProducts={props.detailProducts}
-              isShowIva={props.cotizationData.total_with_iva}
-              setGastosDetail={props.setGastosDetail}
-            />
-            <Row className="justify-content-center">
-              <Col sm={1} md={1} lg={1}>
-                <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Producto a la Cotización</Tooltip>}>
-                  <DropdownButton size="sm" variant="danger" id={'dropdown_product'} title={(<FaPlusCircle />)} className="button_product">
-                    <Dropdown.Item onClick={() => setIsShowModalProduct(true) }>Agregar Producto desde Inventario</Dropdown.Item>
-                    {/*<Dropdown.Item onClick={() => addNewProductIrregular(true)}>Agregar producto (valor neto) </Dropdown.Item>*/}
-                    <Dropdown.Item onClick={() => addNewProductIrregular(false)}>Agregar producto</Dropdown.Item>
-                  </DropdownButton>
-                </OverlayTrigger>
-              </Col>
-            </Row>
-          </>
-        )}
-      </Col>
-      <Col sm={12} md={12} lg={12}>
-        <ModalCotizacionProduct
-          isShow={isShowModalProduct}
-          onHide={handleHideModalProduct}
-          products={props.products}
-          handleSelectProduct={handleSelectProduct}
-          handleSelectProductNotRegistered={() => {}}
-          {...props}
-        />
-      </Col>
-    </Row>
+    <>
+      <Row className="">
+        <Col sm={12} md={12} lg={12}>
+          <Row className="">
+            <Col sm={12} md={12} lg={12} xs={12}>
+              <h4 className="title_principal text-center">Tabla de Productos</h4>
+            </Col>
+          </Row>
+          <br/>
+          <Row>
+            <Col sm={4} md={4} lg={4}>
+              <Row>
+                <Col sm={12} md={12} lg={12} className="text-center">
+                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltipConfigPrice">Opción para configurar como se muestran los totales de los productos y los totales en el resumen</Tooltip>}>
+                    <Form.Label>Configuración de Totales</Form.Label>
+                  </OverlayTrigger>
+                </Col>
+              </Row>
+              <Row className="justify-content-center">
+                <Col sm={5} md={5} lg={5} className="text-center">
+                  <Form.Group>
+                    <Form.Check
+                      name="total_with_iva"
+                      type={'radio'}
+                      id={`radio-3`}
+                      label={`Con Iva`}
+                      value={true}
+                      checked={props.cotizationData.total_with_iva}
+                      onChange={props.onChange}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col sm={5} md={5} lg={5}>
+                  <Form.Group>
+                    <Form.Check
+                      name="total_with_iva"
+                      type={'radio'}
+                      id={`radio-4`}
+                      label={`Solo totales`}
+                      value={false}
+                      checked={!props.cotizationData.total_with_iva}
+                      onChange={props.onChange}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+            </Col>
+            <Col sm={4} md={4} lg={4}>
+              <Row>
+                <InputField
+                  type='select'
+                  label='Listado de Productos'
+                  name='price_list'
+                  required={false}
+                  messageErrors={[
+                    'Requerido*'
+                  ]}
+                  cols='col-md-12 col-lg-12 col-sm-12'
+                  handleChange={changeListProductHandler}
+                >
+                  <option value="">--Seleccione--</option>
+                  {props.listData.map((v,i) => <option key={i} value={v.id}>{v.name}</option>)}
+                </InputField>
+              </Row>
+            </Col>
+            <Col sm={4} md={4} lg={4}> 
+              <Form.Label>Agregar producto a la {props.word2}</Form.Label>
+              <DropdownButton size="sm" variant="danger" id={'dropdown_product'} title={(<FaPlusCircle />)} className="">
+                <Dropdown.Item onClick={() => setIsShowModalProduct(true) }>Agregar Producto desde Inventario</Dropdown.Item>
+                {/*<Dropdown.Item onClick={() => addNewProductIrregular(true)}>Agregar producto (valor neto) </Dropdown.Item>*/}
+                <Dropdown.Item onClick={() => addNewProductIrregular(false)}>Agregar producto</Dropdown.Item>
+              </DropdownButton>
+            </Col>
+          </Row>
+          {displayLoading ? (
+            <LoadingComponent />
+          ) : (
+            <>
+              <div style={{width: "100%", overflowY: "auto", paddingLeft: "20px", paddingRight: "20px", maxHeight: "300px"}}>
+                <TableProductsCotization
+                  setDetailProducts={props.setDetailProducts}
+                  detailProducts={props.detailProducts}
+                  isShowIva={props.cotizationData.total_with_iva}
+                  setGastosDetail={props.setGastosDetail}
+                />
+              </div>
+              <br />
+              <Row className="justify-content-center">
+                <Col sm={4} lg={4} md={4}>
+                  <Button variant="secondary" block={true} size="sm" onClick={() => props.changeSection(2,true)} type="button">Siguiente</Button>
+                </Col>
+              </Row>
+            </>
+          )}
+        </Col>
+      </Row>
+      <ModalCotizacionProduct
+        isShow={isShowModalProduct}
+        onHide={handleHideModalProduct}
+        products={props.products}
+        handleSelectProduct={handleSelectProduct}
+        handleSelectProductNotRegistered={() => {}}
+        {...props}
+      />
+    </>
   )
 }
 
@@ -199,6 +205,9 @@ ProductTableComponent.propTypes = {
   setGastosDetail: PropTypes.func.isRequired,
   listData : PropTypes.array,
   setProducts : PropTypes.func,
+  type : PropTypes.string,
+  changeSection: PropTypes.func,
+  word2 : PropTypes.string,
 }
 
 export default ProductTableComponent

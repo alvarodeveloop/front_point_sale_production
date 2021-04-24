@@ -177,6 +177,12 @@ const RefComponent = (props) => {
           </Card>
       ) : (
         <React.Fragment>
+          <Row className="justify-content-center">
+            <Col sm={4} md={4} lg={4}>
+              <Button variant="danger" block={true} type="button" size="sm" onClick={props.addRef}>Agregar Referencia <FaPlusCircle /></Button>
+            </Col>
+          </Row>
+          <br/>
           <Row>
             <Col sm={12} md={12} lg={12} className="table-responsive">
               <table className="table table-bordered">
@@ -318,13 +324,6 @@ const RefComponent = (props) => {
                   ))}
                 </tbody>
               </table>
-            </Col>
-          </Row>
-          <Row className="justify-content-center">
-            <Col sm={1} md={1} lg={1}>
-              <OverlayTrigger placement={'right'} overlay={<Tooltip id="tooltip-disabled2">Agregar Referencia</Tooltip>}>
-                <Button className="button_product_base" variant="danger" block={true} type="button" onClick={props.addRef}><FaPlusCircle /></Button>
-              </OverlayTrigger>
             </Col>
           </Row>
         </React.Fragment>

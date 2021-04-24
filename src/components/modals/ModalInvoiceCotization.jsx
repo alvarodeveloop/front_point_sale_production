@@ -112,8 +112,8 @@ const ModalInvoiceCotization = (props) => {
       <Modal.Footer>
         {props.isLoading ? "" : (
           <>
-            <Button size="md" variant="danger" onClick={onSubmit}>Enviar</Button>
             <Button size="md" variant="secondary" onClick={handleOnHide}>cerrar</Button>
+            <Button size="md" variant="danger" onClick={onSubmit}>Enviar</Button>
           </>
         )}
       </Modal.Footer>

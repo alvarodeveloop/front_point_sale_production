@@ -136,3 +136,34 @@ body.react-confirm-alert-body-element {
     opacity: 1;
   }
 }
+
+.indicatorsCircle{
+  border-radius: 500px;
+  background-color: #f4f4f4;
+  color: dark;
+  text-align: center;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  margin-left: 10px;
+}
+
+.indicatorsCircle:hover{
+  background-color: #2286f1;
+  color: white;
+}
+
+.indicatorsCircleActive{
+  border-radius: 500px;
+  background-color: #2286f1;
+  color: white;
+  text-align: center;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  margin-left: 10px;
+}

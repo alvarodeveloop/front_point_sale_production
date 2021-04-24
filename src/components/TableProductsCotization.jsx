@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { formatNumber } from 'utils/functions'
+import { showPriceWithDecimals } from 'utils/functions'
 import InputField from 'components/input/InputComponent'
 import styled from 'styled-components'
 import { FaTrash } from 'react-icons/fa'
@@ -48,7 +48,6 @@ const TableProductsCotization = (props) => {
 
   const displayTotal = productData => {
     let product = Object.assign({},productData)
-    let configStore = props.configStore
 
     if(product.is_neto){
       product.price = product.discount ? ( parseFloat(product.price) - (( parseFloat(product.price) *  product.discount) / 100 ) ) : product.price
@@ -61,7 +60,7 @@ const TableProductsCotization = (props) => {
 
       }
     }
-    return formatNumber(parseFloat(product.price) * product.quantity,2,',','.')
+    return showPriceWithDecimals(props.configGeneral,parseFloat(product.price) * product.quantity);
   }
 
   return (

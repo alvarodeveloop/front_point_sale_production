@@ -121,3 +121,103 @@ export const base64ToArrayBuffer = data => {
     }
     return bytes;
 }
+
+
+export const displayTotalProduct = (detailProducts,discountGlobal,totalWithIva,tax) => {
+  let total = 0
+  detailProducts.forEach((item, i) => {
+
+    let item1 = Object.assign({},item)
+
+    if(item1.is_neto){
+      item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+      item1.price = discountGlobal ? parseFloat(item1.price) - ((item1.price * discountGlobal) / 100) : item1.price
+    }else{
+      if(totalWithIva){
+        item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+        item1.price = discountGlobal ? parseFloat(item1.price) - ((item1.price * discountGlobal) / 100) : item1.price
+      }else{
+        item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price
+        item1.price = discountGlobal ? parseFloat(item1.price) - ((item1.price * discountGlobal) / 100) : item1.price
+        item1.price = parseFloat( (item1.price * tax) / 100) + parseFloat(item1.price) // linea para sumar el iva
+      }
+    }
+    total+= Math.ceil(parseFloat(item1.price)) * item1.quantity;
+  })
+  return total
+}
+
+export const displayTotalIva = (detailProducts,discountGlobal,totalWithIva,tax) => {
+  let total = 0
+  //console.log(detailProducts,discountGlobal,totalWithIva,tax,"");
+  if(!detailProducts){
+    return 0;
+  }
+  detailProducts.forEach((item, i) => {
+    let item1 = Object.assign({},item)
+    if(!item1.is_neto){
+      if(totalWithIva){
+        if(item1.method_sale === 3){
+          item1.price = item1.quantity * item1.price;
+        }
+        item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price;
+        item1.price = discountGlobal ? parseFloat(item1.price) - ((item1.price * discountGlobal) / 100) : item1.price;
+        if(item1.method_sale === 3){
+          total+= Math.ceil(parseFloat(((item1.price * tax) / 100)));
+        }else{
+          total+= Math.ceil(parseFloat(((item1.price * tax) / 100))) * item1.quantity;
+        }
+      }else{
+        total+= 0
+      }
+    }
+  })
+  return total
+}
+
+export const displayTotalGastos = gastosDetail => {
+  let total = 0
+  gastosDetail.forEach((item, i) => {
+    total += parseFloat(item.amount)
+  });
+
+  return total
+}
+
+
+export const displayTotalTotal = (detailProducts,discountGlobal,totalWithIva,tax,sin_gastos = false,gastosDetail) => {
+  let total_product = displayTotalProduct(detailProducts,discountGlobal,totalWithIva,tax);
+  let total_gastos  = displayTotalGastos(gastosDetail);
+  let total_iva = 0
+  if(totalWithIva){
+    total_iva = displayTotalIva(detailProducts,discountGlobal,totalWithIva,tax);
+  }
+  if(!sin_gastos){
+    return (parseFloat(total_product) + parseFloat(total_iva)) - parseFloat(total_gastos)
+  }else{
+    return (parseFloat(total_product) + parseFloat(total_iva))
+  }
+}
+
+export const displayTotalDiscount = (detailProducts,discountGlobal,totalWithIva) => {
+  let total = 0
+  detailProducts.forEach((item, i) => {
+
+    let item1 = Object.assign({},item)
+    let value = 0
+    if(item1.is_neto){
+      item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price;
+      value  = discountGlobal ? ((item1.price * discountGlobal) / 100) : 0;
+    }else{
+      if(totalWithIva){
+        item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price;
+        value = discountGlobal ?  ((item1.price * discountGlobal) / 100) : 0;
+      }else{
+        item1.price = item1.discount ? ( parseFloat(item1.price) - (( parseFloat(item1.price) *  item1.discount) / 100 ) ) : item1.price;
+        value = discountGlobal ? ((item1.price * discountGlobal) / 100) : 0;
+      }
+    }
+    total+= Math.ceil(value) * item1.quantity
+  })
+  return total
+}

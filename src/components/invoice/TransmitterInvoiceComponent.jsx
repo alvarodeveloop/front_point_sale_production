@@ -8,9 +8,13 @@ import {
 import {FaUser} from 'react-icons/fa'
 import InputField from 'components/input/InputComponent'
 import LoadingComponent from 'components/LoadingComponent'
+import { arraySaleNote, arrayBoleta, arrayGuide,arrayInvoice } from 'utils/constants';
 
 const TransmitterInvoiceComponent = (props) => {
   
+  let arrayInvoiceMerge = [...arrayInvoice,...arraySaleNote];
+
+
   useEffect(() => {
     setTimeout(function () {
       props.setCotizationData(oldData => {
@@ -35,9 +39,9 @@ const TransmitterInvoiceComponent = (props) => {
         <b>Datos del Emisor</b> <FaUser /> (hacer click para desplegar campos)
       </Accordion.Toggle>
       <Accordion.Collapse eventKey="0">
-        {props.isType == "cotizacion" || props.isType == "boleta" ? (
+        {props.isType == "cotizacion" || arrayBoleta.includes(props.isType) ? (
           <Card.Body>
-            {props.isType == "boleta" && props.cotizationData.fetchTransmitter ? (
+            {arrayBoleta.includes(props.isType) && props.cotizationData.fetchTransmitter ? (
               <LoadingComponent />
             ) : (
               <>
@@ -112,7 +116,7 @@ const TransmitterInvoiceComponent = (props) => {
                     value={props.cotizationData.city_transmitter}
                     handleChange={props.onChange}
                   />
-                  {props.isType === "boleta" ? (
+                  {arrayBoleta.includes(props.isType) ? (
                     <InputField
                       type='text'
                       label='Comuna'
@@ -152,7 +156,7 @@ const TransmitterInvoiceComponent = (props) => {
                     handleChange={props.onChange}
                     />
                 </Row>
-                {props.isType === "boleta" ? (
+                {arrayBoleta.includes(props.isType) ? (
                   <Row>
                     <InputField
                       type='text'
@@ -186,14 +190,14 @@ const TransmitterInvoiceComponent = (props) => {
               </>
             )}
           </Card.Body>
-        ) : props.isType == "facturacion" || props.isType == "sale_note" ? (
+        ) : arrayInvoiceMerge.includes(props.isType) ? (
           <Card.Body>
             <Row>
               <InputField
                type='text'
                label='Razón Social'
                name='business_name_transmitter'
-               required={props.isType === "sale_note" ? false : true}
+               required={arraySaleNote.includes(props.isType) ? false : true}
                messageErrors={[
                'Requerido*'
                ]}
@@ -218,7 +222,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='select'
                   label='Direccion'
                   name='address_transmitter'
-                  required={!props.cotizationData.type_invoicing && props.isType !== "sale_note"  ? true : false}
+                  required={!props.cotizationData.type_invoicing && !arraySaleNote.includes(props.isType)  ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -276,7 +280,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='select'
                   label='Actividad Económica'
                   name='actividad_economica_transmitter'
-                  required={props.isType !== "sale_note" ? true : false}
+                  required={!arraySaleNote.includes(props.isType) ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -294,7 +298,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='text'
                   label='Actividad Económica'
                   name='actividad_economica_transmitter'
-                  required={props.isType !== "sale_note" ? true : false}
+                  required={!arraySaleNote.includes(props.isType) ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -310,7 +314,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='select'
                   label='Tipo de Venta'
                   name='type_sale_transmitter'
-                  required={props.isType !== "sale_note" ? true : false}
+                  required={!arraySaleNote.includes(props.isType) ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -328,7 +332,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='text'
                   label='Tipo de Venta'
                   name='type_sale_transmitter'
-                  required={props.isType !== "sale_note" ? true : false}
+                  required={!arraySaleNote.includes(props.isType) ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -341,7 +345,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='text'
                   label='Giro'
                   name='spin_transmitter'
-                  required={props.isType !== "sale_note" ? true : false}
+                  required={!arraySaleNote.includes(props.isType) ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -351,7 +355,7 @@ const TransmitterInvoiceComponent = (props) => {
                 />
             </Row>
           </Card.Body>
-        ) : props.isType == "guide" ? (
+        ) : arrayGuide.includes(props.isType) ? (
 
           <Card.Body>
             <Row>
@@ -441,7 +445,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='select'
                   label='Actividad Económica'
                   name='actividad_economica_transmitter'
-                  required={props.isType === "sale_note" ? false : true}
+                  required={arraySaleNote.includes(props.isType) ? false : true}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -459,7 +463,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='text'
                   label='Actividad Económica'
                   name='actividad_economica_transmitter'
-                  required={props.isType === "sale_note" ? false : true}
+                  required={arraySaleNote.includes(props.isType) ? false : true}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -475,7 +479,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='select'
                   label='Tipo de Venta'
                   name='type_sale_transmitter'
-                  required={props.isType === "sale_note" || props.isType === "guide" ? false : true}
+                  required={arraySaleNote.includes(props.isType) || arrayGuide.includes(props.isType) ? false : true}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -493,7 +497,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='text'
                   label='Tipo de Venta'
                   name='type_sale_transmitter'
-                  required={props.isType === "sale_note" || props.isType === "guide" ? false : true}
+                  required={arraySaleNote.includes(props.isType) || arrayGuide.includes(props.isType) ? false : true}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -507,7 +511,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='select'
                   label='Tipo de Traslado'
                   name='type_transfer_trasmitter'
-                  required={props.isType !== "sale_note" ? true : false}
+                  required={!arraySaleNote.includes(props.isType) ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
@@ -525,7 +529,7 @@ const TransmitterInvoiceComponent = (props) => {
                   type='text'
                   label='Tipo de Traslado'
                   name='type_transfer_trasmitter'
-                  required={props.isType !== "sale_note" ? true : false}
+                  required={!arraySaleNote.includes(props.isType) ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}

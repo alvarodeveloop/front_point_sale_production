@@ -197,6 +197,10 @@ export const routes = [
     component: lazy(() => import('./pages/InvoiceCreatePage'))
   },
   {
+    path: '/invoice/create_invoice_by_sale_note/:id',
+    component: lazy(() => import('./pages/InvoiceBySaleNotePage'))
+  },
+  {
     path: '/invoice/invoice_bond/:id',
     component: lazy(() => import('./pages/InvoiceBondPage'))
   },

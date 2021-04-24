@@ -57,7 +57,6 @@ const FormClientModal = (props) => {
         comuna: updateClient.comuna,
         spin: updateClient.spin,
         actividad_economica: updateClient.actividad_economica,
-
         id: updateClient.id
       })
     }

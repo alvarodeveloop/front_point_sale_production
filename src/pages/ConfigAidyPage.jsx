@@ -42,15 +42,17 @@ const ConfigAidyPage = (props) => {
 
   const fetchData = () => {
     axios.get(API_URL+'config_aidy').then(result => {
-      setFormData({
-        img_login : result.data.img_login,
-        api_key_nuxo : result.data.api_key_nuxo,
-        rut_nuxo : result.data.rut_nuxo+"-"+result.data.dv_nuxo,
-        password_nuxo : result.data.password_nuxo,
-        bussines_name : result.data.bussines_name,
-        address : result.data.address,
-        email : result.data.email
-      })
+      if(result.data){
+        setFormData({
+          img_login : result.data.img_login,
+          api_key_nuxo : result.data.api_key_nuxo,
+          rut_nuxo : result.data.rut_nuxo+"-"+result.data.dv_nuxo,
+          password_nuxo : result.data.password_nuxo,
+          bussines_name : result.data.bussines_name,
+          address : result.data.address,
+          email : result.data.email
+        })
+      }
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
