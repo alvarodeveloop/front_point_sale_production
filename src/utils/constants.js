@@ -225,7 +225,7 @@ export const arrayFacturarCotizacion = ["facturacionByCotizacion","saleNoteByCot
 export const arraySearchDefaultInvoiceRecetor = ["facturacion","invoiceByGuide","invoiceBySaleNote"]; 
 
 export const API_FACTURACION = true
-export const API_URL = 'http://localhost:9000/'
-export const FRONT_URL = 'http://localhost:3000/quotitation/create_quotitation'
-// export const API_URL = 'https://api.aidy.cl/'
-// export const FRONT_URL = 'https://app.aidy.cl/quotitation/create_quotitation'
+// export const API_URL = 'http://localhost:9000/'
+//export const FRONT_URL = 'http://localhost:3000/quotitation/create_quotitation'
+export const API_URL = 'https://api.aidy.cl/'
+export const FRONT_URL = 'https://app.aidy.cl/quotitation/create_quotitation'
