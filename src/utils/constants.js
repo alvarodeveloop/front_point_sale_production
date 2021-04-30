@@ -211,13 +211,15 @@ export let OBJECT_COTIZATION = {
   type_transfer_trasmitter_array : [],
   type_transfer_trasmitter : "",
   id_guide : "",
+  is_order : 0
 }
 
 export const arrayInvoice = ["facturacion","facturacionByCotizacion","invoiceByGuide","invoiceBySaleNote"];
 export const arraySaleNote = ["saleNote","saleNoteByCotizacion"];
 export const arrayBoleta = ["boleta","boletaByCotizacion"];
 export const arrayGuide = ["guide","guideByCotizacion"];
-export const arrayById = ["facturacionByCotizacion","saleNoteByCotizacion","guideByCotizacion","boletaByCotizacion","cotizacion","invoiceByGuide","invoiceBySaleNote"];
+export const arrayCotizacion = ["cotizacion","buyOrder"];
+export const arrayById = ["facturacionByCotizacion","saleNoteByCotizacion","guideByCotizacion","boletaByCotizacion","cotizacion","invoiceByGuide","invoiceBySaleNote","buyOrder"];
 export const arrayFacturarInvoice = ["saleNote","facturacion","boleta","invoiceByGuide","invoiceBySaleNote"];
 export const arrayFacturarCotizacion = ["facturacionByCotizacion","saleNoteByCotizacion","boletaByCotizacion","guideByCotizacion"];
 export const arraySearchDefaultInvoiceRecetor = ["facturacion","invoiceByGuide","invoiceBySaleNote"]; 

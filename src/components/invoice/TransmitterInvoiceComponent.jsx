@@ -8,7 +8,7 @@ import {
 import {FaUser} from 'react-icons/fa'
 import InputField from 'components/input/InputComponent'
 import LoadingComponent from 'components/LoadingComponent'
-import { arraySaleNote, arrayBoleta, arrayGuide,arrayInvoice } from 'utils/constants';
+import { arrayCotizacion,arraySaleNote, arrayBoleta, arrayGuide,arrayInvoice } from 'utils/constants';
 
 const TransmitterInvoiceComponent = (props) => {
   
@@ -39,7 +39,7 @@ const TransmitterInvoiceComponent = (props) => {
         <b>Datos del Emisor</b> <FaUser /> (hacer click para desplegar campos)
       </Accordion.Toggle>
       <Accordion.Collapse eventKey="0">
-        {props.isType == "cotizacion" || arrayBoleta.includes(props.isType) ? (
+        {arrayCotizacion.includes(props.isType) || arrayBoleta.includes(props.isType) ? (
           <Card.Body>
             {arrayBoleta.includes(props.isType) && props.cotizationData.fetchTransmitter ? (
               <LoadingComponent />

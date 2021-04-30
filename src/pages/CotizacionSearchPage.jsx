@@ -471,7 +471,7 @@ const CotizacionSearchPage = props => {
   const fetchData = () => {
     let objectPost = Object.assign({},dataForm)
     let promises = [
-      axios.get(API_URL+'cotizacion'),
+      axios.get(API_URL+'cotizacion/0'),
       axios.post(API_URL+'cotizacion_stadistics',objectPost),
     ]
     Promise.all(promises).then(result => {

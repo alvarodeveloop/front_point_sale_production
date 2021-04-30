@@ -288,4 +288,12 @@ export const routes = [
     path: '/videoTutorials',
     component: lazy(() => import('./pages/VideoTutorialPage'))
   },
+  {
+    path: '/buyOrder/create/:id?',
+    component: lazy(() => import('./pages/BuyOrderPage'))
+  },
+  {
+    path: '/buyOrder/view',
+    component: lazy(() => import('./pages/BuyOrderSearchPage'))
+  },
 ]

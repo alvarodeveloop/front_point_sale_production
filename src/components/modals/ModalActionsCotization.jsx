@@ -6,7 +6,8 @@ import {FaEdit,FaEye,FaFilePdf,FaFileInvoice,FaBan,FaSync} from 'react-icons/fa'
 import LoadingComponent from 'components/LoadingComponent'
 
 const ModalActionCotization = (props) => {
-
+  
+  let word = props.cotization.is_order ? "Orden de compra" : "Cotización";
   return (
     <Modal
       show={props.isShow}
@@ -32,7 +33,7 @@ const ModalActionCotization = (props) => {
               <hr/>
               <Row className="justify-content-center">
                 <Col sm={3} md={3} lg={3}>
-                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.updateCotizacion(props.cotization.id)} block={true}>Modificar Cotización <FaEdit /></Button>
+                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.updateCotizacion(props.cotization.id)} block={true}>Modificar {word} <FaEdit /></Button>
                 </Col>
                 <Col sm={3} md={3} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
@@ -45,14 +46,14 @@ const ModalActionCotization = (props) => {
                 </Col>
               </Row>
               <br/>
-              <h5 className="title_principal">Status de la Cotización</h5>
+              <h5 className="title_principal">Status de la {word}</h5>
               <hr/>
               <Row className="justify-content-center">
                 <Col sm={3} md={3} lg={3}>
-                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.changeStatus(props.cotization.id,2)} block={true}>Aprobar Cotización <FaSync /></Button>
+                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.changeStatus(props.cotization.id,2)} block={true}>Aprobar {word} <FaSync /></Button>
                 </Col>
                 <Col sm={3} md={3} lg={3}>
-                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.anulateCotization(props.cotization.id,props.cotization.status)} block={true}>Anular cotización <FaBan /></Button>
+                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.anulateCotization(props.cotization.id,props.cotization.status)} block={true}>Anular {word} <FaBan /></Button>
                 </Col>
               </Row>
             </React.Fragment>
@@ -62,7 +63,7 @@ const ModalActionCotization = (props) => {
               <hr/>
               <Row className="justify-content-center">
                 <Col sm={3} md={3} lg={3}>
-                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.updateCotizacion(props.cotization.id)} block={true}>Modificar Cotización <FaEdit /></Button>
+                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.updateCotizacion(props.cotization.id)} block={true}>Modificar {word} <FaEdit /></Button>
                 </Col>
                 <Col sm={3} md={3} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
@@ -92,14 +93,14 @@ const ModalActionCotization = (props) => {
                 </Col>
               </Row>
               <br/>
-              <h5 className="title_principal">Status de la Cotización</h5>
+              <h5 className="title_principal">Status de la {word}</h5>
               <hr/>
               <Row className="justify-content-center">
                 <Col sm={3} md={3} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.changeStatus(props.cotization.id,1)} block={true}>Pasar a Pendiente <FaSync /></Button>
                 </Col>
                 <Col sm={3} md={3} lg={3}>
-                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.anulateCotization(props.cotization.id,props.cotization.status)} block={true}>Anular cotización <FaBan /></Button>
+                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.anulateCotization(props.cotization.id,props.cotization.status)} block={true}>Anular {word} <FaBan /></Button>
                 </Col>
               </Row>
             </React.Fragment>

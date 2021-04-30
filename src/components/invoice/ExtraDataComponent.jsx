@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col, Form } from 'react-bootstrap';
 import InputField from 'components/input/InputComponent';
-import { arrayInvoice, arraySaleNote, arrayBoleta, arrayGuide } from 'utils/constants';
+import { arrayInvoice, arraySaleNote, arrayBoleta, arrayGuide, arrayCotizacion } from 'utils/constants';
 
 function ExtraDataComponent(props) {
 
@@ -54,7 +54,7 @@ function ExtraDataComponent(props) {
             <option value={"Sin Costo"}>Sin Costo</option>
           </InputField>
         </Row>
-      ) : props.type === "cotizacion" ? (
+      ) : arrayCotizacion.includes(props.type) ? (
         <Row>
           <InputField
             type='date'

@@ -38,7 +38,7 @@ import ExtraDataComponent from 'components/invoice/ExtraDataComponent'
 import RefComponent from 'components/invoice/RefComponent'
 import TransferComponent from 'components/invoice/TransferComponent'
 import LoadingComponent from 'components/LoadingComponent'
-import { arrayInvoice, arraySaleNote, arrayBoleta, arrayGuide, arrayById, arrayFacturarInvoice, arrayFacturarCotizacion, arraySearchDefaultInvoiceRecetor } from 'utils/constants';
+import { arrayCotizacion, arrayInvoice, arraySaleNote, arrayBoleta, arrayGuide, arrayById, arrayFacturarInvoice, arrayFacturarCotizacion, arraySearchDefaultInvoiceRecetor } from 'utils/constants';
 import TableBondsBillComponent from 'components/invoice/TableBondsBillComponent'
 
 const Styles = styled.div`
@@ -91,7 +91,7 @@ function ContainerFormInvoice(props) {
               : arrayBoleta.includes(props.type) ? "boleta"
               : arrayGuide.includes(props.type) ? "guía"
               : arrayInvoice.includes(props.type) ? "facturación"
-              : props.type === "cotizacion" ? "cotización" : "";
+              : props.type === "cotizacion" ? "cotización" : "orden de compra";
   
   const [displayLoading, setDisplayLoading] = useState(true)
   const [clients,setClients] = useState([])
@@ -122,7 +122,8 @@ function ContainerFormInvoice(props) {
       : arraySaleNote.includes(props.type) ? 2 
       : arrayBoleta.includes(props.type) ? 3 
       : arrayGuide.includes(props.type) ? 4 
-      : OBJECT_COTIZATION.type
+      : OBJECT_COTIZATION.type,
+      is_order : props.type === "buyOrder" ? 1 : 0
   }))
   const [displayModals,setDisplayModals] = useState(false)
   const [isOpenModalInvoice, setIsOpenModalInvoice] = useState(false)
@@ -192,7 +193,8 @@ function ContainerFormInvoice(props) {
         axios.get(API_URL+'product'),
         axios.get(API_URL+'listProduct'),
       ]
-      if(props.type === "cotizacion" && !props.match.params.id) promises.push(axios.get(API_URL+'cotizacion_get_ref'));
+      if(props.type === "cotizacion" && !props.match.params.id) promises.push(axios.get(API_URL+'cotizacion_get_ref/0'));
+      if(props.type === "buyOrder" && !props.match.params.id) promises.push(axios.get(API_URL+'cotizacion_get_ref/1'));
       if(arraySaleNote.includes(props.type)) promises.push(axios.get(API_URL+'sale_note_get_ref'));
       if(isById){
         if(props.type === "invoiceByGuide"){
@@ -200,7 +202,7 @@ function ContainerFormInvoice(props) {
         }else if(props.type === "invoiceBySaleNote"){
           promises.push(axios.get(API_URL+'invoice/'+props.match.params.id));
         }else{
-          promises.push(axios.get(API_URL+'cotizacion/'+props.match.params.id));
+          promises.push(axios.get(API_URL+'cotizacion/'+cotizationData.is_order+"/"+props.match.params.id));
 
         }
       }
@@ -295,7 +297,7 @@ function ContainerFormInvoice(props) {
               })
             }
           }
-        }else if(props.type === "cotizacion" || props.type === "saleNote"){
+        }else if(arrayCotizacion.includes(props.type) || props.type === "saleNote"){
           setCotizationData(currentData => Object.assign({},currentData,{ref : result[3].data.ref}))
         }else if(props.type === "boleta"){
           // código de ejercicio... remover para producción
@@ -566,7 +568,8 @@ function ContainerFormInvoice(props) {
   }
 
   const goToDashboard = () => {
-    let route = props.type === "cotizacion" ? '/quotitation/search_quotitation' 
+    let route = props.type === "cotizacion" ? '/quotitation/search_quotitation'
+                : props.type === "buyOrder" ? '/buyOrder/view'
                 : arrayById.includes(props.type) && arrayInvoice.includes(props.type)  ? "/invoice/invoice_search"
                 : arrayById.includes(props.type) ? '/quotitation/search_quotitation'
                 : arrayInvoice.includes(props.type) ? "/invoice/invoice_search" 
@@ -603,15 +606,16 @@ function ContainerFormInvoice(props) {
 
     setDisableButton(true)
     //setDisplayLoading(true)
+    let word = props.type === "cotizacion" ? "Cotización" : "Orden de compra";
     if(props.match.params.id){
       axios.put(API_URL+'cotizacion/'+props.match.params.id,object_post).then(result => {
         setDisableButton(false)
         clearData()
         setDisplayLoading(true)
-        toast.success('Cotización modificada con éxito')
+        toast.success(word+' modificada con éxito')
         setDisplayLoading(true)
         setTimeout(function () {
-          props.history.replace('/quotitation/search_quotitation')
+          goToDashboard();
         }, 1500);
       }).catch(err => {
         //setDisplayLoading(false)
@@ -622,10 +626,10 @@ function ContainerFormInvoice(props) {
       axios.post(API_URL+'cotizacion',object_post).then(result => {
         setDisableButton(false)
         setDisplayLoading(false)
-        toast.success(result.data.message ? result.data.message : 'Cotización guardada con éxito')
+        toast.success(result.data.message ? result.data.message : word+' guardada con éxito')
         clearData()
         setTimeout(function () {
-          props.history.replace('/quotitation/search_quotitation')
+          goToDashboard();
         }, 1500);
       }).catch(err => {
         setDisplayLoading(false)
@@ -973,7 +977,7 @@ function ContainerFormInvoice(props) {
                 : arrayBoleta.includes(props.type) ? "Boleta"
                 : arrayGuide.includes(props.type) ? "Guía"
                 : arrayInvoice.includes(props.type) ? "Facturación"
-                : props.type === "cotizacion" ? "Cotización" : ""; 
+                : props.type === "cotizacion" ? "Cotización" : "Orden de Compra"; 
     return (
       <React.Fragment>
         <Row className="justify-content-between align-items-center">
@@ -984,7 +988,7 @@ function ContainerFormInvoice(props) {
                 <div style={{display: "flex", width: "100%"}}>
                   <OverlayTrigger placement={'bottom'} overlay={
                     <Tooltip id="tooltipConfigPrice">
-                      Gestione los productos de la cotización.
+                      Gestione los productos de la {word2}.
                     </Tooltip>
                   }>
                     <div onClick={()=> displayShowSectionsHandler(1,true)} className={showSections === 1 ? "indicatorsCircleActive" : "indicatorsCircle"}>Productos</div>
@@ -1000,7 +1004,7 @@ function ContainerFormInvoice(props) {
                     <div onClick={()=> displayShowSectionsHandler(3,true)} className={showSections === 3 ? "indicatorsCircleActive" : "indicatorsCircle"}>Fecha y Tipo</div>
                   </OverlayTrigger>
                   <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltipConfigClienteEmisor">
-                    Gestione los datos del emisor de la {word1} y el receptor.
+                    Gestione los datos del emisor de la {word2} y el receptor.
                   </Tooltip>}>
                     <div onClick={()=> displayShowSectionsHandler(4,true)} className={showSections === 4 ? "indicatorsCircleActive" : "indicatorsCircle"}>Emisor y Receptor</div>
                   </OverlayTrigger>
@@ -1010,7 +1014,7 @@ function ContainerFormInvoice(props) {
             <Row style={{marginTop: "10px"}}>
               <Col sm={12} md={12} lg={12}>
                 <div style={{display: "flex", width: "100%"}}>
-                {props.type !== "cotizacion" ? (
+                {!arrayCotizacion.includes(props.type) ? (
                     <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltipRef">
                       Gestione las referencias que quiera agregar a la {word2}
                     </Tooltip>}>
@@ -1019,7 +1023,7 @@ function ContainerFormInvoice(props) {
                   ) : ""}
                   { arrayBoleta.includes(props.type) ? ( 
                     <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltipConfigResumen">
-                      Puede agragar pagos a la {word1} para gestionar su liquidación o para agregar pagos parciales.  
+                      Puede agragar pagos a la {word2} para gestionar su liquidación o para agregar pagos parciales.  
                     </Tooltip>}>
                       <div onClick={()=> displayShowSectionsHandler(6,true)} className={showSections === 6 ? "indicatorsCircleActive" : "indicatorsCircle"}>Pagos de la boleta</div>
                     </OverlayTrigger>
@@ -1031,7 +1035,7 @@ function ContainerFormInvoice(props) {
                     </OverlayTrigger>
                   ) : ""}
                   <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltipConfigResumen">
-                    Resumen y totales antes de generar la {word1}.
+                    Resumen y totales antes de generar la {word2}.
                   </Tooltip>}>
                     <div onClick={()=> displayShowSectionsHandler(7,true)} className={showSections === 7 ? "indicatorsCircleActive" : "indicatorsCircle"}>Resumen y Totales</div>
                   </OverlayTrigger>
@@ -1039,7 +1043,7 @@ function ContainerFormInvoice(props) {
               </Col>
             </Row>
           </Col>
-          {props.type ==="cotizacion" || arraySaleNote.includes(props.type) ? (
+          {arrayCotizacion.includes(props.type) || arraySaleNote.includes(props.type) ? (
             <Col sm={4} md={4} lg={4}>
               <InputField
                 type='text'
@@ -1199,7 +1203,7 @@ function ContainerFormInvoice(props) {
                   </Col>
                   <Col sm={4} md={4} lg={4}>
                     <br/>
-                    <Button variant="secondary" block={true} size="sm" onClick={() => displayShowSectionsHandler(5,true)} type="button">Siguiente</Button>
+                    <Button variant="secondary" block={true} size="sm" onClick={() => displayShowSectionsHandler(arrayCotizacion.includes(props.type) ? 7 : 5,true)} type="button">Siguiente</Button>
                   </Col>
                 </Row>
               ) : showSections === 5 ? (
@@ -1260,7 +1264,7 @@ function ContainerFormInvoice(props) {
                     bondsPayments={detailBonds}
                     isType={props.type}
                   />
-                  {props.type === "cotizacion" ? (
+                  {arrayCotizacion.includes(props.type) ? (
                     <Row className="justify-content-center">
                       <Col sm={3} md={3} lg={3}>
                         <DropdownButton size="sm" id={'drop'} title={disableButtons ? 'Guardando' : "Compartir"}  className="dropdown_block" disabled={disableButtons} variant="secondary">
@@ -1272,7 +1276,7 @@ function ContainerFormInvoice(props) {
                         <Button type="button" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => submitData(1)}>{disableButtons ? 'Guardando...' : 'Guardar y Enviar por Mail'} <FaMailBulk /></Button>
                       </Col>
                       <Col sm={3} md={3} lg={3}>
-                        <Button type="button" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => submitData(2)}>{disableButtons ? 'Guardando...' : 'Guardar Cotización'}<FaPlusCircle /></Button>
+                        <Button type="button" size="sm" variant="primary" disabled={disableButtons} block={true} onClick={() => submitData(2)}>{disableButtons ? 'Guardando...' : 'Guardar '+word2} <FaPlusCircle /></Button>
                       </Col>
                       <Col sm={3} md={3} lg={3}>
                         <Button type="button" size="sm" variant="secondary" disabled={disableButtons} block={true} onClick={() => setshowSections(4)}>Volver</Button>

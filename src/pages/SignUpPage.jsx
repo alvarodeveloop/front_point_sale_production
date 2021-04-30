@@ -87,7 +87,12 @@ const SignUpPage = (props) => {
       },1500)
     }).catch(err => {
       setDisplayLoading(false)
-      props.tokenExpired(err)
+      if(err.response){
+        toast.error(err.response.data.message);
+      }else{
+        console.log(err);
+        toast.error("Error, contacte con soporte si el error persiste");
+      }
     })
 
   }

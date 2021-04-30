@@ -16,7 +16,7 @@ import axios from 'axios'
 import {formatRut} from 'utils/functions'
 import {API_URL,API_FACTURACION} from 'utils/constants'
 import LoadingComponent from 'components/LoadingComponent'
-import { arraySaleNote, arrayBoleta, arrayGuide,arrayInvoice } from 'utils/constants';
+import { arrayCotizacion,arraySaleNote, arrayBoleta, arrayGuide,arrayInvoice } from 'utils/constants';
 
 
 const ClientInvoiceComponet = (props) => {
@@ -212,7 +212,7 @@ const ClientInvoiceComponet = (props) => {
       })
     }
 
-    /*if(props.isType === "cotizacion" || arraySaleNote.includes(props.isType)
+    /*if(arrayCotizacion.includes(props.isType) || arraySaleNote.includes(props.isType)
       searchClientByApiFacturacion(data_document)
     }else{
       if(props.cotizationData.type_invoicing){
@@ -243,7 +243,7 @@ const ClientInvoiceComponet = (props) => {
           <LoadingComponent size={75} text="buscando receptor" />
         ) : (
           <>
-            {props.isType === "cotizacion" || arrayBoleta.includes(props.isType) || arrayGuide.includes(props.isType)  ? (
+            {arrayCotizacion.includes(props.isType) || arrayBoleta.includes(props.isType) || arrayGuide.includes(props.isType)  ? (
               <Card.Body>
                 <Row>
                   <Col sm={4} md={4} lg={4}>
