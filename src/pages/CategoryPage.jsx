@@ -43,16 +43,19 @@ const CategoryPage = (props) => {
     categoryColumns.push({
       Header: 'Acciones',
       Cell: props1 => {
-        const id = props1.cell.row.original.id
-        return(
-          <DropdownButton size="sm" id={'drop'+props1.cell.row.original.id} title="Seleccione"  block="true">
-            <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
-            <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
-          </DropdownButton>
-        )
+        const original = props1.cell.row.original;
+          if(original.name_category === "Más Vendidos"){
+            return (<span></span>)
+          }else{
+            return (
+              <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
+                <Dropdown.Item onClick={() => modifyRegister(original)}>Modificar</Dropdown.Item>
+                <Dropdown.Item onClick={() => deleteRegister(original.id)}>Eliminar</Dropdown.Item>
+              </DropdownButton>
+            );
+          } 
       }
     })
-
   },[])
 
   const deleteRegister = id => {

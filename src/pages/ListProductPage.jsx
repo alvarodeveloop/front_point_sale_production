@@ -361,7 +361,7 @@ const ListProductPage = (props) =>{
                   </Row>
                   <Row className="justify-content-center">
                     <Col sm={4} md={4} lg={4}>
-                      <Button variant="danger" block={true} size="sm" type="submit">Crear Lista <FaSave /></Button>
+                      <Button variant="danger" block={true} size="sm" type="submit">{ dataForm.id ? "Modificar Lista" : "Crear Lista" } <FaSave /></Button>
                     </Col>
                     {dataForm.id ? (
                       <Col sm={4} md={4} lg={4}>

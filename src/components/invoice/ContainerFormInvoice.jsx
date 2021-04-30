@@ -822,7 +822,18 @@ function ContainerFormInvoice(props) {
         let result = validateSectionHandler(index);
         if(!result[0]){
           if(index === 4){
-            toast.info(( <span>{result[1].split(":")[0]}: <br/> {result[1].split(":")[1]} <br/> Sección: {index}</span>) );
+            let arraySections = result[1].split(":");
+            
+            toast.info((
+              <>
+                <span>{result[1].split(":")[0]}</span>
+                <br/>
+                <ul>
+                  {arraySections[1].split(",").map(v => <li>*{v}</li>)}
+                </ul>
+                <br/> Sección: {index}
+              </>
+            ));
           }else{
             toast.info(( <span>{result[1]} <br/> sección: {index}</span>) );
           }
@@ -911,7 +922,7 @@ function ContainerFormInvoice(props) {
             !cotizationData.rut_client || !cotizationData.business_name_client || !cotizationData.address_client 
             || !cotizationData.city_client || !cotizationData.comuna_client || !cotizationData.spin_client || !cotizationData.name_contact
           ){
-            return [false, "Los siguientes campos del cliente son requeridos:Rut,razon social,dirección,ciudad,comuna,giro y el nombre del contacto"];
+            return [false, "Los siguientes campos del cliente son requeridos:Rut,razon social,dirección,ciudad,comuna,giro,nombre del contacto"];
           }else{
             return [true];
           }
@@ -921,7 +932,7 @@ function ContainerFormInvoice(props) {
             !cotizationData.rut_client || !cotizationData.business_name_client || !cotizationData.address_client 
             || !cotizationData.city_client || !cotizationData.comuna_client || !cotizationData.spin_client || !cotizationData.name_contact
           ){
-            return [false, "Los siguientes campos del cliente son requeridos:Rut,razon social,dirección,ciudad,comuna,giro y el nombre del contacto"];
+            return [false, "Los siguientes campos del cliente son requeridos:Rut,razon social,dirección,ciudad,comuna,giro,nombre del contacto"];
           }else{
             return [true];
           }
@@ -963,7 +974,18 @@ function ContainerFormInvoice(props) {
         })
         if(!validate){
           return [false, "Todos los campos de los pagos son requeridos"];
-        }  
+        }else{
+          let sum_bonds = 0;
+          let total_total = displayTotalTotal(detailProducts,cotizationData.discount_global,cotizationData.total_with_iva,props.configStore.tax,true,gastosDetail);
+  
+          detailBonds.forEach((item, i) => {
+            sum_bonds+= parseFloat(item.amount)
+          });
+  
+          if(sum_bonds > total_total){
+            return [false,"El monto total de pagos no puede ser mayor que el de la boleta"]
+          }
+        }
       }
     }
 

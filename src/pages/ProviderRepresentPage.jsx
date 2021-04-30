@@ -226,25 +226,20 @@ const ProviderRepresentPage = (props) => {
                 </Row>
                 <Row className="justify-content-center">
                   <Col sm={6} md={6} lg={6} xs={6}>
-                    <Button size="sm" type="submit" variant="primary" block="true">Guardar <FaPlusCircle /></Button>
+                    <Button size="sm" type="submit" variant="danger" block="true">Guardar <FaPlusCircle /></Button>
                   </Col>
+                  {isUpdate ? (
+                      <Col sm={6} md={6} lg={6} xs={6}>
+                        <br/>
+                        <Button size="sm" type="button" onClick={cancelUpdate} variant="secondary" block="true">Cancelar Modificación</Button>
+                      </Col>
+                  ) : (
+                      <Col sm={6} md={6} lg={6} xs={6}>
+                        <br/>
+                        <Button size="sm" type="button" onClick={goToProvider} variant="secondary" block="true">Ir a los Proveedores</Button>
+                      </Col>
+                  )}
                 </Row>
-                {isUpdate ? (
-                  <Row className="justify-content-center">
-                    <Col sm={6} md={6} lg={6} xs={6}>
-                      <br/>
-                      <Button size="sm" type="button" onClick={cancelUpdate} variant="secondary" block="true">Cancelar Modificación</Button>
-                    </Col>
-                  </Row>
-                ) : (
-                  <Row className="justify-content-center">
-                    <Col sm={6} md={6} lg={6} xs={6}>
-                      <br/>
-                      <Button size="sm" type="button" onClick={goToProvider} variant="danger" block="true">Ir a los Proveedores</Button>
-                    </Col>
-                  </Row>
-                )}
-
               </Form>
             </Col>
           </Row>

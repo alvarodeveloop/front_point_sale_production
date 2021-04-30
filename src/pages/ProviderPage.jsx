@@ -154,7 +154,7 @@ const ProviderPage = (props) => {
                   Cell: props => {
                     const id = props.cell.row.original.id
                     return(
-                      <DropdownButton size="sm" id={'drop'+props.cell.row.original.id} title="Seleccione"  block="true">
+                      <DropdownButton size="sm" id={'drop'+props.cell.row.original.id} drop="left" title="Seleccione"  block="true">
                         <Dropdown.Item onClick={() => createRepresent(props.cell.row.original)}>Crear Representante</Dropdown.Item>
                         <Dropdown.Item onClick={() => modifyRegister(id)}>Modificar</Dropdown.Item>
                         <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>

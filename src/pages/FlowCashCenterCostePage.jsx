@@ -200,11 +200,11 @@ const FlowCashCenterCostePage = (props) => {
               <Row>
                 <Col sm={6} md={6} lg={6} xs={12}>
                   <br/>
-                  <Button size="sm" type="submit" variant="primary" block={true}>Guardar Centro de Costo</Button>
+                  <Button size="sm" type="submit" variant="danger" block={true}>Guardar Centro de Costo</Button>
                 </Col>
                 <Col sm={6} md={6} lg={6} xs={12}>
                   <br/>
-                  <Button size="sm" type="button" variant="info" block={true} onClick={displayForm}>Desplegar Datos</Button>
+                  <Button size="sm" type="button" variant="secondary" block={true} onClick={displayForm}>Desplegar Datos</Button>
                 </Col>
               </Row>
             </Form>

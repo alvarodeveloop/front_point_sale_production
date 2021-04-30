@@ -181,7 +181,7 @@ const PlanPage = (props) => {
           <Row className="justify-content-center">
             <Col sm={6} md={6} lg={6} className="text-center">
               <br/>
-              <Image src={require('../assets/img/denied.png')} style={{width: '30%'}}/>
+              <Image src={require('../assets/img/denied.png')} style={{width: '20%'}}/>
               <br/><br/>
               <h4 className="">No existen planes creados</h4>
             </Col>
