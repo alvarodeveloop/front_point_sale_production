@@ -1,67 +1,80 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { showPriceWithDecimals } from 'utils/functions'
-import InputField from 'components/input/InputComponent'
-import styled from 'styled-components'
-import { FaTrash } from 'react-icons/fa'
-import {
-  Row,
-  Col,
-  Button
-} from 'react-bootstrap'
+import React from "react";
+import PropTypes from "prop-types";
+import { showPriceWithDecimals } from "utils/functions";
+import InputField from "components/input/InputComponent";
+import styled from "styled-components";
+import { FaTrash } from "react-icons/fa";
+import { Row, Col, Button } from "react-bootstrap";
 
 const Styles = styled.div`
-  .tr_cabecera{
-    background-color: rgb(218,236,242);
-    font-size: 14px;
-
-  }
-
-  .letras_grandes{
+  .tr_cabecera {
+    background-color: rgb(218, 236, 242);
     font-size: 14px;
   }
 
-  .div_overflow{
+  .letras_grandes {
+    font-size: 14px;
+  }
+
+  .div_overflow {
     max-height: 1700px;
     overflow-y: auto;
   }
-`
+`;
 const TableProductsCotization = (props) => {
+  const onChangeTableProduct = (e, i) => {
+    e.persist();
+    props.setDetailProducts((oldData) => {
+      let newData = [...oldData];
+      newData[i][e.target.name] = e.target.value;
+      return newData;
+    });
+  };
 
-  const onChangeTableProduct = (e,i) => {
-    e.persist()
-    props.setDetailProducts( oldData => {
-      let newData = [...oldData]
-      newData[i][e.target.name] = e.target.value
-      return newData
-    })
-  }
+  const removeProduct = (i) => {
+    let array_copy = [...props.detailProducts];
+    props.setGastosDetail((oldData) => {
+      return oldData.filter((v) => {
+        if (array_copy[i] && array_copy[i].id_product) {
+          return v.id_product !== array_copy[i].id_product;
+        } else {
+          return v;
+        }
+      });
+    });
+    array_copy.splice(i, 1);
+    props.setDetailProducts(array_copy);
+  };
 
-  const removeProduct = i => {
-    let array_copy = [...props.detailProducts]
-    props.setGastosDetail(oldData => {
-      return oldData.filter(v => v.id_product !== array_copy[i].id_product)
-    })
-    array_copy.splice(i,1)
-    props.setDetailProducts(array_copy)
-  }
+  const displayTotal = (productData) => {
+    let product = Object.assign({}, productData);
 
-  const displayTotal = productData => {
-    let product = Object.assign({},productData)
-
-    if(product.is_neto){
-      product.price = product.discount ? ( parseFloat(product.price) - (( parseFloat(product.price) *  product.discount) / 100 ) ) : product.price
-    }else{
-      if(props.isShowIva){
-        product.price = product.discount ? ( parseFloat(product.price) - (( parseFloat(product.price) *  product.discount) / 100 ) ) : product.price
-      }else{
-        product.price = product.discount ? ( parseFloat(product.price) - (( parseFloat(product.price) *  product.discount) / 100 ) ) : product.price
-        product.price = parseFloat( (product.price * props.configStore.tax) / 100) + parseFloat(product.price) // linea para sumar el iva
-
+    if (product.is_neto) {
+      product.price = product.discount
+        ? parseFloat(product.price) -
+          (parseFloat(product.price) * product.discount) / 100
+        : product.price;
+    } else {
+      if (props.isShowIva) {
+        product.price = product.discount
+          ? parseFloat(product.price) -
+            (parseFloat(product.price) * product.discount) / 100
+          : product.price;
+      } else {
+        product.price = product.discount
+          ? parseFloat(product.price) -
+            (parseFloat(product.price) * product.discount) / 100
+          : product.price;
+        product.price =
+          parseFloat((product.price * props.configStore.tax) / 100) +
+          parseFloat(product.price); // linea para sumar el iva
       }
     }
-    return showPriceWithDecimals(props.configGeneral,parseFloat(product.price) * product.quantity);
-  }
+    return showPriceWithDecimals(
+      props.configGeneral,
+      parseFloat(product.price) * product.quantity
+    );
+  };
 
   return (
     <Styles>
@@ -83,47 +96,50 @@ const TableProductsCotization = (props) => {
               </tr>
             </thead>
             <tbody>
-              {props.detailProducts.map((v,i) => (
+              {props.detailProducts.map((v, i) => (
                 <tr key={i}>
                   <td width="5%">
-                    <br/>
+                    <br />
                     {i + 1}
                   </td>
                   <td>
                     <Row>
                       <InputField
                         className="letras_grandes"
-                        type='text'
-                        label=''
-                        id={"category_product"+i}
-                        name='category'
+                        type="text"
+                        label=""
+                        id={"category_product" + i}
+                        name="category"
                         required={false}
-                        messageErrors={[
-
-                        ]}
-                        cols='col-md-12 col-lg-12 col-sm-12'
+                        messageErrors={[]}
+                        cols="col-md-12 col-lg-12 col-sm-12"
                         value={props.detailProducts[i].category}
-                        handleChange={(e) => {onChangeTableProduct(e,i)}}
-                        />
+                        handleChange={(e) => {
+                          onChangeTableProduct(e, i);
+                        }}
+                      />
                     </Row>
                   </td>
                   <td width="15%">
                     <Row>
                       <InputField
                         className="letras_grandes"
-                        type='text'
-                        label=''
-                        id={"name_product"+i}
-                        name='name_product'
+                        type="text"
+                        label=""
+                        id={"name_product" + i}
+                        name="name_product"
                         required={true}
-                        messageErrors={[
-                          'Requerido*'
-                        ]}
+                        messageErrors={["Requerido*"]}
                         className="text-center"
-                        cols='col-md-12 col-lg-12 col-sm-12'
-                        value={props.detailProducts[i].name_product.substring(0,26)}
+                        cols="col-md-12 col-lg-12 col-sm-12"
+                        value={props.detailProducts[i].name_product.substring(
+                          0,
+                          26
+                        )}
                         rows={3}
-                        handleChange={(e) => {onChangeTableProduct(e,i)}}
+                        handleChange={(e) => {
+                          onChangeTableProduct(e, i);
+                        }}
                       />
                     </Row>
                   </td>
@@ -131,94 +147,99 @@ const TableProductsCotization = (props) => {
                     <Row>
                       <InputField
                         className="letras_grandes"
-                        type='text'
-                        label=''
-                        id={"description_product"+i}
-                        name='description'
+                        type="text"
+                        label=""
+                        id={"description_product" + i}
+                        name="description"
                         required={false}
-                        messageErrors={[
-
-                        ]}
-                        cols='col-md-12 col-lg-12 col-sm-12'
-                        value={props.detailProducts[i].description.substring(0,250)}
-                        handleChange={(e) => {onChangeTableProduct(e,i)}}
-                        />
+                        messageErrors={[]}
+                        cols="col-md-12 col-lg-12 col-sm-12"
+                        value={props.detailProducts[i].description.substring(
+                          0,
+                          250
+                        )}
+                        handleChange={(e) => {
+                          onChangeTableProduct(e, i);
+                        }}
+                      />
                     </Row>
                   </td>
                   <td>
                     <Row>
                       <InputField
                         className="letras_grandes"
-                        type='number'
-                        label=''
-                        id={"quantity_product"+i}
-                        name='quantity'
+                        type="number"
+                        label=""
+                        id={"quantity_product" + i}
+                        name="quantity"
                         required={true}
-                        messageErrors={[
-                          'Requerido*'
-                        ]}
-                        cols='col-md-12 col-lg-12 col-sm-12'
+                        messageErrors={["Requerido*"]}
+                        cols="col-md-12 col-lg-12 col-sm-12"
                         value={props.detailProducts[i].quantity}
-                        handleChange={(e) => {onChangeTableProduct(e,i)}}
-                        />
+                        handleChange={(e) => {
+                          onChangeTableProduct(e, i);
+                        }}
+                      />
                     </Row>
                   </td>
                   <td>
                     <Row>
                       <InputField
                         className="letras_grandes"
-                        type='text'
-                        label=''
-                        id={"price_product"+i}
-                        name='price'
+                        type="text"
+                        label=""
+                        id={"price_product" + i}
+                        name="price"
                         required={true}
-                        messageErrors={[
-                          'Requerido*'
-                        ]}
-                        cols='col-md-12 col-lg-12 col-sm-12'
+                        messageErrors={["Requerido*"]}
+                        cols="col-md-12 col-lg-12 col-sm-12"
                         value={props.detailProducts[i].price}
-                        handleChange={(e) => {onChangeTableProduct(e,i)}}
-                        />
+                        handleChange={(e) => {
+                          onChangeTableProduct(e, i);
+                        }}
+                      />
                     </Row>
                   </td>
                   <td>
                     <Row>
                       <InputField
                         className="letras_grandes"
-                        type='number'
-                        label=''
-                        id={"discount_product"+i}
-                        name='discount'
+                        type="number"
+                        label=""
+                        id={"discount_product" + i}
+                        name="discount"
                         required={false}
-                        messageErrors={[
-                          '*'
-                        ]}
-                        cols='col-md-12 col-lg-12 col-sm-12'
+                        messageErrors={["*"]}
+                        cols="col-md-12 col-lg-12 col-sm-12"
                         value={props.detailProducts[i].discount}
-                        handleChange={(e) => {onChangeTableProduct(e,i)}}
-                        />
+                        handleChange={(e) => {
+                          onChangeTableProduct(e, i);
+                        }}
+                      />
                     </Row>
                   </td>
                   <td>
                     <Row>
                       <InputField
                         className="letras_grandes"
-                        type='select'
-                        label=''
-                        id={"method_product"+i}
-                        name='method_sale'
+                        type="select"
+                        label=""
+                        id={"method_product" + i}
+                        name="method_sale"
                         required={true}
-                        messageErrors={[
-                          'Requerido*'
-                        ]}
-                        cols='col-md-12 col-lg-12 col-sm-12'
+                        messageErrors={["Requerido*"]}
+                        cols="col-md-12 col-lg-12 col-sm-12"
                         value={props.detailProducts[i].method_sale}
-                        handleChange={(e) => {onChangeTableProduct(e,i)}}
-                        >
+                        handleChange={(e) => {
+                          onChangeTableProduct(e, i);
+                        }}
+                      >
                         <option value="">--Seleccione--</option>
                         <option value={1}>Unidad</option>
                         <option value={2}>Mayorista</option>
-                        <option value={3}>(Kilos, Litros, Gramos, Etc...)</option>
+                        <option value={3}>
+                          (Kilos, Litros, Gramos, Etc...)
+                        </option>
                       </InputField>
                     </Row>
                   </td>
@@ -226,22 +247,31 @@ const TableProductsCotization = (props) => {
                     <Row>
                       <InputField
                         className="letras_grandes"
-                        type='text'
-                        label=''
-                        id={"total_product"+i}
-                        name='total'
+                        type="text"
+                        label=""
+                        id={"total_product" + i}
+                        name="total"
                         required={false}
                         readonly={true}
                         messageErrors={[]}
-                        cols='col-md-12 col-lg-12 col-sm-12'
+                        cols="col-md-12 col-lg-12 col-sm-12"
                         value={displayTotal(v)}
                         handleChange={() => {}}
-                        />
+                      />
                     </Row>
                   </td>
                   <td>
-                    <br/>
-                    <Button variant="danger" size="sm" type="button" onClick={() => {removeProduct(i)}}><FaTrash /></Button>
+                    <br />
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      type="button"
+                      onClick={() => {
+                        removeProduct(i);
+                      }}
+                    >
+                      <FaTrash />
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -250,18 +280,18 @@ const TableProductsCotization = (props) => {
         </Col>
       </Row>
     </Styles>
-  )
-}
+  );
+};
 
 TableProductsCotization.propTypes = {
-  detailProducts : PropTypes.array.isRequired,
+  detailProducts: PropTypes.array.isRequired,
   setDetailProducts: PropTypes.func.isRequired,
   isShowIva: PropTypes.bool,
   setGastosDetail: PropTypes.func.isRequired,
-}
+};
 
 TableProductsCotization.defaultProps = {
-  configStore : JSON.parse(localStorage.getItem('configStore'))
-}
+  configStore: JSON.parse(localStorage.getItem("configStore")),
+};
 
-export default TableProductsCotization
+export default TableProductsCotization;

@@ -40,9 +40,6 @@ const FlowCashCenterCostePage = (props) => {
     if(displayLoading){
       setDisplayLoading(false)
     }
-    return () => {
-      columns_center = []
-    }
   },[props.centerCostes])
 
   useMemo(() => {

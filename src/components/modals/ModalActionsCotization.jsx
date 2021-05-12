@@ -76,22 +76,30 @@ const ModalActionCotization = (props) => {
                 </Col>
               </Row>
               <br/>
-              <h5 className="title_principal">Documentos de la Cotización</h5>
+              <h5 className="title_principal">{props.cotization.is_order ? "Pago de la Orden" : "Documentos de la Cotización"}</h5>
               <hr/>
-              <Row className="justify-content-center">
-                <Col sm={3} md={3} lg={3}>
-                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToFacturation(props.cotization.id)} block={true}>Facturar <FaFileInvoice /></Button>
-                </Col>
-                <Col sm={3} md={3} lg={3}>
-                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToNoteSale(props.cotization.id)} block={true}>Nota de venta <FaFileInvoice /></Button>
-                </Col>
-                <Col sm={3} md={3} lg={3}>
-                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToBillOfSale(props.cotization.id)} block={true}>Boleta <FaFileInvoice /></Button>
-                </Col>
-                <Col sm={3} md={3} lg={3}>
-                  <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToGuideDispatch(props.cotization.id)} block={true}>Guía de Despacho <FaFileInvoice /></Button>
-                </Col>
-              </Row>
+              {props.cotization.is_order ? (
+                <Row>
+                  <Col sm={3} md={3} lg={3}>
+                    <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToPayments(props.cotization.id)} block={true}>Gestionar Pagos<FaFileInvoice /></Button>
+                  </Col>
+                </Row>
+              ) : (
+                <Row className="justify-content-center">
+                  <Col sm={3} md={3} lg={3}>
+                    <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToFacturation(props.cotization.id)} block={true}>Facturar <FaFileInvoice /></Button>
+                  </Col>
+                  <Col sm={3} md={3} lg={3}>
+                    <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToNoteSale(props.cotization.id)} block={true}>Nota de venta <FaFileInvoice /></Button>
+                  </Col>
+                  <Col sm={3} md={3} lg={3}>
+                    <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToBillOfSale(props.cotization.id)} block={true}>Boleta <FaFileInvoice /></Button>
+                  </Col>
+                  <Col sm={3} md={3} lg={3}>
+                    <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToGuideDispatch(props.cotization.id)} block={true}>Guía de Despacho <FaFileInvoice /></Button>
+                  </Col>
+                </Row>
+              )}
               <br/>
               <h5 className="title_principal">Status de la {word}</h5>
               <hr/>
@@ -107,15 +115,18 @@ const ModalActionCotization = (props) => {
           ) : props.cotization.status >= 3 && props.cotization.status < 7 ? (
             <React.Fragment>
               <Row>
-                <Col sm={4} md={4} lg={4}>
+                <Col sm={3} md={3} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
                 </Col>
-                <Col sm={4} md={4} lg={4}>
+                <Col sm={3} md={3} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printCotizacion(props.cotization.id)} block={true}>Imprimir <FaFilePdf /></Button>
                 </Col>
-                <Col sm={4} md={4} lg={4}>
+                <Col sm={3} md={3} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printCotizacionNew(props.cotization.id)} block={true}>Imprimir nuevo pdf <FaFilePdf /></Button>
                 </Col>
+                <Col sm={3} md={3} lg={3}>
+                    <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToPayments(props.cotization.id)} block={true}>Gestionar Pagos<FaFileInvoice /></Button>
+                  </Col>
               </Row>
             </React.Fragment>
           ) : (

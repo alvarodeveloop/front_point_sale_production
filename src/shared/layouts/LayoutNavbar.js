@@ -179,7 +179,7 @@ const LayoutNavbar = (props) => {
               </Nav>
             ) : ""
           }
-          <Nav style={{paddingLeft: "100px"}}>
+          <Nav style={{paddingLeft: "100px", display: props.videosTutorial.length ? "block" : "none"}}>
             <Nav.Item className="nav-item nav-link px-0 ml-9 ml-lg-0" style={{width: '200px'}}>
               <InputField
                 type='select'

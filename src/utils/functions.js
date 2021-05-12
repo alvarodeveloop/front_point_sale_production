@@ -1,5 +1,4 @@
 import axios from 'axios'
-import * as moment from 'moment-timezone'
 
 export const setAuthorizationToken = token =>{
   if(token){
@@ -221,3 +220,25 @@ export const displayTotalDiscount = (detailProducts,discountGlobal,totalWithIva)
   })
   return total
 }
+
+export const GetDate = (dateValue,format) => {
+  
+  var today = dateValue ? new Date(dateValue) : new Date();
+  const year = today.getFullYear();
+  var month = today.getMonth() + 1;
+  const day = today.getDate();
+  const hour = today.getHours();
+  const minute = today.getMinutes();
+  const seconds = today.getSeconds();
+  
+  if(format === "dd-mm-yyyy hh:MM:ss"){
+    return `${day}-${month}-${year}  ${hour}:${minute}:${seconds}`;
+  }else if(format === "dd-mm-yyyy"){
+    return `${day}-${month}-${year}`;
+  }else if(format === "yyyy-mm-dd"){
+    return `${year}-${month}-${day}`;
+  }else{
+    //default
+    return `${day}-${month}-${year} ${hour}:${minute}:${seconds}`;
+  }
+};

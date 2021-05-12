@@ -15,7 +15,7 @@ import {
   Dropdown,
   Image
 } from 'react-bootstrap'
-import InvoiceBondComponent from 'components/InvoiceBondComponent'
+import InvoiceBondComponent from './InvoiceBondComponent'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import {FaPlusCircle, FaRegFileCode , FaRegFilePdf} from 'react-icons/fa'
@@ -28,11 +28,17 @@ import * as xlsx from 'xlsx'
 import Table from 'components/Table'
 import FileSaver from 'file-saver'
 import LoadingComponent from 'components/LoadingComponent'
+import { arrayCotizacion, arrayInvoice, arraySaleNote, arrayBoleta } from 'utils/constants';
 
 let bondColumns = []
 
-const GuideDispatchBondPage = (props) => {
+const ContainerBondComponent = (props) => {
   
+  let word2 = arraySaleNote.includes(props.type) ? "Nota de venta"
+              : arrayBoleta.includes(props.type) ? "Boleta"
+              : arrayInvoice.includes(props.type) ? "Facturación"
+              : "Orden de compra";
+
   const [displayLoading, setDisplayLoading] = useState(true)
   const [invoice,setInvoice] = useState(null)
   const [bonds, setBonds] = useState([])
@@ -59,7 +65,7 @@ const GuideDispatchBondPage = (props) => {
     }else{
       if(id_branch !== props.id_branch_office){
         setTimeout(function () {
-          props.history.replace('/invoice/invoice_search')
+          props.goBack();
         }, 1500);
       }else{
         count++
@@ -73,20 +79,20 @@ const GuideDispatchBondPage = (props) => {
       if(!props.configStore){
         toast.error('Debe hacer su configuración de tienda o seleccionar una sucursal para usar este módulo')
         setTimeout(function () {
-          props.history.replace('/dashboard')
+          props.history.goBack();
         }, 3000);
       }else if(!props.configGeneral){
         toast.error('Debe hacer su configuración general para usar este módulo')
         setTimeout(function () {
-          props.history.replace('/dashboard')
+          props.history.goBack();
         }, 3000);
       }
     }else{
       let config_general = props.configGeneral
-      if(!config_general.is_syncronized){
+      if(config_general.is_syncronized){
         toast.error('Su cuenta no esta sincronizada con el SII, complete su configuración general para usar este módulo')
         setTimeout(function () {
-          props.history.replace('/dashboard')
+          props.history.goBack();
         }, 3000);
         return
       }
@@ -119,15 +125,28 @@ const GuideDispatchBondPage = (props) => {
         Header: 'Acciones',
         Cell: props1 => {
           const original = props1.cell.row.original
-          if(invoice && invoice.status === 2){
-            return ''
+          if(!arrayCotizacion.includes(props.type)){
+            if(invoice && invoice.status === 2){
+              return ''
+            }else{
+              return(
+                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
+                  <Dropdown.Item onClick={() => modifyRegisterBond(original)}>Modificar</Dropdown.Item>
+                  <Dropdown.Item onClick={() => deleteRegisterBond(original)}>Eliminar</Dropdown.Item>
+                </DropdownButton>
+              )
+            }
           }else{
-            return(
-              <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                <Dropdown.Item onClick={() => modifyRegisterBond(original)}>Modificar</Dropdown.Item>
-                <Dropdown.Item onClick={() => deleteRegisterBond(original)}>Eliminar</Dropdown.Item>
-              </DropdownButton>
-            )
+            if(invoice && invoice.status === 3){
+              return ''
+            }else{
+              return(
+                <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
+                  <Dropdown.Item onClick={() => modifyRegisterBond(original)}>Modificar</Dropdown.Item>
+                  <Dropdown.Item onClick={() => deleteRegisterBond(original)}>Eliminar</Dropdown.Item>
+                </DropdownButton>
+              )
+            }
           }
         }
       }
@@ -136,12 +155,18 @@ const GuideDispatchBondPage = (props) => {
 
   const fetchData = () => {
     const id = props.match.params.id
-    const promise = [
-      axios.get(API_URL+'invoice/'+id+"/"+4),
-    ]
-    Promise.all(promise).then(result => {
-      setInvoice(result[0].data)
-      setBonds(result[0].data.bonds)
+    const type = arrayInvoice.includes(props.type) ? 1
+                : arraySaleNote.includes(props.type) ? 2
+                : arrayBoleta.includes(props.type) ? 3
+                : arrayCotizacion.includes(props.type) ? 1 // ordenes de compra
+                : "";
+    
+    let request =  !arrayCotizacion.includes(props.type) ? axios.get(API_URL+'invoice/'+id+"/"+type)
+                  : axios.get(API_URL+"cotizacion/"+type+"/"+id);
+
+    request.then(result => {
+      setInvoice(result.data)
+      setBonds(result.data.bonds)
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
@@ -167,11 +192,13 @@ const GuideDispatchBondPage = (props) => {
     }
 
     let objectPost = Object.assign({},formBond,{
-      id_invoice: props.match.params.id
+      id_invoice: props.match.params.id,
+      id_cotizacion: props.match.params.id
     })
     setDisplayLoading(true)
+    let routeRequest = !arrayCotizacion.includes(props.type) ? "invoice_bonds" : "cotizacion_bond";
     if(objectPost.id){
-      axios.put(API_URL+'invoice_bonds/'+objectPost.id,objectPost).then(result => {
+      axios.put(API_URL+routeRequest+'/'+objectPost.id,objectPost).then(result => {
         toast.success('Abono modificado con éxito')
         handleModalBond()
         fetchData()
@@ -180,7 +207,7 @@ const GuideDispatchBondPage = (props) => {
         props.tokenExpired(err)
       })
     }else{
-      axios.post(API_URL+'invoice_bonds',objectPost).then(result => {
+      axios.post(API_URL+routeRequest,objectPost).then(result => {
         toast.success('Abono agregado con éxito')
         handleModalBond()
         fetchData()
@@ -198,6 +225,14 @@ const GuideDispatchBondPage = (props) => {
         amount: "",
         id_type_bond: "",
         detail: "",
+        date_payment_bond: moment().tz('America/Santiago').format('YYYY-MM-DD')
+      })
+    }else{
+      setFormBond({
+        notify_client: false,
+        amount: invoice.debit_balance,
+        id_type_bond: 1,
+        detail: "Pago",
         date_payment_bond: moment().tz('America/Santiago').format('YYYY-MM-DD')
       })
     }
@@ -246,7 +281,9 @@ const GuideDispatchBondPage = (props) => {
 
   const confirmDeleteRegister = id  => {
     setDisplayLoading(true)
-    axios.delete(API_URL+'invoice_bonds/'+id).then(result => {
+    let routeRequest = !arrayCotizacion.includes(props.type) ? "invoice_bonds" : "cotizacion_bond";
+
+    axios.delete(API_URL+routeRequest+'/'+id).then(result => {
      toast.success('Abono eliminado con éxito')
      fetchData()
     }).catch(err => {
@@ -308,8 +345,8 @@ const GuideDispatchBondPage = (props) => {
     }
   }
 
-  const goToInvoice = () => {
-    props.history.replace('/guide/guide_search')
+  const goBackHandler = () => {
+    props.history.goBack();
   }
 
   const printInvoice = () => {
@@ -327,10 +364,10 @@ const GuideDispatchBondPage = (props) => {
     <Container fluid>
       <Row>
         <Col sm={7} md={7} lg={7}>
-          <h4 className="title_principal">Historial de Pagos de la Guía {invoice  ? (<Badge variant="danger" className="font-badge">{invoice.ref}</Badge>) : ''}</h4>
+          <h4 className="title_principal">Historial de Pagos de la {word2} {invoice ? (<Badge variant="danger" className="font-badge">{invoice.ref}</Badge>) : ""} </h4>
         </Col>
         <Col sm={5} md={5} lg={5}>
-          <Button variant="primary" block={true} type="button" onClick={goToInvoice} size="sm">Volver a las Guías</Button>
+          <Button variant="primary" block={true} type="button" onClick={goBackHandler} size="sm">Volver a las {word2}</Button>
         </Col>
       </Row>
       {displayLoading ? (
@@ -338,10 +375,9 @@ const GuideDispatchBondPage = (props) => {
       ) : (
         <>
           <InvoiceBondComponent
-            invoice={invoice}
+            document={invoice}
             configGeneral={props.configGeneral}
             configStore={props.configStore}
-            isGuide={true}
           />
           <br/>
           <Row>
@@ -349,7 +385,11 @@ const GuideDispatchBondPage = (props) => {
               <Button variant="success" block={true} type="button" onClick={exportToExcel} size="sm">Exportar a Excel <FaRegFileCode /></Button>
             </Col>
             <Col sm={3} md={3} lg={3}>
-              <Button variant="success" block={true} type="button" onClick={handleModalBond} size="sm" disabled={invoice && invoice.status === 2 ? true : false}>Agregar Abono <FaPlusCircle /></Button>
+              <Button variant="success" block={true} type="button" onClick={handleModalBond} size="sm" disabled={
+                !arrayCotizacion.includes(props.type) ? 
+                  invoice && invoice.status === 2 ? true : false
+                : invoice && invoice.status === 3 ? true : false
+              }>Agregar Abono <FaPlusCircle /></Button>
             </Col>
             <Col sm={3} md={3} lg={3}>
               <Button variant="success" block={true} type="button" onClick={exportToPdf} size="sm">Exportar a Pdf <FaRegFilePdf /></Button>
@@ -463,7 +503,7 @@ const GuideDispatchBondPage = (props) => {
             )}
           </>
           <Modal.Footer>
-            <Button size="md" type="submit" variant="primary"  disabled={disableButton}>Enviar</Button>
+            <Button size="md" type="submit" variant="danger"  disabled={disableButton}>Enviar</Button>
             <Button size="md" variant="secondary" onClick={handleModalBond} disabled={disableButton}>cerrar</Button>
           </Modal.Footer>
         </Form>
@@ -473,7 +513,7 @@ const GuideDispatchBondPage = (props) => {
 }
 
 
-GuideDispatchBondPage.propTypes = {
+ContainerBondComponent.propTypes = {
   id_branch_office: PropTypes.any.isRequired,
   configGeneral : PropTypes.object.isRequired,
   configStore: PropTypes.object.isRequired
@@ -487,4 +527,4 @@ function mapStateToProps(state){
   }
 }
 
-export default connect(mapStateToProps,{})(GuideDispatchBondPage)
+export default connect(mapStateToProps,{})(ContainerBondComponent)

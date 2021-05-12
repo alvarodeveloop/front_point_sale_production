@@ -1,5 +1,5 @@
-import React, {useState,useEffect} from 'react'
-import PropTypes from 'prop-types'
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import {
   Row,
   Col,
@@ -8,84 +8,103 @@ import {
   Dropdown,
   OverlayTrigger,
   Tooltip,
-  Button
-} from 'react-bootstrap'
-import TableProductsCotization from 'components/TableProductsCotization'
-import InputField from 'components/input/InputComponent'
-import {FaPlusCircle} from 'react-icons/fa'
-import ModalCotizacionProduct from 'components/modals/ModalCotizacionProduct'
-import axios from 'axios'
-import { API_URL } from 'utils/constants';
-import { toast } from 'react-toastify'
-import LoadingComponent from 'components/LoadingComponent'
+  Button,
+} from "react-bootstrap";
+import TableProductsCotization from "components/TableProductsCotization";
+import InputField from "components/input/InputComponent";
+import { FaPlusCircle } from "react-icons/fa";
+import ModalCotizacionProduct from "components/modals/ModalCotizacionProduct";
+import axios from "axios";
+import { API_URL } from "utils/constants";
+import { toast } from "react-toastify";
+import LoadingComponent from "components/LoadingComponent";
 
 const ProductTableComponent = (props) => {
+  const [isShowModalProduct, setIsShowModalProduct] = useState(false);
+  const [displayLoading, setDisplayLoading] = useState(false);
+  useEffect(() => {}, []);
 
-  const [isShowModalProduct,setIsShowModalProduct] = useState(false)
-  const [displayLoading, setDisplayLoading] = useState(false)
-  useEffect(() => {
-    
-  },[])
-
-  const addNewProductIrregular = type => {
-    props.setDetailProducts([...props.detailProducts, {
-      category: '',
-      name_product: '',
-      description: '',
-      quantity: '',
-      price: '',
-      discount: '',
-      method_sale: "1",
-      total: '',
-      is_neto: type,
-      discount_stock: false
-    }])
-  }
+  const addNewProductIrregular = (type) => {
+    props.setDetailProducts([
+      ...props.detailProducts,
+      {
+        category: "",
+        name_product: "",
+        description: "",
+        quantity: "",
+        price: "",
+        discount: "",
+        method_sale: "1",
+        total: "",
+        is_neto: type,
+        discount_stock: false,
+      },
+    ]);
+  };
 
   const handleHideModalProduct = () => {
-    setIsShowModalProduct(false)
-  }
+    setIsShowModalProduct(false);
+  };
 
-  const handleSelectProduct = product => {
+  const handleSelectProduct = (product) => {
     // metodo para manejar la escogencia del producto en la modal de productos para el detalle de la cotizacion
-    if(!product.quantity) product.quantity = 1
-    if(!product.category){
-      product.category = ""
-      if(Array.isArray(product.categories)){
+    if (!product.quantity) product.quantity = 1;
+    if (!product.category) {
+      console.log(product, "aqui menorr");
+      product.category = "";
+      if (Array.isArray(product.categories)) {
+        console.log(product.categories, "aqui11");
         product.categories.forEach((item, i) => {
-          product.category+= item.name_category
+          console.log(item, "aqui12222222");
+          product.category += item.categories.name_category;
+          console.log(product.category, "aqui33333333333333");
         });
       }
     }
-    product.discount_stock = true
-    product.id_product = product.id
-    if(product.inventary && Array.isArray(product.inventary) && product.inventary[0].inventary_cost.length){
-      props.setGastosDetail(oldData => {
-        return [...oldData, {description: product.name_product, amount: product.inventary[0].inventary_cost[0].cost, id_product: product.id}]
-      })
-      props.setDetailProducts([...props.detailProducts, product])
-    }else{
-      props.setDetailProducts([...props.detailProducts, product])
+    console.log(product.category, "aqui444444444444444444444");
+    product.discount_stock = true;
+    product.id_product = product.id;
+    if (
+      product.inventary &&
+      Array.isArray(product.inventary) &&
+      product.inventary[0].inventary_cost.length
+    ) {
+      props.setGastosDetail((oldData) => {
+        return [
+          ...oldData,
+          {
+            description: product.name_product,
+            amount: product.inventary[0].inventary_cost[0].cost,
+            id_product: product.id,
+          },
+        ];
+      });
+      props.setDetailProducts([...props.detailProducts, product]);
+    } else {
+      props.setDetailProducts([...props.detailProducts, product]);
     }
-    setIsShowModalProduct(false)
-  }
+    setIsShowModalProduct(false);
+  };
 
   const changeListProductHandler = (e) => {
     e.persist();
-    setDisplayLoading(true)
-    axios.get(API_URL+"productByListProduct/"+e.target.value).then(result => {
-      props.setProducts(result.data)
-      setDisplayLoading(false)
-    }).catch(err => {
-      setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error("Error, contacte con soporte")
-      }
-    })
-  }
+    setDisplayLoading(true);
+    axios
+      .get(API_URL + "productByListProduct/" + e.target.value)
+      .then((result) => {
+        props.setProducts(result.data);
+        setDisplayLoading(false);
+      })
+      .catch((err) => {
+        setDisplayLoading(false);
+        if (err.response) {
+          toast.error(err.response.data.message);
+        } else {
+          console.log(err);
+          toast.error("Error, contacte con soporte");
+        }
+      });
+  };
 
   return (
     <>
@@ -93,15 +112,25 @@ const ProductTableComponent = (props) => {
         <Col sm={12} md={12} lg={12}>
           <Row className="">
             <Col sm={12} md={12} lg={12} xs={12}>
-              <h4 className="title_principal text-center">Tabla de Productos</h4>
+              <h4 className="title_principal text-center">
+                Tabla de Productos
+              </h4>
             </Col>
           </Row>
-          <br/>
+          <br />
           <Row>
             <Col sm={4} md={4} lg={4}>
               <Row>
                 <Col sm={12} md={12} lg={12} className="text-center">
-                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltipConfigPrice">Opción para configurar como se muestran los totales de los productos y los totales en el resumen</Tooltip>}>
+                  <OverlayTrigger
+                    placement={"top"}
+                    overlay={
+                      <Tooltip id="tooltipConfigPrice">
+                        Opción para configurar como se muestran los totales de
+                        los productos y los totales en el resumen
+                      </Tooltip>
+                    }
+                  >
                     <Form.Label>Configuración de Totales</Form.Label>
                   </OverlayTrigger>
                 </Col>
@@ -111,7 +140,7 @@ const ProductTableComponent = (props) => {
                   <Form.Group>
                     <Form.Check
                       name="total_with_iva"
-                      type={'radio'}
+                      type={"radio"}
                       id={`radio-3`}
                       label={`Con Iva`}
                       value={true}
@@ -124,7 +153,7 @@ const ProductTableComponent = (props) => {
                   <Form.Group>
                     <Form.Check
                       name="total_with_iva"
-                      type={'radio'}
+                      type={"radio"}
                       id={`radio-4`}
                       label={`Solo totales`}
                       value={false}
@@ -138,27 +167,39 @@ const ProductTableComponent = (props) => {
             <Col sm={4} md={4} lg={4}>
               <Row>
                 <InputField
-                  type='select'
-                  label='Listado de Productos'
-                  name='price_list'
+                  type="select"
+                  label="Listado de Productos"
+                  name="price_list"
                   required={false}
-                  messageErrors={[
-                    'Requerido*'
-                  ]}
-                  cols='col-md-12 col-lg-12 col-sm-12'
+                  messageErrors={["Requerido*"]}
+                  cols="col-md-12 col-lg-12 col-sm-12"
                   handleChange={changeListProductHandler}
                 >
                   <option value="">--Seleccione--</option>
-                  {props.listData.map((v,i) => <option key={i} value={v.id}>{v.name}</option>)}
+                  {props.listData.map((v, i) => (
+                    <option key={i} value={v.id}>
+                      {v.name}
+                    </option>
+                  ))}
                 </InputField>
               </Row>
             </Col>
-            <Col sm={4} md={4} lg={4}> 
+            <Col sm={4} md={4} lg={4}>
               <Form.Label>Agregar producto a la {props.word2}</Form.Label>
-              <DropdownButton size="sm" variant="danger" id={'dropdown_product'} title={(<FaPlusCircle />)} className="">
-                <Dropdown.Item onClick={() => setIsShowModalProduct(true) }>Agregar Producto desde Inventario</Dropdown.Item>
+              <DropdownButton
+                size="sm"
+                variant="danger"
+                id={"dropdown_product"}
+                title={<FaPlusCircle />}
+                className=""
+              >
+                <Dropdown.Item onClick={() => setIsShowModalProduct(true)}>
+                  Agregar Producto desde Inventario
+                </Dropdown.Item>
                 {/*<Dropdown.Item onClick={() => addNewProductIrregular(true)}>Agregar producto (valor neto) </Dropdown.Item>*/}
-                <Dropdown.Item onClick={() => addNewProductIrregular(false)}>Agregar producto</Dropdown.Item>
+                <Dropdown.Item onClick={() => addNewProductIrregular(false)}>
+                  Agregar producto
+                </Dropdown.Item>
               </DropdownButton>
             </Col>
           </Row>
@@ -166,7 +207,15 @@ const ProductTableComponent = (props) => {
             <LoadingComponent />
           ) : (
             <>
-              <div style={{width: "100%", overflowY: "auto", paddingLeft: "20px", paddingRight: "20px", maxHeight: "300px"}}>
+              <div
+                style={{
+                  width: "100%",
+                  overflowY: "auto",
+                  paddingLeft: "20px",
+                  paddingRight: "20px",
+                  maxHeight: "300px",
+                }}
+              >
                 <TableProductsCotization
                   setDetailProducts={props.setDetailProducts}
                   detailProducts={props.detailProducts}
@@ -174,12 +223,6 @@ const ProductTableComponent = (props) => {
                   setGastosDetail={props.setGastosDetail}
                 />
               </div>
-              <br />
-              <Row className="justify-content-center">
-                <Col sm={4} lg={4} md={4}>
-                  <Button variant="secondary" block={true} size="sm" onClick={() => props.changeSection(2,true)} type="button">Siguiente</Button>
-                </Col>
-              </Row>
             </>
           )}
         </Col>
@@ -193,8 +236,8 @@ const ProductTableComponent = (props) => {
         {...props}
       />
     </>
-  )
-}
+  );
+};
 
 ProductTableComponent.propTypes = {
   setDetailProducts: PropTypes.func.isRequired,
@@ -203,11 +246,10 @@ ProductTableComponent.propTypes = {
   setIsShowModalProduct: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
   setGastosDetail: PropTypes.func.isRequired,
-  listData : PropTypes.array,
-  setProducts : PropTypes.func,
-  type : PropTypes.string,
-  changeSection: PropTypes.func,
-  word2 : PropTypes.string,
-}
+  listData: PropTypes.array,
+  setProducts: PropTypes.func,
+  type: PropTypes.string,
+  word2: PropTypes.string,
+};
 
-export default ProductTableComponent
+export default ProductTableComponent;

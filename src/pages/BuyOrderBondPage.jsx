@@ -1,8 +1,8 @@
 import React from 'react'
 import ContainerBondComponent from 'components/invoice/ContainerBondComponent';
  
-export default function SaleNoteBondPage(props) {
+export default function BuyOrderBondPage(props) {
   return (
-    <ContainerBondComponent type="saleNote" {...props} />
+    <ContainerBondComponent type="buyOrder" {...props} />
   )
 }

@@ -1,23 +1,18 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import {
   Row,
   Col,
-  Container,
   Button,
-  Badge,
   Accordion,
   Card,
   Image
 } from 'react-bootstrap'
 import InputField from 'components/input/InputComponent'
-import axios from 'axios'
-import { toast } from 'react-toastify'
 import { showPriceWithDecimals } from 'utils/functions'
-import { FaPlusCircle, FaChartLine } from "react-icons/fa";
-import * as moment from 'moment-timezone'
+import { FaChartLine } from "react-icons/fa";
 import {Doughnut,Bar,Line} from 'react-chartjs-2';
-import { ARRAY_COLORS, ARRAY_MONTH } from 'utils/constants'
+import { ARRAY_COLORS } from 'utils/constants'
 
 let optionsBar = {
   responsive: true,
@@ -164,7 +159,15 @@ const  StadisticsInvoiceComponent = (props) => {
   },[props.redraw])
 
   const onChange = e => {
-    props.setDataForm({...props.dataForm,[e.target.name] : e.target.value})
+    e.persist();
+    props.setGlobalState(currentState =>{
+      return Object.assign({},currentState,{
+        dataForm: {
+          ...currentState.dataForm,
+          [e.target.name] : e.target.value
+        }
+      });
+    });
   }
 
   const handleDataDonutSsStatus = () => {
@@ -397,7 +400,7 @@ const  StadisticsInvoiceComponent = (props) => {
 }
 
 StadisticsInvoiceComponent.propTypes = {
-  setDataForm: PropTypes.func.isRequired,
+  setGlobalState: PropTypes.func.isRequired,
   dataForm: PropTypes.object.isRequired,
   redraw: PropTypes.bool.isRequired,
   statusCotization: PropTypes.object.isRequired,

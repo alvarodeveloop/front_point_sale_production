@@ -249,10 +249,6 @@ export const routes = [
     component: lazy(() => import('./pages/GuideDispatchSearchByRefPage'))
   },
   {
-    path: '/guide/guide_bond/:id',
-    component: lazy(() => import('./pages/GuideDispatchBondPage'))
-  },
-  {
     path: '/quotitation/guide/:id',
     component: lazy(() => import('./pages/CotizationGuidePage'))
   },
@@ -295,5 +291,9 @@ export const routes = [
   {
     path: '/buyOrder/view',
     component: lazy(() => import('./pages/BuyOrderSearchPage'))
+  },
+  {
+    path: '/buyOrder/bond/:id',
+    component: lazy(() => import('./pages/BuyOrderBondPage'))
   },
 ]

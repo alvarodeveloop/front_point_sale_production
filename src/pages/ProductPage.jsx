@@ -22,10 +22,11 @@ import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import * as XLSX from 'xlsx';
-
+import FileSaver from 'file-saver';
+import * as moment from 'moment-timezone';
 import 'styles/components/modalComponents.css'
 import 'styles/pages/productStyle.css'
-import {formatNumber} from 'utils/functions'
+import { formatNumber, s2ab } from 'utils/functions'
 import layoutHelpers from 'shared/layouts/helpers'
 import LoadingComponent from 'components/LoadingComponent'
 let productColumns = []
@@ -163,7 +164,7 @@ const ProductPage = (props) => {
   const confirmDeleteRegister = id => {
     axios.delete(API_URL+'product/'+id).then(result => {
       toast.success('Registro eliminado con éxito')
-      fetchData()
+      fetchData();
     }).catch(err => {
       props.tokenExpired(err)
     })
@@ -173,15 +174,19 @@ const ProductPage = (props) => {
     props.history.replace('/product/form/'+btoa(id))
   }
 
-  const fetchData = () => {
+  const fetchData = (dispatchInventaryRequest = false) => {
 
     const promises = [
       axios.get(API_URL+'product'),
     ]
 
     Promise.all(promises).then(result => {
-      setProduct(result[0].data)
-      setIsLoading(false)
+      setProduct(result[0].data);
+      if(dispatchInventaryRequest){
+        props.dispatchInventaryHandler();
+      }
+      setIsLoading(false);
+
     }).catch(err => {
       props.tokenExpired(err)
     })
@@ -204,7 +209,7 @@ const ProductPage = (props) => {
     document.getElementById('inputFile').click()
   }
 
-  const uploadExcel = e => {
+  const uploadCreateExcel = e => {
     setIsLoading(true)
     let f = e.target.files[0]
     var name = f.name;
@@ -215,20 +220,93 @@ const ProductPage = (props) => {
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
         const data = XLSX.utils.sheet_to_json(ws, {header:0});
-        handleRequestExcel(data)
+        handleRequestCreateExcel(data)
     };
     reader.readAsBinaryString(f);
   }
 
-  const handleRequestExcel = data => {
+  const handleRequestCreateExcel = data => {
     axios.post(API_URL+"product_excel",{data}).then(result => {
       toast.success("Registros importados con éxito : "+result.data.positivo+"\n registros no importados : "+result.data.negativo)
-      fetchData()
+      fetchData(true)
     }).catch(err => {
       setIsLoading(false)
       props.tokenExpired(err)
-    })    
-  }
+    });    
+  };
+
+  const displayInputUpload = () =>{
+    document.getElementById('inputFileUpload').click();
+  };
+
+  const uploadEditExcel = (e) => {
+    setIsLoading(true)
+    let f = e.target.files[0]
+    var name = f.name;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+        const bstr = evt.target.result;
+        const wb = XLSX.read(bstr, {type:'binary'});
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
+        const data = XLSX.utils.sheet_to_json(ws, {header:0});
+        handleRequestEditExcel(data)
+    };
+    reader.readAsBinaryString(f);
+  };
+
+  const handleRequestEditExcel = data => {
+    axios.put(API_URL+"product_excel_edit",{data}).then(result => {
+      toast.success("Registros editados con éxito : "+result.data.positivo+"\n registros no editados : "+result.data.negativo)
+      fetchData(true);
+    }).catch(err => {
+      console.log(err,"aqui el error");
+      setIsLoading(false)
+      props.tokenExpired(err)
+    });    
+  };
+
+  const exportDataExcel = () => {
+
+    if(!product.length){
+      toast.error('Error, no hay datos para realizar el excel')
+    }else{
+      let wb = XLSX.utils.book_new()
+      let bodyTable = [['Nombre','Descripción','Código Ean','Método de Venta','Categoría','Stock']]
+      let nameTitle  = `Productos la empresa (${props.configGeneral.enterprise.bussines_name})`;
+      wb.Props = {
+        Title: nameTitle,
+        Subject: "Exportación de Productos",
+        Author: 'Aidy tecnology',
+        CreatedDate: moment().format('YYYY-MM-DD')
+      };
+      wb.SheetNames.push("Productos");
+
+      product.forEach((item, i) => {
+        let categoriesString = "";
+        item.categories.forEach((item1,i1) => {
+          categoriesString+= item1.name_category+" - ";
+        });
+        categoriesString = categoriesString ? categoriesString.substring(0,categoriesString.length - 3) : "Sin categorias";
+
+        bodyTable.push([
+          item.name_product,
+          item.description,
+          item.code_ean,
+          item.method_sale_format,
+          categoriesString,
+          item.inventary.stock,
+        ])
+      });
+
+      var ws = XLSX.utils.aoa_to_sheet(bodyTable);
+      wb.Sheets["Productos"] = ws;
+      var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+      let datos = s2ab(wbout)
+      FileSaver.saveAs(new Blob([datos],{type:"application/octet-stream"}), nameTitle+"/"+moment().format('DD-MM-YYYY')+'.xlsx')
+    }
+
+  } 
 
   return (
     <Container>
@@ -242,11 +320,14 @@ const ProductPage = (props) => {
           </Col>
           <Col sm={4} md={4} lg={4}>
             <br/>
-            <DropdownButton size="sm" id={'dropExcel'} title={(<span>Cargar Productos <FaFileExcel /></span>)} variant="success"  block="true">
+            <DropdownButton size="sm" id={'dropExcel'} title={(<span>Operaciones Excel <FaFileExcel /></span>)} variant="success"  block="true">
               <Dropdown.Item onClick={donwloandExcel}>Descargar plantilla excel</Dropdown.Item>
-              <Dropdown.Item onClick={displayInputFile}>Subir excel</Dropdown.Item>
+              <Dropdown.Item onClick={exportDataExcel}>Exportar data</Dropdown.Item>
+              <Dropdown.Item onClick={displayInputFile}>Cargar Proveedores</Dropdown.Item>
+              <Dropdown.Item onClick={displayInputUpload}>Modificar Proveedores</Dropdown.Item>
             </DropdownButton>
-            <input type="file" style={{display: "none"}} id="inputFile" onChange={uploadExcel} accept=".xlsx" />
+            <input type="file" style={{display: "none"}} id="inputFile" onChange={uploadCreateExcel} accept=".xlsx" />
+            <input type="file" style={{display: "none"}} id="inputFileUpload" onChange={uploadEditExcel} accept=".xlsx" />
           </Col>
           <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
             <hr/>
@@ -356,6 +437,7 @@ ProductPage.propTypes ={
   id_branch_office: PropTypes.string.isRequired,
   id_enterprise : PropTypes.string.isRequired,
   configGeneral : PropTypes.object,
+  dispatchInventaryHandler : PropTypes.func,
 }
 
 export default connect(mapStateToProps,{})(ProductPage)

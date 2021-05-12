@@ -24,7 +24,7 @@ import InputFieldRef from 'components/input/InputComponentRef'
 import { toast } from 'react-toastify'
 
 let inventaryColumns = []
-
+let count = 0;
 const InventaryTab = (props) => {
 
   const [inventary, setInventary] = useState([])
@@ -41,8 +41,22 @@ const InventaryTab = (props) => {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    fetchData()
+    return () =>{
+      count = 0;
+    }
+  },[]);
+
+  useEffect(() => {
+    fetchData();
   },[props.id_branch_office])
+
+  useEffect(() => {
+    if(count !== 0){
+      fetchData(false);
+    }else{
+      count++;
+    }
+  },[props.dispatchFetchRequest]);
 
   useMemo(() => {
 
@@ -139,17 +153,23 @@ const InventaryTab = (props) => {
     }, 300);
   }
 
-  const fetchData = () => {
+  const fetchData = (providers = true) => {
     if(!displayLoading){
       setDisplayLoading(true);
     }
     let promises = [
-      axios.get(API_URL+'provider'),
       axios.get(API_URL+'inventary')
     ]
+    if(providers){
+      promises.push(
+        axios.get(API_URL+'provider')
+      );
+    }
     Promise.all(promises).then(result => {
-      setInventary(result[1].data)
-      setProviders(result[0].data)
+      setInventary(result[0].data)
+      if(providers){
+        setProviders(result[1].data)
+      }
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
@@ -174,7 +194,7 @@ const InventaryTab = (props) => {
     setIsOpenStock(false)
     setIsOpenHistory(false)
     setProduct({})
-    fetchData()
+    fetchData(false);
   }
 
   const justifyStockHandler = (data = false) => {
@@ -209,7 +229,7 @@ const InventaryTab = (props) => {
       setDisplayLoadingModal(false);
       justifyStockHandler(false);
       setProduct({});
-      fetchData();
+      fetchData(false);
     }).catch(err => {
       setDisplayLoadingModal(false)
       props.tokenExpired(err)
@@ -318,6 +338,7 @@ InventaryTab.propTypes ={
   id_branch_office: PropTypes.string.isRequired,
   id_enterprise : PropTypes.string.isRequired,
   configGeneral: PropTypes.object,
+  dispatchFetchRequest: PropTypes.bool,
 }
 
 export default connect(mapStateToProps,{})(InventaryTab)

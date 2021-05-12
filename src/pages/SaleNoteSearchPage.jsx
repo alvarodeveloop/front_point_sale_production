@@ -6,7 +6,6 @@ import {
   Container,
   Button,
   Badge,
-  Modal
 } from 'react-bootstrap';
 import Table from 'components/Table';
 import axios from 'axios';
@@ -17,7 +16,6 @@ import { FaPlusCircle } from "react-icons/fa";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import layoutHelpers from 'shared/layouts/helpers';
-import * as moment from 'moment-timezone';
 import 'styles/components/modalComponents.css';
 import { connect } from 'react-redux';
 import ModalInvoiceActions from 'components/modals/ModalInvoiceActions';
@@ -25,25 +23,30 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import StadisticsInvoiceComponent from 'components/StadisticsInvoiceComponent';
 import LoadingComponent from 'components/LoadingComponent';
 import ModalDetailsInvoice from 'components/modals/ModalDetailsInvoice';
+import { FaFileExcel } from 'react-icons/fa';
+import ModalExportDataInvoice from 'components/modals/ModalExportDataInvoice';
 
 let cotizacionColumns = null
 
 const SaleNoteSearchPage = props => {
 
-  const [displayLoading, setDisplayLoading] = useState(true)
-  const [invoiceData, setInvoiceData] = useState([])
-  const [saleNoteDetail, setSaleNoteDetail] = useState({})
-  const [isOpenModalDetail, setIsOpenModalDetail] = useState(false)
-  const [redraw, setRedraw] = useState(false)
-  const [statusCotization, setStatusCotization] = useState({})
-  const [displayFilter,setDisplayFilter] = useState(1)
-  const [dataForm, setDataForm] = useState({
-    date_desde : '',
-    date_hasta: '',
-    type : 2
-  })
-  const [invoiceAction,setInvoiceAction] = useState({})
-  const [isOpenModalAction,setIsOpenModalAction] = useState(false)
+  const [globalState, setGlobalState] = useState({
+    displayLoading: true,
+    invoiceData : [],
+    saleNoteDetail : {},
+    isOpenModalDetail : false,
+    isOpenModalExcel: false,
+    redraw : false,
+    statusCotization: {},
+    displayFilter : 1,
+    dataForm: {
+      date_desde : "",
+      date_hasta: "",
+      type: 2
+    },
+    invoiceAction: {},
+    isOpenModalAction : false
+  });
 
   useMemo(() => {
     cotizacionColumns = [
@@ -98,11 +101,11 @@ const SaleNoteSearchPage = props => {
         },
         {
           Header: 'Fecha-Emisión',
-          accessor: props1 => [moment(props1.date_issue_invoice).tz('America/Santiago').format('DD-MM-YYYY')],
+          accessor: "date_issue_format",
         },
         {
           Header: 'Días de Vencimiento',
-          accessor: 'days_expiration'
+          accessor: 'days_expiration_format'
         },
         {
           Header: 'Status',
@@ -255,106 +258,138 @@ const SaleNoteSearchPage = props => {
   },[props.id_branch_office])
 
   useEffect(() => {
-    if(redraw){
+    if(globalState.redraw){
       handleDataDonutSsStatus()
     }
-  },[redraw])
+  },[globalState.redraw])
 
   const onHideModalAction = (originalCoti = false) => {
-    if(!isOpenModalAction && originalCoti){
-      setInvoiceAction(originalCoti)
-    }
-    setIsOpenModalAction(!isOpenModalAction)
+    
+    setGlobalState(currentState => {
+      return Object.assign({},currentState,{
+        isOpenModalAction : !currentState.isOpenModalAction,
+        invoiceAction : !currentState.isOpenModalAction && originalCoti ? originalCoti : currentState.invoiceAction
+      });
+    });
+    
   }
 
   const handleDataDonutSsStatus = () => {
     setTimeout(function () {
-      setRedraw(false)
+      setGlobalState(currentState => {
+        return Object.assign({},currentState,{
+          redraw : false
+        });
+      });
     }, 2000);
   }
 
   const handleStadistics = () => {
-    let objectPost = Object.assign({},dataForm)
-    setDisplayFilter(3)
+    let objectPost = Object.assign({},globalState.dataForm)
+    setGlobalState({...globalState, displayFilter: 3});
+    
      axios.post(API_URL+'invoice_stadistics',objectPost).then(result => {
-      setStatusCotization({...statusCotization,statusesBonds: result.data.statusesBonds, statuses : result.data.statuses, bondsByMonth: result.data.bondsByMonth, invoiceByYear: result.data.invoiceByYear, totalByStatus: result.data.totalByStatus})
-      setTimeout(function () {
-        setRedraw(true)
-        setDisplayFilter(1)
-      }, 1000);
+      setGlobalState(currentState => {
+        return Object.assign({},currentState,{
+          redraw : true,
+          statusCotization : {
+            ...currentState.statusCotization,
+            statusesBonds: result.data.statusesBonds,
+            statuses : result.data.statuses,
+            bondsByMonth: result.data.bondsByMonth,
+            invoiceByYear: result.data.invoiceByYear,
+            totalByStatus: result.data.totalByStatus,
+          },
+          displayFilter : 1
+        });
+      });
      }).catch(err => {
-       setDisplayFilter(1)
-      props.tokenExpired(err)
+      setGlobalState({...globalState, displayFilter: 1});
+      props.tokenExpired(err);
      })
   }
 
   const handleDisplayFilter = filter => {
-    if(filter == 3){
-      setDataForm({date_desde: '', date_hasta: ''})
-    }
-    setDisplayFilter(filter)
+    setGlobalState(currentState => {
+      return Object.assign({},currentState,{
+        displayFilter : filter,
+        dataForm: filter === 3 ? {date_desde: "", date_hasta: ""} : currentState.dataForm
+      });
+    });
   }
 
   const fetchData = () => {
 
-    let objectPost = Object.assign({},dataForm)
+    let objectPost = Object.assign({},globalState.dataForm)
     let promises = [
       axios.get(API_URL+'invoice/0/2'),
       axios.post(API_URL+'invoice_stadistics',objectPost),
     ]
     Promise.all(promises).then(result => {
-      setInvoiceData(result[0].data)
-      setStatusCotization({...statusCotization, statusesBonds: result[1].data.statusesBonds, statuses : result[1].data.statuses, bondsByMonth: result[1].data.bondsByMonth, invoiceByYear: result[1].data.invoiceByYear, totalByStatus: result[1].data.totalByStatus})
-      setTimeout(function () {
-        setRedraw(true)
-      }, 1000);
-      setDisplayLoading(false)
+      setGlobalState(currentState => {
+        return Object.assign({},currentState,{
+          invoiceData : result[0].data,
+          statusCotization : {
+            statusesBonds: result[1].data.statusesBonds,
+            statuses : result[1].data.statuses, 
+            bondsByMonth: result[1].data.bondsByMonth, 
+            invoiceByYear: result[1].data.invoiceByYear, 
+            totalByStatus: result[1].data.totalByStatus
+          },
+          redraw: true,
+          displayLoading : false
+        });
+      });
     }).catch(err => {
-      setDisplayLoading(false)
-      props.tokenExpired(err)
+      setGlobalState({...globalState, displayLoading: false});
+      props.tokenExpired(err);
     })
   }
 
   const goToForm = () => {
-    props.history.replace('/sale_note/sale_note_create')
+    props.history.push('/sale_note/sale_note_create')
   }
 
   const printInvoice = (original,type = 0) => {
+    
     toast.info('Cargando documento, espere por favor')
-    setDisplayLoading(true)
-    setIsOpenModalAction(false)
+    
+    setGlobalState(currentState => {
+      return Object.assign({},currentState,{
+        displayLoading: true,
+        isOpenModalAction: false
+      });
+    });
+    
     axios.get(API_URL+'invoice_print/'+original.id+"/"+type+"/2").then(result => {
       window.open(API_URL+'documents/sale_note/files_pdf/'+result.data.name)
-      setDisplayLoading(false)
-      setIsOpenModalAction(true)
+      setGlobalState(currentState => {
+        return Object.assign({},currentState,{
+          displayLoading: false,
+          isOpenModalAction: true
+        });
+      });
     }).catch(err => {
-      setDisplayLoading(false)
+      setGlobalState({...globalState, displayLoading: false});
       props.tokenExpired(err)
     })
   }
 
   const handleModalDetail = () => {
-    setIsOpenModalDetail(!isOpenModalDetail)
-  }
-
-  const displayMehotdSale = method => {
-    method = parseInt(method)
-    if(method === 1){
-      return "Unidad"
-    }else if(method === 2){
-      return "Mayorista"
-    }else{
-      return "(Litros, Kg, Etc..)"
-    }
+    setGlobalState({...globalState, isOpenModalDetail: !globalState.isOpenModalDetail});
   }
 
   const seeDetailCotization = data => {
-    setSaleNoteDetail(data)
-    handleModalDetail()
+    setGlobalState(currentState => {
+      return Object.assign({},currentState,{
+        saleNoteDetail: data,
+        isOpenModalDetail: !currentState.isOpenModalDetail
+      });
+    });
   }
 
   const goToBond = datos => {
-    props.history.replace('/sale_note/sale_note_bond/'+datos.id)
+    props.history.push('/sale_note/sale_note_bond/'+datos.id)
   }
 
   const anulateInvoice = datos => {
@@ -390,75 +425,95 @@ const SaleNoteSearchPage = props => {
   }
 
   const confirmAnulateInvoice = (id,type) => {
+    
     toast.info('Anulando nota, esto podría tardar algunos segundos... espere por favor')
-    setDisplayLoading(true)
-    let objectUpdate = {
-      type
-    }
+    setGlobalState({...globalState, displayLoading: true});
+    let objectUpdate = {type};
+
     axios.put(API_URL+'invoice_status/'+id,objectUpdate).then(result => {
         toast.success('Nota de venta anulada con éxito')
-        setInvoiceAction({...invoiceAction,status: 4})
-        fetchData()
+        setGlobalState({...globalState, invoiceAction: {...globalState.invoiceAction, status: 4}});
+        fetchData();
      }).catch(err => {
-      setDisplayLoading(false)
+      setGlobalState({...globalState, displayLoading: false});
       props.tokenExpired(err)
     })
   }
 
   const invoiceBySaleNoteHandler = (saleNoteData) => {
-    props.history.replace("/invoice/create_invoice_by_sale_note/"+saleNoteData.id);
+    props.history.push("/invoice/create_invoice_by_sale_note/"+saleNoteData.id);
+  }
+
+  const openModalExcelHandler = () => {
+    setGlobalState({...globalState, isOpenModalExcel : !globalState.isOpenModalExcel});
   }
 
   return (
 
     <Container fluid>
       <Row>
-        <Col sm={6} md={6} lg={6} className="text-center">
+        <Col sm={6} md={6} lg={6} className="text-center"> 
           <h4 className="title_principal">Tabla de Notas de Ventas</h4>
+        </Col>
+        <Col sm={6} md={6} lg={6} className="text-center title_principal"> 
+          <h4>Total Notas Realizadas</h4>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={3} md={3} lg={3} className="text-center">
           <Button block={true} variant="success" onClick={goToForm} size="sm">Nueva Nota <FaPlusCircle /></Button>
         </Col>
-        <Col sm={6} md={6} lg={6} className="text-center title_principal">
-          <h4>Total Notas Realizadas</h4>
-          <Badge variant="danger">{invoiceData.length}</Badge>
+        <Col sm={3} md={3} lg={3} className="text-center">
+          <Button block={true} variant="success" onClick={openModalExcelHandler} size="sm">Exportar data <FaFileExcel /></Button>
+        </Col>
+        <Col sm={6} md={6} lg={6} className="text-center ">
+          <Badge variant="danger">{globalState.invoiceData.length}</Badge>
         </Col>
       </Row>
       <hr/>
-      {displayLoading ? (
+      {globalState.displayLoading ? (
         <LoadingComponent />
       ) : (
         <>
           <StadisticsInvoiceComponent
-            setDataForm={setDataForm}
-            dataForm={dataForm}
-            redraw={redraw}
-            statusCotization={statusCotization}
+            setGlobalState={setGlobalState}
+            dataForm={globalState.dataForm}
+            redraw={globalState.redraw}
+            statusCotization={globalState.statusCotization}
             handleDisplayFilter={handleDisplayFilter}
             handleStadistics={handleStadistics}
-            displayFilter={displayFilter}
+            displayFilter={globalState.displayFilter}
             configGeneral={props.configGeneral}
           />
           <Row>
             <Col sm={12} md={12} lg={12} xs={12}>
-              <Table columns={cotizacionColumns} data={invoiceData}/>
+              <Table columns={cotizacionColumns} data={globalState.invoiceData}/>
             </Col>
           </Row>
         </>
       )}
       <ModalDetailsInvoice
-        isOpenModalDetail={isOpenModalDetail}
+        isOpenModalDetail={globalState.isOpenModalDetail}
         handleModalDetail={handleModalDetail}
-        cotizationDetail={saleNoteDetail}
+        cotizationDetail={globalState.saleNoteDetail}
         configGeneral={props.configGeneral} 
       />
       <ModalInvoiceActions
-        isShow={isOpenModalAction}
+        isShow={globalState.isOpenModalAction}
         onHide={onHideModalAction}
-        cotization={invoiceAction}
+        cotization={globalState.invoiceAction}
         printInvoice={printInvoice}
         goToBond={goToBond}
         anulateInvoice={anulateInvoice}
         seeDetailCotization={seeDetailCotization}
         invoiceBySaleNote={invoiceBySaleNoteHandler}
+      />
+      <ModalExportDataInvoice 
+        isOpen={globalState.isOpenModalExcel}
+        type="saleNote"
+        handleOnHide={openModalExcelHandler}
+        catchErrorHandler={props.tokenExpired}
+        configGeneral={props.configGeneral}
       />
     </Container>
   )
