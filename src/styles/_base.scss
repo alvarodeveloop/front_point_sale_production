@@ -2,12 +2,12 @@
   width: 100%;
 }
 
-.button-add{
+.button-add {
   width: 95%;
   align-items: right;
 }
 
-.button-add > button{
+.button-add > button {
   float: right;
   padding: 15px;
   margin-bottom: 10px;
@@ -15,7 +15,7 @@
   box-shadow: 3px 3px rgb(219, 222, 215);
 }
 
-.round-buttons{
+.round-buttons {
   border-radius: 25%;
 }
 
@@ -23,34 +23,33 @@
   width: 100%;
 }
 
-.asterisk_red{
+.asterisk_red {
   color: red;
 }
 
-.margin_col{
+.margin_col {
   margin-top: 30px;
 }
 
-.title_principal{
+.title_principal {
   color: rgb(39, 57, 153);
 }
 
-.font-badge{
+.font-badge {
   font-size: 14px;
 }
 
-.header_card{
+.header_card {
   background-color: rgba(2, 29, 54, 0.6);
   color: white;
 }
 
-
-.divContainerFlex{
+.divContainerFlex {
   display: flex;
-  flex-direction:row;
+  flex-direction: row;
 }
 
-.custom-ui-edit{
+.custom-ui-edit {
   font-family: Arial, Helvetica, sans-serif;
   width: 400px;
   padding: 30px;
@@ -61,7 +60,7 @@
   color: #fff;
 }
 
-.button-alert{
+.button-alert {
   outline: none;
   background: #333;
   border: none;
@@ -137,7 +136,7 @@ body.react-confirm-alert-body-element {
   }
 }
 
-.indicatorsCircle{
+.indicatorsCircle {
   border-radius: 500px;
   background-color: #f4f4f4;
   color: dark;
@@ -150,12 +149,12 @@ body.react-confirm-alert-body-element {
   margin-left: 10px;
 }
 
-.indicatorsCircle:hover{
+.indicatorsCircle:hover {
   background-color: #2286f1;
   color: white;
 }
 
-.indicatorsCircleActive{
+.indicatorsCircleActive {
   border-radius: 500px;
   background-color: #2286f1;
   color: white;

@@ -1,4 +1,4 @@
-.divTitleShow{
+.divTitleShow {
   height: 60px;
   color: white;
   font-size: 15px;
@@ -7,27 +7,27 @@
   padding: 10px;
 }
 
-.divTitleShowImg{
+.divTitleShowImg {
   height: 70px;
   width: auto;
 }
 
-.divDescriptionShow{
+.divDescriptionShow {
   height: 60px;
   color: white;
   padding: 15px;
 }
 
-.paddingColGallery{
+.paddingColGallery {
   margin-bottom: 70px;
   text-align: center;
 }
 
-.buttonTrashGallery{
+.buttonTrashGallery {
   width: 100%;
 }
 
-.divGallery{
+.divGallery {
   overflow-y: auto;
   max-height: 400px;
   height: auto;
@@ -46,6 +46,17 @@ li.str:before {
   bottom: -3px;
 }
 
-.dropdown > button{
+.dropdown > button {
   width: 100%;
+}
+
+.excelContainer {
+  height: 500px;
+}
+
+.marginTopExcelCols {
+  margin-top: 30px;
+}
+
+.shadowButtons {
 }

@@ -50,18 +50,13 @@ const ProductTableComponent = (props) => {
     // metodo para manejar la escogencia del producto en la modal de productos para el detalle de la cotizacion
     if (!product.quantity) product.quantity = 1;
     if (!product.category) {
-      console.log(product, "aqui menorr");
       product.category = "";
       if (Array.isArray(product.categories)) {
-        console.log(product.categories, "aqui11");
         product.categories.forEach((item, i) => {
-          console.log(item, "aqui12222222");
           product.category += item.categories.name_category;
-          console.log(product.category, "aqui33333333333333");
         });
       }
     }
-    console.log(product.category, "aqui444444444444444444444");
     product.discount_stock = true;
     product.id_product = product.id;
     if (
