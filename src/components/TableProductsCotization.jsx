@@ -291,7 +291,7 @@ TableProductsCotization.propTypes = {
 };
 
 TableProductsCotization.defaultProps = {
-  configStore: JSON.parse(localStorage.getItem("configStore")),
+  configStore: JSON.parse(sessionStorage.getItem("configStore")),
 };
 
 export default TableProductsCotization;

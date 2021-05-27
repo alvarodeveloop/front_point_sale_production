@@ -11,6 +11,17 @@ li.str:before {
   bottom: -3px;
 }
 
-.dropdown > button{
+.dropdown > button {
   width: 100%;
+}
+
+.rutInputSearch {
+  border-style: none !important;
+  border-bottom: 2px solid #e6e0e0 !important;
+  flex-grow: 2;
+  margin-right: 15px;
+}
+
+.rutInputSearch:focus {
+  border-bottom: 2px solid #284fa9 !important;
 }

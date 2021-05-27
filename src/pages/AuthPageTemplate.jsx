@@ -167,8 +167,8 @@ const AuthPageTemplate = (props) => {
       .then((result) => {
         toast.success("Felicidades, usuario registrado con éxito");
         const { data } = result;
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("token", data.token);
+        sessionStorage.setItem("user", JSON.stringify(data.user));
+        sessionStorage.setItem("token", data.token);
         setAuthorizationToken(data.token);
         setTimeout(() => {
           props.loginDispatch(data.user);
@@ -192,10 +192,10 @@ const AuthPageTemplate = (props) => {
     setShowGif(true);
     let userLocal = Object.assign({}, storage).user;
     let id_enterprise = Object.assign({}, storage).id_enterprise;
-    localStorage.setItem("user", JSON.stringify(userLocal));
-    localStorage.setItem("token", storage.token);
-    localStorage.setItem("id_enterprise", id_enterprise);
-    localStorage.setItem("id_branch_office", idBranch);
+    sessionStorage.setItem("user", JSON.stringify(userLocal));
+    sessionStorage.setItem("token", storage.token);
+    sessionStorage.setItem("id_enterprise", id_enterprise);
+    sessionStorage.setItem("id_branch_office", idBranch);
     await axios.post(API_URL + "user_id_sucursal_enterprise", {
       id_sucursal_active: idBranch,
       id_enterprise: id_enterprise,
@@ -215,9 +215,9 @@ const AuthPageTemplate = (props) => {
         id_parent: userLocal.id_parent,
         email: userLocal.email,
       });
-      localStorage.setItem("user", JSON.stringify(userLocal));
-      localStorage.setItem("token", storage.token);
-      localStorage.setItem("id_enterprise", idEnteprise);
+      sessionStorage.setItem("user", JSON.stringify(userLocal));
+      sessionStorage.setItem("token", storage.token);
+      sessionStorage.setItem("id_enterprise", idEnteprise);
       authFinish(userLocal);
     } else {
       axios
@@ -305,7 +305,7 @@ const AuthPageTemplate = (props) => {
       .get(API_URL + "auth_nuxo")
       .then((result) => {
         if (result.data.token) {
-          localStorage.setItem("token", result.data.token);
+          sessionStorage.setItem("token", result.data.token);
           setAuthorizationToken(result.data.token);
           props.loginDispatch(userDatos);
         } else {
@@ -357,10 +357,10 @@ const AuthPageTemplate = (props) => {
           id_parent: data.user.id_parent,
           email: data.user.email,
         });
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("id_enterprise", data.user.enterprises[0].id);
-        localStorage.setItem(
+        sessionStorage.setItem("user", JSON.stringify(data.user));
+        sessionStorage.setItem("token", data.token);
+        sessionStorage.setItem("id_enterprise", data.user.enterprises[0].id);
+        sessionStorage.setItem(
           "id_branch_office",
           data.user.branch_offices[0].id
         );
@@ -379,9 +379,9 @@ const AuthPageTemplate = (props) => {
     } else {
       if (data.user.enterprises.length > 0) {
         if (data.user.enterprises.length === 1) {
-          localStorage.setItem("user", JSON.stringify(data.user));
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("id_enterprise", data.user.enterprises[0].id);
+          sessionStorage.setItem("user", JSON.stringify(data.user));
+          sessionStorage.setItem("token", data.token);
+          sessionStorage.setItem("id_enterprise", data.user.enterprises[0].id);
           await axios.post(API_URL + "user_id_sucursal_enterprise", {
             id_sucursal_active: "",
             id_enterprise: data.user.enterprises[0].id,
@@ -394,8 +394,8 @@ const AuthPageTemplate = (props) => {
           setTypeVisibleDiv(2);
         }
       } else {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("token", data.token);
+        sessionStorage.setItem("user", JSON.stringify(data.user));
+        sessionStorage.setItem("token", data.token);
         props.loginDispatch(data.user);
       }
     }

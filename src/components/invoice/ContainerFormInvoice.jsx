@@ -50,6 +50,7 @@ import {
   arraySearchDefaultInvoiceRecetor,
 } from "utils/constants";
 import TableBondsBillComponent from "components/invoice/TableBondsBillComponent";
+import "styles/pages/formInvoice.css";
 
 const Styles = styled.div`
   .divContainerFlex {
@@ -177,7 +178,7 @@ function ContainerFormInvoice(props) {
         }, 3000);
       }
     } else {
-      if (props.configGeneral.is_syncronized) {
+      if (!props.configGeneral.is_syncronized) {
         toast.error(
           "Su cuenta no esta sincronizada con el SII, complete su configuración general para usar este módulo"
         );
@@ -253,7 +254,6 @@ function ContainerFormInvoice(props) {
         let rut = props.configGeneral.enterprise.rut.split("-")[0];
         let dv = props.configGeneral.enterprise.rut.split("-")[1];
         promises.push(axios.get(API_URL + "type_bond"));
-        //xodigo para producción promises.push(axios.get(API_URL+'search_receptor/'+rut+'/'+dv));
       }
     } else if (onlyClient) {
       promises = [axios.get(API_URL + "client")];
@@ -289,9 +289,6 @@ function ContainerFormInvoice(props) {
                 result[indexArray].data.address_transmitter;
               if (arrayBoleta.includes(props.type)) {
                 setTypeBond(result[4].data);
-                // código de ejercicio... remover para producción
-                //addressTransmitterArray = result[5].data.direcciones[0];
-                //addressTransmitter = result[5].data.direccion_seleccionada
               }
 
               /*=================================*/
@@ -382,17 +379,17 @@ function ContainerFormInvoice(props) {
             );
           } else if (props.type === "boleta") {
             // código de ejercicio... remover para producción
-            /*setCotizationData(currentData => {
-            return Object.assign({},currentData, {
-              rut_transmitter: result[4].data.rut+"-"+result[4].data.dv,
-              business_name_transmitter: result[4].data.razon_social,
-              address_transmitter_array: result[4].data.direcciones[0],
-              address_transmitter : result[4].data.direccion_seleccionada,
-              comuna_transmitter: result[4].data.comuna_seleccionada,
-              city_transmitter: result[4].data.ciudad_seleccionada,
-              fetchTransmitter: false,
-            })
-          })*/
+            //   setCotizationData(currentData => {
+            //   return Object.assign({},currentData, {
+            //     rut_transmitter: result[4].data.rut+"-"+result[4].data.dv,
+            //     business_name_transmitter: result[4].data.razon_social,
+            //     address_transmitter_array: result[4].data.direcciones[0],
+            //     address_transmitter : result[4].data.direccion_seleccionada,
+            //     comuna_transmitter: result[4].data.comuna_seleccionada,
+            //     city_transmitter: result[4].data.ciudad_seleccionada,
+            //     fetchTransmitter: false,
+            //   })
+            // })
             setTypeBond(result[3].data);
           } else if (props.type === "guide") {
             searchClientReceptorGuide();
@@ -886,7 +883,10 @@ function ContainerFormInvoice(props) {
           toast.info("Generando pdf de la boleta, espere por favor...");
           result.data.response.forEach((item, i) => {
             if (item) {
-              window.open(item.url, "_blank");
+              window.open(
+                process.env.REACT_APP_API_FACTURACION + item.url,
+                "_blank"
+              );
             }
           });
           setTimeout(() => {

@@ -1,14 +1,10 @@
-.error-input {
-  color: rgb(209, 26, 26);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.mainBorder {
+.rutInputSearch {
   border-style: none !important;
   border-bottom: 2px solid #e6e0e0 !important;
+  flex-grow: 2;
+  margin-right: 15px;
 }
 
-.mainBorder:focus {
+.rutInputSearch:focus {
   border-bottom: 2px solid #284fa9 !important;
 }

@@ -753,7 +753,10 @@ const CotizacionSearchPage = (props) => {
       .then((result) => {
         toast.success("Status Cambiado");
         if (Object.keys(globalState.cotizationAction).length) {
-          setGlobalState({ ...globalState, cotizationAction: status });
+          setGlobalState({
+            ...globalState,
+            cotizationAction: { ...globalState.cotizationAction, status },
+          });
         }
         fetchData();
       })
@@ -1651,7 +1654,7 @@ const CotizacionSearchPage = (props) => {
 };
 
 CotizacionSearchPage.defaultProps = {
-  configGeneral: JSON.parse(localStorage.getItem("configGeneral")),
+  configGeneral: JSON.parse(sessionStorage.getItem("configGeneral")),
 };
 
 function mapStateToProps(state) {

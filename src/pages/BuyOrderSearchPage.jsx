@@ -1626,7 +1626,7 @@ const BuyOrderSearchPage = (props) => {
 };
 
 BuyOrderSearchPage.defaultProps = {
-  configGeneral: JSON.parse(localStorage.getItem("configGeneral")),
+  configGeneral: JSON.parse(sessionStorage.getItem("configGeneral")),
 };
 
 function mapStateToProps(state) {

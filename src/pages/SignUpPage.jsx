@@ -1,101 +1,97 @@
-import React, { useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Form,
-  Image
-} from 'react-bootstrap'
-import InputField from 'components/input/InputComponent'
-import { ToastContainer, toast } from 'react-toastify'
-import { API_URL } from 'utils/constants'
-import axios from 'axios'
-import 'vendor/styles/pages/authentication.scss'
-import {formatRut} from 'utils/functions'
-import { connect } from 'react-redux'
-import { login } from 'actions/auth'
-import { setAuthorizationToken } from 'utils/functions'
-import LoadingComponent from 'components/LoadingComponent'
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { Container, Row, Col, Button, Form, Image } from "react-bootstrap";
+import InputField from "components/input/InputComponent";
+import { ToastContainer, toast } from "react-toastify";
+import { API_URL } from "utils/constants";
+import axios from "axios";
+import "vendor/styles/pages/authentication.scss";
+import { formatRut } from "utils/functions";
+import { connect } from "react-redux";
+import { login } from "actions/auth";
+import { setAuthorizationToken } from "utils/functions";
+import LoadingComponent from "components/LoadingComponent";
 
 const SignUpPage = (props) => {
-
-  const [displayLoading, setDisplayLoading] = useState(false)
-  const [validatedForm, setValidatedForm] = useState(false)
-  const [user,setUser] = useState({
-    name: '',
-    rut: '',
-    email: '',
-    password: '',
-    password_repeat: '',
+  const [displayLoading, setDisplayLoading] = useState(false);
+  const [validatedForm, setValidatedForm] = useState(false);
+  const [user, setUser] = useState({
+    name: "",
+    rut: "",
+    email: "",
+    password: "",
+    password_repeat: "",
     id_rol: 2,
-    name_enterprise: '',
-    address_enterprise: ''
-  })
-  const [imgLogin,setImgLogin] = useState(null)
+    name_enterprise: "",
+    address_enterprise: "",
+  });
+  const [imgLogin, setImgLogin] = useState(null);
 
   useEffect(() => {
-    fetchAidyConfig()
-  },[])
+    fetchAidyConfig();
+  }, []);
 
   const fetchAidyConfig = () => {
-     axios.get(API_URL+'config_aidy_login').then(result => {
-      if(result.data && result.data.img_login){
-        setImgLogin(result.data.img_login)
-      }
-    }).catch(err => {
-      props.tokenExpired(err)
-     })
-  }
+    axios
+      .get(API_URL + "config_aidy_login")
+      .then((result) => {
+        if (result.data && result.data.img_login) {
+          setImgLogin(result.data.img_login);
+        }
+      })
+      .catch((err) => {
+        props.tokenExpired(err);
+      });
+  };
 
-  const onChange = e => {
-    if(e.target.name === "rut"){
-      let val = formatRut(e.target.value)
-      setUser({...user, [e.target.name] : val})
-    }else{
-      setUser({...user, [e.target.name] : e.target.value})
+  const onChange = (e) => {
+    if (e.target.name === "rut") {
+      let val = formatRut(e.target.value);
+      setUser({ ...user, [e.target.name]: val });
+    } else {
+      setUser({ ...user, [e.target.name]: e.target.value });
     }
-  }
+  };
 
-  const onSubmit = e => {
-
+  const onSubmit = (e) => {
     const form = e.currentTarget;
     e.preventDefault();
     if (form.checkValidity() === false) {
       e.stopPropagation();
       setValidatedForm(true);
-      return
+      return;
     }
 
-    let userSave = Object.assign({},user)
+    let userSave = Object.assign({}, user);
 
-    if(userSave.password !== userSave.password_repeat){
-      toast.error('Las contraseñas no coinciden')
-      return false
+    if (userSave.password !== userSave.password_repeat) {
+      toast.error("Las contraseñas no coinciden");
+      return false;
     }
-    setDisplayLoading(true)
-    axios.post(API_URL+'user_free',userSave).then(result => {
-      toast.success('Felicidades, usuario registrado con éxito')
-      localStorage.setItem('user',JSON.stringify(result.data.user))
-      localStorage.setItem('token',result.data.token)
-      setAuthorizationToken(result.data.token)
-      props.login(result.data.user)
-      setDisplayLoading(false)
-      setTimeout(() => {
-        props.history.replace('/dashboard')
-      },1500)
-    }).catch(err => {
-      setDisplayLoading(false)
-      if(err.response){
-        toast.error(err.response.data.message);
-      }else{
-        console.log(err);
-        toast.error("Error, contacte con soporte si el error persiste");
-      }
-    })
-
-  }
+    setDisplayLoading(true);
+    axios
+      .post(API_URL + "user_free", userSave)
+      .then((result) => {
+        toast.success("Felicidades, usuario registrado con éxito");
+        sessionStorage.setItem("user", JSON.stringify(result.data.user));
+        sessionStorage.setItem("token", result.data.token);
+        setAuthorizationToken(result.data.token);
+        props.login(result.data.user);
+        setDisplayLoading(false);
+        setTimeout(() => {
+          props.history.replace("/dashboard");
+        }, 1500);
+      })
+      .catch((err) => {
+        setDisplayLoading(false);
+        if (err.response) {
+          toast.error(err.response.data.message);
+        } else {
+          console.log(err);
+          toast.error("Error, contacte con soporte si el error persiste");
+        }
+      });
+  };
 
   return (
     <div className="authentication-wrapper authentication-3">
@@ -104,22 +100,34 @@ const SignUpPage = (props) => {
         {/* Do not display the container on extra small, small and medium screens */}
 
         {!imgLogin ? (
-          <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: `url('${process.env.PUBLIC_URL}/background_1920-16.jpg')` }}>
+          <div
+            className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5"
+            style={{
+              backgroundImage: `url('${process.env.PUBLIC_URL}/background_1920-16.jpg')`,
+            }}
+          >
             <div className="ui-bg-overlay bg-dark opacity-50"></div>
 
             {/* Text */}
             <div className="w-100 text-white px-5">
-              <h1 className="display-2 font-weight-bolder mb-4">REGISTRO DE CUENTA</h1>
+              <h1 className="display-2 font-weight-bolder mb-4">
+                REGISTRO DE CUENTA
+              </h1>
               <div className="text-large font-weight-light">
-                Crea tu usuario nivel empresa para empezar el manejo de negocio en aidy
+                Crea tu usuario nivel empresa para empezar el manejo de negocio
+                en aidy
               </div>
             </div>
             {/* /.Text */}
           </div>
         ) : (
-          <div className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5" style={{ backgroundImage: `url('${API_URL}images/aidy/${imgLogin}')` }}>
+          <div
+            className="d-none d-lg-flex col-lg-8 align-items-center ui-bg-cover ui-bg-overlay-container p-5"
+            style={{
+              backgroundImage: `url('${API_URL}images/aidy/${imgLogin}')`,
+            }}
+          >
             <div className=""></div>
-
           </div>
         )}
         {/* / Side container */}
@@ -133,7 +141,10 @@ const SignUpPage = (props) => {
               {/* Logo */}
               <div className="d-flex justify-content-center align-items-center">
                 <div className="position-relative text-center">
-                  <Image src={require('../assets/img/logo/AIDY_BETA.jpg')} width="150px" />
+                  <Image
+                    src={require("../assets/img/logo/AIDY_BETA.jpg")}
+                    width="150px"
+                  />
                 </div>
               </div>
               {/* / Logo */}
@@ -182,13 +193,28 @@ const SignUpPage = (props) => {
                   </Row>
                   <Row className="justify-content-center">
                     <Col sm={12} md={12} lg={12}>
-                      <Button size="sm" variant="primary" block={true} type="submit">Registrar Usuario</Button>
+                      <Button
+                        size="sm"
+                        variant="primary"
+                        block={true}
+                        type="submit"
+                      >
+                        Registrar Usuario
+                      </Button>
                     </Col>
                   </Row>
-                  <br/>
+                  <br />
                   <Row className="justify-content-center">
                     <Col sm={12} md={12} lg={12}>
-                      <Button size="sm" variant="secondary" block={true} type="button" onClick={() => props.history.replace('/')}>Volver</Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        block={true}
+                        type="button"
+                        onClick={() => props.history.replace("/")}
+                      >
+                        Volver
+                      </Button>
                     </Col>
                   </Row>
                 </Form>
@@ -200,77 +226,67 @@ const SignUpPage = (props) => {
       </div>
       <ToastContainer />
     </div>
-  )
-}
+  );
+};
 
 SignUpPage.propTypes = {
-    isLogin : PropTypes.bool.isRequired,
-    login: PropTypes.func.isRequired
-}
+  isLogin: PropTypes.bool.isRequired,
+  login: PropTypes.func.isRequired,
+};
 
 SignUpPage.defaultProps = {
   inputName: {
-    type: 'text',
+    type: "text",
     required: true,
-    name: 'name',
-    label : 'Nombre Completo',
-    messageErrors: [
-      'Requerido*'
-    ],
-    cols:"col-sm-12 col-md-12 col-lg-12 col-xs-12"
+    name: "name",
+    label: "Nombre Completo",
+    messageErrors: ["Requerido*"],
+    cols: "col-sm-12 col-md-12 col-lg-12 col-xs-12",
   },
   inputEmail: {
-    type: 'email',
+    type: "email",
     required: true,
-    name: 'email',
-    label : 'Correo',
-    messageErrors: [
-      'Requerido*',' Formato tipo Email*'
-    ],
-    cols:"col-sm-12 col-md-12 col-lg-12 col-xs-12"
+    name: "email",
+    label: "Correo",
+    messageErrors: ["Requerido*", " Formato tipo Email*"],
+    cols: "col-sm-12 col-md-12 col-lg-12 col-xs-12",
   },
   inputRut: {
-    type: 'text',
+    type: "text",
     required: true,
-    name: 'rut',
-    label : 'Rut',
-    messageErrors: [
-      'Requerido*'
-    ],
-    cols:"col-sm-12 col-md-12 col-lg-12 col-xs-12"
+    name: "rut",
+    label: "Rut",
+    messageErrors: ["Requerido*"],
+    cols: "col-sm-12 col-md-12 col-lg-12 col-xs-12",
   },
   inputPassword: {
-    type: 'password',
+    type: "password",
     required: true,
-    name: 'password',
-    label : 'Contraseña',
-    messageErrors: [
-      'Requerido*'
-    ],
-    cols:"col-sm-12 col-md-12 col-lg-12 col-xs-12"
+    name: "password",
+    label: "Contraseña",
+    messageErrors: ["Requerido*"],
+    cols: "col-sm-12 col-md-12 col-lg-12 col-xs-12",
   },
   inputPasswordRepeat: {
-    type: 'password',
+    type: "password",
     required: true,
-    name: 'password_repeat',
-    label : 'Repita la Contraseña',
-    messageErrors: [
-      'Requerido*'
-    ],
-    cols:"col-sm-12 col-md-12 col-lg-12 col-xs-12"
+    name: "password_repeat",
+    label: "Repita la Contraseña",
+    messageErrors: ["Requerido*"],
+    cols: "col-sm-12 col-md-12 col-lg-12 col-xs-12",
   },
-}
+};
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   return {
-    isLogin : state.auth.isAuthenticated
-  }
+    isLogin: state.auth.isAuthenticated,
+  };
 }
 
-function mapDispatchToProps(){
-    return {
-      login
-    }
+function mapDispatchToProps() {
+  return {
+    login,
+  };
 }
 
-export default connect(mapStateToProps,mapDispatchToProps())(SignUpPage);
+export default connect(mapStateToProps, mapDispatchToProps())(SignUpPage);

@@ -1,182 +1,179 @@
-import React, {useState,useEffect } from 'react'
-import PropTypes from 'prop-types'
-import axios from 'axios'
-import { connect } from 'react-redux'
-import { FaImage, FaCogs,FaPlusCircle, FaTrash } from "react-icons/fa";
-import InputField from 'components/input/InputComponent'
-import { toast } from 'react-toastify'
-import { API_URL } from 'utils/constants'
-import { setConfigStore } from 'actions/configs'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import { formatRut } from 'utils/functions'
-import {
-  Row,
-  Col,
-  Form,
-  Button,
-  Container,
-  Image
-} from 'react-bootstrap'
-import LoadingComponent from 'components/LoadingComponent'
-
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import axios from "axios";
+import { connect } from "react-redux";
+import { FaImage, FaCogs, FaPlusCircle, FaTrash } from "react-icons/fa";
+import InputField from "components/input/InputComponent";
+import { toast } from "react-toastify";
+import { API_URL } from "utils/constants";
+import { setConfigStore } from "actions/configs";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
+import { formatRut } from "utils/functions";
+import { Row, Col, Form, Button, Container, Image } from "react-bootstrap";
+import LoadingComponent from "components/LoadingComponent";
 
 const ConfigStoreFormPage = (props) => {
-
-  const [dataStore,setDataStore] = useState({
-    logo: '',
-    name_store: '',
-    country: '',
-    city: '',
-    phone: '',
-    whatssap: '',
-    address: '',
-    email: '',
-    tax: '',
+  const [dataStore, setDataStore] = useState({
+    logo: "",
+    name_store: "",
+    country: "",
+    city: "",
+    phone: "",
+    whatssap: "",
+    address: "",
+    email: "",
+    tax: "",
     handle_stock: false,
-    header_text: '',
-    foot_page_text: '',
-    client_data_foot_page: '',
+    header_text: "",
+    foot_page_text: "",
+    client_data_foot_page: "",
     ref: 1,
-    rut: '',
-    comuna : '',
-  })
-  const [logo, setLogo] = useState([])
-  const [paises, setPaises] = useState([])
-  const [validate, setValidate] = useState(false)
-  const [isUpdate, setIsUpdate] = useState(false)
-  const [displayLoading, setDisplayLoading] = useState(true)
+    rut: "",
+    comuna: "",
+  });
+  const [logo, setLogo] = useState([]);
+  const [paises, setPaises] = useState([]);
+  const [validate, setValidate] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [displayLoading, setDisplayLoading] = useState(true);
 
   useEffect(() => {
-    if(props.id_branch_office){
-      fetchData()
-    }else{
-      toast.error('Debe crear una sucursal o escoger una')
+    if (props.id_branch_office) {
+      fetchData();
+    } else {
+      toast.error("Debe crear una sucursal o escoger una");
       setTimeout(function () {
-        props.history.replace('/config/config_store')
+        props.history.replace("/config/config_store");
       }, 1000);
     }
-  },[props.id_branch_office])
+  }, [props.id_branch_office]);
 
-  const onChange = e => {
-    if(e.target.name === "client_data_foot_page"){
-      setDataStore({ ...dataStore, [e.target.name] : e.target.value === "true" ? true : false })
-    }else if(e.target.name === "rut"){
-      let val = formatRut(e.target.value)
-      setDataStore({ ...dataStore, [e.target.name] : val })
-    }else{
-      setDataStore({ ...dataStore, [e.target.name] : e.target.value })
+  const onChange = (e) => {
+    if (e.target.name === "client_data_foot_page") {
+      setDataStore({
+        ...dataStore,
+        [e.target.name]: e.target.value === "true" ? true : false,
+      });
+    } else if (e.target.name === "rut") {
+      let val = formatRut(e.target.value);
+      setDataStore({ ...dataStore, [e.target.name]: val });
+    } else {
+      setDataStore({ ...dataStore, [e.target.name]: e.target.value });
     }
-  }
+  };
 
   const fetchData = () => {
-    let promise = [
-      axios.get(API_URL+'country')
-    ]
+    let promise = [axios.get(API_URL + "country")];
 
-    if(props.match.params.id || (JSON.parse(localStorage.getItem('user')).id_rol == 2 && props.id_branch_office)){
-      promise.push(
-        axios.get(API_URL+'config_store')
-      )
+    if (
+      props.match.params.id ||
+      (JSON.parse(sessionStorage.getItem("user")).id_rol == 2 &&
+        props.id_branch_office)
+    ) {
+      promise.push(axios.get(API_URL + "config_store"));
     }
-    Promise.all(promise).then(result => {
-
-      setPaises(result[0].data)
-      if(result.length > 1 && result[1].data){
-        setDataStore({
-          logo: result[1].data.logo,
-          name_store: result[1].data.name_store,
-          country: result[1].data.country,
-          city: result[1].data.city,
-          phone: result[1].data.phone,
-          whatssap: result[1].data.whatssap,
-          address: result[1].data.address,
-          email: result[1].data.email,
-          header_text: result[1].data.header_text,
-          tax: result[1].data.tax,
-          handle_stock: result[1].data.handle_stock,
-          foot_page_text: result[1].data.foot_page_text,
-          client_data_foot_page: result[1].data.client_data_foot_page,
-          ref: result[1].data.ref,
-          rut: result[1].data.rut,
-          comuna : result[1].data.comuna
-        })
-        setIsUpdate(true)
-      }else{
-        if((props.useConnect.id_rol == 2 && !props.id_branch_office)){
+    Promise.all(promise)
+      .then((result) => {
+        setPaises(result[0].data);
+        if (result.length > 1 && result[1].data) {
           setDataStore({
-            logo: '',
-            name_store: '',
-            country: '',
-            city: '',
-            phone: '',
-            whatssap: '',
-            address: '',
-            email: '',
-            tax: '',
-            handle_stock: false,
-            header_text: '',
-            foot_page_text: '',
-            client_data_foot_page: '',
-            ref: 1,
-            rut: '',
-            comuna: '',
-          })
+            logo: result[1].data.logo,
+            name_store: result[1].data.name_store,
+            country: result[1].data.country,
+            city: result[1].data.city,
+            phone: result[1].data.phone,
+            whatssap: result[1].data.whatssap,
+            address: result[1].data.address,
+            email: result[1].data.email,
+            header_text: result[1].data.header_text,
+            tax: result[1].data.tax,
+            handle_stock: result[1].data.handle_stock,
+            foot_page_text: result[1].data.foot_page_text,
+            client_data_foot_page: result[1].data.client_data_foot_page,
+            ref: result[1].data.ref,
+            rut: result[1].data.rut,
+            comuna: result[1].data.comuna,
+          });
+          setIsUpdate(true);
+        } else {
+          if (props.useConnect.id_rol == 2 && !props.id_branch_office) {
+            setDataStore({
+              logo: "",
+              name_store: "",
+              country: "",
+              city: "",
+              phone: "",
+              whatssap: "",
+              address: "",
+              email: "",
+              tax: "",
+              handle_stock: false,
+              header_text: "",
+              foot_page_text: "",
+              client_data_foot_page: "",
+              ref: 1,
+              rut: "",
+              comuna: "",
+            });
+          }
         }
-      }
-      setDisplayLoading(false)
-    }).catch(err => {
-      setDisplayLoading(false)
-      props.tokenExpired(err)
-    })
-  }
+        setDisplayLoading(false);
+      })
+      .catch((err) => {
+        setDisplayLoading(false);
+        props.tokenExpired(err);
+      });
+  };
 
-  const onSubmit = e => {
-
+  const onSubmit = (e) => {
     const form = e.currentTarget;
     e.preventDefault();
     if (form.checkValidity() === false) {
       e.stopPropagation();
       setValidate(true);
-      return
+      return;
     }
 
-    let objectPost = Object.assign({},dataStore);
+    let objectPost = Object.assign({}, dataStore);
 
-    setDisplayLoading(true)
-    if(isUpdate){
-      axios.put(API_URL+'config_store/'+props.match.params.id,objectPost).then(result => {
-        toast.success('Configuración Modificada')
-        props.setConfigStore(result.data)
-        localStorage.setItem('configStore',JSON.stringify(result.data))
-        setTimeout(() => {
-          props.history.push('/config/config_store')
-        },1500)
-
-      }).catch(err => {
-        setDisplayLoading(false)
-        props.tokenExpired(err)
-      })
-    }else{
-      axios.post(API_URL+'config_store',objectPost).then(result => {
-        toast.success('Configuración Creada')
-        localStorage.setItem('configStore',JSON.stringify(result.data))
-        props.setConfigStore(result.data)
-        setTimeout(() => {
-          props.history.push('/config/config_store')
-        },1500)
-
-      }).catch(err => {
-        setDisplayLoading(false)
-        props.tokenExpired(err)
-      })
+    setDisplayLoading(true);
+    if (isUpdate) {
+      axios
+        .put(API_URL + "config_store/" + props.match.params.id, objectPost)
+        .then((result) => {
+          toast.success("Configuración Modificada");
+          props.setConfigStore(result.data);
+          sessionStorage.setItem("configStore", JSON.stringify(result.data));
+          setTimeout(() => {
+            props.history.push("/config/config_store");
+          }, 1500);
+        })
+        .catch((err) => {
+          setDisplayLoading(false);
+          props.tokenExpired(err);
+        });
+    } else {
+      axios
+        .post(API_URL + "config_store", objectPost)
+        .then((result) => {
+          toast.success("Configuración Creada");
+          sessionStorage.setItem("configStore", JSON.stringify(result.data));
+          props.setConfigStore(result.data);
+          setTimeout(() => {
+            props.history.push("/config/config_store");
+          }, 1500);
+        })
+        .catch((err) => {
+          setDisplayLoading(false);
+          props.tokenExpired(err);
+        });
     }
-
-  }
+  };
 
   const goToConfig = () => {
-    props.history.replace('/config/config_store')
-  }
+    props.history.replace("/config/config_store");
+  };
 
   return (
     <Container>
@@ -186,49 +183,53 @@ const ConfigStoreFormPage = (props) => {
         <Form onSubmit={onSubmit} noValidate validated={validate}>
           <Row className="justify-content-center containerDiv">
             <Col sm={12} md={12} lg={12}>
-              <h4 className="text-center title_principal">Datos de la Tienda</h4>
-              <br/>
+              <h4 className="text-center title_principal">
+                Datos de la Tienda
+              </h4>
+              <br />
             </Col>
             <Col sm={12} md={12} lg={12} xs={12} className="">
               <Row>
                 <InputField
                   {...props.inputCountry}
                   handleChange={onChange}
-                  value={ dataStore.country }
+                  value={dataStore.country}
                 >
-                  <option value=''>--Seleccione--</option>
-                  {paises.map((v,i) => (
-                    <option value={v.id} key={i}>{v.nombre}</option>
+                  <option value="">--Seleccione--</option>
+                  {paises.map((v, i) => (
+                    <option value={v.id} key={i}>
+                      {v.nombre}
+                    </option>
                   ))}
                 </InputField>
                 <InputField
-                  type='text'
-                  label='Ciudad'
-                  name='city'
+                  type="text"
+                  label="Ciudad"
+                  name="city"
                   required={false}
-                  messageErrors={[
-                  'Requerido*'
-                  ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  messageErrors={["Requerido*"]}
+                  cols="col-md-4 col-lg-4 col-sm-4"
                   value={dataStore.city}
                   handleChange={onChange}
                 />
                 <InputField
-                    type='text'
-                    label='Comuna'
-                    name='comuna'
-                    required={false}
-                    messageErrors={[
-                    'Requerido*'
-                    ]}
-                    cols='col-md-4 col-lg-4 col-sm-4'
-                    value={dataStore.comuna}
-                    handleChange={onChange}
-                  />
+                  type="text"
+                  label="Comuna"
+                  name="comuna"
+                  required={false}
+                  messageErrors={["Requerido*"]}
+                  cols="col-md-4 col-lg-4 col-sm-4"
+                  value={dataStore.comuna}
+                  handleChange={onChange}
+                />
               </Row>
-              <OverlayTrigger placement={'top'} overlay={
+              <OverlayTrigger
+                placement={"top"}
+                overlay={
                   <Tooltip id="tooltip-disabled1">
-                    Campos para especificar el tax que se le va a colocar a los productos y si se maneja inventario a la hora de facturar una venta
+                    Campos para especificar el tax que se le va a colocar a los
+                    productos y si se maneja inventario a la hora de facturar
+                    una venta
                   </Tooltip>
                 }
               >
@@ -248,9 +249,12 @@ const ConfigStoreFormPage = (props) => {
                   </InputField>
                 </Row>
               </OverlayTrigger>
-              <OverlayTrigger placement={'top'} overlay={
+              <OverlayTrigger
+                placement={"top"}
+                overlay={
                   <Tooltip id="tooltip-disabled1">
-                    Campo para determinar desde que número empieza la facturación en las ventas
+                    Campo para determinar desde que número empieza la
+                    facturación en las ventas
                   </Tooltip>
                 }
               >
@@ -264,10 +268,20 @@ const ConfigStoreFormPage = (props) => {
               </OverlayTrigger>
               <Row className="justify-content-center">
                 <Col sm={4} md={4} lg={4} xs={4} className="">
-                  <Button size="sm" type="submit" variant="danger" block={true}>Guardar <FaPlusCircle /></Button>
+                  <Button size="sm" type="submit" variant="danger" block={true}>
+                    Guardar <FaPlusCircle />
+                  </Button>
                 </Col>
                 <Col sm={4} md={4} lg={4} xs={4} className="">
-                  <Button size="sm" type="button" onClick={goToConfig} variant="secondary" block={true}>Volver a la Configuracipon <FaCogs /></Button>
+                  <Button
+                    size="sm"
+                    type="button"
+                    onClick={goToConfig}
+                    variant="secondary"
+                    block={true}
+                  >
+                    Volver a la Configuracipon <FaCogs />
+                  </Button>
                 </Col>
               </Row>
             </Col>
@@ -314,147 +328,135 @@ const ConfigStoreFormPage = (props) => {
               <br/><br/>
               </Col>
             */}
-            </Row>
+          </Row>
         </Form>
       )}
     </Container>
-  )
-}
+  );
+};
 
-
-ConfigStoreFormPage.defaultProps ={
+ConfigStoreFormPage.defaultProps = {
   inputNameStore: {
-    type: 'text',
+    type: "text",
     required: true,
-    name: 'name_store',
-    label : 'Nombre de la Tienda',
-    messageErrors: [
-      'Requerido*'
-    ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    name: "name_store",
+    label: "Nombre de la Tienda",
+    messageErrors: ["Requerido*"],
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
   inputEmail: {
-    type: 'email',
+    type: "email",
     required: false,
-    name: 'email',
-    label : 'Correo',
-    messageErrors: [
-      'Requerido*', ' Formato Email*'
-    ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    name: "email",
+    label: "Correo",
+    messageErrors: ["Requerido*", " Formato Email*"],
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
   inputCountry: {
-    type: 'select',
+    type: "select",
     required: true,
-    name: 'country',
-    label : 'País',
-    messageErrors: [
-      'Requerido*'
-    ],
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-4"
+    name: "country",
+    label: "País",
+    messageErrors: ["Requerido*"],
+    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
   },
   inputPhone: {
-    type: 'number',
+    type: "number",
     required: false,
-    name: 'phone',
-    label : 'Teléfono',
-    messageErrors: [
-      'Requerido*'
-    ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    name: "phone",
+    label: "Teléfono",
+    messageErrors: ["Requerido*"],
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
   inputWhatssap: {
-    type: 'number',
+    type: "number",
     required: false,
-    name: 'whatssap',
-    label : 'Whatssap',
+    name: "whatssap",
+    label: "Whatssap",
     messageErrors: [],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
   inputAddress: {
-    type: 'textarea',
+    type: "textarea",
     required: false,
-    name: 'address',
-    label : 'Dirección',
-    messageErrors: [
-      'Requerido*'
-    ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    name: "address",
+    label: "Dirección",
+    messageErrors: ["Requerido*"],
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
   inputTax: {
-    type: 'number',
+    type: "number",
     required: true,
-    name: 'tax',
-    label : 'Tax',
+    name: "tax",
+    label: "Tax",
     messageErrors: [],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
   inputHandleStock: {
-    type: 'select',
+    type: "select",
     required: true,
-    name: 'handle_stock',
-    label : 'Maneja Inventario',
+    name: "handle_stock",
+    label: "Maneja Inventario",
     messageErrors: [],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
   inputHeaderText: {
-    type: 'textarea',
+    type: "textarea",
     required: false,
     rows: 3,
-    name: 'header_text',
-    label : 'Texto de Cabecera',
+    name: "header_text",
+    label: "Texto de Cabecera",
     messageErrors: [],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
   inputFooterPageText: {
-    type: 'textarea',
+    type: "textarea",
     required: false,
     rows: 3,
-    name: 'foot_page_text',
-    label : 'Texto Pie de Página',
+    name: "foot_page_text",
+    label: "Texto Pie de Página",
     messageErrors: [],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
   inputRut: {
-    type: 'text',
+    type: "text",
     required: false,
-    name: 'rut',
-    label : 'Rut de la tienda',
-    messageErrors: [
-      'Requerido*'
-    ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    name: "rut",
+    label: "Rut de la tienda",
+    messageErrors: ["Requerido*"],
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
   inputRef: {
-    type: 'number',
+    type: "number",
     required: true,
-    name: 'ref',
-    label : 'Número de referencia',
-    placeholder:'Número de referencia de venta',
-    messageErrors: [
-      'Requerido*'
-    ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    name: "ref",
+    label: "Número de referencia",
+    placeholder: "Número de referencia de venta",
+    messageErrors: ["Requerido*"],
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
-}
+};
 
-function mapDispatchToProps(){
+function mapDispatchToProps() {
   return {
-    setConfigStore
-  }
+    setConfigStore,
+  };
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   return {
-    id_branch_office : state.enterpriseSucursal.id_branch_office,
-    id_enterprise : state.enterpriseSucursal.id_enterprise,
-  }
+    id_branch_office: state.enterpriseSucursal.id_branch_office,
+    id_enterprise: state.enterpriseSucursal.id_enterprise,
+  };
 }
 
-ConfigStoreFormPage.propTypes ={
+ConfigStoreFormPage.propTypes = {
   id_branch_office: PropTypes.string.isRequired,
-  id_enterprise : PropTypes.string.isRequired,
-  setConfigStore: PropTypes.func.isRequired
-}
+  id_enterprise: PropTypes.string.isRequired,
+  setConfigStore: PropTypes.func.isRequired,
+};
 
-export default connect(mapStateToProps,mapDispatchToProps())(ConfigStoreFormPage)
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps()
+)(ConfigStoreFormPage);

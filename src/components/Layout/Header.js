@@ -1,10 +1,10 @@
-import Avatar from 'components/Avatar';
-import { UserCard } from 'components/Card';
-import Notifications from 'components/Notifications';
-import SearchInput from 'components/SearchInput';
-import { notificationsData } from 'demos/header';
-import withBadge from 'hocs/withBadge';
-import React from 'react';
+import Avatar from "components/Avatar";
+import { UserCard } from "components/Card";
+import Notifications from "components/Notifications";
+import SearchInput from "components/SearchInput";
+import { notificationsData } from "demos/header";
+import withBadge from "hocs/withBadge";
+import React from "react";
 import {
   MdClearAll,
   MdExitToApp,
@@ -15,7 +15,7 @@ import {
   MdNotificationsNone,
   MdPersonPin,
   MdSettingsApplications,
-} from 'react-icons/md';
+} from "react-icons/md";
 import {
   Button,
   ListGroup,
@@ -28,21 +28,21 @@ import {
   NavLink,
   Popover,
   PopoverBody,
-} from 'reactstrap';
-import bn from 'utils/bemnames';
-import InputField from 'components/input/InputComponent'
+} from "reactstrap";
+import bn from "utils/bemnames";
+import InputField from "components/input/InputComponent";
 
-const bem = bn.create('header');
+const bem = bn.create("header");
 
 const MdNotificationsActiveWithBadge = withBadge({
-  size: 'md',
-  color: 'primary',
+  size: "md",
+  color: "primary",
   style: {
     top: -10,
     right: -10,
-    display: 'inline-flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    display: "inline-flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   children: <small>5</small>,
 })(MdNotificationsActive);
@@ -70,25 +70,23 @@ class Header extends React.Component {
     });
   };
 
-  handleSidebarControlButton = event => {
+  handleSidebarControlButton = (event) => {
     event.preventDefault();
     event.stopPropagation();
-
-
   };
 
   render() {
     const { isNotificationConfirmed } = this.state;
 
     return (
-      <Navbar light expand className={bem.b('bg-white')}>
+      <Navbar light expand className={bem.b("bg-white")}>
         <Nav navbar className="mr-2">
           <Button size="sm" outline onClick={this.handleSidebarControlButton}>
             <MdClearAll size={25} />
           </Button>
         </Nav>
-        <Nav navbar className={bem.e('nav-right')}>
-        {/*<NavItem className="d-inline-flex">
+        <Nav navbar className={bem.e("nav-right")}>
+          {/*<NavItem className="d-inline-flex">
             <NavLink id="Popover1" className="position-relative">
               {isNotificationConfirmed ? (
                 <MdNotificationsNone
@@ -133,13 +131,18 @@ class Header extends React.Component {
             >
               <PopoverBody className="p-0 border-light">
                 <UserCard
-                  title={this.props.user ? this.props.user.email : ''}
+                  title={this.props.user ? this.props.user.email : ""}
                   subtitle=""
                   text=""
                   className="border-light"
                 >
                   <ListGroup flush>
-                    <ListGroupItem tag="button" action className="border-light" onClick={this.props.logoutUser}>
+                    <ListGroupItem
+                      tag="button"
+                      action
+                      className="border-light"
+                      onClick={this.props.logoutUser}
+                    >
                       <MdExitToApp /> Salir
                     </ListGroupItem>
                   </ListGroup>
@@ -154,7 +157,7 @@ class Header extends React.Component {
 }
 
 Header.defaultProps = {
-  user : JSON.parse(localStorage.getItem('user'))
-}
+  user: JSON.parse(sessionStorage.getItem("user")),
+};
 
 export default Header;

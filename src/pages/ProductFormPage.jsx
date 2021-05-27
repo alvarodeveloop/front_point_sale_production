@@ -1,21 +1,20 @@
-import React, { useEffect } from 'react'
-import { toast } from 'react-toastify'
-import layoutHelpers from 'shared/layouts/helpers'
-import FormProductSale from 'components/FormProductSale'
+import React, { useEffect } from "react";
+import { toast } from "react-toastify";
+import layoutHelpers from "shared/layouts/helpers";
+import FormProductSale from "components/FormProductSale";
 
 const ProductFormPage = (props) => {
-
   useEffect(() => {
-    if(localStorage.getItem('configStore')){
-      layoutHelpers.toggleCollapsed()
+    if (sessionStorage.getItem("configStore")) {
+      layoutHelpers.toggleCollapsed();
       return () => {
-        layoutHelpers.toggleCollapsed()
-      }
-    }else{
-      toast.error('Error, debe hacer su configuración de empresa')
-      props.history.replace('/config/config_store')
+        layoutHelpers.toggleCollapsed();
+      };
+    } else {
+      toast.error("Error, debe hacer su configuración de empresa");
+      props.history.replace("/config/config_store");
     }
-  },[])
+  }, []);
 
   return (
     <FormProductSale
@@ -23,8 +22,7 @@ const ProductFormPage = (props) => {
       handleSubmitProduct={() => {}}
       isInventary={true}
     />
-  )
-}
+  );
+};
 
-
-export default ProductFormPage
+export default ProductFormPage;
