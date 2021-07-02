@@ -89,6 +89,7 @@ const MainContainer = (props) => {
           }
 
           tokenRefreshIntervalHandler(response[0].data);
+          console.log("aqui mi muchacho ========================================", response);
           setIsLoading(false);
         } catch (e) {
           logoutUserByTokenExpired(e);
@@ -98,7 +99,7 @@ const MainContainer = (props) => {
   };
 
   const tokenRefreshIntervalHandler = (config) => {
-    if (config.is_syncronized) {
+    if (config && config.is_syncronized) {
       intervalTokenRefresh = window.setInterval(() => {
         axios
           .get(API_URL + "refreshTokenNuxo")

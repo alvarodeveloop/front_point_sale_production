@@ -42,6 +42,11 @@ const EnterpriseFormPage = (props) => {
     requiredInput: false,
     displaySection: true,
     dataForm: {
+      addressArray: [],
+      economicActivityArray: [],
+      saleTypeArray: [],
+      economic_activity: "",
+      sale_type: "",
       rut: "",
       name: "",
       bussines_name: "",
@@ -52,8 +57,6 @@ const EnterpriseFormPage = (props) => {
       phone: "",
       spin: "",
       plan: {},
-      actividad_economica: "",
-      giro: "",
     },
     displayLoading: true,
     branchOfficeForm: {
@@ -72,6 +75,7 @@ const EnterpriseFormPage = (props) => {
       id_rol: 3,
     },
     isOpenModalAdd: false,
+    readonly: false
   });
 
   useEffect(() => {
@@ -96,24 +100,36 @@ const EnterpriseFormPage = (props) => {
             dataForm:
               result.length > 1
                 ? {
-                    rut: result[1].data.rut,
-                    name: result[1].data.name,
-                    bussines_name: result[1].data.bussines_name,
-                    email_enterprise: result[1].data.email_enterprise,
-                    city: result[1].data.city,
-                    comuna: result[1].data.comuna,
-                    address: result[1].data.address,
-                    phone: result[1].data.phone,
-                    spin: result[1].data.spin,
-                    plan: result[1].data.plan,
-                    id: result[1].data.id,
-                    actividad_economica: result[1].data.actividad_economica,
-                    plan_backup: result[1].data.plan,
-                    giro: result[1].data.giro,
-                    displayLoading: false,
-                  }
+                  rut: result[1].data.rut,
+                  name: result[1].data.name,
+                  bussines_name: result[1].data.bussines_name,
+                  email_enterprise: result[1].data.email_enterprise,
+                  city: result[1].data.city,
+                  comuna: result[1].data.comuna,
+                  address: result[1].data.address,
+                  phone: result[1].data.phone,
+                  spin: result[1].data.spin,
+                  sale_type: result[1].data.sale_type,
+                  economic_activity: result[1].data.economic_activity,
+                  plan: result[1].data.plan,
+                  id: result[1].data.id,
+                  plan_backup: result[1].data.plan,
+                  addressArray: result[1].data.addresses.map((v, i) => {
+                    return {
+                      address: {
+                        value: v.value,
+                        text: v.text
+                      },
+                      commune: v.commune,
+                      city: v.city
+                    }
+                  }),
+                  economicActivityArray: result[1].data.activities,
+                  saleTypeArray: result[1].data.saleTypes
+                }
                 : currentState.dataForm,
             displayLoading: false,
+            readonly: result.length > 1 && result[1].data.addresses.length ? true : false
           });
         });
       })
@@ -189,8 +205,8 @@ const EnterpriseFormPage = (props) => {
             props.setDisplayMessage(true);
             let branch = await axios.get(
               API_URL +
-                "enterprises_branch_office/" +
-                result.data.enterprises[0].id
+              "enterprises_branch_office/" +
+              result.data.enterprises[0].id
             );
             props.setEnterprises(result.data.enterprises);
             if (branch.data.menu) {
@@ -231,12 +247,23 @@ const EnterpriseFormPage = (props) => {
   };
 
   const onChange = (e) => {
+    e.persist();
     setGlobalState({
       ...globalState,
       dataForm: {
         ...globalState.dataForm,
         [e.target.name]:
           e.target.name === "rut" ? formatRut(e.target.value) : e.target.value,
+        comuna: e.target.name === "address" && globalState.dataForm.addressArray
+          ? e.target.value
+            ? globalState.dataForm.addressArray.find(v => v.address.value === e.target.value).commune
+            : ""
+          : e.target.name === "comuna" ? e.target.value : globalState.dataForm.comuna,
+        city: e.target.name === "address" && globalState.dataForm.addressArray
+          ? e.target.value
+            ? globalState.dataForm.addressArray.find(v => v.address.value === e.target.value).city
+            : ""
+          : e.target.name === "city" ? e.target.value : globalState.dataForm.city,
       },
     });
   };
@@ -260,25 +287,38 @@ const EnterpriseFormPage = (props) => {
       toast.info("Buscando Receptor, espere por favor");
       setGlobalState({ ...globalState, displayLoading: true });
       axios
-        .get(
+        .post(
           API_URL +
-            "search_receptor/" +
-            val.split("-")[0] +
-            "/" +
-            val.split("-")[1]
+          "search_user_simple", {
+          isRequest: true,
+          rut: val.split("-")[0],
+          dv: val.split("-")[1]
+        }
         )
         .then((result) => {
-          globalState((currentState) => {
+          let sender = result.data.sender;
+
+          setGlobalState((currentState) => {
             return Object.assign({}, currentState, {
               dataForm: {
                 ...currentState.dataForm,
-                rut: result.data.rut + "-" + result.data.dv,
-                bussines_name: result.data.razon_social,
-                address: result.data.direccion_seleccionada,
-                comuna: result.data.comuna_seleccionada,
-                city: result.data.ciudad_seleccionada,
+                rut: val,
+                bussines_name: sender.businessName,
+                email_enterprise: sender.email,
+                address: sender.addresses && sender.addresses.length ? sender.addresses[0].address.value : "",
+                addressArray: sender.addresses && sender.addresses.length ? sender.addresses : "",
+                comuna: sender.addresses && sender.addresses.length ? sender.addresses[0].commune : "",
+                city: sender.addresses && sender.addresses.length ? sender.addresses[0].city : "",
+                spin: sender.concept,
+                economic_activity: sender.economicActivity && sender.economicActivity.length ? sender.economicActivity[0].value : "",
+                economicActivityArray: sender.economicActivity && sender.economicActivity.length ? sender.economicActivity : "",
+                sale_type: sender.saleType && sender.saleType.length ? sender.saleType[0].value : "",
+                saleTypeArray: sender.saleType && sender.saleType.length ? sender.saleType : "",
+                phone: sender.phone,
+                name: currentState.name ? currentState.name : sender.businessName,
               },
               displayLoading: false,
+              readonly: sender.addresses && sender.addresses.length ? true : false
             });
           });
         })
@@ -311,12 +351,12 @@ const EnterpriseFormPage = (props) => {
             if (result[0].data.length === 1) {
               let branch = await axios.get(
                 API_URL +
-                  "enterprises_branch_office/" +
-                  null +
-                  "/" +
-                  result[0].data[0].id +
-                  "/" +
-                  1
+                "enterprises_branch_office/" +
+                null +
+                "/" +
+                result[0].data[0].id +
+                "/" +
+                1
               );
               sessionStorage.setItem("id_branch_office", result[0].data[0].id);
               sessionStorage.setItem(
@@ -453,21 +493,39 @@ const EnterpriseFormPage = (props) => {
                       />
                     </Row>
                     <Row>
-                      <InputField
-                        type="textarea"
-                        label="Dirección"
-                        name="address"
-                        required={true}
-                        messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
-                        value={globalState.dataForm.address}
-                        handleChange={onChange}
-                      />
+                      {globalState.dataForm.addressArray.length ? (
+                        <InputField
+                          type="select"
+                          label="Dirección"
+                          name="address"
+                          required={true}
+                          messageErrors={["Requerido*"]}
+                          cols="col-md-4 col-lg-4 col-sm-4"
+                          value={globalState.dataForm.address}
+                          handleChange={onChange}
+                        >
+                          {globalState.dataForm.addressArray.map((v, i) => (
+                            <option key={"addressKey" + i} value={v.address.value}>{v.address.text}</option>
+                          ))}
+                        </InputField>
+                      ) : (
+                        <InputField
+                          type="textarea"
+                          label="Dirección"
+                          name="address"
+                          required={true}
+                          messageErrors={["Requerido*"]}
+                          cols="col-md-4 col-lg-4 col-sm-4"
+                          value={globalState.dataForm.address}
+                          handleChange={onChange}
+                        />
+                      )}
                       <InputField
                         type="text"
                         label="Ciudad"
                         name="city"
                         required={true}
+                        readonly={globalState.readonly}
                         messageErrors={["Requerido*"]}
                         cols="col-md-4 col-lg-4 col-sm-4"
                         value={globalState.dataForm.city}
@@ -478,6 +536,7 @@ const EnterpriseFormPage = (props) => {
                         label="Comuna"
                         name="comuna"
                         required={true}
+                        readonly={globalState.readonly}
                         messageErrors={["Requerido*"]}
                         cols="col-md-4 col-lg-4 col-sm-4"
                         value={globalState.dataForm.comuna}
@@ -505,6 +564,63 @@ const EnterpriseFormPage = (props) => {
                         value={globalState.dataForm.phone}
                         handleChange={onChange}
                       />
+                      {globalState.dataForm.saleTypeArray.length ? (
+                        <InputField
+                          type="select"
+                          label="Tipo de venta"
+                          name="sale_type"
+                          required={true}
+                          messageErrors={["Requerido*"]}
+                          cols="col-md-4 col-lg-4 col-sm-4"
+                          value={globalState.dataForm.sale_type}
+                          handleChange={onChange}
+                        >
+                          {globalState.dataForm.saleTypeArray.map((v, i) => (
+                            <option key={"saleType" + i} value={v.value}>{v.text}</option>
+                          ))}
+                        </InputField>
+                      ) : (
+                        <InputField
+                          type="text"
+                          label="Tipos de venta"
+                          name="sale_type"
+                          required={true}
+                          messageErrors={["Requerido*"]}
+                          cols="col-md-4 col-lg-4 col-sm-4"
+                          value={globalState.dataForm.sale_type}
+                          handleChange={onChange}
+                        />
+                      )}
+                    </Row>
+                    <Row>
+                      {globalState.dataForm.economicActivityArray.length ? (
+                        <InputField
+                          type="select"
+                          label="Actividad Económica"
+                          name="economic_activity"
+                          required={true}
+                          messageErrors={["Requerido*"]}
+                          cols="col-md-4 col-lg-4 col-sm-4"
+                          value={globalState.dataForm.economic_activity}
+                          handleChange={onChange}
+                        >
+                          {globalState.dataForm.economicActivityArray.map((v, i) => (
+                            <option key={"economicActivity" + i} value={v.value}>{v.text}</option>
+                          ))}
+                        </InputField>
+                      ) : (
+                        <InputField
+                          type="text"
+                          label="Actividad Económica"
+                          name="economic_activity"
+                          required={true}
+                          messageErrors={["Requerido*"]}
+                          cols="col-md-4 col-lg-4 col-sm-4"
+                          value={globalState.dataForm.economic_activity}
+                          handleChange={onChange}
+                        />
+                      )}
+
                     </Row>
                   </Col>
                 </Row>

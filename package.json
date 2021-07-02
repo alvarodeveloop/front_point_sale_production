@@ -28,6 +28,7 @@
     "match-sorter": "^4.2.0",
     "moment": "~2.24.0",
     "moment-timezone": "^0.5.31",
+    "node-sass": "^4.14.1",
     "nouislider-react": "~3.3.6",
     "numeral": "~2.0.6",
     "p-min-delay": "~3.1.0",
@@ -104,10 +105,10 @@
     "del": "~5.1.0",
     "gulp": "~4.0.2",
     "gulp-autoprefixer": "~7.0.0",
-    "gulp-sass": "~4.0.1",
+    "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "~2.6.4",
-    "node-sass": "~4.13.1",
-    "npm-watch": "~0.6.0"
+    "npm-watch": "~0.6.0",
+    "sass-loader": "^11.1.0"
   },
   "eslintConfig": {
     "extends": "react-app"
