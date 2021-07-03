@@ -12,7 +12,7 @@ import {
 const ModalRechargeProduct = (props) => {
 
   const [validate, setValidate] = useState(false)
-  const [totalCalculado,setTotalCalculado] = useState(0)
+  const [totalCalculado, setTotalCalculado] = useState(0)
   const [discount, setDiscount] = useState({
     type: 'fijo',
     amount: ''
@@ -21,16 +21,16 @@ const ModalRechargeProduct = (props) => {
   const inputRechargeRef = useRef()
 
   useEffect(() => {
-    if(props.isShow){
+    if (props.isShow) {
       inputRechargeRef.current.focus()
-    }else{
+    } else {
       setDiscount({
         type: 'fijo',
         amount: ''
       })
       setTotalCalculado(0)
     }
-  },[props.isShow])
+  }, [props.isShow])
 
 
   const handleOnHide = () => {
@@ -47,37 +47,37 @@ const ModalRechargeProduct = (props) => {
       return
     }
 
-    props.handleRechargeProduct(Object.assign({},discount))
+    props.handleRechargeProduct(Object.assign({}, discount))
     setDiscount({
-      type:'fijo',
+      type: 'fijo',
       amount: ''
     })
   }
 
   const onChange = e => {
     e.persist()
-    setDiscount( { ...discount, [e.target.name] : e.target.value } )
-    if(props.product && e.target.name === "amount"){
-      if(discount.type !== "fijo"){
+    setDiscount({ ...discount, [e.target.name]: e.target.value })
+    if (props.product && e.target.name === "amount") {
+      if (discount.type !== "fijo") {
         let total = parseFloat(props.product.price) * parseFloat(props.product.cantidad)
         let sumTotal = ((total * e.target.value) / 100) * parseFloat(props.product.cantidad)
         total = total + sumTotal
         total = total ? total : 0
         setTotalCalculado(total)
-      }else{
+      } else {
         let total = parseFloat(props.product.price) * parseFloat(props.product.cantidad)
         let sumTotal = parseFloat(e.target.value) * parseFloat(props.product.cantidad)
         total = total + sumTotal
         total = total ? total : 0
         setTotalCalculado(total)
       }
-    }else if(!props.product && e.target.name === "amount"){
-      if(discount.type !== "fijo"){
+    } else if (!props.product && e.target.name === "amount") {
+      if (discount.type !== "fijo") {
         let total = (parseFloat(props.totales.total_backup) * parseFloat(e.target.value)) / 100
-        total+= parseFloat(props.totales.total_backup)
+        total += parseFloat(props.totales.total_backup)
         total = total ? total : 0
         setTotalCalculado(total)
-      }else{
+      } else {
         let total = parseFloat(props.totales.total_backup) + parseFloat(e.target.value)
         total = total ? total : 0
         setTotalCalculado(oldData => {
@@ -90,7 +90,8 @@ const ModalRechargeProduct = (props) => {
   const handleResetRechargeDiscount = () => {
     props.handleResetRechargeDiscount({
       product: props.product,
-      isRegistered: props.product.is_neto ? 'registered' : 'not_registered'
+      isRegistered: props.product.inventary ? 'registered' : 'not_registered',
+
     })
   }
 
@@ -110,7 +111,7 @@ const ModalRechargeProduct = (props) => {
         <Modal.Title id="contained-modal-title-vcenter">
           {!props.titleTotal ? (
 
-            <span>{ "Agregar Recargo al Producto" }</span>
+            <span>{"Agregar Recargo al Producto"}</span>
           ) : (
             <span>{props.titleTotal}</span>
           )}
@@ -136,7 +137,7 @@ const ModalRechargeProduct = (props) => {
                 value={discount.amount}
                 onChange={onChange}
                 {...props.inputRecharge}
-                />
+              />
               <Form.Control.Feedback type="invalid">
                 <span className="error-input">Requerido*</span>
               </Form.Control.Feedback>
@@ -152,14 +153,14 @@ const ModalRechargeProduct = (props) => {
                   readOnly={true}
                   className={'form-control'}
                   step={'any'}
-                  />
+                />
               </Col>
               <Col sm={6} md={6} lg={6}>
-                <br/>
+                <br />
                 <Button size="sm" variant="danger" onClick={handleResetRechargeDiscount}>Reestablecer Precio Base</Button>
               </Col>
             </Row>
-          ): (
+          ) : (
             <Row>
               <Col sm={6} md={6} lg={6}>
                 <Form.Control
@@ -169,10 +170,10 @@ const ModalRechargeProduct = (props) => {
                   readOnly={true}
                   className={'form-control'}
                   step={'any'}
-                  />
+                />
               </Col>
               <Col sm={6} md={6} lg={6}>
-                <br/>
+                <br />
                 <Button size="sm" variant="danger" onClick={handleResetTotal}>Reestablecer Precio Base</Button>
               </Col>
             </Row>
@@ -198,24 +199,24 @@ ModalRechargeProduct.propTypes = {
   handleResetTotal: PropTypes.func,
 }
 
-ModalRechargeProduct.defaultProps ={
+ModalRechargeProduct.defaultProps = {
   inputType: {
     type: 'select',
     required: true,
     name: 'type',
-    label : 'Tipo de Recargo',
+    label: 'Tipo de Recargo',
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6"
   },
   inputRecharge: {
     type: 'number',
     required: true,
     name: 'amount',
-    label : 'Monto Recarga',
+    label: 'Monto Recarga',
     step: 'any',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6"
   },
 }
 

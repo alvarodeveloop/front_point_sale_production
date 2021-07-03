@@ -11,43 +11,67 @@ const AutoCompleteClientComponent = (props) => {
   const [value, setValue] = useState('')
 
   useEffect(() => {
-    if(props.resetValue){
+    if (props.resetValue) {
       setValue('')
       props.handleResetValueClient()
     }
-  },[props.resetValue])
+  }, [props.resetValue])
 
   return (
-    <div style={{width: '100%',position: 'relative', zIndex: '1000'}}>
+    <div style={{ width: '100%', position: 'relative', zIndex: '1000' }}>
       <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled3">Buscar Cliente</Tooltip>}>
         <div className="input-search">
           <FaSearch />
           <Autocomplete
-            getItemValue={(item) => item.name_client+'/'+item.data_document+"-"+item.dv}
+            getItemValue={(item) => {
+              let string = item.name_client;
+              string = item.data_document ? string + "/" + item.data_document : string;
+              string = item.dv ? string + "-" + item.dv : string;
+              return string;
+            }}
             items={props.items}
-            shouldItemRender={(item, value) =>{
-              return !item.name_client.toLowerCase().indexOf(value.toString().toLowerCase()) || !item.data_document.toLowerCase().indexOf(value.toString().toLowerCase()) || !item.dv.toString().toLowerCase().indexOf(value.toString().toLowerCase())
+            shouldItemRender={(item, value) => {
+              return item.name_client ? !item.name_client.toLowerCase().indexOf(value.toString().toLowerCase()) : item.data_document ? !item.data_document.toLowerCase().indexOf(value.toString().toLowerCase()) : item.dv ? !item.dv.toString().toLowerCase().indexOf(value.toString().toLowerCase()) : "";
             }}
 
-            renderItem={ (item, isHighlighted) =>
-              <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} key={item.name_client+"-"+item.data_document} >
-                { item.name_client+"/"+item.data_document+"-"+item.dv }
-              </div>
-            }
+            renderItem={(item, isHighlighted) => {
+              if (item.data_document && item.dv) {
+                return (
+                  <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} key={item.name_client + "-" + item.id} >
+                    {item.name_client + "/" + item.data_document + "-" + item.dv}
+                  </div>
+                )
+              } else if (item.data_document) {
+                return (
+
+                  <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} key={item.name_client + "-" + item.id} >
+                    {item.name_client + "/" + item.data_document}
+                  </div>
+                )
+              } else {
+                return (
+
+                  <div style={{ background: isHighlighted ? 'lightgray' : 'white' }} key={item.name_client + "-" + item.id} >
+                    {item.name_client}
+                  </div>
+                )
+              }
+
+            }}
             value={value}
 
-            onChange={(e) =>setValue(e.target.value) }
+            onChange={(e) => setValue(e.target.value)}
 
-            onClick={(val) =>{
+            onClick={(val) => {
               setValue(val)
               props.returnValue(val)
             }}
 
-            onSelect={(val) =>{
+            onSelect={(val) => {
               setValue(val)
               props.returnValue(val)
             }}
-            />
+          />
         </div>
       </OverlayTrigger>
     </div>

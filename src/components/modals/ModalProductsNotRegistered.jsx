@@ -10,14 +10,14 @@ import {
   DropdownButton,
   Dropdown
 } from 'react-bootstrap'
-import {FaPlusCircle} from 'react-icons/fa'
+import { FaPlusCircle } from 'react-icons/fa'
 import InputField from 'components/input/InputComponent'
 import { toast } from 'react-toastify'
 
 const ModalProductsNotRegistered = (props) => {
 
   const [dataProduct, setDataProduct] = useState({
-    name_product: '',price:'', observation:'', is_neto : false
+    name_product: '', price: '', observation: '', is_neto: false
   })
   const [validate, setValidate] = useState(false)
 
@@ -34,17 +34,17 @@ const ModalProductsNotRegistered = (props) => {
       setValidate(true);
       return
     }
-    props.handleAddProduct(Object.assign({},dataProduct))
-    setDataProduct({name_product: '',price:'', observation:''})
+    props.handleAddProduct(Object.assign({}, dataProduct))
+    setDataProduct({ name_product: '', price: '', observation: '' })
 
   }
 
   const onChange = e => {
-    if(e.target.name === "is_neto"){
+    if (e.target.name === "is_neto") {
       let val = e.target.value === "true" ? true : false
-      setDataProduct({...dataProduct, [e.target.name] : val})
-    }else{
-      setDataProduct({...dataProduct, [e.target.name] : e.target.value})
+      setDataProduct({ ...dataProduct, [e.target.name]: val })
+    } else {
+      setDataProduct({ ...dataProduct, [e.target.name]: e.target.value })
     }
   }
 
@@ -81,40 +81,6 @@ const ModalProductsNotRegistered = (props) => {
               value={dataProduct.observation}
               handleChange={onChange}
             />
-            <Col sm={6} md={6} lg={6}>
-              <Row>
-                <Col sm={12} md={12} lg={12} className="text-center">
-                  <b>Afecto a Iva</b>
-                </Col>
-              </Row>
-              <br/>
-              <Row className="justify-content-center">
-                <Col sm={4} md={4} lg={4} className="text-center">
-                  <Form.Group>
-                    <Form.Check type="radio"
-                      custom
-                      id={'is_neto_check1'}
-                      name="is_neto"
-                      label={'Si'}
-                      value={false}
-                      checked={!dataProduct.is_neto}
-                      onChange={onChange} />
-                  </Form.Group>
-                </Col>
-                <Col sm={4} md={4} lg={4} className="text-center">
-                  <Form.Group>
-                    <Form.Check type="radio"
-                      custom
-                      id={'is_neto_check2'}
-                      name="is_neto"
-                      label={'No'}
-                      value={true}
-                      checked={dataProduct.is_neto}
-                      onChange={onChange} />
-                  </Form.Group>
-                </Col>
-              </Row>
-            </Col>
           </Row>
           <Row className="justify-content-center">
             <Col sm={4} md={4} lg={4}>
@@ -142,8 +108,8 @@ ModalProductsNotRegistered.defaultProps = {
     type: 'text',
     required: false,
     name: 'name_product',
-    label : 'Nombre Producto',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    label: 'Nombre Producto',
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
     messageErrors: [
 
     ],
@@ -153,8 +119,8 @@ ModalProductsNotRegistered.defaultProps = {
     required: true,
     name: 'price',
     step: 'any',
-    label : 'Precio',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    label: 'Precio',
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
     messageErrors: [
       'Requerido*'
     ],
@@ -163,9 +129,9 @@ ModalProductsNotRegistered.defaultProps = {
     type: 'textarea',
     required: false,
     name: 'observation',
-    label : 'Observación',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
-    rows: 3,
+    label: 'Observación',
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    rows: 1,
     messageErrors: [
       'Requerido*'
     ],
