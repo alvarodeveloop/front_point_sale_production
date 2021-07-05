@@ -99,14 +99,14 @@ function ContainerFormInvoice(props) {
   let word2 = arraySaleNote.includes(props.type)
     ? "nota de venta"
     : arrayBoleta.includes(props.type)
-    ? "boleta"
-    : arrayGuide.includes(props.type)
-    ? "guía"
-    : arrayInvoice.includes(props.type)
-    ? "facturación"
-    : props.type === "cotizacion"
-    ? "cotización"
-    : "orden de compra";
+      ? "boleta"
+      : arrayGuide.includes(props.type)
+        ? "guía"
+        : arrayInvoice.includes(props.type)
+          ? "facturación"
+          : props.type === "cotizacion"
+            ? "cotización"
+            : "orden de compra";
 
   const [displayLoading, setDisplayLoading] = useState(true);
   const [clients, setClients] = useState([]);
@@ -122,8 +122,7 @@ function ContainerFormInvoice(props) {
   const [isShowModalSeller, setIsShowModalSeller] = useState(false);
   const [validated, setValidated] = useState(false);
   const [displayDataInvoice, setDisplayDataInvoice] = useState(1);
-  const [showSections, setshowSections] = useState(
-    arrayInvoice.includes(props.type) ? 0 : 1
+  const [showSections, setshowSections] = useState(1
   ); // variable para controlar las pantallas que se muestran
   //const [requireInvoice, setRequireInvoice] = useState(false)
   const [cotizationData, setCotizationData] = useState(
@@ -131,23 +130,44 @@ function ContainerFormInvoice(props) {
       date_issue: moment().tz("America/Santiago").format("YYYY-MM-DD"),
       date_expiration: moment().tz("America/Santiago").format("YYYY-MM-DD"),
       date_issue_invoice: moment().tz("America/Santiago").format("YYYY-MM-DD"),
-      type_invoicing: props.type === "facturacion" ? 1 : 3,
       searchReceptorDefault: false,
       type:
         props.type === "invoiceByGuide"
           ? 6
           : props.type === "invoiceBySaleNote"
-          ? 5
-          : arrayInvoice.includes(props.type)
-          ? 1
-          : arraySaleNote.includes(props.type)
-          ? 2
-          : arrayBoleta.includes(props.type)
-          ? 3
-          : arrayGuide.includes(props.type)
-          ? 4
-          : OBJECT_COTIZATION.type,
+            ? 5
+            : arrayInvoice.includes(props.type)
+              ? 1
+              : arraySaleNote.includes(props.type)
+                ? 2
+                : arrayBoleta.includes(props.type)
+                  ? 3
+                  : arrayGuide.includes(props.type)
+                    ? 4
+                    : OBJECT_COTIZATION.type,
       is_order: props.type === "buyOrder" ? 1 : 0,
+      business_name_transmitter: props.enterpriseSelected.bussines_name,
+      rut_transmitter: props.enterpriseSelected.rut,
+      address_transmitter: props.enterpriseSelected.address,
+      address_transmitter_array: props.enterpriseSelected.addresses && props.enterpriseSelected.addresses.length ? props.enterpriseSelected.addresses.map((v, i) => {
+        return {
+          address: {
+            value: v.value,
+            text: v.text
+          },
+          city: v.city,
+          commune: v.commune
+        }
+      }) : [],
+      city_transmitter: props.enterpriseSelected.city,
+      comuna_transmitter: props.enterpriseSelected.comuna,
+      spin_transmitter: props.enterpriseSelected.spin,
+      email_transmitter: props.enterpriseSelected.email_enterprise,
+      phone_transmitter: props.enterpriseSelected.phone,
+      actividad_economica_transmitter_array: props.enterpriseSelected.activities && props.enterpriseSelected.activities.length ? props.enterpriseSelected.activities : [],
+      actividad_economica_transmitter: props.enterpriseSelected.economic_activity,
+      type_sale_transmitter_array: props.enterpriseSelected.saleTypes && props.enterpriseSelected.saleTypes.length ? props.enterpriseSelected.saleTypes : [],
+      type_sale_transmitter: props.enterpriseSelected.sale_type,
     })
   );
   const [displayModals, setDisplayModals] = useState(false);
@@ -242,10 +262,10 @@ function ContainerFormInvoice(props) {
           promises.push(
             axios.get(
               API_URL +
-                "cotizacion/" +
-                cotizationData.is_order +
-                "/" +
-                props.match.params.id
+              "cotizacion/" +
+              cotizationData.is_order +
+              "/" +
+              props.match.params.id
             )
           );
         }
@@ -690,27 +710,27 @@ function ContainerFormInvoice(props) {
     });
   };
 
-  const clearData = () => {};
+  const clearData = () => { };
 
   const goToDashboard = () => {
     let route =
       props.type === "cotizacion"
         ? "/quotitation/search_quotitation"
         : props.type === "buyOrder"
-        ? "/buyOrder/view"
-        : arrayById.includes(props.type) && arrayInvoice.includes(props.type)
-        ? "/invoice/invoice_search"
-        : arrayById.includes(props.type)
-        ? "/quotitation/search_quotitation"
-        : arrayInvoice.includes(props.type)
-        ? "/invoice/invoice_search"
-        : arraySaleNote.includes(props.type)
-        ? "/sale_note/sale_note_search"
-        : arrayBoleta.includes(props.type)
-        ? "/bill/bill_search"
-        : arrayGuide.includes(props.type)
-        ? "/guide/guide_search"
-        : "/dashboard";
+          ? "/buyOrder/view"
+          : arrayById.includes(props.type) && arrayInvoice.includes(props.type)
+            ? "/invoice/invoice_search"
+            : arrayById.includes(props.type)
+              ? "/quotitation/search_quotitation"
+              : arrayInvoice.includes(props.type)
+                ? "/invoice/invoice_search"
+                : arraySaleNote.includes(props.type)
+                  ? "/sale_note/sale_note_search"
+                  : arrayBoleta.includes(props.type)
+                    ? "/bill/bill_search"
+                    : arrayGuide.includes(props.type)
+                      ? "/guide/guide_search"
+                      : "/dashboard";
     props.history.replace(route);
   };
 
@@ -820,17 +840,17 @@ function ContainerFormInvoice(props) {
     let route = arrayFacturarInvoice.includes(props.type)
       ? API_URL + "invoice"
       : arrayFacturarCotizacion.includes(props.type)
-      ? API_URL + "cotizacion_facturar/" + props.match.params.id
-      : props.type === "guide"
-      ? API_URL + "guide"
-      : "";
+        ? API_URL + "cotizacion_facturar/" + props.match.params.id
+        : props.type === "guide"
+          ? API_URL + "guide"
+          : "";
     let request = arrayFacturarInvoice.includes(props.type)
       ? axios.post(route, object_post)
       : arrayFacturarCotizacion.includes(props.type)
-      ? axios.put(route, object_post)
-      : props.type === "guide"
-      ? axios.post(route, object_post)
-      : "";
+        ? axios.put(route, object_post)
+        : props.type === "guide"
+          ? axios.post(route, object_post)
+          : "";
 
     //API_URL+'cotizacion_facturar/'+props.match.params.id
     request
@@ -844,7 +864,7 @@ function ContainerFormInvoice(props) {
           );
 
           result.data.response.forEach((item, i) => {
-            window.open(item.pdf_public_url, "_blank");
+            window.open(process.env.REACT_APP_API_FACTURACION + item.file.url, "_blank");
           });
 
           setTimeout(() => {
@@ -924,26 +944,8 @@ function ContainerFormInvoice(props) {
       e.target.name === "type_effect" ||
       e.target.name === "type_invoicing"
     ) {
-      if (
-        e.target.name === "type_invoicing" &&
-        arrayInvoice.includes(props.type)
-      ) {
-        if (
-          cotizationData.type_invoicing !== true &&
-          cotizationData.type_invoicing !== false
-        ) {
-          let val = e.target.value === "false" ? false : true;
-          setCotizationData({ ...cotizationData, type_invoicing: val });
-          searchReceptorEmisorInvoice(
-            arraySearchDefaultInvoiceRecetor.includes(props.type) ? false : true
-          );
-        } else {
-          toast.error("Error ya inicio una factura previamente");
-        }
-      } else {
-        let val = e.target.value === "false" ? false : true;
-        setCotizationData({ ...cotizationData, [e.target.name]: val });
-      }
+      let val = e.target.value === "false" ? false : true;
+      setCotizationData({ ...cotizationData, [e.target.name]: val });
     } else if (
       e.target.name === "rut_transmitter" ||
       e.target.name === "rut_client" ||
@@ -1002,17 +1004,11 @@ function ContainerFormInvoice(props) {
 
   const displayShowSectionsHandler = (section, type, isLastSection = false) => {
     //type ? avanzar : retroceder;
-    if (
-      arrayInvoice.includes(props.type) &&
-      cotizationData.type_invoicing !== true &&
-      cotizationData.type_invoicing !== false
-    ) {
-      return false;
-    }
     let validate = true;
     if (showSections < section && type) {
       for (let index = showSections; index < section; index++) {
         let result = validateSectionHandler(index);
+        console.log(result[0], "aqui me2mnorrrrs");
         if (!result[0]) {
           if (index === 4) {
             let arraySections = result[1].split(":");
@@ -1280,14 +1276,14 @@ function ContainerFormInvoice(props) {
     let word1 = arraySaleNote.includes(props.type)
       ? "Nota de Venta"
       : arrayBoleta.includes(props.type)
-      ? "Boleta"
-      : arrayGuide.includes(props.type)
-      ? "Guía"
-      : arrayInvoice.includes(props.type)
-      ? "Facturación"
-      : props.type === "cotizacion"
-      ? "Cotización"
-      : "Orden de Compra";
+        ? "Boleta"
+        : arrayGuide.includes(props.type)
+          ? "Guía"
+          : arrayInvoice.includes(props.type)
+            ? "Facturación"
+            : props.type === "cotizacion"
+              ? "Cotización"
+              : "Orden de Compra";
     return (
       <React.Fragment>
         <Row className="justify-content-between align-items-center">
@@ -1476,7 +1472,7 @@ function ContainerFormInvoice(props) {
             </Row>
           </Col>
           {arrayCotizacion.includes(props.type) ||
-          arraySaleNote.includes(props.type) ? (
+            arraySaleNote.includes(props.type) ? (
             <Col sm={4} md={4} lg={4}>
               <InputField
                 type="text"
@@ -1489,7 +1485,7 @@ function ContainerFormInvoice(props) {
                 cols="col-md-12 col-lg-12 col-sm-12"
                 readonly={true}
                 value={cotizationData.ref}
-                handleChange={() => {}}
+                handleChange={() => { }}
               />
               <Row className="justify-content-center">
                 <Col sm={6} md={6} lg={6}>
@@ -1529,7 +1525,7 @@ function ContainerFormInvoice(props) {
           <LoadingComponent />
         ) : (
           <Form
-            onSubmit={() => {}}
+            onSubmit={() => { }}
             noValidate
             validated={validated}
             ref={inputRef}
@@ -1537,47 +1533,7 @@ function ContainerFormInvoice(props) {
             <React.Fragment>
               {displayMembreteCotizacion()}
               <br />
-              {showSections === 0 ? (
-                <Row className="justify-content-center">
-                  <Col sm={4} md={4} lg={4}>
-                    <Row>
-                      <Col sm={12} md={12} lg={12} className="text-center">
-                        <b>Tipo de Factura</b>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col sm={6} md={6} lg={6}>
-                        <Form.Group>
-                          <Form.Check
-                            name="type_invoicing"
-                            type={"radio"}
-                            id={`radio-5`}
-                            label={`Afecta`}
-                            value={true}
-                            checked={cotizationData.type_invoicing === true}
-                            required={true}
-                            onChange={onChange}
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col sm={6} md={6} lg={6} className="text-right">
-                        <Form.Group>
-                          <Form.Check
-                            name="type_invoicing"
-                            type={"radio"}
-                            id={`radio-6`}
-                            label={`Excento`}
-                            value={false}
-                            required={true}
-                            checked={cotizationData.type_invoicing === false}
-                            onChange={onChange}
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                  </Col>
-                </Row>
-              ) : showSections === 1 ? (
+              {showSections === 1 ? (
                 <>
                   <ProductTableComponent
                     setDetailProducts={setDetailProducts}
@@ -1771,7 +1727,7 @@ function ContainerFormInvoice(props) {
                         size="sm"
                         onClick={() =>
                           arrayBoleta.includes(props.type) ||
-                          arrayGuide.includes(props.type)
+                            arrayGuide.includes(props.type)
                             ? displayShowSectionsHandler(6, true)
                             : displayShowSectionsHandler(7, true)
                         }
@@ -1946,7 +1902,7 @@ function ContainerFormInvoice(props) {
                   clients={clients}
                   isShow={openModalClientMail}
                   onHide={() => setOpenModalClientMail(false)}
-                  handleClientSubmit={() => {}}
+                  handleClientSubmit={() => { }}
                 />
                 <ModalContacts
                   isShow={isShowModalContacts}
@@ -1984,6 +1940,7 @@ ContainerFormInvoice.propTypes = {
   id_enterprise: PropTypes.string.isRequired,
   configStore: PropTypes.object,
   configGeneral: PropTypes.object,
+  enterpriseSelected: PropTypes.object
 };
 
 function mapStateToProps(state) {
@@ -1992,6 +1949,7 @@ function mapStateToProps(state) {
     id_enterprise: state.enterpriseSucursal.id_enterprise,
     configGeneral: state.configs.config,
     configStore: state.configs.configStore,
+    enterpriseSelected: state.enterpriseSucursal.enterprises.find(v => v.id === parseInt(state.enterpriseSucursal.id_enterprise))
   };
 }
 

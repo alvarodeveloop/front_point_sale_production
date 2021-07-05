@@ -38,7 +38,7 @@ const ClientInvoiceComponet = (props) => {
     }
   }, [props.cotizationData.searchReceptorDefault]);
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   const onChange = (e) => {
     if (
@@ -72,87 +72,54 @@ const ClientInvoiceComponet = (props) => {
     setRutFacturacionClientSearch(formatRut(e.target.value));
   };
 
+  const setClientResearchByApi = (clientResearch) => {
+    console.log(clientResearch, "aqui cabeza de ganado");
+    props.setCotizationData((currentData) => {
+      return Object.assign({}, currentData, {
+        rut_client: clientResearch.rut.rut + "-" + clientResearch.rut.dv,
+        business_name_client: clientResearch.businessName
+          ? clientResearch.businessName
+          : "",
+        address_client: clientResearch.addresses && clientResearch.addresses.length ? clientResearch.addresses[0].address.value : "",
+        city_client: clientResearch.addresses && clientResearch.addresses.length ? clientResearch.addresses[0].city : "",
+        comuna_client: clientResearch.addresses && clientResearch.addresses.length ? clientResearch.addresses[0].commune : "",
+        address_client_array: clientResearch.addresses && clientResearch.addresses.length ? clientResearch.addresses : [],
+        type_buy_client: clientResearch.purchaseType && clientResearch.purchaseType.length ? clientResearch.purchaseType[0].value : "",
+        type_buy_client_array: clientResearch.purchaseType && clientResearch.purchaseType.length ? clientResearch.purchaseType : [],
+        spin_client: clientResearch.concept && clientResearch.concept.length ? clientResearch.concept[0].value : "",
+        spin_client_array: clientResearch.concept && clientResearch.concept.length ? clientResearch.concept : []
+      });
+    });
+
+  }
+
   const searchClientByApiFacturacion = async (rut = false) => {
     // para buscar receptores simple
     let val = !rut ? rutFacturacionClientSearch : rut;
     if (val) {
       toast.info("Buscando Receptor, espere por favor");
       setDisplayLoading(true);
-      if (arrayGuide.includes(props.isType)) {
-        try {
-          let receptor = await axios.get(
-            API_URL +
-              "search_receptor_guide/" +
-              props.cotizationData.facturaId +
-              "/" +
-              val
-          );
-          if (!receptor.data.error) {
-            props.setCotizationData((oldData) => {
-              return Object.assign({}, oldData, {
-                rut_client:
-                  receptor.data.receptor.rut + "-" + receptor.data.receptor.dv,
-                business_name_client: receptor.data.receptor.razon_social,
-                address_client_array: receptor.data.receptor.direcciones[0],
-                address_client: receptor.data.receptor.direccion_seleccionada,
-                comuna_client: receptor.data.receptor.comuna_seleccionada,
-                city_client: receptor.data.receptor.ciudad_seleccionada,
-                spin_client_array: Array.isArray(receptor.data.girosReceptor)
-                  ? receptor.data.girosReceptor
-                  : [receptor.data.girosReceptor],
-                spin_client: Array.isArray(receptor.data.girosReceptor)
-                  ? receptor.data.girosReceptor[0].nombre
-                  : receptor.data.girosReceptor.nombre,
-                type_buy_client_array: Array.isArray(receptor.data.TipoDeCompra)
-                  ? receptor.data.TipoDeCompra
-                  : [receptor.data.TipoDeCompra],
-                type_buy_client:
-                  receptor.data.receptor.tipoDeCompraId.toString(),
-              });
-            });
-            setReadonlyRut(true);
-          }
-          setDisplayLoading(false);
-        } catch (error) {
-          setDisplayLoading(false);
-          if (error.response) {
-            toast.error(error.response.data.message);
-          } else {
-            console.log(error);
-            toast.error("Error, contacte con soporte");
-          }
+      try {
+        let receptor = await axios.post(
+          API_URL +
+          "search_receptor", {
+          rut: val.split("-")[0],
+          dv: val.split("-")[1]
         }
-      } else {
-        try {
-          let receptor = await axios.get(
-            API_URL +
-              "search_receptor/" +
-              val.split("-")[0] +
-              "/" +
-              val.split("-")[1]
-          );
-          if (receptor.data) {
-            props.setCotizationData((oldData) => {
-              return Object.assign({}, oldData, {
-                rut_client: receptor.data.rut + "-" + receptor.data.dv,
-                business_name_client: receptor.data.razon_social,
-                address_client: receptor.data.direccion_seleccionada,
-                comuna_client: receptor.data.comuna_seleccionada,
-                city_client: receptor.data.ciudad_seleccionada,
-                address_client_array: receptor.data.direcciones[0],
-              });
-            });
-            setReadonlyRut(true);
-          }
-          setDisplayLoading(false);
-        } catch (error) {
-          setDisplayLoading(false);
-          if (error.response) {
-            toast.error(error.response.data.message);
-          } else {
-            console.log(error);
-            toast.error("Error, contacte con soporte");
-          }
+        );
+        let receiver = receptor.data;
+        if (receiver) {
+          setClientResearchByApi(receiver);
+          setReadonlyRut(true);
+        }
+        setDisplayLoading(false);
+      } catch (error) {
+        setDisplayLoading(false);
+        if (error.response) {
+          toast.error(error.response.data.message);
+        } else {
+          console.log(error);
+          toast.error("Error, contacte con soporte");
         }
       }
     } else {
@@ -168,84 +135,20 @@ const ClientInvoiceComponet = (props) => {
         if (props.isType === "facturacion") {
           setDisplayLoading(true);
           toast.info("Buscando Receptor, espere por favor");
+          let result = await axios.post(
+            API_URL +
+            "search_receptor",
+            {
+              rut: val.split("-")[0],
+              dv: val.split("-")[1]
+            }
+          );
 
-          if (props.cotizationData.type_invoicing === true) {
-            let result = await axios.get(
-              API_URL +
-                "get_client_invoice/" +
-                props.cotizationData.facturaId +
-                "/" +
-                val.split("-")[0] +
-                "/" +
-                val.split("-")[1]
-            );
-            let girosReceptor = API_FACTURACION
-              ? result.data.girosReceptor
-              : { id: 1, nombre: "ACTIVIDADES DE CONSULTORIA DE INFORMATIC" };
-            let tipo_compra = API_FACTURACION
-              ? result.data.TipoDeCompra
-              : { id: 1, valor: "1", nombre: "Del Giro" };
+          let receiver = result.data;
+          setClientResearchByApi(receiver);
+          setReadonlyRut(true);
+          setDisplayLoading(false);
 
-            props.setCotizationData((oldData1) => {
-              let object_return = Object.assign({}, oldData1, {
-                rut_client:
-                  result.data.receptor.rut + "-" + result.data.receptor.dv,
-                business_name_client: result.data.receptor.razon_social,
-                address_client: result.data.receptor.direccion_seleccionada,
-                address_client_array: result.data.receptor.direcciones[0],
-                comuna_client: result.data.receptor.comuna_seleccionada,
-                city_client: result.data.receptor.ciudad_seleccionada,
-                type_buy_client: result.data.receptor.tipoDeCompraId.toString(),
-                type_buy_client_array: Array.isArray(tipo_compra)
-                  ? tipo_compra
-                  : [tipo_compra],
-                spin_client_array: Array.isArray(girosReceptor)
-                  ? girosReceptor
-                  : [girosReceptor],
-                spin_client: Array.isArray(result.data.girosReceptor)
-                  ? result.data.girosReceptor[0].nombre
-                  : result.data.girosReceptor.nombre,
-              });
-
-              return object_return;
-            });
-            setReadonlyRut(true);
-            setDisplayLoading(false);
-          } else {
-            let receptor = await axios.get(
-              API_URL +
-                "get_receptor_invoice_excenta/" +
-                props.cotizationData.facturaId +
-                "/" +
-                val
-            );
-            props.setCotizationData((oldData) => {
-              let objectReturn = Object.assign({}, oldData, {
-                rut_client:
-                  receptor.data.receptor.rut + "-" + receptor.data.receptor.dv,
-                business_name_client: receptor.data.receptor.razon_social,
-                address_client_array: receptor.data.receptor.direcciones[0],
-                address_client: receptor.data.receptor.direccion_seleccionada,
-                comuna_client: receptor.data.receptor.comuna_seleccionada,
-                city_client: receptor.data.receptor.ciudad_seleccionada,
-                spin_client: Array.isArray(receptor.data.girosReceptor)
-                  ? receptor.data.girosReceptor[0].nombre
-                  : receptor.data.girosReceptor.nombre,
-                spin_client_array: Array.isArray(receptor.data.girosReceptor)
-                  ? receptor.data.girosReceptor
-                  : [receptor.data.girosReceptor],
-                name_contact: receptor.data.receptor.contacto,
-                type_buy_client:
-                  receptor.data.receptor.tipoDeCompraId.toString(),
-                type_buy_client_array: Array.isArray(receptor.data.TipoDeCompra)
-                  ? receptor.data.TipoDeCompra
-                  : [receptor.data.TipoDeCompra],
-              });
-              return objectReturn;
-            });
-            setReadonlyRut(true);
-            setDisplayLoading(false);
-          }
         } else {
           // si es nota de venta
           if (arraySaleNote.includes(props.isType)) {
@@ -262,39 +165,47 @@ const ClientInvoiceComponet = (props) => {
   };
 
   const handleSelectClient = (data) => {
-    let id = data.split("/")[1];
-    let lookForClient;
-    if (id.indexOf("-") !== -1) {
-      id = id.split("-");
-      lookForClient = props.clients.find(
-        (v) => v.data_document === id[0] && v.dv.toString() === id[1]
-      );
-    } else {
-      lookForClient = props.clients.find((v) => v.data_document === id);
-    }
-    if (lookForClient) {
+    let data_document = data.split('/');
+    let client = props.clients.find(v => {
+      if (data_document.length > 1) {
+        if (data_document[1].indexOf("-") !== -1) {
+          return v.data_document + "-" + v.dv === data_document[1];
+        } else {
+          return v.data_document === data_document[1];
+        }
+
+      } else {
+        return v.name_client === data_document[0];
+      }
+    })
+
+    if (client) {
       props.setCotizationData((currentData) => {
         return Object.assign({}, currentData, {
-          rut_client: Array.isArray(id) ? id.join("-") : id,
-          business_name_client: lookForClient.bussines_name
-            ? lookForClient.bussines_name
-            : lookForClient.name_client,
-          address_client: lookForClient.address,
-          city_client: lookForClient.city,
-          comuna_client: lookForClient.comuna,
+          rut_client: data_document[1] ? data_document[1] : "",
+          business_name_client: client.bussines_name
+            ? client.bussines_name
+            : client.name_client,
+          address_client: client.address,
+          city_client: client.city,
+          comuna_client: client.comuna,
+          address_client_array: client.addresses && client.addresses.length ? client.addresses.map((v, i) => {
+            return {
+              address: {
+                value: v.value,
+                text: v.text
+              },
+              city: v.city,
+              commune: v.commune
+            }
+          }) : [],
+          type_buy_client: client.purchase_type,
+          type_buy_client_array: client.purchaseTypes,
+          spin_client: client.spin,
+          spin_client_array: client.spins
         });
       });
     }
-
-    /*if(arrayCotizacion.includes(props.isType) || arraySaleNote.includes(props.isType)
-      searchClientByApiFacturacion(data_document)
-    }else{
-      if(props.cotizationData.type_invoicing){
-        searchClientByApiFacturacionInvoice(data_document)
-      }else{
-
-      }
-    }*/
   };
 
   const handleResetValueClient = () => {
@@ -328,8 +239,8 @@ const ClientInvoiceComponet = (props) => {
         ) : (
           <>
             {arrayCotizacion.includes(props.isType) ||
-            arrayBoleta.includes(props.isType) ||
-            arrayGuide.includes(props.isType) ? (
+              arrayBoleta.includes(props.isType) ||
+              arrayGuide.includes(props.isType) ? (
               <Card.Body>
                 <Row>
                   <Col sm={4} md={4} lg={4}>
@@ -468,8 +379,8 @@ const ClientInvoiceComponet = (props) => {
                     >
                       <option value="">--Seleccione--</option>
                       {props.cotizationData.address_client_array.map((v, i) => (
-                        <option value={v} key={i}>
-                          {v}
+                        <option value={v.address.value} key={"addressCoti" + i}>
+                          {v.address.text}
                         </option>
                       ))}
                     </InputField>
@@ -541,8 +452,8 @@ const ClientInvoiceComponet = (props) => {
                       >
                         <option value="">--Seleccione--</option>
                         {props.cotizationData.spin_client_array.map((v, i) => (
-                          <option value={v.nombre} key={i}>
-                            {v.nombre}
+                          <option value={v.value} key={"spinClient" + i}>
+                            {v.text}
                           </option>
                         ))}
                       </InputField>
@@ -572,8 +483,8 @@ const ClientInvoiceComponet = (props) => {
                         <option value="">--Seleccione--</option>
                         {props.cotizationData.type_buy_client_array.map(
                           (v, i) => (
-                            <option value={v.valor} key={i}>
-                              {v.nombre}
+                            <option value={v.value} key={"typePurchaseCoti" + i}>
+                              {v.text}
                             </option>
                           )
                         )}
@@ -595,7 +506,7 @@ const ClientInvoiceComponet = (props) => {
                   ""
                 )}
                 {!arrayBoleta.includes(props.isType) &&
-                !arrayGuide.includes(props.type) ? (
+                  !arrayGuide.includes(props.type) ? (
                   <React.Fragment>
                     <br />
                     <Row>
@@ -838,7 +749,7 @@ const ClientInvoiceComponet = (props) => {
                       name="address_client"
                       required={
                         !props.cotizationData.type_invoicing &&
-                        !arraySaleNote.includes(props.isType)
+                          !arraySaleNote.includes(props.isType)
                           ? true
                           : false
                       }
@@ -848,8 +759,8 @@ const ClientInvoiceComponet = (props) => {
                       handleChange={onChange}
                     >
                       {props.cotizationData.address_client_array.map((v, i) => (
-                        <option value={v} key={i}>
-                          {v}
+                        <option value={v.address.value} key={"addressInvoice" + i}>
+                          {v.address.text}
                         </option>
                       ))}
                     </InputField>
@@ -860,7 +771,7 @@ const ClientInvoiceComponet = (props) => {
                       name="address_client"
                       required={
                         !props.cotizationData.type_invoicing &&
-                        !arraySaleNote.includes(props.isType)
+                          !arraySaleNote.includes(props.isType)
                           ? true
                           : false
                       }
@@ -878,7 +789,7 @@ const ClientInvoiceComponet = (props) => {
                     name="city_client"
                     required={
                       !props.cotizationData.type_invoicing &&
-                      !arraySaleNote.includes(props.isType)
+                        !arraySaleNote.includes(props.isType)
                         ? true
                         : false
                     }
@@ -893,7 +804,7 @@ const ClientInvoiceComponet = (props) => {
                     name="comuna_client"
                     required={
                       !props.cotizationData.type_invoicing &&
-                      !arraySaleNote.includes(props.isType)
+                        !arraySaleNote.includes(props.isType)
                         ? true
                         : false
                     }
@@ -915,8 +826,8 @@ const ClientInvoiceComponet = (props) => {
                     >
                       <option value="">--Seleccione--</option>
                       {props.cotizationData.spin_client_array.map((v, i) => (
-                        <option value={v.nombre} key={i}>
-                          {v.nombre}
+                        <option value={v.value} key={"spinInvoice" + i}>
+                          {v.text}
                         </option>
                       ))}
                     </InputField>
@@ -927,7 +838,7 @@ const ClientInvoiceComponet = (props) => {
                       name="spin_client"
                       required={
                         !props.cotizationData.type_invoicing &&
-                        !arraySaleNote.includes(props.isType)
+                          !arraySaleNote.includes(props.isType)
                           ? true
                           : false
                       }
@@ -949,7 +860,7 @@ const ClientInvoiceComponet = (props) => {
                       }
                       required={
                         props.cotizationData.type_invoicing &&
-                        arraySaleNote.includes(props.isType)
+                          arraySaleNote.includes(props.isType)
                           ? false
                           : true
                       }
@@ -961,8 +872,8 @@ const ClientInvoiceComponet = (props) => {
                       <option value="">--Seleccione--</option>
                       {props.cotizationData.type_buy_client_array.map(
                         (v, i) => (
-                          <option value={v.valor.toString()} key={i}>
-                            {v.nombre}
+                          <option value={v.value} key={"typePurchaseInvoice" + i}>
+                            {v.text}
                           </option>
                         )
                       )}
@@ -977,7 +888,7 @@ const ClientInvoiceComponet = (props) => {
                       }
                       required={
                         props.cotizationData.type_invoicing &&
-                        arraySaleNote.includes(props.isType)
+                          arraySaleNote.includes(props.isType)
                           ? false
                           : true
                       }

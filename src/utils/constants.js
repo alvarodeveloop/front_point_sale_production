@@ -174,7 +174,7 @@ export let OBJECT_COTIZATION = {
   email_seller: "",
   total_with_iva: true, // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
   price_list: "",
-  type_invoicing: 1,
+  type_invoicing: true,
   status: 1,
   ref: "",
   discount_global: "",

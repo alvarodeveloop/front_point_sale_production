@@ -1,37 +1,18 @@
-import React, {useState,useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import {
   Row,
   Accordion,
   Card,
 } from 'react-bootstrap'
-import {FaUser} from 'react-icons/fa'
+import { FaUser } from 'react-icons/fa'
 import InputField from 'components/input/InputComponent'
 import LoadingComponent from 'components/LoadingComponent'
-import { arrayCotizacion,arraySaleNote, arrayBoleta, arrayGuide,arrayInvoice } from 'utils/constants';
+import { arrayCotizacion, arraySaleNote, arrayBoleta, arrayGuide, arrayInvoice } from 'utils/constants';
 
 const TransmitterInvoiceComponent = (props) => {
-  
-  let arrayInvoiceMerge = [...arrayInvoice,...arraySaleNote];
 
-
-  useEffect(() => {
-    setTimeout(function () {
-      props.setCotizationData(oldData => {
-        return Object.assign({},oldData,{
-          business_name_transmitter : props.configGeneral && !oldData.bussines_name ? props.configGeneral.enterprise.bussines_name : oldData.bussines_name,
-          rut_transmitter : props.configGeneral && !oldData.rut_transmitter ? props.configGeneral.enterprise.rut : oldData.rut_transmitter,
-          address_transmitter : props.configGeneral && !oldData.address_transmitter ? props.configGeneral.enterprise.address : oldData.address_transmitter,
-          city_transmitter : props.configGeneral && !oldData.city_transmitter ? props.configGeneral.enterprise.city : oldData.city_transmitter,
-          comuna_transmitter : props.configGeneral && !oldData.comuna_transmitter ? props.configGeneral.enterprise.comuna : oldData.comuna_transmitter,
-          spin_transmitter : props.configGeneral && !oldData.spin_transmitter ? props.configGeneral.enterprise.spin : oldData.spin_transmitter,
-          email_transmitter : props.configGeneral && !oldData.email_transmitter ? props.configGeneral.enterprise.email_enterprise : oldData.email_transmitter,
-          actividad_economica_transmitter : props.configGeneral && !oldData.actividad_economica_transmitter ? props.configGeneral.enterprise.actividad_economica : oldData.actividad_economica_transmitter,
-          phone_transmitter : props.configGeneral && !oldData.phone_transmitter ? props.configGeneral.enterprise.phone : oldData.phone_transmitter,
-        })
-      })
-    }, 1500);
-  },[])
+  let arrayInvoiceMerge = [...arrayInvoice, ...arraySaleNote];
 
   return (
     <Card>
@@ -57,7 +38,7 @@ const TransmitterInvoiceComponent = (props) => {
                     cols='col-md-4 col-lg-4 col-sm-4'
                     value={props.cotizationData.business_name_transmitter}
                     handleChange={props.onChange}
-                    />
+                  />
                   <InputField
                     type='text'
                     label='Rut'
@@ -69,7 +50,7 @@ const TransmitterInvoiceComponent = (props) => {
                     cols='col-md-4 col-lg-4 col-sm-4'
                     value={props.cotizationData.rut_transmitter}
                     handleChange={props.onChange}
-                    />
+                  />
                   {props.cotizationData.address_transmitter_array.length > 0 ? (
                     <InputField
                       type='select'
@@ -84,8 +65,8 @@ const TransmitterInvoiceComponent = (props) => {
                       handleChange={props.onChange}
                     >
                       <option value="">--Seleccione--</option>
-                      {props.cotizationData.address_transmitter_array.map((v,i) => (
-                        <option value={v} key={i}>{v}</option>
+                      {props.cotizationData.address_transmitter_array.map((v, i) => (
+                        <option value={v.address.value} key={"addressTransmitter" + i}>{v.address.text}</option>
                       ))}
                     </InputField>
                   ) : (
@@ -149,28 +130,52 @@ const TransmitterInvoiceComponent = (props) => {
                     name='email_transmitter'
                     required={false}
                     messageErrors={[
-                      'Requerido*','Formato tipo email*'
+                      'Requerido*', 'Formato tipo email*'
                     ]}
                     cols='col-md-4 col-lg-4 col-sm-4'
                     value={props.cotizationData.email_transmitter}
                     handleChange={props.onChange}
-                    />
+                  />
                 </Row>
                 {arrayBoleta.includes(props.isType) ? (
-                  <Row>
-                    <InputField
-                      type='text'
-                      label='Actividad Económica'
-                      name='actividad_economica_transmitter'
-                      required={false}
-                      messageErrors={[
-                        'Requerido*'
-                      ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
-                      value={props.cotizationData.actividad_economica_transmitter}
-                      handleChange={props.onChange}
-                      />
-                  </Row>
+                  <>
+                    {props.cotizationData.actividad_economica_transmitter_array.length ? (
+                      <Row>
+                        <InputField
+                          type='select'
+                          label='Actividad Económica'
+                          name='actividad_economica_transmitter'
+                          required={false}
+                          messageErrors={[
+                            'Requerido*'
+                          ]}
+                          cols='col-md-4 col-lg-4 col-sm-4'
+                          value={props.cotizationData.actividad_economica_transmitter}
+                          handleChange={props.onChange}
+                        >
+                          {props.cotizationData.actividad_economica_transmitter_array.map((v, i) => (
+                            <option value={v.value.toString()} key={"economicActivityTransmitter" + i}>{v.text}</option>
+                          ))}
+                        </InputField>
+                      </Row>
+                    ) : (
+                      <Row>
+                        <InputField
+                          type='text'
+                          label='Actividad Económica'
+                          name='actividad_economica_transmitter'
+                          required={false}
+                          messageErrors={[
+                            'Requerido*'
+                          ]}
+                          cols='col-md-4 col-lg-4 col-sm-4'
+                          value={props.cotizationData.actividad_economica_transmitter}
+                          handleChange={props.onChange}
+                        />
+                      </Row>
+
+                    )}
+                  </>
                 ) : (
                   <Row>
                     <InputField
@@ -184,7 +189,7 @@ const TransmitterInvoiceComponent = (props) => {
                       cols='col-md-4 col-lg-4 col-sm-4'
                       value={props.cotizationData.phone_transmitter}
                       handleChange={props.onChange}
-                      />
+                    />
                   </Row>
                 )}
               </>
@@ -194,48 +199,48 @@ const TransmitterInvoiceComponent = (props) => {
           <Card.Body>
             <Row>
               <InputField
-               type='text'
-               label='Razón Social'
-               name='business_name_transmitter'
-               required={arraySaleNote.includes(props.isType) ? false : true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.business_name_transmitter}
-               handleChange={props.onChange}
+                type='text'
+                label='Razón Social'
+                name='business_name_transmitter'
+                required={arraySaleNote.includes(props.isType) ? false : true}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.business_name_transmitter}
+                handleChange={props.onChange}
               />
               <InputField
-               type='text'
-               label='Rut'
-               name='rut_transmitter'
-               required={props.isType === "facturacion" ? !props.cotizationData.type_invoicing ? true : false : true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.rut_transmitter}
-               handleChange={props.onChange}
+                type='text'
+                label='Rut'
+                name='rut_transmitter'
+                required={props.isType === "facturacion" ? !props.cotizationData.type_invoicing ? true : false : true}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.rut_transmitter}
+                handleChange={props.onChange}
               />
               {props.cotizationData.address_transmitter_array.length > 0 ? (
                 <InputField
                   type='select'
                   label='Direccion'
                   name='address_transmitter'
-                  required={!props.cotizationData.type_invoicing && !arraySaleNote.includes(props.isType)  ? true : false}
+                  required={!props.cotizationData.type_invoicing && !arraySaleNote.includes(props.isType) ? true : false}
                   messageErrors={[
                     'Requerido*'
                   ]}
                   cols='col-md-4 col-lg-4 col-sm-4'
                   value={props.cotizationData.address_transmitter}
                   handleChange={props.onChange}
-                  >
+                >
                   <option value="">--Seleccione--</option>
-                  {props.cotizationData.address_transmitter_array.map((v,i) => (
-                    <option value={v} key={i}>{v}</option>
+                  {props.cotizationData.address_transmitter_array.map((v, i) => (
+                    <option value={v.address.value} key={"addressTrasmitter" + i}>{v.address.text}</option>
                   ))}
                 </InputField>
-              ): (
+              ) : (
                 <InputField
                   type='text'
                   label='Direccion'
@@ -252,28 +257,28 @@ const TransmitterInvoiceComponent = (props) => {
             </Row>
             <Row>
               <InputField
-               type='text'
-               label='Ciudad'
-               name='city_transmitter'
-               required={props.isType === "facturacion" ? !props.cotizationData.type_invoicing ? true : false : false}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.city_transmitter}
-               handleChange={props.onChange}
+                type='text'
+                label='Ciudad'
+                name='city_transmitter'
+                required={props.isType === "facturacion" ? !props.cotizationData.type_invoicing ? true : false : false}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.city_transmitter}
+                handleChange={props.onChange}
               />
               <InputField
-               type='text'
-               label='Comuna'
-               name='comuna_transmitter'
-               required={props.isType === "facturacion" ? true : false}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.comuna_transmitter}
-               handleChange={props.onChange}
+                type='text'
+                label='Comuna'
+                name='comuna_transmitter'
+                required={props.isType === "facturacion" ? true : false}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.comuna_transmitter}
+                handleChange={props.onChange}
               />
               {props.cotizationData.actividad_economica_transmitter_array.length > 0 ? (
                 <InputField
@@ -287,10 +292,10 @@ const TransmitterInvoiceComponent = (props) => {
                   cols='col-md-4 col-lg-4 col-sm-4'
                   value={props.cotizationData.actividad_economica_transmitter}
                   handleChange={props.onChange}
-                  >
+                >
                   <option>--Seleccione--</option>
-                  {props.cotizationData.actividad_economica_transmitter_array.map((v,i) => (
-                    <option value={v[0]} key={i}>{v[1]}</option>
+                  {props.cotizationData.actividad_economica_transmitter_array.map((v, i) => (
+                    <option value={v.value.toString()} key={"economicActivityTransmitter" + i}>{v.text}</option>
                   ))}
                 </InputField>
               ) : (
@@ -321,10 +326,10 @@ const TransmitterInvoiceComponent = (props) => {
                   cols='col-md-4 col-lg-4 col-sm-4'
                   value={props.cotizationData.type_sale_transmitter}
                   handleChange={props.onChange}
-                  >
+                >
                   <option vcalue="">--Seleccione--</option>
-                  {props.cotizationData.type_sale_transmitter_array.map((v,i) => (
-                    <option value={v[0]} key={i}>{v[1]}</option>
+                  {props.cotizationData.type_sale_transmitter_array.map((v, i) => (
+                    <option value={v.value.toString()} key={"saleTypeTransmitter" + i}>{v.text}</option>
                   ))}
                 </InputField>
               ) : (
@@ -342,17 +347,17 @@ const TransmitterInvoiceComponent = (props) => {
                 />
               )}
               <InputField
-                  type='text'
-                  label='Giro'
-                  name='spin_transmitter'
-                  required={!arraySaleNote.includes(props.isType) ? true : false}
-                  messageErrors={[
-                    'Requerido*'
-                  ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
-                  value={props.cotizationData.spin_transmitter}
-                  handleChange={props.onChange}
-                />
+                type='text'
+                label='Giro'
+                name='spin_transmitter'
+                required={!arraySaleNote.includes(props.isType) ? true : false}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.spin_transmitter}
+                handleChange={props.onChange}
+              />
             </Row>
           </Card.Body>
         ) : arrayGuide.includes(props.isType) ? (
@@ -360,28 +365,28 @@ const TransmitterInvoiceComponent = (props) => {
           <Card.Body>
             <Row>
               <InputField
-               type='text'
-               label='Razón Social'
-               name='business_name_transmitter'
-               required={false}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.business_name_transmitter}
-               handleChange={props.onChange}
+                type='text'
+                label='Razón Social'
+                name='business_name_transmitter'
+                required={false}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.business_name_transmitter}
+                handleChange={props.onChange}
               />
               <InputField
-               type='text'
-               label='Rut'
-               name='rut_transmitter'
-               required={false}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.rut_transmitter}
-               handleChange={props.onChange}
+                type='text'
+                label='Rut'
+                name='rut_transmitter'
+                required={false}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.rut_transmitter}
+                handleChange={props.onChange}
               />
               {props.cotizationData.address_transmitter_array.length > 0 ? (
                 <InputField
@@ -395,12 +400,12 @@ const TransmitterInvoiceComponent = (props) => {
                   cols='col-md-4 col-lg-4 col-sm-4'
                   value={props.cotizationData.address_transmitter}
                   handleChange={props.onChange}
-                  >
-                  {props.cotizationData.address_transmitter_array.map((v,i) => (
-                    <option value={v} key={i}>{v}</option>
+                >
+                  {props.cotizationData.address_transmitter_array.map((v, i) => (
+                    <option value={v.address.value} key={"addressTransmitter" + i}>{v.address.text}</option>
                   ))}
                 </InputField>
-              ): (
+              ) : (
                 <InputField
                   type='text'
                   label='Direccion'
@@ -417,28 +422,28 @@ const TransmitterInvoiceComponent = (props) => {
             </Row>
             <Row>
               <InputField
-               type='text'
-               label='Ciudad'
-               name='city_transmitter'
-               required={true}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.city_transmitter}
-               handleChange={props.onChange}
+                type='text'
+                label='Ciudad'
+                name='city_transmitter'
+                required={true}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.city_transmitter}
+                handleChange={props.onChange}
               />
               <InputField
-               type='text'
-               label='Comuna'
-               name='comuna_transmitter'
-               required={false}
-               messageErrors={[
-               'Requerido*'
-               ]}
-               cols='col-md-4 col-lg-4 col-sm-4'
-               value={props.cotizationData.comuna_transmitter}
-               handleChange={props.onChange}
+                type='text'
+                label='Comuna'
+                name='comuna_transmitter'
+                required={false}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.comuna_transmitter}
+                handleChange={props.onChange}
               />
               {props.cotizationData.actividad_economica_transmitter_array.length > 0 ? (
                 <InputField
@@ -452,10 +457,10 @@ const TransmitterInvoiceComponent = (props) => {
                   cols='col-md-4 col-lg-4 col-sm-4'
                   value={props.cotizationData.actividad_economica_transmitter}
                   handleChange={props.onChange}
-                  >
+                >
                   <option>--Seleccione--</option>
-                  {props.cotizationData.actividad_economica_transmitter_array.map((v,i) => (
-                    <option value={v[0]} key={i}>{v[1]}</option>
+                  {props.cotizationData.actividad_economica_transmitter_array.map((v, i) => (
+                    <option value={v.value.toString()} key={"economicActivity" + i}>{v.text}</option>
                   ))}
                 </InputField>
               ) : (
@@ -486,10 +491,10 @@ const TransmitterInvoiceComponent = (props) => {
                   cols='col-md-4 col-lg-4 col-sm-4'
                   value={props.cotizationData.type_sale_transmitter}
                   handleChange={props.onChange}
-                  >
+                >
                   <option value="">--Seleccione--</option>
-                  {props.cotizationData.type_sale_transmitter_array.map((v,i) => (
-                    <option value={v[0]} key={i}>{v[1]}</option>
+                  {props.cotizationData.type_sale_transmitter_array.map((v, i) => (
+                    <option value={v.value.toString()} key={"saleTypeTransmitter" + i}>{v.text}</option>
                   ))}
                 </InputField>
               ) : (
@@ -504,7 +509,7 @@ const TransmitterInvoiceComponent = (props) => {
                   cols='col-md-4 col-lg-4 col-sm-4'
                   value={props.cotizationData.type_sale_transmitter}
                   handleChange={props.onChange}
-                  />
+                />
               )}
               {props.cotizationData.type_transfer_trasmitter_array.length > 0 ? (
                 <InputField
@@ -518,10 +523,10 @@ const TransmitterInvoiceComponent = (props) => {
                   cols='col-md-4 col-lg-4 col-sm-4'
                   value={props.cotizationData.type_transfer_trasmitter}
                   handleChange={props.onChange}
-                  >
-                    <option value="">--Seleccione--</option>
-                  {props.cotizationData.type_transfer_trasmitter_array.map((v,i) => (
-                    <option value={v.id} key={i}>{v.valor}</option>
+                >
+                  <option value="">--Seleccione--</option>
+                  {props.cotizationData.type_transfer_trasmitter_array.map((v, i) => (
+                    <option value={v.value} key={"transfferType" + i}>{v.text}</option>
                   ))}
                 </InputField>
               ) : (
@@ -536,32 +541,32 @@ const TransmitterInvoiceComponent = (props) => {
                   cols='col-md-4 col-lg-4 col-sm-4'
                   value={props.cotizationData.type_transfer_trasmitter}
                   handleChange={props.onChange}
-                  />
+                />
               )}
               <InputField
-                  type='text'
-                  label='Giro'
-                  name='spin_transmitter'
-                  required={true}
-                  messageErrors={[
-                    'Requerido*'
-                  ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
-                  value={props.cotizationData.spin_transmitter}
-                  handleChange={props.onChange}
+                type='text'
+                label='Giro'
+                name='spin_transmitter'
+                required={true}
+                messageErrors={[
+                  'Requerido*'
+                ]}
+                cols='col-md-4 col-lg-4 col-sm-4'
+                value={props.cotizationData.spin_transmitter}
+                handleChange={props.onChange}
               />
             </Row>
           </Card.Body>
-        ) : '' }
+        ) : ''}
       </Accordion.Collapse>
     </Card>
   )
 }
 
 TransmitterInvoiceComponent.propTypes = {
-  isType : PropTypes.string.isRequired,
-  cotizationData : PropTypes.object.isRequired,
-  setCotizationData : PropTypes.func.isRequired,
+  isType: PropTypes.string.isRequired,
+  cotizationData: PropTypes.object.isRequired,
+  setCotizationData: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired
 }
 

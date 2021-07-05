@@ -89,7 +89,6 @@ const MainContainer = (props) => {
           }
 
           tokenRefreshIntervalHandler(response[0].data);
-          console.log("aqui mi muchacho ========================================", response);
           setIsLoading(false);
         } catch (e) {
           logoutUserByTokenExpired(e);

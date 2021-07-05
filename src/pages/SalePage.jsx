@@ -225,7 +225,6 @@ const SalePage = (props) => {
 
   const handleSelectClient = data => {
     let data_document = data.split('/');
-    console.log(data_document, "aqui la data document");
     let client = clients.find(v => {
       if (data_document.length > 1) {
         if (data_document[1].indexOf("-") !== -1) {
