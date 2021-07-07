@@ -421,90 +421,72 @@ const ClientInvoiceComponet = (props) => {
                     handleChange={onChange}
                   />
                   {arrayGuide.includes(props.isType) ? (
-                    <React.Fragment>
-                      <InputField
-                        type="text"
-                        label="Contacto"
-                        name="name_contact"
-                        required={true}
-                        messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
-                        value={props.cotizationData.name_contact}
-                        handleChange={onChange}
-                      />
-                    </React.Fragment>
-                  ) : (
-                    ""
-                  )}
-                </Row>
-                {arrayGuide.includes(props.isType) ? (
-                  <Row>
-                    {props.cotizationData.spin_client_array.length > 0 ? (
-                      <InputField
-                        type="select"
-                        label="Giro"
-                        name="spin_client"
-                        required={true}
-                        messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
-                        value={props.cotizationData.spin_client}
-                        handleChange={onChange}
-                      >
-                        <option value="">--Seleccione--</option>
-                        {props.cotizationData.spin_client_array.map((v, i) => (
-                          <option value={v.value} key={"spinClient" + i}>
-                            {v.text}
-                          </option>
-                        ))}
-                      </InputField>
-                    ) : (
-                      <InputField
-                        type="text"
-                        label="Giro"
-                        name="spin_client"
-                        required={true}
-                        messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
-                        value={props.cotizationData.spin_client}
-                        handleChange={onChange}
-                      />
-                    )}
-                    {props.cotizationData.type_buy_client_array.length > 0 ? (
-                      <InputField
-                        type="select"
-                        label="Tipo de Compra"
-                        name="type_buy_client"
-                        required={true}
-                        messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
-                        value={props.cotizationData.type_buy_client}
-                        handleChange={onChange}
-                      >
-                        <option value="">--Seleccione--</option>
-                        {props.cotizationData.type_buy_client_array.map(
-                          (v, i) => (
-                            <option value={v.value} key={"typePurchaseCoti" + i}>
+                    <>
+                      {props.cotizationData.spin_client_array.length > 0 ? (
+                        <InputField
+                          type="select"
+                          label="Giro"
+                          name="spin_client"
+                          required={true}
+                          messageErrors={["Requerido*"]}
+                          cols="col-md-4 col-lg-4 col-sm-4"
+                          value={props.cotizationData.spin_client}
+                          handleChange={onChange}
+                        >
+                          <option value="">--Seleccione--</option>
+                          {props.cotizationData.spin_client_array.map((v, i) => (
+                            <option value={v.value} key={"spinClient" + i}>
                               {v.text}
                             </option>
-                          )
-                        )}
-                      </InputField>
-                    ) : (
-                      <InputField
-                        type="text"
-                        label="Tipo de Compra"
-                        name="type_buy_client"
-                        required={true}
-                        messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
-                        value={props.cotizationData.type_buy_client}
-                        handleChange={onChange}
-                      />
-                    )}
-                  </Row>
-                ) : (
-                  ""
-                )}
+                          ))}
+                        </InputField>
+                      ) : (
+                        <InputField
+                          type="text"
+                          label="Giro"
+                          name="spin_client"
+                          required={true}
+                          messageErrors={["Requerido*"]}
+                          cols="col-md-4 col-lg-4 col-sm-4"
+                          value={props.cotizationData.spin_client}
+                          handleChange={onChange}
+                        />
+                      )}
+                      {props.cotizationData.type_buy_client_array.length > 0 ? (
+                        <InputField
+                          type="select"
+                          label="Tipo de Compra"
+                          name="type_buy_client"
+                          required={true}
+                          messageErrors={["Requerido*"]}
+                          cols="col-md-4 col-lg-4 col-sm-4"
+                          value={props.cotizationData.type_buy_client}
+                          handleChange={onChange}
+                        >
+                          <option value="">--Seleccione--</option>
+                          {props.cotizationData.type_buy_client_array.map(
+                            (v, i) => (
+                              <option value={v.value} key={"typePurchaseCoti" + i}>
+                                {v.text}
+                              </option>
+                            )
+                          )}
+                        </InputField>
+                      ) : (
+                        <InputField
+                          type="text"
+                          label="Tipo de Compra"
+                          name="type_buy_client"
+                          required={true}
+                          messageErrors={["Requerido*"]}
+                          cols="col-md-4 col-lg-4 col-sm-4"
+                          value={props.cotizationData.type_buy_client}
+                          handleChange={onChange}
+                        />
+                      )}
+                    </>
+                  ) : ""}
+                </Row>
                 {!arrayBoleta.includes(props.isType) &&
                   !arrayGuide.includes(props.type) ? (
                   <React.Fragment>

@@ -268,6 +268,69 @@ export const MONTH_ARRAY = [
   "Diciembre",
 ];
 
+export const TransfferTypeArray = [
+  {
+    value: 1,
+    text: "Operación constituye venta"
+  },
+  {
+    value: 2,
+    text: "Ventas por efectuar"
+  },
+  {
+    value: 3,
+    text: "Consignaciones"
+  },
+  {
+    value: 4,
+    text: "Entrega Gratuita"
+  },
+  {
+    value: 5,
+    text: "Traslados internos"
+  },
+  {
+    value: 6,
+    text: "Otros traslados no venta"
+  },
+  {
+    value: 7,
+    text: "Guía de devolución"
+  },
+];
+
+export const RefArray = [
+  { value: 0, text: "Factura" },
+  { value: 1, text: "Factura no Afecta" },
+  { value: 2, text: "Factura elec." },
+  { value: 3, text: "Factura no Afecta elec." },
+  { value: 4, text: "Boleta" },
+  { value: 5, text: "Boleta exenta" },
+  { value: 6, text: "Boleta elec." },
+  { value: 7, text: "Liq. Factura" },
+  { value: 8, text: "Boleta exenta elec." },
+  { value: 9, text: "Liq. Factura elec." },
+  { value: 10, text: "Factura de Compra." },
+  { value: 11, text: "Factura Compra elec." },
+  { value: 12, text: "Comprobante pago elec." },
+  { value: 13, text: "Guia despacho" },
+  { value: 14, text: "Guia despacho elec." },
+  { value: 15, text: "Nota Débito" },
+  { value: 16, text: "Nota Débito elec." },
+  { value: 17, text: "Nota Crédito" },
+  { value: 18, text: "Nota Crédito elec." },
+  { value: 19, text: "Liq. com. dis." },
+  { value: 20, text: "Orden de Compra" },
+  { value: 21, text: "Nota de pedido" },
+  { value: 22, text: "Contrato" },
+  { value: 23, text: "Resolución" },
+  { value: 24, text: "Proceso ChileCompra" },
+  { value: 25, text: "Ficha ChileCompra" },
+  { value: 26, text: "Pasaporte" },
+  { value: 27, text: "Código registro de Economía" },
+  { value: 28, text: "Hoja Entrada Servicio" },
+]
+
 export const API_FACTURACION = true;
 export const API_URL = 'http://localhost:9000/'
 export const FRONT_URL = 'http://localhost:3000/quotitation/create_quotitation'

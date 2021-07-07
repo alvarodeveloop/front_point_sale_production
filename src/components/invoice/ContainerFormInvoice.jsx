@@ -47,7 +47,7 @@ import {
   arrayById,
   arrayFacturarInvoice,
   arrayFacturarCotizacion,
-  arraySearchDefaultInvoiceRecetor,
+  TransfferTypeArray
 } from "utils/constants";
 import TableBondsBillComponent from "components/invoice/TableBondsBillComponent";
 import "styles/pages/formInvoice.css";
@@ -168,6 +168,7 @@ function ContainerFormInvoice(props) {
       actividad_economica_transmitter: props.enterpriseSelected.economic_activity,
       type_sale_transmitter_array: props.enterpriseSelected.saleTypes && props.enterpriseSelected.saleTypes.length ? props.enterpriseSelected.saleTypes : [],
       type_sale_transmitter: props.enterpriseSelected.sale_type,
+      type_transfer_trasmitter_array: TransfferTypeArray
     })
   );
   const [displayModals, setDisplayModals] = useState(false);
@@ -290,106 +291,106 @@ function ContainerFormInvoice(props) {
             let indexArray = arraySaleNote.includes(props.type) ? 4 : 3;
             setGastosDetail(result[indexArray].data.gastos);
             setDetailProducts(result[indexArray].data.products);
-            if (
-              arrayInvoice.includes(props.type) &&
-              props.type !== "invoiceByGuide"
-            ) {
-              let isInvoice = props.type === "facturacion" ? true : false;
-              searchReceptorEmisorInvoice(
-                isInvoice ? false : true,
-                isInvoice ? false : result[indexArray]
-              );
-            } else {
-              /* logica para algunos datos de las boletas */
-              let addressTransmitterArray = Object.assign(
-                {},
-                OBJECT_COTIZATION
-              ).address_transmitter_array;
-              let addressTransmitter =
-                result[indexArray].data.address_transmitter;
-              if (arrayBoleta.includes(props.type)) {
-                setTypeBond(result[4].data);
-              }
 
-              /*=================================*/
-              if (arrayGuide.includes(props.type)) {
-                searchClientReceptorGuide(
-                  result[indexArray].data.rut_client,
-                  result[indexArray].data
-                );
-              } else {
-                setCotizationData((oldData) => {
-                  return Object.assign({}, oldData, {
-                    business_name_transmitter:
-                      result[indexArray].data.business_name_transmitter,
-                    rut_transmitter: result[indexArray].data.rut_transmitter,
-                    address_transmitter: addressTransmitter,
-                    spin_transmitter: result[indexArray].data.spin_transmitter,
-                    email_transmitter:
-                      result[indexArray].data.email_transmitter,
-                    phone_transmitter:
-                      result[indexArray].data.phone_transmitter,
-                    actividad_economica_transmitter:
-                      result[indexArray].data.actividad_economica_transmitter,
-                    city_transmitter: result[indexArray].data.city_transmitter,
-                    comuna_transmitter:
-                      result[indexArray].data.comuna_transmitter,
-                    type_sale_transmitter:
-                      result[indexArray].data.type_sale_transmitter,
-                    address_transmitter_array: addressTransmitterArray,
-
-                    comment: result[indexArray].data.comment,
-                    date_issue: moment(result[indexArray].data.date_issue)
-                      .tz("America/Santiago")
-                      .format("YYYY-MM-DD"),
-                    date_issue_invoice: moment()
-                      .tz("America/Santiago")
-                      .format("YYYY-MM-DD"),
-                    date_expiration: moment(
-                      result[indexArray].data.date_expiration
-                    )
-                      .tz("America/Santiago")
-                      .format("YYYY-MM-DD"),
-                    type_api: result[indexArray].data.type_api,
-                    discount_global: result[indexArray].data.discount_global,
-                    way_of_payment: result[indexArray].data.way_of_payment
-                      ? result[indexArray].data.way_of_payment
-                      : 1,
-
-                    rut_client: result[indexArray].data.rut_client,
-                    business_name_client:
-                      result[indexArray].data.business_name_client,
-                    address_client: result[indexArray].data.address_client,
-                    actividad_economica_client:
-                      result[indexArray].data.actividad_economica_client,
-                    city_client: result[indexArray].data.city_client,
-                    spin_client: result[indexArray].data.spin_client,
-                    type_buy_client: result[indexArray].data.type_buy_client,
-                    comuna_client: result[indexArray].data.comuna_client,
-
-                    name_contact: result[indexArray].data.name_contact,
-                    phone_contact: result[indexArray].data.phone_contact,
-                    email_contact: result[indexArray].data.email_contact,
-
-                    name_seller: result[indexArray].data.name_seller,
-                    phone_seller: result[indexArray].data.phone_seller,
-                    email_seller: result[indexArray].data.email_seller,
-
-                    total_with_iva: result[indexArray].data.total_with_iva, // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
-                    price_list: "",
-                    type_effect: result[indexArray].data.type_effect,
-                    status: result[indexArray].data.status,
-                    ref: result[indexArray].data.ref,
-                    id_branch_office: result[indexArray].data.id_branch_office,
-                    id_guide:
-                      props.type === "invoiceByGuide"
-                        ? props.match.params.id
-                        : oldData.id_guide,
-                    type_invoicing: result[indexArray].data.type_effect,
-                  });
-                });
-              }
+            /* logica para algunos datos de las boletas */
+            let addressTransmitterArray = Object.assign(
+              {},
+              OBJECT_COTIZATION
+            ).address_transmitter_array;
+            let addressTransmitter =
+              result[indexArray].data.address_transmitter;
+            if (arrayBoleta.includes(props.type)) {
+              setTypeBond(result[4].data);
             }
+
+            let client = result[indexArray].data.rut_client ? result[0].data.find(v => v.data_document + "-" + v.dv === result[indexArray].data.rut_client) : null;
+
+            /*=================================*/
+            setCotizationData((oldData) => {
+              return Object.assign({}, oldData, {
+                ...oldData,
+                business_name_transmitter:
+                  result[indexArray].data.business_name_transmitter,
+                rut_transmitter: result[indexArray].data.rut_transmitter,
+                address_transmitter: addressTransmitter,
+                spin_transmitter: result[indexArray].data.spin_transmitter,
+                email_transmitter:
+                  result[indexArray].data.email_transmitter,
+                phone_transmitter:
+                  result[indexArray].data.phone_transmitter,
+                actividad_economica_transmitter:
+                  result[indexArray].data.actividad_economica_transmitter,
+                city_transmitter: result[indexArray].data.city_transmitter,
+                comuna_transmitter:
+                  result[indexArray].data.comuna_transmitter,
+                type_sale_transmitter:
+                  result[indexArray].data.type_sale_transmitter,
+                address_transmitter_array: addressTransmitterArray,
+
+                comment: result[indexArray].data.comment,
+                date_issue: moment(result[indexArray].data.date_issue)
+                  .tz("America/Santiago")
+                  .format("YYYY-MM-DD"),
+                date_issue_invoice: moment()
+                  .tz("America/Santiago")
+                  .format("YYYY-MM-DD"),
+                date_expiration: moment(
+                  result[indexArray].data.date_expiration
+                )
+                  .tz("America/Santiago")
+                  .format("YYYY-MM-DD"),
+                type_api: result[indexArray].data.type_api,
+                discount_global: result[indexArray].data.discount_global,
+                way_of_payment: result[indexArray].data.way_of_payment
+                  ? result[indexArray].data.way_of_payment
+                  : 1,
+
+                rut_client: result[indexArray].data.rut_client,
+                business_name_client:
+                  result[indexArray].data.business_name_client,
+                address_client: result[indexArray].data.address_client,
+                actividad_economica_client:
+                  result[indexArray].data.actividad_economica_client,
+                city_client: result[indexArray].data.city_client,
+                spin_client: result[indexArray].data.spin_client,
+                type_buy_client: result[indexArray].data.type_buy_client,
+                comuna_client: result[indexArray].data.comuna_client,
+
+                name_contact: result[indexArray].data.name_contact,
+                phone_contact: result[indexArray].data.phone_contact,
+                email_contact: result[indexArray].data.email_contact,
+
+                name_seller: result[indexArray].data.name_seller,
+                phone_seller: result[indexArray].data.phone_seller,
+                email_seller: result[indexArray].data.email_seller,
+
+                total_with_iva: result[indexArray].data.total_with_iva, // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
+                price_list: "",
+                type_effect: result[indexArray].data.type_effect,
+                status: result[indexArray].data.status,
+                ref: result[indexArray].data.ref,
+                id_branch_office: result[indexArray].data.id_branch_office,
+                id_guide:
+                  props.type === "invoiceByGuide"
+                    ? props.match.params.id
+                    : oldData.id_guide,
+                type_invoicing: result[indexArray].data.type_effect,
+                spin_client_array: client ? client.spins : [],
+                type_buy_client_array: client ? client.purchaseTypes : [],
+                address_client_array: client ? client.addresses.map(v => {
+                  return {
+                    address: {
+                      value: v.value,
+                      text: v.text
+                    },
+                    city: v.city,
+                    commune: v.commune
+                  }
+                }) : [],
+
+              });
+            });
+
           } else if (
             arrayCotizacion.includes(props.type) ||
             props.type === "saleNote"
@@ -398,21 +399,7 @@ function ContainerFormInvoice(props) {
               Object.assign({}, currentData, { ref: result[3].data.ref })
             );
           } else if (props.type === "boleta") {
-            // código de ejercicio... remover para producción
-            //   setCotizationData(currentData => {
-            //   return Object.assign({},currentData, {
-            //     rut_transmitter: result[4].data.rut+"-"+result[4].data.dv,
-            //     business_name_transmitter: result[4].data.razon_social,
-            //     address_transmitter_array: result[4].data.direcciones[0],
-            //     address_transmitter : result[4].data.direccion_seleccionada,
-            //     comuna_transmitter: result[4].data.comuna_seleccionada,
-            //     city_transmitter: result[4].data.ciudad_seleccionada,
-            //     fetchTransmitter: false,
-            //   })
-            // })
             setTypeBond(result[3].data);
-          } else if (props.type === "guide") {
-            searchClientReceptorGuide();
           }
         }
         setDisplayLoading(false);
@@ -426,260 +413,6 @@ function ContainerFormInvoice(props) {
       });
   };
 
-  const searchReceptorEmisorInvoice = (
-    autoReceptorSearch = false,
-    dataCotizacion = false
-  ) => {
-    toast.info("Preparando el emisor de la factura");
-    //comentado para ejemplo, descomentar para producción
-
-    /*axios.get(API_URL+'get_transmitter_invoice').then(transmitter => {
-      if(dataCotizacion){
-        
-        setCotizationData(oldData => {
-          return Object.assign({},oldData,{
-
-            business_name_transmitter : transmitter.data.emisor.razon_social,
-            rut_transmitter: dataCotizacion.data.rut_transmitter,
-            address_transmitter:  transmitter.data.emisor.direccion_seleccionada,
-            address_transmitter_array: transmitter.data.emisor.direcciones[0],
-            spin_transmitter : transmitter.data.emisor.giro,
-            email_transmitter: dataCotizacion.data.email_transmitter,
-            phone_transmitter: dataCotizacion.data.phone_transmitter,
-            actividad_economica_transmitter : transmitter.data.emisor.actvidades_economicas.length > 0 ? transmitter.data.emisor.actvidades_economicas[0][0] : props.configGeneral.actividad_economica,
-            actividad_economica_transmitter_array: transmitter.data.emisor.actvidades_economicas,
-            city_transmitter : transmitter.data.emisor.ciudad_seleccionada,
-            comuna_transmitter: transmitter.data.emisor.comuna_seleccionada,
-            city_transmitter: dataCotizacion.data.city_transmitter,
-            type_sale_transmitter: transmitter.data.emisor.tipos_de_venta.length > 0 ? transmitter.data.emisor.tipos_de_venta[0][0] : '',
-            type_sale_transmitter_array: transmitter.data.emisor.tipos_de_venta,
-            
-            facturaId: transmitter.data.id,
-            token: transmitter.data.token,
-            searchReceptorDefault : autoReceptorSearch,
-
-            rut_client: dataCotizacion.data.rut_client,
-            business_name_client: dataCotizacion.data.business_name_client,
-            address_client: dataCotizacion.data.address_client,
-            city_client: dataCotizacion.data.city_client,
-            spin_client: dataCotizacion.data.spin_client,
-            type_buy_client: dataCotizacion.data.type_buy_client,
-            actividad_economica_client: dataCotizacion.data.actividad_economica_client,
-            
-            name_contact: dataCotizacion.data.name_contact,
-            phone_contact: dataCotizacion.data.phone_contact,
-            email_contact: dataCotizacion.data.email_contact,
-            
-            name_seller: dataCotizacion.data.name_seller,
-            phone_seller: dataCotizacion.data.phone_seller,
-            email_seller: dataCotizacion.data.email_seller,
-            comment: dataCotizacion.data.comment,
-
-            date_issue: moment(dataCotizacion.data.date_issue).tz('America/Santiago').format('YYYY-MM-DD'),
-            date_expiration: moment(dataCotizacion.data.date_expiration).tz('America/Santiago').format('YYYY-MM-DD'),
-            type_api: dataCotizacion.data.type_api,
-            total_with_iva : dataCotizacion.data.total_with_iva, // si esta en true en el total de las cotizaciones se muestra iva si no el iva va en los productos y no se muestra el iva al final
-            price_list: "",
-            type_effect: dataCotizacion.data.type_effect,
-            status: dataCotizacion.data.status,
-            ref: dataCotizacion.data.ref,
-            id_branch_office: dataCotizacion.data.id_branch_office,
-            date_issue_invoice: moment().tz('America/Santiago').format('YYYY-MM-DD'),
-            comuna_client: dataCotizacion.data.comuna_client,
-            type_invoicing : dataCotizacion.data.type_effect
-          })
-        })
-      }else{
-        setCotizationData(oldData => {
-          return Object.assign({},oldData,{
-            actividad_economica_transmitter_array: transmitter.data.emisor.actvidades_economicas,
-            actividad_economica_transmitter : transmitter.data.emisor.actvidades_economicas.length > 0 ? transmitter.data.emisor.actvidades_economicas[0][0] : props.configGeneral.actividad_economica,
-            city_transmitter : transmitter.data.emisor.ciudad_seleccionada,
-            comuna_transmitter: transmitter.data.emisor.comuna_seleccionada,
-            address_transmitter:  transmitter.data.emisor.direccion_seleccionada,
-            address_transmitter_array: transmitter.data.emisor.direcciones[0],
-            business_name_transmitter : transmitter.data.emisor.razon_social,
-            spin_transmitter : transmitter.data.emisor.giro,
-            type_sale_transmitter_array: transmitter.data.emisor.tipos_de_venta,
-            type_sale_transmitter: transmitter.data.emisor.tipos_de_venta.length > 0 ? transmitter.data.emisor.tipos_de_venta[0][0] : '',
-            facturaId: transmitter.data.id,
-            token: transmitter.data.token,
-            searchReceptorDefault : autoReceptorSearch
-          })
-        })
-      }
-       
-    }).catch(err => {
-      setCotizationData({...props.cotizationData,type_invoicing: null})
-      if(err.response){
-        toast.error(err.response.data.message)
-      }else{
-        console.log(err);
-        toast.error('Error, contacte con soporte')
-      }
-    })*/
-    if (dataCotizacion) {
-      setCotizationData((currentData) =>
-        Object.assign({}, currentData, {
-          type_invoicing: false,
-          ref: dataCotizacion.data.ref,
-        })
-      );
-    }
-    setshowSections(1);
-  };
-
-  const searchClientReceptorGuide = async (
-    rutSearch = false,
-    dataCoti = null
-  ) => {
-    try {
-      let rut_value = rutSearch ? rutSearch : cotizationData.rut_client_search;
-      if (dataCoti) {
-        // código de ejercicio... remover para producción
-        setCotizationData((oldData) => {
-          return Object.assign({}, oldData, {
-            type_api: dataCoti.type_api,
-            name_contact: dataCoti.name_contact,
-            email_contact: dataCoti.email_contact,
-            phone_contact: dataCoti.phone_contact,
-            name_seller: dataCoti.name_seller,
-            phone_seller: dataCoti.phone_seller,
-            email_seller: dataCoti.email_seller,
-            ref: dataCoti.ref,
-            id_branch_office: dataCoti.id_branch_office,
-          });
-        });
-      }
-
-      return;
-      let emisor = await axios.get(API_URL + "search_emisor_guide");
-      if (rut_value) {
-        toast.info("Buscando datos, espere por favor...");
-        if (!displayLoading) {
-          setDisplayLoading(true);
-        }
-        let receptor = await axios.get(
-          API_URL + "search_receptor_guide/" + emisor.data.id + "/" + rut_value
-        );
-        setCotizationData((oldData) => {
-          return Object.assign({}, oldData, {
-            type_api: dataCoti.type_api,
-            name_contact: dataCoti.name_contact,
-            email_contact: dataCoti.email_contact,
-            phone_contact: dataCoti.phone_contact,
-            name_seller: dataCoti.name_seller,
-            phone_seller: dataCoti.phone_seller,
-            email_seller: dataCoti.email_seller,
-            ref: dataCoti.ref,
-            id_branch_office: dataCoti.id_branch_office,
-
-            actividad_economica_transmitter_array:
-              emisor.data.emisor.actvidades_economicas,
-            actividad_economica_transmitter: emisor.data.emisor
-              .actividad_economica_seleccionada
-              ? emisor.data.emisor.actividad_economica_seleccionada
-              : emisor.data.emisor.actvidades_economicas[0][0],
-            city_transmitter: emisor.data.emisor.ciudad_seleccionada,
-            email_transmitter: emisor.data.emisor.correo,
-            comuna_transmitter: emisor.data.emisor.comuna_seleccionada,
-            address_transmitter: emisor.data.emisor.direccion_seleccionada,
-            address_transmitter_array: emisor.data.emisor.direcciones[0],
-            business_name_transmitter: emisor.data.emisor.razon_social,
-            rut_transmitter: props.configGeneral.enterprise.rut,
-            spin_transmitter: emisor.data.emisor.giro,
-            type_transfer_trasmitter_array: API_FACTURACION
-              ? emisor.data.tipos_de_traslado
-              : emisor.data.tipos_de_venta,
-            type_transfer_trasmitter: API_FACTURACION
-              ? emisor.data.tipos_de_traslado.length > 0
-                ? emisor.data.tipos_de_traslado[0].id
-                : ""
-              : "",
-            facturaId: API_FACTURACION ? emisor.data.id : "", //result.data.facturaID,
-            type_sale_transmitter_array: emisor.data.emisor.tipos_de_venta,
-            type_sale_transmitter:
-              emisor.data.emisor.tipos_de_venta.length > 0
-                ? emisor.data.emisor.tipos_de_venta[0][0]
-                : "",
-            facturaId: emisor.data.id,
-
-            rut_client:
-              receptor.data.receptor.rut + "-" + receptor.data.receptor.dv,
-            business_name_client: receptor.data.receptor.razon_social,
-            address_client_array: receptor.data.receptor.direcciones[0],
-            address_client: receptor.data.receptor.direccion_seleccionada,
-            comuna_client: receptor.data.receptor.comuna_seleccionada,
-            city_client: receptor.data.receptor.ciudad_seleccionada,
-            spin_client_array: Array.isArray(receptor.data.girosReceptor)
-              ? receptor.data.girosReceptor
-              : [receptor.data.girosReceptor],
-            spin_client: Array.isArray(receptor.data.girosReceptor)
-              ? receptor.data.girosReceptor[0].nombre
-              : receptor.data.girosReceptor.nombre,
-            type_buy_client_array: Array.isArray(receptor.data.TipoDeCompra)
-              ? receptor.data.TipoDeCompra
-              : [receptor.data.TipoDeCompra],
-            type_buy_client: receptor.data.receptor.tipoDeCompraId.toString(),
-          });
-        });
-        setDisplayLoading(false);
-      } else {
-        setCotizationData((oldData) => {
-          return Object.assign({}, oldData, {
-            type_api: dataCoti.type_api,
-            name_contact: dataCoti.name_contact,
-            email_contact: dataCoti.email_contact,
-            phone_contact: dataCoti.phone_contact,
-            name_seller: dataCoti.name_seller,
-            phone_seller: dataCoti.phone_seller,
-            email_seller: dataCoti.email_seller,
-            ref: dataCoti.ref,
-            id_branch_office: dataCoti.id_branch_office,
-
-            actividad_economica_transmitter_array:
-              emisor.data.emisor.actvidades_economicas,
-            actividad_economica_transmitter: emisor.data.emisor
-              .actividad_economica_seleccionada
-              ? emisor.data.emisor.actividad_economica_seleccionada
-              : emisor.data.emisor.actvidades_economicas[0][0],
-            city_transmitter: emisor.data.emisor.ciudad_seleccionada,
-            email_transmitter: emisor.data.emisor.correo,
-            comuna_transmitter: emisor.data.emisor.comuna_seleccionada,
-            address_transmitter: emisor.data.emisor.direccion_seleccionada,
-            address_transmitter_array: emisor.data.emisor.direcciones[0],
-            business_name_transmitter: emisor.data.emisor.razon_social,
-            rut_transmitter: props.configGeneral.enterprise.rut,
-            spin_transmitter: emisor.data.emisor.giro,
-            type_transfer_trasmitter_array: API_FACTURACION
-              ? emisor.data.tipos_de_traslado
-              : emisor.data.tipos_de_venta,
-            type_transfer_trasmitter: API_FACTURACION
-              ? emisor.data.tipos_de_traslado.length > 0
-                ? emisor.data.tipos_de_traslado[0].id
-                : ""
-              : "",
-            facturaId: API_FACTURACION ? emisor.data.id : "", //result.data.facturaID,
-            type_sale_transmitter_array: emisor.data.emisor.tipos_de_venta,
-            type_sale_transmitter:
-              emisor.data.emisor.tipos_de_venta.length > 0
-                ? emisor.data.emisor.tipos_de_venta[0][0]
-                : "",
-            facturaId: emisor.data.id,
-          });
-        });
-        setDisplayLoading(false);
-      }
-    } catch (error) {
-      toast.error(
-        "No se ha podido cargar la guía , intentelo de nuevo por favor"
-      );
-      setTimeout(() => {
-        goToDashboard();
-      }, 1500);
-    }
-  };
-
   const removeProductRef = (i) => {
     let array_copy = [...refCotizacion];
     array_copy.splice(i, 1);
@@ -691,7 +424,7 @@ function ContainerFormInvoice(props) {
       ...refCotizacion,
       {
         ind: "ind",
-        type_document: "HES",
+        type_document: 0,
         ref_cotizacion: cotizationData.ref,
         date_ref: moment().tz("America/Santiago").format("YYYY-MM-DD"),
         reason_ref: "Cotización",
@@ -918,7 +651,7 @@ function ContainerFormInvoice(props) {
           toast.success("Guía guardada con éxito");
           toast.info("Generando pdf de la Guía, espere por favor...");
           result.data.response.forEach((item, i) => {
-            if (item) window.open(item.pdf_public_url, "_blank");
+            if (item) window.open(process.env.REACT_APP_API_FACTURACION + item.file.url, "_blank");
           });
           setTimeout(() => {
             goToDashboard();
