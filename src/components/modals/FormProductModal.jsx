@@ -4,7 +4,7 @@ import {
   Modal,
   Button,
 } from 'react-bootstrap'
-import 'styles/components/modalComponents.css'
+import 'styles/components/modalComponents.scss'
 import FormProductSale from 'components/FormProductSale'
 
 const FormProductModal = (props) => {
@@ -27,7 +27,7 @@ const FormProductModal = (props) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-          <FormProductSale {...props} handleSubmitProduct={handleSubmitProduct} />
+        <FormProductSale {...props} handleSubmitProduct={handleSubmitProduct} />
       </Modal.Body>
       <Modal.Footer>
         <Button size="md" onClick={props.onHide}>Cerrar</Button>
@@ -37,7 +37,7 @@ const FormProductModal = (props) => {
 }
 
 FormProductModal.propTypes = {
-  handleSubmitProduct : PropTypes.func.isRequired
+  handleSubmitProduct: PropTypes.func.isRequired
 }
 
 export default FormProductModal

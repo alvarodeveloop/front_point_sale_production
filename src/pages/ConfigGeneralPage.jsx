@@ -7,7 +7,7 @@ import { API_URL } from "utils/constants";
 import { setAuthorizationToken } from "utils/functions";
 import { Container, Row, Col, Button, Badge, Image } from "react-bootstrap";
 import { toast } from "react-toastify";
-import "styles/pages/config_general.css";
+import "styles/pages/config_general.scss";
 import { confirmAlert } from "react-confirm-alert"; // Import
 import LoadingComponent from "components/LoadingComponent";
 import ModalConfirmDataDeleteConfigGeneral from "components/ModalConfirmDataDeleteConfigGeneral";
@@ -65,7 +65,7 @@ const ConfigGeneralPage = (props) => {
   const updateConfigGeneral = () => {
     props.history.push(
       "/config/config_general_form/" +
-        JSON.parse(sessionStorage.getItem("user")).id_parent
+      JSON.parse(sessionStorage.getItem("user")).id_parent
     );
   };
 
@@ -250,10 +250,10 @@ const ConfigGeneralPage = (props) => {
               )}
               <br />
               {!config.is_syncronized &&
-              config.rut_legal_representative &&
-              config.clave_sii &&
-              config.clave_login_sii &&
-              config.username ? (
+                config.rut_legal_representative &&
+                config.clave_sii &&
+                config.clave_login_sii &&
+                config.username ? (
                 <Button
                   variant="danger"
                   size="sm"

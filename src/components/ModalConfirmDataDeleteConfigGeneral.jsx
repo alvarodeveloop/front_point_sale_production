@@ -5,7 +5,7 @@ import {
   Button
 } from 'react-bootstrap'
 
-import 'styles/components/modalComponents.css'
+import 'styles/components/modalComponents.scss'
 
 
 const ModalConfirmDataDeleteConfigGeneral = (props) => {
@@ -21,14 +21,14 @@ const ModalConfirmDataDeleteConfigGeneral = (props) => {
           ¿Esta seguro que desea eliminar los registros?
         </Modal.Title>
       </Modal.Header>
-        <Modal.Body>
-          <h4>Escoja los datos que desea eliminar</h4>
+      <Modal.Body>
+        <h4>Escoja los datos que desea eliminar</h4>
 
-        </Modal.Body>
-        <Modal.Footer>
-          <Button size="sm" variant="success" onClick={props.onHide}>Aceptar</Button>
-          <Button size="sm" onClick={props.onHide}>Close</Button>
-        </Modal.Footer>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button size="sm" variant="success" onClick={props.onHide}>Aceptar</Button>
+        <Button size="sm" onClick={props.onHide}>Close</Button>
+      </Modal.Footer>
     </Modal>
   )
 }

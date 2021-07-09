@@ -13,7 +13,7 @@ import {
 import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
 import { FaTrash } from 'react-icons/fa'
-import 'styles/components/modalComponents.css'
+import 'styles/components/modalComponents.scss'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { formatNumber } from 'utils/functions'
@@ -31,13 +31,13 @@ let inventaryHistorialColumns = []
 
 const ModalHistoryInventary = (props) => {
 
-  const [costUpdate,setCostUpdate] = useState(null)
-  const [validated,setValidated] = useState(null)
+  const [costUpdate, setCostUpdate] = useState(null)
+  const [validated, setValidated] = useState(null)
   const [displayLoading, setDisplayLoading] = useState(false)
 
   useEffect(() => {
 
-  },[])
+  }, [])
 
   useMemo(() => {
     inventaryHistorialColumns = [
@@ -53,9 +53,9 @@ const ModalHistoryInventary = (props) => {
         Header: 'Costo',
         accessor: 'cost',
         Cell: props1 => {
-          const {original} = props1.cell.row
+          const { original } = props1.cell.row
           return (
-            <Badge variant="danger" className="font-badge">{props.configGeneral ? props.configGeneral.simbolo_moneda : ""}{formatNumber(original.cost,2,',','.')}</Badge>
+            <Badge variant="danger" className="font-badge">{props.configGeneral ? props.configGeneral.simbolo_moneda : ""}{formatNumber(original.cost, 2, ',', '.')}</Badge>
           )
         }
       },
@@ -67,13 +67,13 @@ const ModalHistoryInventary = (props) => {
         Header: 'Proveedores',
         accessor: props1 => props1.providers.map(v => v.provider.social_razon),
         Cell: props1 => {
-          const {original} = props1.cell.row
-          if(original.providers.length > 1){
-            return(
+          const { original } = props1.cell.row
+          if (original.providers.length > 1) {
+            return (
               <OverlayTrigger placement={'right'} overlay={
                 <Tooltip id={"tooltip-right"}>
                   <ul className="list-group">
-                    {original.providers.map((v,i) => (
+                    {original.providers.map((v, i) => (
                       <li key={i} className="list-group-item">{v.provider.social_razon}</li>
                     ))}
                   </ul>
@@ -82,10 +82,10 @@ const ModalHistoryInventary = (props) => {
                 <Button sm="sm" type="button" variant="link" block={true}>Proveedores</Button>
               </OverlayTrigger>
             )
-          }else{
-            if(original.providers.length === 1){
+          } else {
+            if (original.providers.length === 1) {
               return original.providers[0].provider.social_razon
-            }else{
+            } else {
               return 'Sin proveedores'
             }
           }
@@ -94,14 +94,14 @@ const ModalHistoryInventary = (props) => {
       {
         Header: 'Fecha',
         accessor: props1 => props.createdAt,
-        Cell: props1 => moment.tz(props1.cell.row.original.createdAt,'America/Santiago').format('DD-MM-YYYY')
+        Cell: props1 => moment.tz(props1.cell.row.original.createdAt, 'America/Santiago').format('DD-MM-YYYY')
       },
       {
-        Header : '.',
-        Cell : props1 => {
-          const {original} = props1.cell.row
+        Header: '.',
+        Cell: props1 => {
+          const { original } = props1.cell.row
           return (
-            <DropdownButton size="sm" id={'drop'+props1.cell.row.original.id} title="Seleccione"  block="true">
+            <DropdownButton size="sm" id={'drop' + props1.cell.row.original.id} title="Seleccione" block="true">
               <Dropdown.Item onClick={() => modifyRegister(original)}>Modificar</Dropdown.Item>
               <Dropdown.Item onClick={() => removeCost(original)}>Eliminar</Dropdown.Item>
             </DropdownButton>
@@ -109,14 +109,14 @@ const ModalHistoryInventary = (props) => {
         }
       }
     ]
-  },[])
+  }, [])
 
   const modifyRegister = original => {
 
     setCostUpdate(oldData => {
-      return Object.assign({},original,{
-        id_provider : original.providers.map(v =>{ return {value : v.id_provider, label : v.provider.social_razon} }),
-        type_operation : 1
+      return Object.assign({}, original, {
+        id_provider: original.providers.map(v => { return { value: v.id_provider, label: v.provider.social_razon } }),
+        type_operation: 1
       })
     })
   }
@@ -145,33 +145,33 @@ const ModalHistoryInventary = (props) => {
 
   const confirmDeleteRegister = id => {
     setDisplayLoading(true)
-     axios.delete(API_URL+'inventary/'+id).then(result => {
+    axios.delete(API_URL + 'inventary/' + id).then(result => {
       toast.success('Registro eliminado, actualizando registros del inventario...')
       props.fetchData()
-      setTimeout( () => {
+      setTimeout(() => {
         document.getElementById('button_close').click()
       }, 1500);
       setDisplayLoading(false)
-     }).catch(err => {
+    }).catch(err => {
       setDisplayLoading(false)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
-     })
+      if (err.response) {
+        toast.error(err.response.data.message)
+      } else {
+        console.log(err);
+        toast.error('Error, contacte con soporte')
+      }
+    })
   }
 
   const handleChange = e => {
-    setCostUpdate({...costUpdate, [e.target.name] : e.target.value})
+    setCostUpdate({ ...costUpdate, [e.target.name]: e.target.value })
   }
 
   const handleSubmit = e => {
     e.preventDefault();
 
     const form = e.currentTarget;
-    const objectPost = Object.assign({},costUpdate)
+    const objectPost = Object.assign({}, costUpdate)
 
     if (form.checkValidity() === false) {
       e.stopPropagation();
@@ -179,16 +179,16 @@ const ModalHistoryInventary = (props) => {
       return
     }
     setDisplayLoading(true)
-    axios.put(API_URL+'inventary/'+objectPost.id,objectPost).then(result => {
+    axios.put(API_URL + 'inventary/' + objectPost.id, objectPost).then(result => {
       toast.success('Stock Modificado')
       setCostUpdate(null)
       props.handleSubmitStock()
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
-      if(err.response){
+      if (err.response) {
         toast.error(err.response.data.message)
-      }else{
+      } else {
         console.log(err);
         toast.error('Error, contacte con soporte')
       }
@@ -196,7 +196,7 @@ const ModalHistoryInventary = (props) => {
   }
 
   const onChangeSelect = val => {
-    setCostUpdate({...costUpdate, id_provider : val})
+    setCostUpdate({ ...costUpdate, id_provider: val })
   }
 
   return (
@@ -231,7 +231,7 @@ const ModalHistoryInventary = (props) => {
                         type={'number'}
                         required={true}
                         name={'quantity'}
-                        label ={'Cantidad'}
+                        label={'Cantidad'}
                         cols='col-md-4 col-lg-4 col-sm-4'
                         messageErrors={[
                           'Requerido*'
@@ -240,29 +240,29 @@ const ModalHistoryInventary = (props) => {
                         value={costUpdate.quantity}
                       />
                       <InputField
-                      type='text'
-                      label='Detalle de Costo'
-                      name='detail'
-                      required={false}
-                      messageErrors={[
-                      'Requerido*'
-                      ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
-                      value={costUpdate.detail ? costUpdate.detail : ''}
-                      handleChange={handleChange}
+                        type='text'
+                        label='Detalle de Costo'
+                        name='detail'
+                        required={false}
+                        messageErrors={[
+                          'Requerido*'
+                        ]}
+                        cols='col-md-4 col-lg-4 col-sm-4'
+                        value={costUpdate.detail ? costUpdate.detail : ''}
+                        handleChange={handleChange}
                       />
                       <InputField
-                      type='number'
-                      step="any"
-                      label='Costo'
-                      name='cost'
-                      required={true}
-                      messageErrors={[
-                      'Requerido*'
-                      ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
-                      value={costUpdate.cost}
-                      handleChange={handleChange}
+                        type='number'
+                        step="any"
+                        label='Costo'
+                        name='cost'
+                        required={true}
+                        messageErrors={[
+                          'Requerido*'
+                        ]}
+                        cols='col-md-4 col-lg-4 col-sm-4'
+                        value={costUpdate.cost}
+                        handleChange={handleChange}
                       />
                     </Row>
                     <Row>
@@ -272,22 +272,22 @@ const ModalHistoryInventary = (props) => {
                           value={costUpdate.id_provider}
                           onChange={onChangeSelect}
                           isMulti={true}
-                          options={props.providers.map((v,i) => {
-                            return {value: v.id, label: v.social_razon}
+                          options={props.providers.map((v, i) => {
+                            return { value: v.id, label: v.social_razon }
                           })}
                         />
-                    </Form.Group>
+                      </Form.Group>
                       <InputField
-                          type='select'
-                          label='Tipo de Operación'
-                          name='type_operation'
-                          required={true}
-                          messageErrors={[
+                        type='select'
+                        label='Tipo de Operación'
+                        name='type_operation'
+                        required={true}
+                        messageErrors={[
                           'Requerido*'
-                          ]}
-                          cols='col-md-4 col-lg-4 col-sm-4'
-                          value={costUpdate.type_operation}
-                          handleChange={handleChange}
+                        ]}
+                        cols='col-md-4 col-lg-4 col-sm-4'
+                        value={costUpdate.type_operation}
+                        handleChange={handleChange}
                       >
                         <option value={1}>No afecta el Stock</option>
                         <option value={2}>Afecta el Stock en forma de descuento</option>
@@ -323,8 +323,8 @@ const ModalHistoryInventary = (props) => {
 }
 
 ModalHistoryInventary.propTypes = {
-  costs : PropTypes.any.isRequired,
-  onHide : PropTypes.func.isRequired,
+  costs: PropTypes.any.isRequired,
+  onHide: PropTypes.func.isRequired,
   handleSubmitStock: PropTypes.func.isRequired,
   providers: PropTypes.array.isRequired,
   configGeneral: PropTypes.object,

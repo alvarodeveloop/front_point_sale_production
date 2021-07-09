@@ -17,7 +17,7 @@ import {
 import { toast } from 'react-toastify'
 import InputField from 'components/input/InputComponent'
 import { API_URL } from 'utils/constants'
-import 'styles/components/modalComponents.css'
+import 'styles/components/modalComponents.scss'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import LoadingComponent from 'components/LoadingComponent'
 

@@ -6,15 +6,13 @@ import {
   Container,
   Form,
   Button,
-  Accordion,
-  Card,
   Badge,
 } from "react-bootstrap";
 import InputField from "components/input/InputComponent";
 import { toast } from "react-toastify";
 import { API_URL } from "utils/constants";
 import axios from "axios";
-import { FaSearch, FaPlusCircle, FaBuilding } from "react-icons/fa";
+import { FaSearch, FaPlusCircle } from "react-icons/fa";
 import TablePlansComponent from "components/TablePlansComponent";
 import { formatRut } from "utils/functions";
 import {
@@ -33,7 +31,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import BranchOfficeFormModal from "components/modals/BranchOfficeFormModal";
 import { setConfigStore } from "actions/configs";
 import LoadingComponent from "components/LoadingComponent";
-import "styles/pages/enterprisePage.css";
+import "styles/pages/enterprisePage.scss";
 
 const EnterpriseFormPage = (props) => {
   const [globalState, setGlobalState] = useState({

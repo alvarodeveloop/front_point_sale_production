@@ -13,7 +13,7 @@ import * as XLSX from "xlsx";
 import FileSaver from "file-saver";
 import * as moment from "moment-timezone";
 import { s2ab } from "utils/functions";
-import "styles/pages/ListProductPage.css";
+import "styles/pages/ListProductPage.scss";
 
 let id_branch = sessionStorage.getItem("id_branch_office");
 let listColumns = [];
@@ -69,7 +69,7 @@ export const ProductListDetailPage = (props) => {
         Header: "Precio con iva",
         accessor: (props1) => [
           (parseFloat(props1.price) * parseFloat(configStore.tax)) / 100 +
-            parseFloat(props1.price),
+          parseFloat(props1.price),
         ],
         Cell: (props1) => {
           const { original } = props1.cell.row;
@@ -78,8 +78,8 @@ export const ProductListDetailPage = (props) => {
               {showPriceWithDecimals(
                 props.configGeneral,
                 (parseFloat(original.price) * parseFloat(configStore.tax)) /
-                  100 +
-                  parseFloat(original.price),
+                100 +
+                parseFloat(original.price),
                 2,
                 ",",
                 "."
@@ -296,9 +296,9 @@ export const ProductListDetailPage = (props) => {
       .then((result) => {
         toast.success(
           "Registros agregados con éxito : " +
-            result.data.positivo +
-            "\n registros no agregados : " +
-            result.data.negativo
+          result.data.positivo +
+          "\n registros no agregados : " +
+          result.data.negativo
         );
         fetchData();
       })

@@ -14,18 +14,18 @@ import {
 import InputField from 'components/input/InputComponent'
 import { toast } from 'react-toastify'
 import Table from 'components/Table'
-import 'styles/components/modalComponents.css'
+import 'styles/components/modalComponents.scss'
 let client_columns = null
 
 const ModalClientCotizacion = (props) => {
 
-  const [clientSelect,setClientSelect] = useState([])
+  const [clientSelect, setClientSelect] = useState([])
   const [disableButton, setDisableButton] = useState(false)
   useEffect(() => {
     return () => {
       client_columns = null
     }
-  },[])
+  }, [])
 
   useMemo(() => {
     client_columns = [
@@ -39,28 +39,28 @@ const ModalClientCotizacion = (props) => {
       },
       {
         Header: 'Documento',
-        accessor: props1 => [props1.type_document+' '+props1.data_document],
+        accessor: props1 => [props1.type_document + ' ' + props1.data_document],
         Cell: props1 => {
-          return (props1.cell.row.original.type_document+'\n'+props1.cell.row.original.data_document)
+          return (props1.cell.row.original.type_document + '\n' + props1.cell.row.original.data_document)
         }
       },
       {
         Header: 'Seleccione',
         Cell: props1 => {
           return (
-            <input type="checkbox" value={props1.cell.row.original.email}  onChange={addOrRemoveClient} className="checkTable" />
+            <input type="checkbox" value={props1.cell.row.original.email} onChange={addOrRemoveClient} className="checkTable" />
           )
         }
       }
     ]
-  },[])
+  }, [])
 
   const addOrRemoveClient = e => {
     e.persist()
-    if(e.target.checked){
-      setClientSelect( client => [...client,e.target.value])
-    }else{
-      setClientSelect( state => state.filter(v => v !== e.target.value) )
+    if (e.target.checked) {
+      setClientSelect(client => [...client, e.target.value])
+    } else {
+      setClientSelect(state => state.filter(v => v !== e.target.value))
     }
   }
 
@@ -76,17 +76,17 @@ const ModalClientCotizacion = (props) => {
   }
 
   const handleSubmit = () => {
-      props.handleClientSubmit([...clientSelect])
-      if(clientSelect.length > 0){
-        setClientSelect([])
-        descheck()
-        setDisableButton(true)
-        setTimeout(() => {
-          setDisableButton(false)
-        },5000)
-      }else{
-        toast.error('Debe seleccionar al menos 1 cliente')
-      }
+    props.handleClientSubmit([...clientSelect])
+    if (clientSelect.length > 0) {
+      setClientSelect([])
+      descheck()
+      setDisableButton(true)
+      setTimeout(() => {
+        setDisableButton(false)
+      }, 5000)
+    } else {
+      toast.error('Debe seleccionar al menos 1 cliente')
+    }
   }
 
   return (

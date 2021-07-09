@@ -8,9 +8,9 @@ import { formatNumber } from "utils/functions"
 import LoadingComponent from 'components/LoadingComponent'
 import layoutHelpers from 'shared/layouts/helpers'
 import InputField from 'components/input/InputComponent'
-import { FaSearch,FaChartArea } from "react-icons/fa";
-import { Doughnut, Bar }  from "react-chartjs-2" 
-import 'styles/components/modalComponents.css'
+import { FaSearch, FaChartArea } from "react-icons/fa";
+import { Doughnut, Bar } from "react-chartjs-2"
+import 'styles/components/modalComponents.scss'
 
 let paymentColumns = [];
 
@@ -28,11 +28,11 @@ let optionsBar = {
 
 let dataDonut = {
   labels: [],
-	datasets: [{
-		data: [],
-		backgroundColor: [],
-		hoverBackgroundColor: []
-	}]
+  datasets: [{
+    data: [],
+    backgroundColor: [],
+    hoverBackgroundColor: []
+  }]
 }
 
 let dataBar = {
@@ -53,84 +53,84 @@ let dataBar = {
 function PaymentAdminPage(props) {
   const [objectState, setObjectStates] = useState({
     payments: [],
-    isLoading : true,
-    filter : {
-      dateIni : "",
-      dateEnd : ""
+    isLoading: true,
+    filter: {
+      dateIni: "",
+      dateEnd: ""
     },
-    isOpenModal : false,
-    counts : [],
+    isOpenModal: false,
+    counts: [],
     amounts: [],
-    redraw : false
+    redraw: false
   })
 
   useEffect(() => {
     layoutHelpers.toggleCollapsed()
     fetchData();
-    return () =>{
+    return () => {
       layoutHelpers.toggleCollapsed()
     }
-  },[])
+  }, [])
 
   useEffect(() => {
-    if(objectState.counts.length) stadisticsHandler()
-  },[objectState.counts])
+    if (objectState.counts.length) stadisticsHandler()
+  }, [objectState.counts])
 
   paymentColumns = useMemo(() => {
     return [
       {
         Header: "Empresa",
-        accessor : props1 => [props1.enterprise.bussines_name]
+        accessor: props1 => [props1.enterprise.bussines_name]
       },
       {
-        Header : "Plan",
-        accessor : props1 => [props1.plan.name]
+        Header: "Plan",
+        accessor: props1 => [props1.plan.name]
       },
       {
-        Header : "Monto",
-        accessor : "amount",
-        Cell : props1 => <Badge variant="danger" className="font-badge">{ formatNumber(props1.cell.row.original.amount,2,",",".") }</Badge>
+        Header: "Monto",
+        accessor: "amount",
+        Cell: props1 => <Badge variant="danger" className="font-badge">{formatNumber(props1.cell.row.original.amount, 2, ",", ".")}</Badge>
       },
       {
-        Header : "Estado",
-        accessor : props1 => props1.status === 1 ? ["Pendiente"] : ["Pagada"]
+        Header: "Estado",
+        accessor: props1 => props1.status === 1 ? ["Pendiente"] : ["Pagada"]
       },
       {
-        Header : "Nº Factura",
-        accessor : "identifier"
+        Header: "Nº Factura",
+        accessor: "identifier"
       },
       {
-        Header : "Token Flow",
-        accessor : "tokenFlow"
+        Header: "Token Flow",
+        accessor: "tokenFlow"
       },
       {
-        Header : "Orden Flow",
-        accessor : "flowOrdenFlow",
+        Header: "Orden Flow",
+        accessor: "flowOrdenFlow",
       }
     ]
-  },[])
-  
+  }, [])
+
   const fetchData = () => {
-    axios.post(API_URL+"payment_invoices",{}).then(result => {
-      setObjectStates( currentData => {
-        return Object.assign({},currentData,{
-          payments: result.data.invoices,counts: result.data.counts, amounts : result.data.amounts,isLoading: false
-        })        
+    axios.post(API_URL + "payment_invoices", {}).then(result => {
+      setObjectStates(currentData => {
+        return Object.assign({}, currentData, {
+          payments: result.data.invoices, counts: result.data.counts, amounts: result.data.amounts, isLoading: false
+        })
       })
     }).catch(err => {
-      setObjectStates({ ...objectState, isLoading : false })
+      setObjectStates({ ...objectState, isLoading: false })
       props.tokenExpired(err)
     })
   }
 
   const onSubmitHandler = e => {
     e.preventDefault();
-    let objectPost = Object.assign({},objectState.filter);
-    setObjectStates({...objectState, isLoading : true})
-    axios.post(API_URL+"payment_invoices",objectPost).then(result =>{ 
-      setObjectStates({...objectState, isLoading : false, payments : result.data})
+    let objectPost = Object.assign({}, objectState.filter);
+    setObjectStates({ ...objectState, isLoading: true })
+    axios.post(API_URL + "payment_invoices", objectPost).then(result => {
+      setObjectStates({ ...objectState, isLoading: false, payments: result.data })
     }).catch(err => {
-      setObjectStates({...objectState, isLoading : false})
+      setObjectStates({ ...objectState, isLoading: false })
       props.tokenExpired(err)
     })
   }
@@ -138,16 +138,16 @@ function PaymentAdminPage(props) {
   const onChangeHandler = e => {
     e.persist()
     setObjectStates(currentData => {
-      return Object.assign({},currentData,{
-        filter : Object.assign({},currentData.filter,{
-          [e.target.name] : e.target.value
+      return Object.assign({}, currentData, {
+        filter: Object.assign({}, currentData.filter, {
+          [e.target.name]: e.target.value
         })
       })
     })
   }
 
   const displayModalHandler = () => {
-    setObjectStates({...objectState, isOpenModal : !objectState.isOpenModal})
+    setObjectStates({ ...objectState, isOpenModal: !objectState.isOpenModal })
   }
 
   const stadisticsHandler = () => {
@@ -170,15 +170,15 @@ function PaymentAdminPage(props) {
       dataBar.datasets[0].data.push(v.total)
     });
 
-    setObjectStates( currentState => Object.assign({},currentState, {redraw : true}))
+    setObjectStates(currentState => Object.assign({}, currentState, { redraw: true }))
     setTimeout(function () {
-      setObjectStates( currentState => Object.assign({},currentState,{redraw : false}))
+      setObjectStates(currentState => Object.assign({}, currentState, { redraw: false }))
     }, 1500);
   }
 
   return (
     <Container fluid>
-      { objectState.isLoading ? (
+      {objectState.isLoading ? (
         <LoadingComponent />
       ) : (
         <>
@@ -195,11 +195,11 @@ function PaymentAdminPage(props) {
               <Button variant="danger" size="sm" type="button" onClick={displayModalHandler}>Estadísticas <FaChartArea /></Button>
             </Col>
           </Row>
-          <hr/>
+          <hr />
           <Row>
             <Col>
               <Form onSubmit={onSubmitHandler}>
-                <Row> 
+                <Row>
                   <InputField
                     type="date"
                     name="dateIni"
@@ -208,7 +208,7 @@ function PaymentAdminPage(props) {
                     cols="col-md-4 col-sm-4 col-lg-4 col-xl-4 col-xs-4"
                     messageErrors={[]}
                     handleChange={onChangeHandler}
-                    value={objectState.filter.dateIni} 
+                    value={objectState.filter.dateIni}
                   />
                   <InputField
                     type="date"
@@ -218,7 +218,7 @@ function PaymentAdminPage(props) {
                     cols="col-md-4 col-sm-4 col-lg-4 col-xl-4 col-xs-4"
                     messageErrors={[]}
                     handleChange={onChangeHandler}
-                    value={objectState.filter.dateEnd} 
+                    value={objectState.filter.dateEnd}
                   />
                   <Col>
                     <br />
@@ -244,12 +244,12 @@ function PaymentAdminPage(props) {
       >
         <Modal.Header closeButton className="header_dark">
           <Modal.Title id="contained-modal-title-vcenter">
-              Estadísticas de las Facturas
-            </Modal.Title>
+            Estadísticas de las Facturas
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Row>
-            <Col style={{height: "200px", borderRight: "1px solid lightgray"}}>
+            <Col style={{ height: "200px", borderRight: "1px solid lightgray" }}>
               <h5>Total de facturas categorizado por estados</h5>
               <Doughnut data={dataDonut} redraw={objectState.redraw} options={optionsBar} />
             </Col>

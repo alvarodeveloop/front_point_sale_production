@@ -23,22 +23,22 @@ import * as moment from 'moment-timezone';
 import FileSaver from 'file-saver';
 import { s2ab } from 'utils/functions';
 
-import 'styles/components/modalComponents.css'
+import 'styles/components/modalComponents.scss'
 import { FaUser, FaFileExcel } from 'react-icons/fa'
 import { connect } from 'react-redux'
 import LoadingComponent from 'components/LoadingComponent'
 
 const ProviderPage = (props) => {
 
-  const [provider,setProvider] = useState([]);
+  const [provider, setProvider] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [directionRegister,setDirectionRegister] = useState('');
+  const [directionRegister, setDirectionRegister] = useState('');
   const [displayLoading, setDisplayLoading] = useState(true);
   const [countries, setCountries] = useState([]);
 
   useEffect(() => {
     fetchData(true);
-  },[props.id_enterprise]);
+  }, [props.id_enterprise]);
 
   const deleteRegister = id => {
     confirmAlert({
@@ -64,7 +64,7 @@ const ProviderPage = (props) => {
 
   const confirmDeleteRegister = id => {
     setDisplayLoading(true)
-    axios.delete(API_URL+'provider/'+id).then(result => {
+    axios.delete(API_URL + 'provider/' + id).then(result => {
       toast.success('Registro eliminado con éxito');
       fetchData();
     }).catch(err => {
@@ -74,19 +74,19 @@ const ProviderPage = (props) => {
   };
 
   const modifyRegister = id => {
-    props.history.replace('/provider/form/'+btoa(id))
+    props.history.replace('/provider/form/' + btoa(id))
   }
 
   const fetchData = (country = false) => {
     let promiseArray = [
-      axios.get(API_URL+'provider'),
+      axios.get(API_URL + 'provider'),
     ];
 
-    if(country) promiseArray.push(axios.get(API_URL+'country'));
+    if (country) promiseArray.push(axios.get(API_URL + 'country'));
 
     Promise.all(promiseArray).then(result => {
       setProvider(result[0].data);
-      if(country){
+      if (country) {
         setCountries(result[1].data);
       }
       setDisplayLoading(false)
@@ -101,7 +101,7 @@ const ProviderPage = (props) => {
   }
 
   const createRepresent = data => {
-    props.history.replace('/provider/represent/'+data.id)
+    props.history.replace('/provider/represent/' + data.id)
   }
 
   const onHide = () => {
@@ -109,21 +109,21 @@ const ProviderPage = (props) => {
   }
 
   const donwloandExcel = async () => {
-    window.open(API_URL+"documents/providers/cargar_proveedores.xlsx",'_blank') 
+    window.open(API_URL + "documents/providers/cargar_proveedores.xlsx", '_blank')
     let msgInfo = (
       <>
         <span>Debe llenar el excel con los datos y después cargar el archivo en la opción de cargar o editar proveedores</span>
-        <br/><br/>
+        <br /><br />
         <ul>
           <li>El campo razon social</li>
           <li>EL campo tipo identificación</li>
           <li>EL campo Id</li>
         </ul>
-        <span style={{marginTop: "-10px"}}>Son requeridos</span> <br/>
+        <span style={{ marginTop: "-10px" }}>Son requeridos</span> <br />
         <span>Si el tipo de identificación es rut debe ingresar el id con el guión para separar el dv</span>
       </>
     );
-    toast.info(msgInfo,{
+    toast.info(msgInfo, {
       autoClose: 15000,
     });
   }
@@ -138,27 +138,27 @@ const ProviderPage = (props) => {
     var name = f.name;
     const reader = new FileReader();
     reader.onload = (evt) => {
-        const bstr = evt.target.result;
-        const wb = XLSX.read(bstr, {type:'binary'});
-        const wsname = wb.SheetNames[0];
-        const ws = wb.Sheets[wsname];
-        const data = XLSX.utils.sheet_to_json(ws, {header:0});
-        handleRequestCreateExcel(data)
+      const bstr = evt.target.result;
+      const wb = XLSX.read(bstr, { type: 'binary' });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      const data = XLSX.utils.sheet_to_json(ws, { header: 0 });
+      handleRequestCreateExcel(data)
     };
     reader.readAsBinaryString(f);
   }
 
   const handleRequestCreateExcel = data => {
-    axios.post(API_URL+"provider_excel",{data}).then(result => {
-      toast.success("Registros importados con éxito : "+result.data.positivo+"\n registros no importados : "+result.data.negativo);
+    axios.post(API_URL + "provider_excel", { data }).then(result => {
+      toast.success("Registros importados con éxito : " + result.data.positivo + "\n registros no importados : " + result.data.negativo);
       fetchData();
     }).catch(err => {
       setDisplayLoading(false)
       props.tokenExpired(err)
-    });    
+    });
   };
 
-  const displayInputUpload = () =>{
+  const displayInputUpload = () => {
     document.getElementById('input-file-update').click();
   };
 
@@ -168,36 +168,36 @@ const ProviderPage = (props) => {
     var name = f.name;
     const reader = new FileReader();
     reader.onload = (evt) => {
-        const bstr = evt.target.result;
-        const wb = XLSX.read(bstr, {type:'binary'});
-        const wsname = wb.SheetNames[0];
-        const ws = wb.Sheets[wsname];
-        const data = XLSX.utils.sheet_to_json(ws, {header:0});
-        handleRequestEditExcel(data)
+      const bstr = evt.target.result;
+      const wb = XLSX.read(bstr, { type: 'binary' });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      const data = XLSX.utils.sheet_to_json(ws, { header: 0 });
+      handleRequestEditExcel(data)
     };
     reader.readAsBinaryString(f);
   };
 
   const handleRequestEditExcel = data => {
-    axios.put(API_URL+"provider_excel_edit",{data}).then(result => {
-      toast.success("Registros editados con éxito : "+result.data.positivo+"\n registros no editados : "+result.data.negativo)
+    axios.put(API_URL + "provider_excel_edit", { data }).then(result => {
+      toast.success("Registros editados con éxito : " + result.data.positivo + "\n registros no editados : " + result.data.negativo)
       fetchData(true);
     }).catch(err => {
-      console.log(err,"aqui el error");
+      console.log(err, "aqui el error");
       setDisplayLoading(false)
       props.tokenExpired(err)
-    });    
+    });
   };
 
   const exportDataExcel = () => {
 
-    if(!provider.length){
+    if (!provider.length) {
       toast.error('Error, no hay datos para realizar el excel')
-    }else{
+    } else {
       let wb = XLSX.utils.book_new()
-      let nameTitle  = `Proveedores la empresa (${props.configGeneral.enterprise.bussines_name})`;
+      let nameTitle = `Proveedores la empresa (${props.configGeneral.enterprise.bussines_name})`;
 
-      let bodyTable = [['Razón social',"Nombre fantasía",'Tipo de identificación','Id','País','Ciudad','Comuna','Giro','Teléfono','Dirección']];
+      let bodyTable = [['Razón social', "Nombre fantasía", 'Tipo de identificación', 'Id', 'País', 'Ciudad', 'Comuna', 'Giro', 'Teléfono', 'Dirección']];
       wb.Props = {
         Title: nameTitle,
         Subject: "Exportación de Proveedores",
@@ -207,7 +207,7 @@ const ProviderPage = (props) => {
       wb.SheetNames.push("Proveedores");
 
       provider.forEach((item, i) => {
-        
+
         let stringCountry = countries.find(v1 => v1.id === item.id_country).nombre;
         let typeId = item.type_id === 1 ? "Rut" : "Identificación Fiscal";
 
@@ -227,12 +227,12 @@ const ProviderPage = (props) => {
 
       var ws = XLSX.utils.aoa_to_sheet(bodyTable);
       wb.Sheets["Proveedores"] = ws;
-      var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+      var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
       let datos = s2ab(wbout)
-      FileSaver.saveAs(new Blob([datos],{type:"application/octet-stream"}), nameTitle+"/"+moment().format('DD-MM-YYYY')+'.xlsx')
+      FileSaver.saveAs(new Blob([datos], { type: "application/octet-stream" }), nameTitle + "/" + moment().format('DD-MM-YYYY') + '.xlsx')
     }
 
-  } 
+  }
 
   return (
     <>
@@ -245,20 +245,20 @@ const ProviderPage = (props) => {
           <Row>
             <Col sm={12} md={12} lg={12}>
               <h4 className="title_principal">Proveedores</h4>
-              <hr/>
+              <hr />
             </Col>
             <Col sm={3} md={3} lg={3} className="">
               <Button size="sm" title="Crear Proveedor" onClick={goToForm} variant="success" block={true}>Crear Proveedor <FaPlusCircle /></Button>
             </Col>
             <Col sm={3} md={3} lg={3} className="">
-              <DropdownButton size="sm" id={'dropExcel'} title={(<span>Operaciones Excel <FaFileExcel /></span>)} variant="success"  block="true">
+              <DropdownButton size="sm" id={'dropExcel'} title={(<span>Operaciones Excel <FaFileExcel /></span>)} variant="success" block="true">
                 <Dropdown.Item onClick={donwloandExcel}>Descargar plantilla excel</Dropdown.Item>
                 <Dropdown.Item onClick={exportDataExcel}>Exportar data</Dropdown.Item>
                 <Dropdown.Item onClick={displayInputFile}>Cargar Proveedores</Dropdown.Item>
                 <Dropdown.Item onClick={displayInputUpload}>Modificar Proveedores</Dropdown.Item>
               </DropdownButton>
-              <input type="file" style={{display: "none"}} id="input-file-create" onChange={uploadCreateExcel} />
-              <input type="file" style={{display: "none"}} id="input-file-update" onChange={uploadEditExcel} />
+              <input type="file" style={{ display: "none" }} id="input-file-create" onChange={uploadCreateExcel} />
+              <input type="file" style={{ display: "none" }} id="input-file-update" onChange={uploadEditExcel} />
             </Col>
             <Col sm={6} md={6} lg={6} xs={12} className="text-right">
               <h5 className="title_principal">Total Proveedores: <Badge variant="danger" className="font_badge">{provider.length}</Badge></h5>
@@ -303,8 +303,8 @@ const ProviderPage = (props) => {
                   Header: 'Acciones',
                   Cell: props => {
                     const id = props.cell.row.original.id
-                    return(
-                      <DropdownButton size="sm" id={'drop'+props.cell.row.original.id} drop="left" title="Seleccione"  block="true">
+                    return (
+                      <DropdownButton size="sm" id={'drop' + props.cell.row.original.id} drop="left" title="Seleccione" block="true">
                         <Dropdown.Item onClick={() => createRepresent(props.cell.row.original)}>Crear Representante</Dropdown.Item>
                         <Dropdown.Item onClick={() => modifyRegister(id)}>Modificar</Dropdown.Item>
                         <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
@@ -341,18 +341,18 @@ const ProviderPage = (props) => {
   )
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   return {
-    id_branch_office : state.enterpriseSucursal.id_branch_office,
-    id_enterprise : state.enterpriseSucursal.id_enterprise,
-    configGeneral : state.configs.config
+    id_branch_office: state.enterpriseSucursal.id_branch_office,
+    id_enterprise: state.enterpriseSucursal.id_enterprise,
+    configGeneral: state.configs.config
   }
 }
 
-ProviderPage.propTypes ={
+ProviderPage.propTypes = {
   id_branch_office: PropTypes.string.isRequired,
-  id_enterprise : PropTypes.string.isRequired,
-  configGeneral : PropTypes.object,
+  id_enterprise: PropTypes.string.isRequired,
+  configGeneral: PropTypes.object,
 }
 
-export default connect(mapStateToProps,{})(ProviderPage)
+export default connect(mapStateToProps, {})(ProviderPage)

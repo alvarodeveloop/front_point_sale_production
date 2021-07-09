@@ -24,7 +24,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import layoutHelpers from "shared/layouts/helpers";
 import * as moment from "moment-timezone";
 import { formatNumber } from "utils/functions";
-import "styles/components/modalComponents.css";
+import "styles/components/modalComponents.scss";
 import { connect } from "react-redux";
 import { Doughnut, Bar, Line } from "react-chartjs-2";
 import { ARRAY_COLORS } from "utils/constants";
@@ -311,8 +311,8 @@ const BuyOrderSearchPage = (props) => {
                         {v.status == 1
                           ? "Pendiente"
                           : v.status == 2
-                          ? "Pagado"
-                          : "Anulado"}
+                            ? "Pagado"
+                            : "Anulado"}
                       </li>
                     ))}
                   </ul>
@@ -639,10 +639,10 @@ const BuyOrderSearchPage = (props) => {
         dataForm:
           filter === 3
             ? {
-                ...currentState.dataForm,
-                date_desde: "",
-                date_hasta: "",
-              }
+              ...currentState.dataForm,
+              date_desde: "",
+              date_hasta: "",
+            }
             : currentState.dataForm,
         displayFilter: filter,
       });
@@ -1395,8 +1395,8 @@ const BuyOrderSearchPage = (props) => {
                             {v.status == 1
                               ? "Pendiente"
                               : v.status == 2
-                              ? "Pagado"
-                              : "Anulado"}
+                                ? "Pagado"
+                                : "Anulado"}
                           </td>
                         </tr>
                       ))}
@@ -1446,8 +1446,8 @@ const BuyOrderSearchPage = (props) => {
           </Row>
           <br />
           {Object.keys(globalState.cotizationDetail).length > 0 &&
-          globalState.cotizationDetail.referencias &&
-          globalState.cotizationDetail.referencias.length > 0 ? (
+            globalState.cotizationDetail.referencias &&
+            globalState.cotizationDetail.referencias.length > 0 ? (
             <Row>
               <Col sm={12} md={12} lg={12} className="">
                 <h4 className="title_principal text-center">
@@ -1477,8 +1477,8 @@ const BuyOrderSearchPage = (props) => {
                               <td>
                                 {v.date_ref
                                   ? moment(v.date_ref)
-                                      .tz("America/Santiago")
-                                      .format("DD-MM-YYYY")
+                                    .tz("America/Santiago")
+                                    .format("DD-MM-YYYY")
                                   : ""}
                               </td>
                               <td>{v.reason_ref}</td>

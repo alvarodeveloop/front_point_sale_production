@@ -1,33 +1,24 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import {
   Container,
   Row,
   Col,
   Button,
-  Dropdown,
-  DropdownButton,
   Badge,
   Modal,
   Form,
   Accordion,
   Card
 } from 'react-bootstrap'
-import 'styles/components/modalComponents.css'
+import 'styles/components/modalComponents.scss'
 import axios from 'axios'
 import { FaPlusCircle } from "react-icons/fa";
 import { API_URL } from 'utils/constants'
 import { toast } from 'react-toastify'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
-import Tooltip from 'react-bootstrap/Tooltip';
 import { confirmAlert } from 'react-confirm-alert'; // Import
-
-import { connect } from 'react-redux'
-import {formatNumber} from 'utils/functions'
-import layoutHelpers from 'shared/layouts/helpers'
 import EnterpriseCardComponent from 'components/EnterpriseCardComponent'
-import 'styles/pages/enterprisePage.css'
+import 'styles/pages/enterprisePage.scss'
 import TablePlansComponent from 'components/TablePlansComponent'
 import LoadingComponent from 'components/LoadingComponent'
 
@@ -36,15 +27,15 @@ const EnterprisePage = (props) => {
   const [enterprises, setEnterprises] = useState([])
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [modulesPlan, setModulesPlan] = useState([])
-  const [enterpriseDetail,setEnterpriseDetail] = useState({})
+  const [enterpriseDetail, setEnterpriseDetail] = useState({})
   const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     fetchData()
-  },[])
+  }, [])
 
   const fetchData = () => {
-    axios.get(API_URL+'enterprise').then(result => {
+    axios.get(API_URL + 'enterprise').then(result => {
       setEnterprises(result.data)
       setDisplayLoading(false)
     }).catch(err => {
@@ -54,7 +45,7 @@ const EnterprisePage = (props) => {
   }
 
   const modifyRegister = data => {
-    props.history.replace('/enterprise/form/'+data.id)
+    props.history.replace('/enterprise/form/' + data.id)
   }
 
   const deleteRegister = id => {
@@ -82,7 +73,7 @@ const EnterprisePage = (props) => {
 
   const confirmDeleteRegister = id => {
     setDisplayLoading(true)
-    axios.delete(API_URL+'enterprise/'+id).then(result => {
+    axios.delete(API_URL + 'enterprise/' + id).then(result => {
       toast.success('Proceso completado')
       fetchData()
     }).catch(err => {
@@ -106,7 +97,7 @@ const EnterprisePage = (props) => {
 
   const displayDetails = enterpriseData => {
     setEnterpriseDetail(enterpriseData)
-    console.log(enterpriseData,'aqui');
+    console.log(enterpriseData, 'aqui');
     setTimeout(function () {
       handleModal()
     }, 200);
@@ -130,11 +121,11 @@ const EnterprisePage = (props) => {
               <Badge variant="danger">{enterprises.length}</Badge>
             </Col>
           </Row>
-          <hr/>
+          <hr />
           <Row className="justify-content-center">
             <Col sm={12} md={12} lg={12}>
               <Row className="justify-content-center">
-                {enterprises.map((v,i) => (
+                {enterprises.map((v, i) => (
                   <Col sm={4} md={4} lg={4} key={i} className="text-center mb-4">
                     <EnterpriseCardComponent
                       enterprise={v}
@@ -153,7 +144,7 @@ const EnterprisePage = (props) => {
             size="xl"
             aria-labelledby="contained-modal-title-vcenter"
             centered
-            style={{zIndex: '1000000'}}
+            style={{ zIndex: '1000000' }}
           >
             <Modal.Header closeButton className="header_dark">
               <Modal.Title id="contained-modal-title-vcenter">
@@ -162,7 +153,7 @@ const EnterprisePage = (props) => {
             </Modal.Header>
             <Modal.Body>
               <Row className=" justify-content-center">
-                <Col sm={5} md={5} lg={5} style={{textAligment: "justify"}}>
+                <Col sm={5} md={5} lg={5} style={{ textAligment: "justify" }}>
                   <h4 className="title_principal">Datos de la Empresa</h4>
                   <ul>
                     <li className="str"><b>Rut</b>: {Object.keys(enterpriseDetail).length > 0 ? enterpriseDetail.rut : ''}</li>
@@ -189,7 +180,7 @@ const EnterprisePage = (props) => {
                   </Row>
                 </Col>
                 <Col sm={12} md={12} lg={12}>
-                  <br/><br/>
+                  <br /><br />
                   {Object.keys(enterpriseDetail).length > 0 ? (
                     <Accordion>
                       <Card>
@@ -199,17 +190,17 @@ const EnterprisePage = (props) => {
                         <Accordion.Collapse eventKey="0">
                           <Card.Body>
                             <Row>
-                              {enterpriseDetail.plan.modules.map((v,i) => (
+                              {enterpriseDetail.plan.modules.map((v, i) => (
                                 <Col sm={4} md={4} lg={4} xs={6} key={i}>
                                   <Form.Group>
                                     <Form.Check type="checkbox"
                                       custom
-                                      id={v.name_item+v.id}
+                                      id={v.name_item + v.id}
                                       label={(<span className="">{v.name_item}</span>)}
                                       value={v.id}
                                       checked={true}
                                       readOnly={true}
-                                      />
+                                    />
                                   </Form.Group>
                                 </Col>
                               ))}
@@ -218,7 +209,7 @@ const EnterprisePage = (props) => {
                         </Accordion.Collapse>
                       </Card>
                     </Accordion>
-                  ): ''}
+                  ) : ''}
                 </Col>
               </Row>
             </Modal.Body>

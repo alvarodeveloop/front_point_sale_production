@@ -13,7 +13,7 @@ import {
 import InputField from "components/input/InputComponent";
 import { FaCheckCircle, FaTrash } from "react-icons/fa";
 import { API_URL } from "utils/constants";
-import "styles/components/modalComponents.css";
+import "styles/components/modalComponents.scss";
 import { formatRut } from "utils/functions";
 import { toast } from "react-toastify";
 import axios from "axios";

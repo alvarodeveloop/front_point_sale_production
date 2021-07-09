@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Autocomplete from 'react-autocomplete'
 import { FaSearch } from 'react-icons/fa'
-import 'styles/components/autoComplete.css'
+import 'styles/components/autoComplete.scss'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 

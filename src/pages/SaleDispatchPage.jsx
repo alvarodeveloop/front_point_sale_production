@@ -1,4 +1,4 @@
-import React, {useState,useMemo,useEffect} from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
 import {
@@ -20,8 +20,8 @@ import ModalDetailSale from 'components/modals/ModalDetailSale'
 import * as moment from 'moment-timezone'
 import { showPriceWithDecimals } from 'utils/functions'
 import InputField from 'components/input/InputComponent'
-import 'styles/components/modalComponents.css'
-import {Doughnut} from 'react-chartjs-2';
+import 'styles/components/modalComponents.scss'
+import { Doughnut } from 'react-chartjs-2';
 import { ARRAY_COLORS } from 'utils/constants'
 import { connect } from 'react-redux'
 import layoutHelpers from 'shared/layouts/helpers'
@@ -44,34 +44,34 @@ let optionsBar = {
 }
 
 let data_donut_ss_status = {
-	labels: [],
-	datasets: [{
-		data: [],
-		backgroundColor: [],
-		hoverBackgroundColor: []
-	}]
+  labels: [],
+  datasets: [{
+    data: [],
+    backgroundColor: [],
+    hoverBackgroundColor: []
+  }]
 };
 
 const SaleDispatchPage = (props) => {
 
   const [displayLoading, setDisplayLoading] = useState(true)
-  const [sales,setSales] = useState([])
-  const [isOpenSolvedSale,setIsOpenSolvedSale] = useState(false)
+  const [sales, setSales] = useState([])
+  const [isOpenSolvedSale, setIsOpenSolvedSale] = useState(false)
   const [saleDataOption, setSaleDataOption] = useState({})
-  const [isOpenDetailSale,setIsOpenDetailSale] = useState(false)
-  const [isOpenStatusDispatch,setIsOpenStatusDispatch] = useState(false)
-  const [formStatus,setFormStatus] = useState({
+  const [isOpenDetailSale, setIsOpenDetailSale] = useState(false)
+  const [isOpenStatusDispatch, setIsOpenStatusDispatch] = useState(false)
+  const [formStatus, setFormStatus] = useState({
     status_dispatch: '',
     description_dispatch: '',
-    dispatch : {}
+    dispatch: {}
   })
   const [validated, setValidated] = useState(false)
-  const [redraw,setRedraw] = useState(false)
-  const [stadistics,setStadistics] = useState([])
+  const [redraw, setRedraw] = useState(false)
+  const [stadistics, setStadistics] = useState([])
   const [isOpenModalAction, setIsOpenModalAction] = useState(false)
   const [dispatchUpdate, setDispatchUpdate] = useState(null)
 
-  useEffect(() =>{
+  useEffect(() => {
     /*if(!props.config || !props.configStore){
       if(!props.config){
         toast.error('Error, debe hacer su configuración general')
@@ -88,135 +88,135 @@ const SaleDispatchPage = (props) => {
     }*/
     fetchData()
     layoutHelpers.toggleCollapsed()
-    return () =>{
+    return () => {
       layoutHelpers.toggleCollapsed()
       saleColumns = []
       resetChartData()
     }
-  },[props.id_branch_office])
+  }, [props.id_branch_office])
 
   useEffect(() => {
     handleDataDonutSsStatus()
     setTimeout(function () {
       setRedraw(false)
     }, 3000);
-  },[stadistics])
+  }, [stadistics])
 
-  useMemo(() =>{
+  useMemo(() => {
     saleColumns = [
-        {
-          Header: 'Referencia',
-          accessor: 'ref',
-          Cell: props1 => {
-            const original = props1.cell.row.original
+      {
+        Header: 'Referencia',
+        accessor: 'ref',
+        Cell: props1 => {
+          const original = props1.cell.row.original
+          return (
+            <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para cambiar el status</Tooltip>}>
+              <Button variant="link" size="sm" onClick={() => openModalStatusDispatch(original)}>{original.ref}</Button>
+            </OverlayTrigger>
+          )
+        }
+      },
+      {
+        Header: 'Cliente',
+        accessor: props1 => props1.client ? [props1.client.name_client + ' ' + props1.client.data_document] : [],
+
+      },
+      {
+        Header: 'Total',
+        accessor: 'total',
+        Cell: props1 => {
+          return props.config ? props.config.simbolo_moneda + showPriceWithDecimals(props.config, props1.cell.row.original.total) : "";
+        }
+      },
+      {
+        Header: 'Status de Entrega',
+        accessor: props1 => {
+          if (props1.status_dispatch == 1) {
+            return ['Sin entregar']
+          } else if (props1.status_dispatch == 2) {
+            return ['Entregado']
+          } else if (props1.status_dispatch == 3) {
+            return ['Se llevo sin recepción']
+          } else if (props1.status_dispatch == 4) {
+            return ['Retiro en Local']
+          } else if (props1.status_dispatch == 5) {
+            return ['Anulado']
+          } else {
+            return ['Otro']
+          }
+
+        },
+        Cell: props1 => {
+
+          const original = props1.cell.row.original
+          let val_status = ''
+          if (original.status_dispatch == 1) {
+            val_status = 'Sin entregar'
+          } else if (original.status_dispatch == 2) {
+            val_status = 'Entregado'
+          } else if (original.status_dispatch == 3) {
+            val_status = 'Se llevo sin recepción'
+          } else if (original.status_dispatch == 4) {
+            val_status = 'Retiro en Local'
+          } else if (original.status_dispatch == 5) {
+            val_status = 'Anulado'
+          } else {
+            val_status = 'Otro'
+          }
+
+          if (original.status_dispatch >= 5) {
             return (
-              <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para cambiar el status</Tooltip>}>
-                <Button variant="link" size="sm" onClick={() => openModalStatusDispatch(original) }>{original.ref}</Button>
-              </OverlayTrigger>
+              <React.Fragment>
+                <Badge variant="danger" className="font-badge">{val_status}</Badge>
+                <br />
+                <b>Motivo:</b> {original.description_dispatch}
+              </React.Fragment>
             )
-          }
-        },
-        {
-          Header: 'Cliente',
-          accessor: props1 => props1.client ? [props1.client.name_client+' '+props1.client.data_document] : [],
-
-        },
-        {
-          Header: 'Total',
-          accessor: 'total',
-          Cell: props1 => {
-            return props.config ? props.config.simbolo_moneda+showPriceWithDecimals(props.config,props1.cell.row.original.total) : "";
-          }
-        },
-        {
-          Header: 'Status de Entrega',
-          accessor: props1 => {
-            if(props1.status_dispatch == 1){
-              return ['Sin entregar']
-            }else if(props1.status_dispatch == 2){
-              return ['Entregado']
-            }else if(props1.status_dispatch == 3){
-              return ['Se llevo sin recepción']
-            }else if(props1.status_dispatch == 4){
-              return ['Retiro en Local']
-            }else if(props1.status_dispatch == 5){
-              return ['Anulado']
-            }else{
-              return ['Otro']
-            }
-
-          },
-          Cell: props1 => {
-
-            const original = props1.cell.row.original
-            let val_status = ''
-            if(original.status_dispatch == 1){
-              val_status = 'Sin entregar'
-            }else if(original.status_dispatch == 2){
-              val_status = 'Entregado'
-            }else if(original.status_dispatch == 3){
-              val_status = 'Se llevo sin recepción'
-            }else if(original.status_dispatch == 4){
-              val_status = 'Retiro en Local'
-            }else if(original.status_dispatch == 5){
-              val_status = 'Anulado'
-            }else{
-              val_status = 'Otro'
-            }
-
-            if(original.status_dispatch >= 5){
-              return (
-                <React.Fragment>
-                  <Badge variant="danger" className="font-badge">{val_status}</Badge>
-                  <br/>
-                  <b>Motivo:</b> {original.description_dispatch}
-                </React.Fragment>
-              )
-            }else{
-              return (<Badge variant="danger" className="font-badge">{val_status}</Badge>)
-            }
-          }
-        },
-        {
-          Header: 'Status de Pago',
-          accessor: props1 => {
-            if(props1.status_payment_dispatch == 1){
-              return ['En espera']
-            }else if(props1.status_payment_dispatch == 2){
-              return ['Pedido Guardado']
-            }else if(props1.status_payment_dispatch == 3){
-              return ['Pagado']
-            }else if(props1.status_payment_dispatch == 4){
-              return ['Anulado']
-            }
-          },
-          Cell: props1 => {
-            const original = props1.cell.row.original
-            let val = ''
-            if(original.status_payment_dispatch == 1){
-              val = 'En espera'
-            }else if(original.status_payment_dispatch == 2){
-              val = 'Pedido Guardado'
-            }else if(original.status_payment_dispatch == 3){
-              val = 'Pagado'
-            }else if(original.status_payment_dispatch == 4){
-              val = 'Anulado'
-            }
-            return ( <Badge variant="secondary" className="font-badge">{val}</Badge>)
-          }
-        },
-        {
-          Header: 'Fecha',
-          accessor: props1 => [moment(props.createdAt).format('DD-MM-YYYY')],
-        },
-        {
-          Header: 'Acciones',
-          Cell: props1 =>{
-            const { original } = props1.cell.row
-            return (<Button variant="primary" block={true} size="sm" onClick={() => actionsDispatchHandler(original)}>Acciones</Button>)
+          } else {
+            return (<Badge variant="danger" className="font-badge">{val_status}</Badge>)
           }
         }
-      ]
+      },
+      {
+        Header: 'Status de Pago',
+        accessor: props1 => {
+          if (props1.status_payment_dispatch == 1) {
+            return ['En espera']
+          } else if (props1.status_payment_dispatch == 2) {
+            return ['Pedido Guardado']
+          } else if (props1.status_payment_dispatch == 3) {
+            return ['Pagado']
+          } else if (props1.status_payment_dispatch == 4) {
+            return ['Anulado']
+          }
+        },
+        Cell: props1 => {
+          const original = props1.cell.row.original
+          let val = ''
+          if (original.status_payment_dispatch == 1) {
+            val = 'En espera'
+          } else if (original.status_payment_dispatch == 2) {
+            val = 'Pedido Guardado'
+          } else if (original.status_payment_dispatch == 3) {
+            val = 'Pagado'
+          } else if (original.status_payment_dispatch == 4) {
+            val = 'Anulado'
+          }
+          return (<Badge variant="secondary" className="font-badge">{val}</Badge>)
+        }
+      },
+      {
+        Header: 'Fecha',
+        accessor: props1 => [moment(props.createdAt).format('DD-MM-YYYY')],
+      },
+      {
+        Header: 'Acciones',
+        Cell: props1 => {
+          const { original } = props1.cell.row
+          return (<Button variant="primary" block={true} size="sm" onClick={() => actionsDispatchHandler(original)}>Acciones</Button>)
+        }
+      }
+    ]
   })
 
   const handleDataDonutSsStatus = () => {
@@ -234,9 +234,9 @@ const SaleDispatchPage = (props) => {
 
   }
 
-  const  storageDispatch = data => {
+  const storageDispatch = data => {
     setDisplayLoading(true)
-    axios.put(API_URL+'sale_storage_dispatch/'+data.id).then(result =>{
+    axios.put(API_URL + 'sale_storage_dispatch/' + data.id).then(result => {
       toast.success('Despacho Guardado')
       handleModalActions()
       resetChartData()
@@ -249,34 +249,34 @@ const SaleDispatchPage = (props) => {
 
   const openModalStatusDispatch = (data) => {
     handleOnHideFormStatus()
-    setFormStatus({...formStatus, dispatch: data})
+    setFormStatus({ ...formStatus, dispatch: data })
   }
 
   const onChangeStatusDispatch = e => {
-    if(parseInt(e.target.value,10) < 5){
-      setFormStatus({...formStatus, [e.target.name] : e.target.value, description_dispatch: ''})
-    }else{
-      setFormStatus({...formStatus, [e.target.name] : e.target.value})
+    if (parseInt(e.target.value, 10) < 5) {
+      setFormStatus({ ...formStatus, [e.target.name]: e.target.value, description_dispatch: '' })
+    } else {
+      setFormStatus({ ...formStatus, [e.target.name]: e.target.value })
     }
   }
 
   const printInvoice = datos => {
-    let params = "/"+datos.ref;
+    let params = "/" + datos.ref;
     setDisplayLoading(true)
-    axios.get(API_URL+"sale_print_invoice_history/"+datos.ref).then(result => {
-      if(datos.voucher){
-        
-        axios.get(API_URL+'invoice_print/'+result.data.id+"/2/2").then(result => {
-          window.open(API_URL+'documents/sale_note/files_pdf/'+result.data.name)
+    axios.get(API_URL + "sale_print_invoice_history/" + datos.ref).then(result => {
+      if (datos.voucher) {
+
+        axios.get(API_URL + 'invoice_print/' + result.data.id + "/2/2").then(result => {
+          window.open(API_URL + 'documents/sale_note/files_pdf/' + result.data.name)
           setDisplayLoading(false)
         }).catch(err => {
           setDisplayLoading(false)
           props.tokenExpired(err)
         })
 
-      }else{
+      } else {
         setDisplayLoading(false)
-        window.open(result.data.pdf_public_url_bill,"_blank")
+        window.open(result.data.pdf_public_url_bill, "_blank")
       }
     }).catch(error => {
       setDisplayLoading(false)
@@ -296,12 +296,12 @@ const SaleDispatchPage = (props) => {
 
   const fetchData = () => {
     let promise = [
-      axios.get(API_URL+'sale_by_dispatch'),
-      axios.get(API_URL+'sale_dispatch_stadistics'),
+      axios.get(API_URL + 'sale_by_dispatch'),
+      axios.get(API_URL + 'sale_dispatch_stadistics'),
     ]
 
     Promise.all(promise).then(result => {
-      console.log(result[0].data,'aqui flaco malvado');
+      console.log(result[0].data, 'aqui flaco malvado');
       setSales(result[0].data)
       setStadistics(result[1].data.delivery)
       setDisplayLoading(false)
@@ -313,7 +313,7 @@ const SaleDispatchPage = (props) => {
 
   const handleOnhideSaleFiao = (isPost = false) => {
     setIsOpenSolvedSale(false)
-    if(isPost){
+    if (isPost) {
       handleModalActions()
       resetChartData()
       fetchData()
@@ -343,9 +343,9 @@ const SaleDispatchPage = (props) => {
       return
     }
 
-    let data = Object.assign({},formStatus)
+    let data = Object.assign({}, formStatus)
     setDisplayLoading(true)
-    axios.put(API_URL+'sale_dispatch_status_delivery/'+data.dispatch.id,data).then(result => {
+    axios.put(API_URL + 'sale_dispatch_status_delivery/' + data.dispatch.id, data).then(result => {
       toast.success('Status Modificado')
       cleanFormStatusDelivery()
       handleOnHideFormStatus()
@@ -368,11 +368,11 @@ const SaleDispatchPage = (props) => {
   const resetChartData = () => {
     data_donut_ss_status = {
       labels: [],
-    	datasets: [{
-    		data: [],
-    		backgroundColor: [],
-    		hoverBackgroundColor: []
-    	}]
+      datasets: [{
+        data: [],
+        backgroundColor: [],
+        hoverBackgroundColor: []
+      }]
     }
   }
 
@@ -389,10 +389,10 @@ const SaleDispatchPage = (props) => {
           <h4 className="title_principal">Tabla de Despachos</h4>
         </Col>
         <Col sm={8} md={8} lg={8}>
-          <Doughnut data={data_donut_ss_status} redraw={redraw} options={optionsBar}/>
+          <Doughnut data={data_donut_ss_status} redraw={redraw} options={optionsBar} />
         </Col>
       </Row>
-      <hr/>
+      <hr />
       {displayLoading ? (
         <LoadingComponent />
       ) : (
@@ -410,16 +410,16 @@ const SaleDispatchPage = (props) => {
         dataToPay={saleDataOption}
         isDispatch={true}
       />
-    {props.config && props.configStore ? (
-      <ModalDetailSale
-        isShow={isOpenDetailSale}
-        onHide={() => setIsOpenDetailSale(false) }
-        config={props.config}
-        configStore={props.configStore}
-        dataSale={saleDataOption}
-        isDispatch={true}
+      {props.config && props.configStore ? (
+        <ModalDetailSale
+          isShow={isOpenDetailSale}
+          onHide={() => setIsOpenDetailSale(false)}
+          config={props.config}
+          configStore={props.configStore}
+          dataSale={saleDataOption}
+          isDispatch={true}
         />
-    ) : ''}
+      ) : ''}
       <Modal
         show={isOpenStatusDispatch}
         onHide={handleOnHideFormStatus}
@@ -468,15 +468,15 @@ const SaleDispatchPage = (props) => {
                     value={formStatus.description_dispatch}
                     handleChange={onChangeStatusDispatch}
                     messageErrors={[]}
-                    />
+                  />
                 </Row>
               ) : ''
             }
 
           </Modal.Body>
           <Modal.Footer>
-            <Button  variant="primary" type="submit">Guardar</Button>
-            <Button  variant="danger" onClick={handleOnHideFormStatus}>Cerrar</Button>
+            <Button variant="primary" type="submit">Guardar</Button>
+            <Button variant="danger" onClick={handleOnHideFormStatus}>Cerrar</Button>
           </Modal.Footer>
         </Form>
       </Modal>
@@ -515,7 +515,7 @@ const SaleDispatchPage = (props) => {
                   <Button block={true} size="sm" variant="secondary" onClick={() => seeDetails(dispatchUpdate)} >Ver detalles</Button>
                 </Col>
                 <Col sm={3} md={3} lg={3} xl={3}>
-                  <Button block={true} variant="secondary" size="sm" onClick={() => openModalStatusDispatch(dispatchUpdate) } >Cambiar Status de Entrega</Button>
+                  <Button block={true} variant="secondary" size="sm" onClick={() => openModalStatusDispatch(dispatchUpdate)} >Cambiar Status de Entrega</Button>
                 </Col>
               </Row>
             </>
@@ -529,20 +529,20 @@ const SaleDispatchPage = (props) => {
   )
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   return {
-    id_branch_office : state.enterpriseSucursal.id_branch_office,
-    id_enterprise : state.enterpriseSucursal.id_enterprise,
+    id_branch_office: state.enterpriseSucursal.id_branch_office,
+    id_enterprise: state.enterpriseSucursal.id_enterprise,
     config: state.configs.config,
     configStore: state.configs.configStore,
   }
 }
 
-SaleDispatchPage.propTypes ={
+SaleDispatchPage.propTypes = {
   id_branch_office: PropTypes.string.isRequired,
-  id_enterprise : PropTypes.string.isRequired,
+  id_enterprise: PropTypes.string.isRequired,
   config: PropTypes.object,
   configStore: PropTypes.object,
 }
 
-export default connect(mapStateToProps,{})(SaleDispatchPage)
+export default connect(mapStateToProps, {})(SaleDispatchPage)

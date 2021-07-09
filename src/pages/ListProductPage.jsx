@@ -10,117 +10,117 @@ import { toast } from 'react-toastify';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import { connect } from 'react-redux'
 import { showPriceWithDecimals, formatNumber } from 'utils/functions'
-import 'styles/components/modalComponents.css'
+import 'styles/components/modalComponents.scss'
 
 let listColumns = [];
 let productArrayCopy = []; // array para limpiar la data cuando haga post y los productos vuelvan a ser los productos originales
 let productArrayCopy2 = []; // arreglo para modificar los precios y usarlos en el forEach del post
 
-const ListProductPage = (props) =>{
+const ListProductPage = (props) => {
   const [listData, setListData] = useState([]);
   const [displayLoading, setDisplayLoading] = useState(true)
   const [validate, setValidated] = useState(false)
   const [products, setProducts] = useState([])
   const [productsDetail, setProductsDetail] = useState([])
   const [isShowModal, setIsShowModal] = useState(false)
-  const [configStore, setConfigStore] = useState({tax : 19})
-  const [ dataForm, setDataForm ] = useState({
-    name : "",
-    status : true,
-    id : ""
-  }) 
+  const [configStore, setConfigStore] = useState({ tax: 19 })
+  const [dataForm, setDataForm] = useState({
+    name: "",
+    status: true,
+    id: ""
+  })
 
   const inputRef = useRef(null)
 
   useEffect(() => {
-    if(!displayLoading){
+    if (!displayLoading) {
       setDisplayLoading(true)
     }
     fetchData(true);
-  },[props.id_branch_office,props.id_enterprise])
+  }, [props.id_branch_office, props.id_enterprise])
 
   listColumns = useMemo(() => {
     return [
       {
-        Header : "Nombre",
+        Header: "Nombre",
         accessor: "name"
       },
       {
-        Header : "Estado",
+        Header: "Estado",
         accessor: props1 => props1.status ? ["Activa"] : ["Desactivada"]
       },
       {
-        Header : "Cantidad Productos",
+        Header: "Cantidad Productos",
         accesor: props1 => [props1.details.length],
-        Cell : props1 => {
+        Cell: props1 => {
           const { original } = props1.cell.row
           return (
             <OverlayTrigger placement={'right'} overlay={
               <Tooltip id="tooltip-disabled2">
-                {original.details.map((v,i) => (
+                {original.details.map((v, i) => (
                   <ul className="list-group">
                     <li className="list-group-item">
-                      <b>Producto: </b> 
+                      <b>Producto: </b>
                       {v.products.name_product}
-                      <br/>
+                      <br />
                       <b>Precio: </b>{v.price}
                     </li>
                   </ul>
                 ))}
               </Tooltip>}>
-                <Badge variant="danger" className="font-badge">{original.details.length}</Badge>
-              </OverlayTrigger> 
+              <Badge variant="danger" className="font-badge">{original.details.length}</Badge>
+            </OverlayTrigger>
           )
         }
       },
       {
-        Header : "Acciones",
-        Cell : props1 => {
+        Header: "Acciones",
+        Cell: props1 => {
           const { original } = props1.cell.row
-          return ( 
-            <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione" drop="left" block="true">
-              <Dropdown.Item onClick={() => {updateListHandler(original)}}>Modificar</Dropdown.Item>
-              <Dropdown.Item onClick={() => {addDetailHandler(original)}}>Agregar Detalles</Dropdown.Item>
-              <Dropdown.Item onClick={() => {destroyListHandler(original)}}>Eliminar</Dropdown.Item>
+          return (
+            <DropdownButton size="sm" id={'drop' + original.id} title="Seleccione" drop="left" block="true">
+              <Dropdown.Item onClick={() => { updateListHandler(original) }}>Modificar</Dropdown.Item>
+              <Dropdown.Item onClick={() => { addDetailHandler(original) }}>Agregar Detalles</Dropdown.Item>
+              <Dropdown.Item onClick={() => { destroyListHandler(original) }}>Eliminar</Dropdown.Item>
             </DropdownButton>
           )
         }
       }
     ]
-  },[])
+  }, [])
 
   let productColumns = useMemo(() => {
     return [
       {
-        Header : "Producto",
-        accessor : "name_product"
+        Header: "Producto",
+        accessor: "name_product"
       },
       {
-        Header : "Precio",
-        accessor : props1 => [props1.price],
-        Cell : props1 => {
+        Header: "Precio",
+        accessor: props1 => [props1.price],
+        Cell: props1 => {
           const original = props1.cell.row.original;
           let price1 = original.price
           return (
-            <input 
-            className="form-control text-center" 
-            type="text" 
-            value={price1}
-            onChange={(e) => onChangePriceTableHandler(props1.row.id,e,original.id)} />
-          ) 
+            <input
+              className="form-control text-center"
+              type="text"
+              value={price1}
+              onChange={(e) => onChangePriceTableHandler(props1.row.id, e, original.id)} />
+          )
         }
       },
       {
-        Header : "Precio con iva",
-        accessor : props1 => [ (( parseFloat(props1.price) * parseFloat(configStore.tax)) / 100) + parseFloat(props1.price)],
-        Cell : props1 => {
+        Header: "Precio con iva",
+        accessor: props1 => [((parseFloat(props1.price) * parseFloat(configStore.tax)) / 100) + parseFloat(props1.price)],
+        Cell: props1 => {
           const { original } = props1.cell.row
-          return (<Badge variant="danger" className="font-badge">{showPriceWithDecimals(props.configGeneral,(( parseFloat(original.price) * parseFloat(configStore.tax)) / 100) + parseFloat(original.price),2,",",".")} {props.configGeneral ? props.configGeneral.simbolo_moneda : "" }</Badge>)
+          return (<Badge variant="danger" className="font-badge">{showPriceWithDecimals(props.configGeneral, ((parseFloat(original.price) * parseFloat(configStore.tax)) / 100) + parseFloat(original.price), 2, ",", ".")} {props.configGeneral ? props.configGeneral.simbolo_moneda : ""}</Badge>)
         }
       },
       {
-        Header : "Seleccionar",
-        Cell : props1 => {
+        Header: "Seleccionar",
+        Cell: props1 => {
           const { original } = props1.cell.row
           return (
             <div>
@@ -134,21 +134,21 @@ const ListProductPage = (props) =>{
       }
     ];
   }, [productsDetail])
-  
+
 
   const fetchData = (type = false) => {
     let promises = [
-      axios.get(API_URL+"listProduct"),
+      axios.get(API_URL + "listProduct"),
     ]
-    if(type){
+    if (type) {
       promises.push(
-        axios.get(API_URL+"product"),
-        axios.get(API_URL+"config_store"),
+        axios.get(API_URL + "product"),
+        axios.get(API_URL + "config_store"),
       )
     }
     Promise.all(promises).then(result => {
       setListData(result[0].data);
-      if(type){
+      if (type) {
         setProducts(result[1].data);
         productArrayCopy = result[1].data;
         productArrayCopy2 = result[1].data;
@@ -162,14 +162,14 @@ const ListProductPage = (props) =>{
   }
 
   const updateListHandler = (data) => {
-    setDataForm({...dataForm, name: data.name, status : data.status, id: data.id})
+    setDataForm({ ...dataForm, name: data.name, status: data.status, id: data.id })
     inputRef.current.focus()
   }
 
   const addDetailHandler = (data) => {
-    props.history.replace("/product/listProduct/"+data.id)
+    props.history.replace("/product/listProduct/" + data.id)
   }
-  
+
   const destroyListHandler = (data) => {
     confirmAlert({
       customUI: ({ onClose }) => {
@@ -194,7 +194,7 @@ const ListProductPage = (props) =>{
 
   const confirmDestroyHandler = (id) => {
     setDisplayLoading(true)
-    axios.delete(API_URL+"listProduct/"+id).then(result => {
+    axios.delete(API_URL + "listProduct/" + id).then(result => {
       toast.success(`Lista eliminada con éxito`);
       setListData(currentData => currentData.filter(v => v.id != id));
       setDisplayLoading(false)
@@ -205,7 +205,7 @@ const ListProductPage = (props) =>{
   }
 
   const onChangeHandler = e => {
-    setDataForm({...dataForm, [e.target.name] : e.target.name === "status" ? e.target.checked : e.target.value})
+    setDataForm({ ...dataForm, [e.target.name]: e.target.name === "status" ? e.target.checked : e.target.value })
   }
 
   const onSubmitHanldle = e => {
@@ -216,29 +216,29 @@ const ListProductPage = (props) =>{
       setValidated(true);
       return
     }
-    if(dataForm.id){
+    if (dataForm.id) {
       confirmSubmitHandler();
-    }else{
+    } else {
       onHideModalHandler();
     }
   }
 
   const confirmSubmitHandler = () => {
-    
-    let objectPost = Object.assign({},dataForm,{
-      productsList : productsDetail.map(v => {
+
+    let objectPost = Object.assign({}, dataForm, {
+      productsList: productsDetail.map(v => {
         v.price = products[v.index].price;
         return v;
       })
     })
-    
-    let route = objectPost.id ? API_URL + "listProduct/"+objectPost.id : API_URL + "listProduct";
-    let promise  = objectPost.id ? axios.put(route,objectPost) : axios.post(route,objectPost);
+
+    let route = objectPost.id ? API_URL + "listProduct/" + objectPost.id : API_URL + "listProduct";
+    let promise = objectPost.id ? axios.put(route, objectPost) : axios.post(route, objectPost);
     promise.then(result => {
       toast.success(`Lista ${objectPost.id ? "modificada" : "creada"} con éxito`);
-      if(objectPost.id){
+      if (objectPost.id) {
         cancelEdition();
-      }else{
+      } else {
         clearData();
       }
       fetchData();
@@ -251,9 +251,9 @@ const ListProductPage = (props) =>{
 
   const clearData = () => {
     setDataForm({
-      name : "",
-      status : true,
-      id : ""
+      name: "",
+      status: true,
+      id: ""
     })
     setProductsDetail([])
     setProducts(productArrayCopy)
@@ -263,25 +263,25 @@ const ListProductPage = (props) =>{
 
   const cancelEdition = () => {
     setDataForm({
-      name : "",
-      status : true,
-      id : ""
+      name: "",
+      status: true,
+      id: ""
     })
     inputRef.current.focus();
   }
 
   const selectAllProductsHandler = type => {
-    if(type){
+    if (type) {
       let arrayId = [];
-      products.forEach((v,i) => arrayId.push( {id_product : parseInt(v.id) , price : v.price, index: i} ));
+      products.forEach((v, i) => arrayId.push({ id_product: parseInt(v.id), price: v.price, index: i }));
       setProductsDetail(arrayId)
-    }else{
+    } else {
       setProductsDetail([])
     }
   }
 
-  const onChangePriceTableHandler = (index,e,id) => {
-    let val = e.target.value.replace(/[^0-9 .]/g,"");
+  const onChangePriceTableHandler = (index, e, id) => {
+    let val = e.target.value.replace(/[^0-9 .]/g, "");
     setProducts(currentData => {
       let currentArray = [...currentData]
       currentArray[index].price = val
@@ -291,15 +291,15 @@ const ListProductPage = (props) =>{
 
   const onChangeProductDetailHadler = e => {
     e.persist()
-    if(e.target.checked){
+    if (e.target.checked) {
       let product;
-      productArrayCopy.forEach((v,i) => {
-        if(v.id == e.target.value){
-          product = {id_product: parseInt(e.target.value), price: v.price, index: i}
+      productArrayCopy.forEach((v, i) => {
+        if (v.id == e.target.value) {
+          product = { id_product: parseInt(e.target.value), price: v.price, index: i }
         }
       });
-      setProductsDetail(currentData => [...currentData, product ]);
-    }else{
+      setProductsDetail(currentData => [...currentData, product]);
+    } else {
       setProductsDetail(currentData => currentData.filter(v => v.id_product !== parseInt(e.target.value)));
     }
   }
@@ -320,7 +320,7 @@ const ListProductPage = (props) =>{
                 <h4 className="title_principal">Lista de Productos</h4>
               </Col>
               <Col className="text-center">
-              <h4 className="title_principal">Total Listas <Badge variant="danger" className="font-badge">{listData.length}</Badge></h4>
+                <h4 className="title_principal">Total Listas <Badge variant="danger" className="font-badge">{listData.length}</Badge></h4>
               </Col>
             </Row>
             <Row>
@@ -335,7 +335,7 @@ const ListProductPage = (props) =>{
                       required={true}
                       value={dataForm.name}
                       handleChange={onChangeHandler}
-                      messageErrors = {[
+                      messageErrors={[
                         'Requerido*'
                       ]}
                       cols="col-md-4 col-sm-4 col-lg-4"
@@ -361,7 +361,7 @@ const ListProductPage = (props) =>{
                   </Row>
                   <Row className="justify-content-center">
                     <Col sm={4} md={4} lg={4}>
-                      <Button variant="danger" block={true} size="sm" type="submit">{ dataForm.id ? "Modificar Lista" : "Crear Lista" } <FaSave /></Button>
+                      <Button variant="danger" block={true} size="sm" type="submit">{dataForm.id ? "Modificar Lista" : "Crear Lista"} <FaSave /></Button>
                     </Col>
                     {dataForm.id ? (
                       <Col sm={4} md={4} lg={4}>
@@ -406,10 +406,10 @@ const ListProductPage = (props) =>{
           </Row>
           <Row>
             <Col>
-              <Table columns={productColumns} data={products} pageSizeHandler={[500,1000]} />
+              <Table columns={productColumns} data={products} pageSizeHandler={[500, 1000]} />
             </Col>
           </Row>
-          <br/>
+          <br />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" size="md" onClick={onHideModalHandler}>Cerrar</Button>
@@ -420,13 +420,13 @@ const ListProductPage = (props) =>{
 }
 
 const mapStateToProps = (state) => ({
-  id_branch_office : state.enterpriseSucursal.id_branch_office,
-  id_enterprise : state.enterpriseSucursal.id_enterprise,
-  configGeneral : state.configs.config
+  id_branch_office: state.enterpriseSucursal.id_branch_office,
+  id_enterprise: state.enterpriseSucursal.id_enterprise,
+  configGeneral: state.configs.config
 })
 
 const mapDispatchToProps = {
-  
+
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ListProductPage)

@@ -27,7 +27,7 @@ import {
   resetDiscountRecharge,
   handleResetTotal,
 } from "actions/cart";
-import "styles/pages/salePage.css";
+import "styles/pages/salePage.scss";
 import {
   Container,
   Row,

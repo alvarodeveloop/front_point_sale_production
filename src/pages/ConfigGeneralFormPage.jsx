@@ -15,7 +15,7 @@ import InputField from "components/input/InputComponent";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { API_URL } from "utils/constants";
-import "styles/pages/config_general.css";
+import "styles/pages/config_general.scss";
 import { setConfig } from "actions/configs";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";

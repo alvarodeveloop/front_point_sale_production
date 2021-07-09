@@ -16,20 +16,20 @@ import { API_URL } from 'utils/constants'
 import Table from 'components/Table'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 
-import 'styles/pages/users.css'
-import {connect} from 'react-redux'
+import 'styles/pages/users.scss'
+import { connect } from 'react-redux'
 import LoadingComponent from 'components/LoadingComponent'
 
 let userColumns = [];
 
 const UserListPage = (props) => {
 
-  const [users,setUsers] = useState([])
+  const [users, setUsers] = useState([])
   const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     fetchData()
-  },[props.id_branch_office])
+  }, [props.id_branch_office])
 
   useMemo(() => {
     userColumns = [
@@ -49,8 +49,8 @@ const UserListPage = (props) => {
         Header: 'Acciones',
         Cell: props => {
           const id = props.cell.row.original.id
-          return(
-            <DropdownButton size="sm" id={'drop'+props.cell.row.original.id} title="Seleccione"  block="true">
+          return (
+            <DropdownButton size="sm" id={'drop' + props.cell.row.original.id} title="Seleccione" block="true">
               <Dropdown.Item onClick={() => modifyRegister(id)}>Modificar</Dropdown.Item>
               <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
             </DropdownButton>
@@ -58,7 +58,7 @@ const UserListPage = (props) => {
         }
       }
     ]
-  },[])
+  }, [])
 
   const deleteRegister = id => {
     confirmAlert({
@@ -84,7 +84,7 @@ const UserListPage = (props) => {
 
   const confirmDeleteRegister = id => {
     setDisplayLoading(true)
-    axios.delete(API_URL+'user/'+id).then(result => {
+    axios.delete(API_URL + 'user/' + id).then(result => {
       toast.success('Registro eliminado con éxito')
       fetchData()
     }).catch(err => {
@@ -94,11 +94,11 @@ const UserListPage = (props) => {
   }
 
   const modifyRegister = id => {
-    props.history.replace('/user/create/'+id)
+    props.history.replace('/user/create/' + id)
   }
 
   const fetchData = () => {
-    axios.get(API_URL+'user').then(result => {
+    axios.get(API_URL + 'user').then(result => {
       setUsers(result.data)
       setDisplayLoading(false)
     }).catch(err => {
@@ -121,31 +121,31 @@ const UserListPage = (props) => {
           <h4 className="title_principal">Total usuarios registrados: <Badge variant="danger" className="font-badge">{users.length}</Badge></h4>
         </Col>
       </Row>
-      <hr/>
+      <hr />
       {displayLoading ? (
         <LoadingComponent />
       ) : (
-      <Row className="justify-content-center">
-        <Col sm={6} md={6} lg={6} xs={12}>
-          <Button block={true} size="sm" title="Crear Usuario" onClick={goToForm} variant="success">Crear Usuario <FaPlusCircle /></Button>
-        </Col>
-        <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
-          <Table columns={userColumns} data={users} />
-        </Col>
-      </Row>
+        <Row className="justify-content-center">
+          <Col sm={6} md={6} lg={6} xs={12}>
+            <Button block={true} size="sm" title="Crear Usuario" onClick={goToForm} variant="success">Crear Usuario <FaPlusCircle /></Button>
+          </Col>
+          <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
+            <Table columns={userColumns} data={users} />
+          </Col>
+        </Row>
       )}
     </Container>
   )
 }
 
 UserListPage.propTypes = {
-  id_branch_office : PropTypes.string.isRequired
+  id_branch_office: PropTypes.string.isRequired
 }
 
-function mapDispatchToProps(state){
-    return{
-      id_branch_office : state.enterpriseSucursal.id_branch_office
-    }
+function mapDispatchToProps(state) {
+  return {
+    id_branch_office: state.enterpriseSucursal.id_branch_office
+  }
 }
 
-export default connect(mapDispatchToProps,{})(UserListPage)
+export default connect(mapDispatchToProps, {})(UserListPage)

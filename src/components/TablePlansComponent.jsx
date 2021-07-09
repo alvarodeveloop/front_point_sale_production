@@ -4,12 +4,12 @@ import { formatNumber } from "utils/functions";
 import { FaCheck } from "react-icons/fa";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import "styles/components/tabla_plans.css";
+import "styles/components/tabla_plans.scss";
 
 const TablePlansComponent = ({ plan, ...props }) => {
   const [displayDescription, setDisplayDescription] = useState(false);
 
-  const handleSubmit = () => {};
+  const handleSubmit = () => { };
 
   const handleUpdate = (e) => {
     e.preventDefault();

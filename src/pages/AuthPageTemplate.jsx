@@ -12,7 +12,7 @@ import { FaGoogle, FaSignOutAlt } from "react-icons/fa";
 import GoogleLogin from "react-google-login";
 //import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import { FaPaperPlane } from "react-icons/fa";
-import "styles/pages/AuthPage.css";
+import "styles/pages/AuthPage.scss";
 import "styles/animate.css";
 import { formatRut } from "utils/functions";
 import * as moment from "moment-timezone";
@@ -223,10 +223,10 @@ const AuthPageTemplate = (props) => {
       axios
         .get(
           API_URL +
-            "branch_office_by_enterprise_and_user/" +
-            idEnteprise +
-            "/" +
-            userLocal.email
+          "branch_office_by_enterprise_and_user/" +
+          idEnteprise +
+          "/" +
+          userLocal.email
         )
         .then((result) => {
           setShowGif(false);
@@ -581,10 +581,10 @@ const AuthPageTemplate = (props) => {
                   {array_morning.includes(hr_tz)
                     ? "Buenos Días"
                     : array_afternoon.includes(hr_tz)
-                    ? "Buenas tardes"
-                    : array_evening.includes(hr_tz)
-                    ? "Buenas noches"
-                    : ""}
+                      ? "Buenas tardes"
+                      : array_evening.includes(hr_tz)
+                        ? "Buenas noches"
+                        : ""}
                   , accede a tu cuenta
                 </h4>
 
@@ -600,7 +600,7 @@ const AuthPageTemplate = (props) => {
                       <Col sm={12} md={12} lg={12} className="text-center">
                         <b>Entrar con:</b>
                       </Col>
-                      <Col sm={6} md={6} lg={6} className="text-center">
+                      <Col sm={6} md={6} lg={6} xs={6} className="text-center">
                         <Form.Check
                           name="is_email"
                           type={"radio"}
@@ -611,7 +611,7 @@ const AuthPageTemplate = (props) => {
                           value={true}
                         />
                       </Col>
-                      <Col sm={6} md={6} lg={6} className="text-center">
+                      <Col sm={6} md={6} lg={6} xs={6} className="text-center">
                         <Form.Check
                           name="is_email"
                           type={"radio"}
@@ -734,17 +734,17 @@ const AuthPageTemplate = (props) => {
                   {array_morning.includes(hr_tz)
                     ? "Buenos Días"
                     : array_afternoon.includes(hr_tz)
-                    ? "Buenas tardes"
-                    : array_evening.includes(hr_tz)
-                    ? "Buenas noches"
-                    : ""}
+                      ? "Buenas tardes"
+                      : array_evening.includes(hr_tz)
+                        ? "Buenas noches"
+                        : ""}
                   , accede a tu cuenta
                 </h4>
 
                 {/* Form */}
                 <Form
                   className="my-5"
-                  onSubmit={() => {}}
+                  onSubmit={() => { }}
                   noValidate
                   validated={false}
                 >

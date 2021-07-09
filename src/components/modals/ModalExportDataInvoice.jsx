@@ -4,7 +4,7 @@ import { Modal, Button, Row, Col } from "react-bootstrap";
 import { FaFileExcel } from "react-icons/fa";
 import { API_URL } from "utils/constants";
 import axios from "axios";
-import "styles/components/modalComponents.css";
+import "styles/components/modalComponents.scss";
 import LoadingComponent from "components/LoadingComponent";
 import InputField from "components/input/InputComponent";
 import * as moment from "moment-timezone";
@@ -26,14 +26,14 @@ function ModalExportDataInvoice(props) {
     props.type === "cotizacion"
       ? "Cotizaciones"
       : props.type === "saleNote"
-      ? "Notas de Ventas"
-      : props.type === "facturacion"
-      ? "Facturas"
-      : props.type === "boleta"
-      ? "Boletas"
-      : props.type === "guide"
-      ? "Guías"
-      : "Ordenes de Compra";
+        ? "Notas de Ventas"
+        : props.type === "facturacion"
+          ? "Facturas"
+          : props.type === "boleta"
+            ? "Boletas"
+            : props.type === "guide"
+              ? "Guías"
+              : "Ordenes de Compra";
 
   const [globalState, setGlobalState] = useState({
     isLoading: false,
@@ -206,10 +206,10 @@ function ModalExportDataInvoice(props) {
             item.status === 1
               ? "Pendiente"
               : item.status === 2
-              ? "Pagada"
-              : item.status === 3
-              ? "Vencida"
-              : "Anulada",
+                ? "Pagada"
+                : item.status === 3
+                  ? "Vencida"
+                  : "Anulada",
             item.date_issue_format,
             item.date_expiration_format,
             showPriceWithDecimals(props.configGeneral, item.total_product),
@@ -238,10 +238,10 @@ function ModalExportDataInvoice(props) {
             item.status === 1
               ? "Pendiente"
               : item.status === 2
-              ? "Pagada"
-              : item.status === 3
-              ? "Vencida"
-              : "Anulada",
+                ? "Pagada"
+                : item.status === 3
+                  ? "Vencida"
+                  : "Anulada",
             item.date_issue_format,
             item.date_expiration_format,
             determinateStatus(item.status),
@@ -267,10 +267,10 @@ function ModalExportDataInvoice(props) {
             item.status === 1
               ? "Pendiente"
               : item.status === 2
-              ? "Vencida"
-              : item.status === 3
-              ? "Pagada"
-              : "Anulada",
+                ? "Vencida"
+                : item.status === 3
+                  ? "Pagada"
+                  : "Anulada",
             showPriceWithDecimals(props.configGeneral, item.total_product),
             showPriceWithDecimals(props.configGeneral, item.total_gastos),
             showPriceWithDecimals(props.configGeneral, item.total_iva),

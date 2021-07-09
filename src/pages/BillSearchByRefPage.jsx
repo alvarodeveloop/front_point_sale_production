@@ -21,7 +21,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import layoutHelpers from 'shared/layouts/helpers'
 import * as moment from 'moment-timezone'
 import { formatNumber } from 'utils/functions'
-import 'styles/components/modalComponents.css'
+import 'styles/components/modalComponents.scss'
 import { connect } from 'react-redux'
 import ModalInvoiceActions from 'components/modals/ModalInvoiceActions'
 import { confirmAlert } from 'react-confirm-alert'; // Import
@@ -37,15 +37,15 @@ const BillSearchByRefPage = props => {
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false)
   const [redraw, setRedraw] = useState(false)
   const [statusCotization, setStatusCotization] = useState({})
-  const [displayFilter,setDisplayFilter] = useState(1)
+  const [displayFilter, setDisplayFilter] = useState(1)
   const [displayLoading, setDisplayLoading] = useState(true)
   const [dataForm, setDataForm] = useState({
-    date_desde : '',
+    date_desde: '',
     date_hasta: '',
-    type : 3
+    type: 3
   })
-  const [invoiceAction,setInvoiceAction] = useState({})
-  const [isOpenModalAction,setIsOpenModalAction] = useState(false)
+  const [invoiceAction, setInvoiceAction] = useState({})
+  const [isOpenModalAction, setIsOpenModalAction] = useState(false)
 
   useMemo(() => {
     cotizacionColumns = [
@@ -53,10 +53,10 @@ const BillSearchByRefPage = props => {
         Header: 'Referencia',
         accessor: 'ref',
         Cell: props1 => {
-          const {original} = props1.cell.row
+          const { original } = props1.cell.row
           return (
             <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled2">Hacer click para acceder a las acciones de la Boleta</Tooltip>}>
-              <Button variant="link" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>{ original.ref }</Button>
+              <Button variant="link" block={true} type="button" size="sm" onClick={() => onHideModalAction(original)}>{original.ref}</Button>
             </OverlayTrigger>
           )
         }
@@ -77,18 +77,18 @@ const BillSearchByRefPage = props => {
         Header: 'Razón Social',
         accessor: 'business_name_client',
         Cell: props1 => {
-          const {original} = props1.cell.row
-          return(
+          const { original } = props1.cell.row
+          return (
             <OverlayTrigger placement={'right'} overlay={
-            <Tooltip id="tooltip-disabled2">
-              <ul className="list-group">
-                <li className="list-group-item"><b>Vendedor: </b> {original.name_seller}</li>
-                <li className="list-group-item"><b>Fono del Vendedor: </b> {original.phone_seller ? original.phone_seller : 'No posee'}</li>
-                <li className="list-group-item"><b>Contacto</b> {original.name_contact ? original.name_contact : 'No posee'}</li>
-                <li className="list-group-item"><b>Fono del Contacto: </b> {original.phone_contact}</li>
-                <li className="list-group-item"><b>Comentario: </b> {original.comment}</li>
-              </ul>
-            </Tooltip>}>
+              <Tooltip id="tooltip-disabled2">
+                <ul className="list-group">
+                  <li className="list-group-item"><b>Vendedor: </b> {original.name_seller}</li>
+                  <li className="list-group-item"><b>Fono del Vendedor: </b> {original.phone_seller ? original.phone_seller : 'No posee'}</li>
+                  <li className="list-group-item"><b>Contacto</b> {original.name_contact ? original.name_contact : 'No posee'}</li>
+                  <li className="list-group-item"><b>Fono del Contacto: </b> {original.phone_contact}</li>
+                  <li className="list-group-item"><b>Comentario: </b> {original.comment}</li>
+                </ul>
+              </Tooltip>}>
               <Button variant="link" size="sm" block={true} type="button">{original.business_name_client}</Button>
             </OverlayTrigger>
           )
@@ -109,13 +109,13 @@ const BillSearchByRefPage = props => {
       {
         Header: 'Status',
         accessor: props1 => {
-          if(props1.status == 1){
+          if (props1.status == 1) {
             return (<Badge variant="secondary" className="font-badge">Pendiente</Badge>)
-          }else if(props1.status == 2){
+          } else if (props1.status == 2) {
             return (<Badge variant="secondary" className="font-badge">Pagada</Badge>)
-          }else if(props1.status == 3){
+          } else if (props1.status == 3) {
             return (<Badge variant="secondary" className="font-badge">Vencida</Badge>)
-          }else{
+          } else {
             return (<Badge variant="secondary" className="font-badge">Anulada</Badge>)
           }
         },
@@ -127,19 +127,19 @@ const BillSearchByRefPage = props => {
           const original = props1.cell.row.original;
           return (
             <OverlayTrigger placement={'left'} overlay={
-              <Tooltip id={"tooltip-total_pagar"+original.id}>
+              <Tooltip id={"tooltip-total_pagar" + original.id}>
                 <ul className="list-group">
-                  {original.products.map((v,i) => (
+                  {original.products.map((v, i) => (
                     <li className="list-group-item" key={i}>
-                      <b>Producto</b>: {v.name_product}<br/>
-                      <b>Precio</b> : {props.configGeneral.simbolo_moneda+showPriceWithDecimals(props.configGeneral,original.total_with_iva ? v.price : v.total)}<br/>
+                      <b>Producto</b>: {v.name_product}<br />
+                      <b>Precio</b> : {props.configGeneral.simbolo_moneda + showPriceWithDecimals(props.configGeneral, original.total_with_iva ? v.price : v.total)}<br />
                       <b>Cantidad</b>: {v.quantity}</li>
                   ))}
                 </ul>
               </Tooltip>}>
-                <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                  {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,original.total_product)}
-                </Badge>
+              <Badge variant="info" className="font-badge" style={{ backgroundColor: "rgb(198, 196, 54)", color: "white" }}>
+                {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral, original.total_product)}
+              </Badge>
             </OverlayTrigger>
           )
         }
@@ -149,8 +149,8 @@ const BillSearchByRefPage = props => {
         accessor: 'total_gastos',
         Cell: props1 => {
           return (
-            <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-              {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_gastos)}
+            <Badge variant="info" className="font-badge" style={{ backgroundColor: "rgb(198, 196, 54)", color: "white" }}>
+              {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral, props1.cell.row.original.total_gastos)}
             </Badge>
           )
         }
@@ -160,8 +160,8 @@ const BillSearchByRefPage = props => {
         accessor: 'total_iva',
         Cell: props1 => {
           return (
-            <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-              {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_iva)}
+            <Badge variant="info" className="font-badge" style={{ backgroundColor: "rgb(198, 196, 54)", color: "white" }}>
+              {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral, props1.cell.row.original.total_iva)}
             </Badge>
           )
         }
@@ -170,17 +170,17 @@ const BillSearchByRefPage = props => {
         Header: 'Descuento o Recargo Global',
         accessor: 'discount_global_total',
         Cell: props1 => {
-          const {original} = props1.cell.row
+          const { original } = props1.cell.row
           return (
             <OverlayTrigger placement={'left'} overlay={
-              <Tooltip id={"tooltip-total_pagar"+props1.cell.row.original.id}>
+              <Tooltip id={"tooltip-total_pagar" + props1.cell.row.original.id}>
                 {original.ref_sale ? (
                   <React.Fragment>
-                    Monto: { original.type_discount_global ? original.discount_global+"%" : showPriceWithDecimals(props.configGeneral,original.discount_global_amount)}
-                    <br/>
+                    Monto: {original.type_discount_global ? original.discount_global + "%" : showPriceWithDecimals(props.configGeneral, original.discount_global_amount)}
+                    <br />
                     {original.discount_global_amount > 0 ? (
                       <React.Fragment>
-                        <b>Tipo:</b> { original.type_discount_global ? "Porcentaje" : "Fijo"} - {original.discount_or_recharge_discount_global ? "Descuento" : "Recarga"}
+                        <b>Tipo:</b> {original.type_discount_global ? "Porcentaje" : "Fijo"} - {original.discount_or_recharge_discount_global ? "Descuento" : "Recarga"}
                       </React.Fragment>
                     ) : ''}
                   </React.Fragment>
@@ -190,9 +190,9 @@ const BillSearchByRefPage = props => {
                   </React.Fragment>
                 )}
               </Tooltip>}>
-                <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-                  {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.discount_global_amount)}
-                </Badge>
+              <Badge variant="info" className="font-badge" style={{ backgroundColor: "rgb(198, 196, 54)", color: "white" }}>
+                {props.configGeneral ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral, props1.cell.row.original.discount_global_amount)}
+              </Badge>
             </OverlayTrigger>
           )
         }
@@ -202,8 +202,8 @@ const BillSearchByRefPage = props => {
         accessor: 'total_balance',
         Cell: props1 => {
           return (
-            <Badge variant="info" className="font-badge" style={{backgroundColor: "rgb(198, 196, 54)", color: "white"}}>
-              {props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_balance)}
+            <Badge variant="info" className="font-badge" style={{ backgroundColor: "rgb(198, 196, 54)", color: "white" }}>
+              {props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral, props1.cell.row.original.total_balance)}
             </Badge>
           )
         }
@@ -214,7 +214,7 @@ const BillSearchByRefPage = props => {
         Cell: props1 => {
           return (
             <Badge variant="danger" className="font-badge">
-              {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.total_bond)}
+              {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral, props1.cell.row.original.total_bond)}
             </Badge>
 
           )
@@ -226,7 +226,7 @@ const BillSearchByRefPage = props => {
         Cell: props1 => {
           return (
             <Badge variant="danger" className="font-badge">
-              {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral,props1.cell.row.original.debit_balance)}
+              {props.configGeneral.simbolo_moneda ? props.configGeneral.simbolo_moneda : ''}{showPriceWithDecimals(props.configGeneral, props1.cell.row.original.debit_balance)}
             </Badge>
 
           )
@@ -242,28 +242,28 @@ const BillSearchByRefPage = props => {
         }
       }
     ]
-  },[])
+  }, [])
 
   useEffect(() => {
     layoutHelpers.toggleCollapsed()
-    return () =>{
+    return () => {
       cotizacionColumns = null
       layoutHelpers.toggleCollapsed()
     }
-  },[])
+  }, [])
 
   useEffect(() => {
     fetchData()
-  },[props.id_branch_office])
+  }, [props.id_branch_office])
 
   useEffect(() => {
-    if(redraw){
+    if (redraw) {
       handleDataDonutSsStatus()
     }
-  },[redraw])
+  }, [redraw])
 
   const onHideModalAction = (originalCoti = false) => {
-    if(!isOpenModalAction && originalCoti){
+    if (!isOpenModalAction && originalCoti) {
       setInvoiceAction(originalCoti)
     }
     setIsOpenModalAction(!isOpenModalAction)
@@ -276,45 +276,45 @@ const BillSearchByRefPage = props => {
   }
 
   const handleStadistics = () => {
-    let objectPost = Object.assign({},dataForm)
+    let objectPost = Object.assign({}, dataForm)
     setDisplayFilter(3)
     setDisplayLoading(true)
-     axios.post(API_URL+'invoice_stadistics',objectPost).then(result => {
-      setStatusCotization({...statusCotization,statusesBonds: result.data.statusesBonds, statuses : result.data.statuses, bondsByMonth: result.data.bondsByMonth, invoiceByYear: result.data.invoiceByYear, totalByStatus: result.data.totalByStatus})
+    axios.post(API_URL + 'invoice_stadistics', objectPost).then(result => {
+      setStatusCotization({ ...statusCotization, statusesBonds: result.data.statusesBonds, statuses: result.data.statuses, bondsByMonth: result.data.bondsByMonth, invoiceByYear: result.data.invoiceByYear, totalByStatus: result.data.totalByStatus })
       setTimeout(function () {
         setRedraw(true)
         setDisplayFilter(1)
         setDisplayLoading(false)
       }, 1000);
-     }).catch(err => {
+    }).catch(err => {
       setDisplayLoading(false)
-       setDisplayFilter(1)
-       if(err.response){
-         toast.error(err.response.data.message)
-       }else{
-         console.log(err);
-         toast.error('Error, contacte con soporte')
-       }
-     })
+      setDisplayFilter(1)
+      if (err.response) {
+        toast.error(err.response.data.message)
+      } else {
+        console.log(err);
+        toast.error('Error, contacte con soporte')
+      }
+    })
   }
 
   const handleDisplayFilter = filter => {
-    if(filter == 3){
-      setDataForm({date_desde: '', date_hasta: ''})
+    if (filter == 3) {
+      setDataForm({ date_desde: '', date_hasta: '' })
     }
     setDisplayFilter(filter)
   }
 
   const fetchData = () => {
 
-    let objectPost = Object.assign({},dataForm)
+    let objectPost = Object.assign({}, dataForm)
     let promises = [
-      axios.get(API_URL+'invoice_by_cotization_ref/'+props.match.params.ref),
-      axios.post(API_URL+'invoice_stadistics',objectPost),
+      axios.get(API_URL + 'invoice_by_cotization_ref/' + props.match.params.ref),
+      axios.post(API_URL + 'invoice_stadistics', objectPost),
     ]
     Promise.all(promises).then(result => {
-      if(result[0].data) setBillData([result[0].data])
-      setStatusCotization({...statusCotization, statusesBonds: result[1].data.statusesBonds, statuses : result[1].data.statuses, bondsByMonth: result[1].data.bondsByMonth, invoiceByYear: result[1].data.invoiceByYear, totalByStatus: result[1].data.totalByStatus})
+      if (result[0].data) setBillData([result[0].data])
+      setStatusCotization({ ...statusCotization, statusesBonds: result[1].data.statusesBonds, statuses: result[1].data.statuses, bondsByMonth: result[1].data.bondsByMonth, invoiceByYear: result[1].data.invoiceByYear, totalByStatus: result[1].data.totalByStatus })
       setTimeout(function () {
         setRedraw(true)
       }, 1000);
@@ -331,7 +331,7 @@ const BillSearchByRefPage = props => {
 
   const printInvoice = original => {
     toast.info('Cargando documento, espere por favor')
-    window.open(original.pdf_public_url_bill,"_blank")
+    window.open(original.pdf_public_url_bill, "_blank")
   }
 
   const handleModalDetail = () => {
@@ -340,11 +340,11 @@ const BillSearchByRefPage = props => {
 
   const displayMehotdSale = method => {
     method = parseInt(method)
-    if(method === 1){
+    if (method === 1) {
       return "Unidad"
-    }else if(method === 2){
+    } else if (method === 2) {
       return "Mayorista"
-    }else{
+    } else {
       return "(Litros, Kg, Etc..)"
     }
   }
@@ -355,7 +355,7 @@ const BillSearchByRefPage = props => {
   }
 
   const goToBond = datos => {
-    props.history.replace('/bill/bill_bond/'+datos.id)
+    props.history.replace('/bill/bill_bond/' + datos.id)
   }
 
   const anulateInvoice = datos => {
@@ -377,18 +377,18 @@ const BillSearchByRefPage = props => {
           </div>
         );
       }
-    }); 
+    });
   }
 
   const confirmAnulateInvoice = id => {
     setDisplayLoading(true)
-    axios.put(API_URL+'invoice_status/'+id).then(result => {
-        toast.success('Boleta anulada con éxito')
-        setInvoiceAction({...invoiceAction,status: 4})
-        fetchData()
-     }).catch(err => {
+    axios.put(API_URL + 'invoice_status/' + id).then(result => {
+      toast.success('Boleta anulada con éxito')
+      setInvoiceAction({ ...invoiceAction, status: 4 })
+      fetchData()
+    }).catch(err => {
       setDisplayLoading(false)
-       props.tokenExpired(err)
+      props.tokenExpired(err)
     })
   }
 
@@ -414,14 +414,14 @@ const BillSearchByRefPage = props => {
                   <Button block={true} variant="success" onClick={goToAllBills} size="sm">Ver todas las Boletas</Button>
                 </Col>
               </Row>
-              
+
             </Col>
             <Col sm={6} md={6} lg={6} className="text-center title_principal">
               <h4>Total Boletas Realizadas</h4>
               <Badge variant="danger">{billData.length}</Badge>
             </Col>
           </Row>
-          <hr/>
+          <hr />
           <StadisticsInvoiceComponent
             setDataForm={setDataForm}
             dataForm={dataForm}
@@ -434,7 +434,7 @@ const BillSearchByRefPage = props => {
           />
           <Row>
             <Col sm={12} md={12} lg={12} xs={12}>
-              <Table columns={cotizacionColumns} data={billData}/>
+              <Table columns={cotizacionColumns} data={billData} />
             </Col>
           </Row>
           <Modal
@@ -443,7 +443,7 @@ const BillSearchByRefPage = props => {
             size="xl"
             aria-labelledby="contained-modal-title-vcenter"
             centered
-            >
+          >
             <Modal.Header closeButton className="header_dark">
               <Modal.Title id="contained-modal-title-vcenter">
                 Detalles de la Factura N° {Object.keys(cotizationDetail).length > 0 ? cotizationDetail.ref : ''}
@@ -453,7 +453,7 @@ const BillSearchByRefPage = props => {
               <Row>
                 <Col sm={12} md={12} lg={12}>
                   <h4 className="title_principal text-center">Datos del Registrador</h4>
-                  <br/>
+                  <br />
                   <table className="table table-striped table-bordered">
                     <thead>
                       <tr>
@@ -480,11 +480,11 @@ const BillSearchByRefPage = props => {
                   </table>
                 </Col>
               </Row>
-              <br/>
+              <br />
               <Row>
                 <Col sm={12} md={12} lg={12}>
                   <h4 className="title_principal text-center">Datos del Cliente</h4>
-                  <br/>
+                  <br />
                   <table className="table table-striped table-bordered">
                     <thead>
                       <tr>
@@ -511,11 +511,11 @@ const BillSearchByRefPage = props => {
                   </table>
                 </Col>
               </Row>
-              <br/>
+              <br />
               <Row>
                 <Col sm={12} md={12} lg={12} className="table-responsive">
                   <h4 className="title_principal text-center">Productos de la Factura</h4>
-                  <br/>
+                  <br />
                   <table className="table table-striped table-bordered">
                     <thead>
                       <tr>
@@ -533,17 +533,17 @@ const BillSearchByRefPage = props => {
                     <tbody className="text-center">
                       {Object.keys(cotizationDetail).length > 0 ? (
                         <React.Fragment>
-                          {cotizationDetail.products.map((v,i) => (
+                          {cotizationDetail.products.map((v, i) => (
                             <tr>
                               <td>{v.category}</td>
                               <td>{v.name_product}</td>
                               <td>{v.description}</td>
                               <td>{v.quantity}</td>
-                              <td>{props.configGeneral.simbolo_moneda}{ formatNumber(cotizationDetail.total_with_iva ? v.price : v.total,2,',','.')}</td>
+                              <td>{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_with_iva ? v.price : v.total, 2, ',', '.')}</td>
                               <td>{v.discount}</td>
                               <td>{displayMehotdSale(v.method_sale)}</td>
                               <td>{v.is_neto ? 'Neto' : "Iva"}</td>
-                              <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(v.total,2,',','.')}</Badge></td>
+                              <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(v.total, 2, ',', '.')}</Badge></td>
                             </tr>
                           ))}
                         </React.Fragment>
@@ -552,11 +552,11 @@ const BillSearchByRefPage = props => {
                   </table>
                 </Col>
               </Row>
-              <br/>
+              <br />
               <Row>
                 <Col sm={12} md={12} lg={12} className="">
                   <h4 className="title_principal text-center">Gastos de la Factura</h4>
-                  <br/>
+                  <br />
                   <table className="table table-striped table-bordered">
                     <thead>
                       <tr>
@@ -567,10 +567,10 @@ const BillSearchByRefPage = props => {
                     <tbody className="text-center">
                       {Object.keys(cotizationDetail).length > 0 ? (
                         <React.Fragment>
-                          {cotizationDetail.gastos.map((v,i) => (
+                          {cotizationDetail.gastos.map((v, i) => (
                             <tr>
                               <td>{v.description}</td>
-                              <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(v.amount,2,',','.')}</Badge></td>
+                              <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(v.amount, 2, ',', '.')}</Badge></td>
                             </tr>
                           ))}
                         </React.Fragment>
@@ -579,12 +579,12 @@ const BillSearchByRefPage = props => {
                   </table>
                 </Col>
               </Row>
-              <br/>
+              <br />
               {Object.keys(cotizationDetail).length > 0 && cotizationDetail.refs.length > 0 ? (
                 <Row>
                   <Col sm={12} md={12} lg={12} className="">
                     <h4 className="title_principal text-center">Referencias de la Factura</h4>
-                    <br/>
+                    <br />
                     <table className="table table-striped table-bordered">
                       <thead>
                         <tr>
@@ -599,7 +599,7 @@ const BillSearchByRefPage = props => {
                       <tbody className="text-center">
                         {Object.keys(cotizationDetail).length > 0 ? (
                           <React.Fragment>
-                            {cotizationDetail.refs.map((v,i) => (
+                            {cotizationDetail.refs.map((v, i) => (
                               <tr>
                                 <td>{v.type_document}</td>
                                 <td>{v.ref_invoice}</td>
@@ -619,7 +619,7 @@ const BillSearchByRefPage = props => {
               <Row>
                 <Col sm={12} md={12} lg={12} className="">
                   <h4 className="title_principal text-center">Totales</h4>
-                  <br/>
+                  <br />
                   <table className="table table-striped table-bordered">
                     <thead>
                       <tr>
@@ -632,17 +632,17 @@ const BillSearchByRefPage = props => {
                     <tbody className="text-center">
                       {Object.keys(cotizationDetail).length > 0 ? (
                         <tr>
-                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_product,2,',','.')}</Badge></td>
-                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_iva,2,',','.')}</Badge></td>
-                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_gastos,2,',','.')}</Badge></td>
-                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_balance,2,',','.')}</Badge></td>
+                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_product, 2, ',', '.')}</Badge></td>
+                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_iva, 2, ',', '.')}</Badge></td>
+                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_gastos, 2, ',', '.')}</Badge></td>
+                          <td><Badge variant="danger" className="font-badge">{props.configGeneral.simbolo_moneda}{formatNumber(cotizationDetail.total_balance, 2, ',', '.')}</Badge></td>
                         </tr>
                       ) : ''}
                     </tbody>
                   </table>
                 </Col>
               </Row>
-              <br/>
+              <br />
               <Row>
                 <Col sm={6} md={6} lg={6} className="text-center">
                   {Object.keys(cotizationDetail).length > 0 ? (
@@ -675,20 +675,20 @@ const BillSearchByRefPage = props => {
   )
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   return {
-    id_branch_office : state.enterpriseSucursal.id_branch_office,
-    id_enterprise : state.enterpriseSucursal.id_enterprise,
+    id_branch_office: state.enterpriseSucursal.id_branch_office,
+    id_enterprise: state.enterpriseSucursal.id_enterprise,
     configGeneral: state.configs.config,
     configStore: state.configs.configStore
   }
 }
 
-BillSearchByRefPage.propTypes ={
+BillSearchByRefPage.propTypes = {
   id_branch_office: PropTypes.string.isRequired,
-  id_enterprise : PropTypes.string.isRequired,
+  id_enterprise: PropTypes.string.isRequired,
   configGeneral: PropTypes.object,
-  configStore : PropTypes.object,
+  configStore: PropTypes.object,
 }
 
-export default connect(mapStateToProps,{})(BillSearchByRefPage)
+export default connect(mapStateToProps, {})(BillSearchByRefPage)

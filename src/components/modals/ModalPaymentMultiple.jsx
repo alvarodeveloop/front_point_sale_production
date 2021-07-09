@@ -8,7 +8,7 @@ import {
   Form
 } from 'react-bootstrap'
 import { API_URL } from 'utils/constants'
-import 'styles/components/modalComponents.css'
+import 'styles/components/modalComponents.scss'
 import InputField from 'components/input/InputComponent'
 import InputFieldRef from 'components/input/InputComponentRef'
 import { toast } from 'react-toastify'
@@ -24,9 +24,9 @@ const ModalPaymentMultiple = (props) => {
   })
   const inputRef = useRef(null)
   useEffect(() => {
-    if(props.isShow){
-        inputRef.current.focus()
-    }else{
+    if (props.isShow) {
+      inputRef.current.focus()
+    } else {
       setPaymentMultiple({
         efectivo: '',
         tarjeta: '',
@@ -35,10 +35,10 @@ const ModalPaymentMultiple = (props) => {
         otros: ''
       })
     }
-  },[props.isShow])
+  }, [props.isShow])
 
   const onChange = e => {
-    setPaymentMultiple({...paymentMultiple, [e.target.name] : e.target.value})
+    setPaymentMultiple({ ...paymentMultiple, [e.target.name]: e.target.value })
   }
 
   const handleSubmit = e => {
@@ -50,14 +50,14 @@ const ModalPaymentMultiple = (props) => {
     let validate = false
 
     Object.keys(paymentMultiple).forEach(v => {
-      if(paymentMultiple[v]){
+      if (paymentMultiple[v]) {
         validate = true
       }
     })
 
-    if(!validate){
+    if (!validate) {
       toast.error('Debe llenar al menos un método de pago')
-    }else{
+    } else {
 
       props.handlePaymentMultiple(paymentMultiple)
     }
@@ -126,8 +126,8 @@ ModalPaymentMultiple.defaultProps = {
     type: 'number',
     required: false,
     name: 'efectivo',
-    label : 'Efectivo',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    label: 'Efectivo',
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
     messageErrors: [
 
     ],
@@ -136,8 +136,8 @@ ModalPaymentMultiple.defaultProps = {
     type: 'number',
     required: false,
     name: 'tarjeta',
-    label : 'Tarjeta',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    label: 'Tarjeta',
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
     messageErrors: [
 
     ],
@@ -146,8 +146,8 @@ ModalPaymentMultiple.defaultProps = {
     type: 'number',
     required: false,
     name: 'sumup',
-    label : 'Sumup',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    label: 'Sumup',
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
     messageErrors: [
 
     ],
@@ -156,8 +156,8 @@ ModalPaymentMultiple.defaultProps = {
     type: 'number',
     required: false,
     name: 'cheque',
-    label : 'Cheque',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    label: 'Cheque',
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
     messageErrors: [
 
     ],
@@ -166,8 +166,8 @@ ModalPaymentMultiple.defaultProps = {
     type: 'number',
     required: false,
     name: 'otros',
-    label : 'Otros',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    label: 'Otros',
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
     messageErrors: [
 
     ],

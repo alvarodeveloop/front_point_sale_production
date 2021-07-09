@@ -27,7 +27,7 @@ import styled from "styled-components";
 import { setConfigStore, setConfig } from "actions/configs";
 import { setAuthorizationToken } from "utils/functions";
 import { FaUser } from "react-icons/fa";
-import "styles/components/modalComponents.css";
+import "styles/components/modalComponents.scss";
 
 const Styles = styled.div`
   .border_success {
@@ -178,9 +178,8 @@ const LayoutNavbar = (props) => {
       <Navbar
         bg={props.navbarBg}
         expand="md"
-        className={`layout-navbar align-items-lg-center container-p-x ${
-          !objectMessage.borderSuccess ? "" : "border_success"
-        }`}
+        className={`layout-navbar align-items-lg-center container-p-x ${!objectMessage.borderSuccess ? "" : "border_success"
+          }`}
         style={{ height: "80px" }}
       >
         {/* Brand */}
@@ -208,154 +207,155 @@ const LayoutNavbar = (props) => {
         )}
 
         {/* Navbar toggle */}
-        <Navbar.Toggle />
-
-        <Navbar.Collapse>
-          {objectMessage.displayMessage ? (
-            <Nav>
-              <Nav.Item>
-                <p style={{ color: "rgb(200, 67, 28)" }}>
-                  Actualizando el sistema, espere por favor...{" "}
-                  <Image
-                    src={require("../../assets/img/loading.gif")}
-                    style={{ width: "10px" }}
-                  />
-                </p>
+        {objectMessage.displayMessage ? (
+          <Nav>
+            <Nav.Item>
+              <p style={{ color: "rgb(200, 67, 28)" }}>
+                Actualizando el sistema, espere por favor...{" "}
+                <Image
+                  src={require("../../assets/img/loading.gif")}
+                  style={{ width: "10px" }}
+                />
+              </p>
+            </Nav.Item>
+          </Nav>
+        ) : (
+          ""
+        )}
+        <Nav
+          style={{
+            paddingLeft: "100px",
+            display: props.videosTutorial.length ? "block" : "none",
+          }}
+          className="d-none d-lg-block"
+        >
+          <Nav.Item
+            className="nav-item nav-link px-0 ml-9 ml-lg-0"
+            style={{ width: "200px" }}
+          >
+            <InputField
+              type="select"
+              label={
+                <span style={{ color: "rgb(198, 69, 41)" }}>Tutoriales</span>
+              }
+              name="tutoNavbar"
+              required={false}
+              messageErrors={[]}
+              cols="col-12"
+              handleChange={(e) => displayTutoModalHandler(e)}
+            >
+              <option value="">--Seleccione--</option>
+              {props.videosTutorial.map((v, i) => (
+                <option key={i} value={v.id}>
+                  {v.name}
+                </option>
+              ))}
+            </InputField>
+          </Nav.Item>
+        </Nav>
+        <Nav className="align-items-lg-center ml-auto d-none d-lg-flex">
+          <div className="nav-item d-none d-lg-block text-big font-weight-light line-height-1 opacity-25 mr-3 ml-1">
+            |
+          </div>
+          {props.userConnect &&
+            (props.userConnect.id_rol == 2 || props.userConnect.id_rol == 9) ? (
+            <React.Fragment>
+              <Nav.Item
+                className="nav-item nav-link px-0 ml-2 ml-lg-0"
+                style={{ width: "200px" }}
+              >
+                <InputField
+                  type="select"
+                  label={
+                    <span style={{ color: "rgb(198, 69, 41)" }}>
+                      Empresas
+                    </span>
+                  }
+                  name="enterprise"
+                  required={false}
+                  value={props.enterpriseSucursal.id_enterprise}
+                  messageErrors={[]}
+                  cols="col-md-12 col-lg-12 col-sm-12"
+                  handleChange={(e) =>
+                    handleSelectEnterpriseBranch(e, "enterprise")
+                  }
+                >
+                  {props.enterpriseSucursal.enterprises.map((v, i) => (
+                    <option key={i} value={v.id}>
+                      {v.bussines_name}
+                    </option>
+                  ))}
+                </InputField>
               </Nav.Item>
-            </Nav>
+              <Nav.Item
+                className="nav-item nav-link px-0 ml-2 ml-lg-0"
+                style={{ width: "200px" }}
+              >
+                <InputField
+                  type="select"
+                  label={
+                    <span style={{ color: "rgb(198, 69, 41)" }}>
+                      Sucursales
+                    </span>
+                  }
+                  name="branch_office"
+                  required={false}
+                  value={props.enterpriseSucursal.id_branch_office}
+                  messageErrors={[]}
+                  cols="col-md-12 col-lg-12 col-sm-12"
+                  handleChange={(e) =>
+                    handleSelectEnterpriseBranch(e, "branch_office")
+                  }
+                >
+                  <option value={""}>--Seleccione--</option>
+                  {props.enterpriseSucursal.branchOffices.map((v, i) => (
+                    <option key={i} value={v.id}>
+                      {v.name}
+                    </option>
+                  ))}
+                </InputField>
+              </Nav.Item>
+            </React.Fragment>
           ) : (
             ""
           )}
-          <Nav
-            style={{
-              paddingLeft: "100px",
-              display: props.videosTutorial.length ? "block" : "none",
-            }}
+        </Nav>
+        <Nav>
+          <Button variant="secondary"></Button>
+        </Nav>
+        <Nav>
+          <Dropdown
+            as={Nav.Item}
+            className="demo-navbar-user"
+            alignRight={isRTL}
           >
-            <Nav.Item
-              className="nav-item nav-link px-0 ml-9 ml-lg-0"
-              style={{ width: "200px" }}
-            >
-              <InputField
-                type="select"
-                label={
-                  <span style={{ color: "rgb(198, 69, 41)" }}>Tutoriales</span>
-                }
-                name="tutoNavbar"
-                required={false}
-                messageErrors={[]}
-                cols="col-12"
-                handleChange={(e) => displayTutoModalHandler(e)}
-              >
-                <option value="">--Seleccione--</option>
-                {props.videosTutorial.map((v, i) => (
-                  <option key={i} value={v.id}>
-                    {v.name}
-                  </option>
-                ))}
-              </InputField>
-            </Nav.Item>
-          </Nav>
-          <Nav className="align-items-lg-center ml-auto">
-            <div className="nav-item d-none d-lg-block text-big font-weight-light line-height-1 opacity-25 mr-3 ml-1">
-              |
-            </div>
-            {props.userConnect &&
-            (props.userConnect.id_rol == 2 || props.userConnect.id_rol == 9) ? (
-              <React.Fragment>
-                <Nav.Item
-                  className="nav-item nav-link px-0 ml-2 ml-lg-0"
-                  style={{ width: "200px" }}
-                >
-                  <InputField
-                    type="select"
-                    label={
-                      <span style={{ color: "rgb(198, 69, 41)" }}>
-                        Empresas
-                      </span>
-                    }
-                    name="enterprise"
-                    required={false}
-                    value={props.enterpriseSucursal.id_enterprise}
-                    messageErrors={[]}
-                    cols="col-md-12 col-lg-12 col-sm-12"
-                    handleChange={(e) =>
-                      handleSelectEnterpriseBranch(e, "enterprise")
-                    }
-                  >
-                    {props.enterpriseSucursal.enterprises.map((v, i) => (
-                      <option key={i} value={v.id}>
-                        {v.bussines_name}
-                      </option>
-                    ))}
-                  </InputField>
-                </Nav.Item>
-                <Nav.Item
-                  className="nav-item nav-link px-0 ml-2 ml-lg-0"
-                  style={{ width: "200px" }}
-                >
-                  <InputField
-                    type="select"
-                    label={
-                      <span style={{ color: "rgb(198, 69, 41)" }}>
-                        Sucursales
-                      </span>
-                    }
-                    name="branch_office"
-                    required={false}
-                    value={props.enterpriseSucursal.id_branch_office}
-                    messageErrors={[]}
-                    cols="col-md-12 col-lg-12 col-sm-12"
-                    handleChange={(e) =>
-                      handleSelectEnterpriseBranch(e, "branch_office")
-                    }
-                  >
-                    <option value={""}>--Seleccione--</option>
-                    {props.enterpriseSucursal.branchOffices.map((v, i) => (
-                      <option key={i} value={v.id}>
-                        {v.name}
-                      </option>
-                    ))}
-                  </InputField>
-                </Nav.Item>
-              </React.Fragment>
-            ) : (
-              ""
-            )}
-
-            <Dropdown
-              as={Nav.Item}
-              className="demo-navbar-user"
-              alignRight={isRTL}
-            >
-              <Dropdown.Toggle as={Nav.Link}>
-                <span className="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
-                  <img
-                    src={`${process.env.PUBLIC_URL}/add_client.png`}
-                    className="d-block ui-w-30 rounded-circle"
-                    alt="User"
-                  />
-                  <span className="px-1 mr-lg-2 ml-2 ml-lg-0">
-                    {props.userConnect.email}
-                  </span>
+            <Dropdown.Toggle as={Nav.Link}>
+              <span className="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
+                <img
+                  src={`${process.env.PUBLIC_URL}/add_client.png`}
+                  className="d-block ui-w-30 rounded-circle"
+                  alt="User"
+                />
+                <span className="px-1 mr-lg-2 ml-2 ml-lg-0">
+                  {props.userConnect.email}
                 </span>
-              </Dropdown.Toggle>
+              </span>
+            </Dropdown.Toggle>
 
-              <Dropdown.Menu>
-                <Dropdown.Item
-                  hred="#"
-                  onClick={() => props.history.replace("/profile")}
-                >
-                  <FaUser className="text-primary" /> &nbsp; Perfil
-                </Dropdown.Item>
-                <Dropdown.Item hred="#" onClick={props.logoutUser}>
-                  <i className="ion ion-ios-log-out text-danger"></i> &nbsp;
-                  Salir
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-          </Nav>
-        </Navbar.Collapse>
+            <Dropdown.Menu>
+              <Dropdown.Item
+                hred="#"
+                onClick={() => props.history.replace("/profile")}
+              >
+                <FaUser className="text-primary" /> &nbsp; Perfil
+              </Dropdown.Item>
+              <Dropdown.Item hred="#" onClick={props.logoutUser}>
+                <i className="ion ion-ios-log-out text-danger"></i> &nbsp;
+                Salir
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </Nav>
       </Navbar>
       <Modal
         show={displayModal}

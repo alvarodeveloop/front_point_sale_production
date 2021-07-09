@@ -11,7 +11,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import layoutHelpers from "shared/layouts/helpers";
 import * as moment from "moment-timezone";
-import "styles/components/modalComponents.css";
+import "styles/components/modalComponents.scss";
 import { connect } from "react-redux";
 import ModalInvoiceActions from "components/modals/ModalInvoiceActions";
 import { confirmAlert } from "react-confirm-alert"; // Import

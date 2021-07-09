@@ -14,7 +14,7 @@ import {
   OverlayTrigger,
   Tooltip,
 } from "react-bootstrap";
-import { API_URL, API_FACTURACION } from "utils/constants";
+import { API_URL } from "utils/constants";
 import { FaPlusCircle, FaMailBulk } from "react-icons/fa";
 import FormClientModal from "components/modals/FormClientModal";
 import ModalGastosCotizacion from "components/modals/ModalGastosCotizacion";
@@ -50,7 +50,7 @@ import {
   TransfferTypeArray
 } from "utils/constants";
 import TableBondsBillComponent from "components/invoice/TableBondsBillComponent";
-import "styles/pages/formInvoice.css";
+import "styles/pages/formInvoice.scss";
 
 const Styles = styled.div`
   .divContainerFlex {

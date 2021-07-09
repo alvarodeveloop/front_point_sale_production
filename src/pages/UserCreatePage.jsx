@@ -14,7 +14,7 @@ import InputField from "components/input/InputComponent";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { API_URL } from "utils/constants";
-import "styles/pages/users.css";
+import "styles/pages/users.scss";
 import { formatRut } from "utils/functions";
 import LoadingComponent from "components/LoadingComponent";
 let count = 0;

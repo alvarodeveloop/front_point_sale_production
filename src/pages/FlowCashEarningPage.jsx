@@ -22,12 +22,12 @@ import { API_URL } from 'utils/constants'
 import { confirmAlert } from 'react-confirm-alert'; // Import
 
 import FileSaver from 'file-saver';
-import 'styles/components/modalComponents.css'
+import 'styles/components/modalComponents.scss'
 import {
   FaCloudDownloadAlt,
   FaPlusCircle
 } from 'react-icons/fa'
-import {showPriceWithDecimals} from 'utils/functions'
+import { showPriceWithDecimals } from 'utils/functions'
 import { connect } from 'react-redux'
 import LoadingComponent from 'components/LoadingComponent'
 
@@ -35,16 +35,16 @@ const FlowCashEarningPage = (props) => {
 
   const [earnings, setEarnings] = useState([])
   const [earningForm, setEarningForm] = useState({
-    name : '',
-    description : '',
+    name: '',
+    description: '',
     amount: '',
     id_flow_cash_account: '',
     id_flow_cash_center_cost: '',
     date_execution: '',
     is_recurrent: false,
     date_execution: '',
-    document_1 : '',
-    document_2 : '',
+    document_1: '',
+    document_2: '',
   })
 
   const [showForm, setShowForm] = useState(false)
@@ -57,12 +57,12 @@ const FlowCashEarningPage = (props) => {
 
   useEffect(() => {
     fetchData()
-  },[props.id_branch_office])
+  }, [props.id_branch_office])
 
   const cleanForm = () => {
     setEarningForm({
-      name : '',
-      description : '',
+      name: '',
+      description: '',
       amount: '',
       id_flow_cash_account: '',
       id_flow_cash_center_cost: '',
@@ -79,7 +79,7 @@ const FlowCashEarningPage = (props) => {
 
   const confirmDeleteRegister = id => {
     setDisplayLoading(true)
-    axios.delete(API_URL+'flow_cash_earning/'+id).then(result => {
+    axios.delete(API_URL + 'flow_cash_earning/' + id).then(result => {
       toast.success('Registro Eliminado')
       fetchData()
       props.fetchData()
@@ -120,10 +120,10 @@ const FlowCashEarningPage = (props) => {
 
   const downloadDocument = doc => {
     setDisplayLoading(true)
-    axios.get(API_URL+'flow_cash_doc_download/'+doc,{
+    axios.get(API_URL + 'flow_cash_doc_download/' + doc, {
       responseType: 'blob'
     }).then(result => {
-      FileSaver.saveAs(result.data,doc);
+      FileSaver.saveAs(result.data, doc);
       setDisplayLoading(false)
     }).catch(err => {
       setDisplayLoading(false)
@@ -132,7 +132,7 @@ const FlowCashEarningPage = (props) => {
   }
 
   const fetchData = () => {
-    axios.get(API_URL+'flow_cash_earning').then(result => {
+    axios.get(API_URL + 'flow_cash_earning').then(result => {
       setEarnings(result.data)
       setDisplayLoading(false)
     }).catch(err => {
@@ -146,9 +146,9 @@ const FlowCashEarningPage = (props) => {
   }
 
   const handleChangeFile = e => {
-    if(e.target.id === 'adjunt1'){
+    if (e.target.id === 'adjunt1') {
       setFileUpload(e.target.files)
-    }else{
+    } else {
       setFileUpload2(e.target.files)
     }
   }
@@ -168,27 +168,27 @@ const FlowCashEarningPage = (props) => {
     }
 
     let newFormData = new FormData()
-    Object.keys(earningForm).forEach((v,i) => {
-      newFormData.append(v,earningForm[v])
+    Object.keys(earningForm).forEach((v, i) => {
+      newFormData.append(v, earningForm[v])
     })
 
-    if(fileUpload){
-      newFormData.append('delete_adjunt_1',true)
+    if (fileUpload) {
+      newFormData.append('delete_adjunt_1', true)
       Object.keys(fileUpload).forEach((item, i2) => {
-        newFormData.append('documents',fileUpload[item])
+        newFormData.append('documents', fileUpload[item])
       });
     }
 
-    if(fileUpload2){
-      newFormData.append('delete_adjunt_2',true)
+    if (fileUpload2) {
+      newFormData.append('delete_adjunt_2', true)
       Object.keys(fileUpload2).forEach((item, i2) => {
-        newFormData.append('documents',fileUpload2[item])
+        newFormData.append('documents', fileUpload2[item])
       });
     }
 
     setDisplayLoading(true)
-    if(earningForm.id){
-      axios.put(API_URL+'flow_cash_earning/'+earningForm.id,newFormData).then(result => {
+    if (earningForm.id) {
+      axios.put(API_URL + 'flow_cash_earning/' + earningForm.id, newFormData).then(result => {
         toast.success('Ingreso Modificado')
         cleanForm()
         displayForm()
@@ -199,8 +199,8 @@ const FlowCashEarningPage = (props) => {
         setDisplayLoading(false)
         props.tokenExpired(err)
       })
-    }else{
-      axios.post(API_URL+'flow_cash_earning',newFormData).then(result => {
+    } else {
+      axios.post(API_URL + 'flow_cash_earning', newFormData).then(result => {
         toast.success('Ingreso Agregado')
         cleanForm()
         displayForm()
@@ -216,8 +216,8 @@ const FlowCashEarningPage = (props) => {
 
   const modifyRegister = data => {
     setEarningForm({
-      name : data.name,
-      description : data.description,
+      name: data.name,
+      description: data.description,
       amount: data.amount,
       id_flow_cash_account: data.id_flow_cash_account,
       id_flow_cash_center_cost: data.id_flow_cash_center_cost,
@@ -226,17 +226,17 @@ const FlowCashEarningPage = (props) => {
       date_execution: data.date_execution ? moment(data.date_execution).format('YYYY-MM-DD') : '',
       document_1: data.document_1,
       document_2: data.document_2,
-      id : data.id
+      id: data.id
     })
     displayForm()
   }
 
   const onChange = e => {
-    if(e.target.name === 'is_recurrent'){
+    if (e.target.name === 'is_recurrent') {
       let val = e.target.value === 'true' ? true : false
-      setEarningForm({...earningForm, [e.target.name] : val })
-    }else{
-      setEarningForm({...earningForm, [e.target.name] : e.target.value })
+      setEarningForm({ ...earningForm, [e.target.name]: val })
+    } else {
+      setEarningForm({ ...earningForm, [e.target.name]: e.target.value })
     }
   }
 
@@ -253,7 +253,7 @@ const FlowCashEarningPage = (props) => {
         </Container>
       ) : (
         <Container>
-          <br/><br/>
+          <br /><br />
           {showForm ? (
             <Form onSubmit={handleSubmit} noValidate validated={validated}>
               <Row>
@@ -281,7 +281,7 @@ const FlowCashEarningPage = (props) => {
                 >
                   <option value="">--Seleccione--</option>
                   {
-                    props.accounts.map( (v,i) => (
+                    props.accounts.map((v, i) => (
                       <option key={i} value={v.id}>{v.account_name}</option>
                     ))
                   }
@@ -294,7 +294,7 @@ const FlowCashEarningPage = (props) => {
                 >
                   <option value="">--Seleccione--</option>
                   {
-                    props.centerCostes.map( (v,i) => (
+                    props.centerCostes.map((v, i) => (
                       <option key={i} value={v.id}>{v.name}</option>
                     ))
                   }
@@ -304,7 +304,7 @@ const FlowCashEarningPage = (props) => {
                 <Col sm={12} md={12} lg={12}>
                   <Accordion>
                     <Card>
-                      <Accordion.Toggle as={Card.Header} eventKey="0" style={{ backgroundColor: 'black', color: 'lightblue'}}>
+                      <Accordion.Toggle as={Card.Header} eventKey="0" style={{ backgroundColor: 'black', color: 'lightblue' }}>
                         Avanzado, hacer click para desplegar campos
                       </Accordion.Toggle>
                       <Accordion.Collapse eventKey="0">
@@ -335,24 +335,24 @@ const FlowCashEarningPage = (props) => {
                           </Row>
                           <Row>
                             <Col sm={4} md={4} lg={4}>
-                              <br/>
-                                <Button size="sm" variant="info" block={true} onClick={() =>  handleAdjunto('adjunt1')  }>Adjunto1</Button>
-                                <input type="file" id="adjunt1" onChange={handleChangeFile} style={{display: 'none'}} />
-                                {
-                                  earningForm.document_1 && earningForm.id ? (
-                                    <Button size="sm" variant="link" onClick={() => downloadDocument(earningForm.document_1) }>Descargar Adjunto1</Button>
-                                  ) : ''
-                                }
+                              <br />
+                              <Button size="sm" variant="info" block={true} onClick={() => handleAdjunto('adjunt1')}>Adjunto1</Button>
+                              <input type="file" id="adjunt1" onChange={handleChangeFile} style={{ display: 'none' }} />
+                              {
+                                earningForm.document_1 && earningForm.id ? (
+                                  <Button size="sm" variant="link" onClick={() => downloadDocument(earningForm.document_1)}>Descargar Adjunto1</Button>
+                                ) : ''
+                              }
                             </Col>
                             <Col sm={4} md={4} lg={4}>
-                              <br/>
-                                <Button size="sm" variant="info" block={true} onClick={() => handleAdjunto('adjunt2') }>Adjunto2</Button>
-                                <input type="file" id="adjunt2" onChange={handleChangeFile} style={{display: 'none'}} />
-                                  {
-                                    earningForm.document_1 && earningForm.id ? (
-                                      <Button size="sm" variant="link" onClick={() => downloadDocument(earningForm.document_2) }>Descargar Adjunto2</Button>
-                                    ) : ''
-                                  }
+                              <br />
+                              <Button size="sm" variant="info" block={true} onClick={() => handleAdjunto('adjunt2')}>Adjunto2</Button>
+                              <input type="file" id="adjunt2" onChange={handleChangeFile} style={{ display: 'none' }} />
+                              {
+                                earningForm.document_1 && earningForm.id ? (
+                                  <Button size="sm" variant="link" onClick={() => downloadDocument(earningForm.document_2)}>Descargar Adjunto2</Button>
+                                ) : ''
+                              }
                             </Col>
                           </Row>
                         </Card.Body>
@@ -362,14 +362,14 @@ const FlowCashEarningPage = (props) => {
                 </Col>
               </Row>
               <Row className="justify-content-center">
-                  <Col sm={4} md={4} lg={4} xs={12}>
-                    <br/>
-                    <Button size="sm" type="submit" variant="primary" block={true}>Guardar Ingreso</Button>
-                  </Col>
-                  <Col sm={4} md={4} lg={4} xs={12}>
-                    <br/>
-                    <Button size="sm" type="button" variant="info" block={true} onClick={displayForm}>Volver a la Tabla</Button>
-                  </Col>
+                <Col sm={4} md={4} lg={4} xs={12}>
+                  <br />
+                  <Button size="sm" type="submit" variant="primary" block={true}>Guardar Ingreso</Button>
+                </Col>
+                <Col sm={4} md={4} lg={4} xs={12}>
+                  <br />
+                  <Button size="sm" type="button" variant="info" block={true} onClick={displayForm}>Volver a la Tabla</Button>
+                </Col>
               </Row>
             </Form>
           ) : (
@@ -387,43 +387,43 @@ const FlowCashEarningPage = (props) => {
                   <Col sm={12} md={12} lg={12} xs={12}>
                     <Table data={earnings} columns={[
 
-                          {
-                            Header: 'Nombre',
-                            accessor: 'name'
-                          },
-                          {
-                            Header: 'Descripción',
-                            accessor: 'description'
-                          },
-                          {
-                            Header: 'Monto',
-                            accessor: 'amount',
-                            Cell : props1 => {
-                              return <Badge variant="danger" className="font-badge">{showPriceWithDecimals( props.configGeneral,props1.cell.row.original.amount )}$</Badge>
-                            }
-                          },
-                          {
-                            Header: 'Cuenta',
-                            accessor: props1 => [props1.account.account_name]
-                          },
-                          {
-                            Header: 'Centro de Costros',
-                            accessor: props1 => [props1.centerCoste.name]
-                          },
-                          {
-                            Header: 'Acciones',
-                            Cell: props1 => {
-                              const id = props1.cell.row.original.id
-                              return (
-                                <DropdownButton size="sm" id={'drop'+id} title="Seleccione"  block="true">
-                                  <Dropdown.Item onClick={() => seeDetails(props1.cell.row.original)}>Ver Detalle</Dropdown.Item>
-                                  <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
-                                  <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
-                                </DropdownButton>
-                              )
-                            }
-                          }
-                        ]} />
+                      {
+                        Header: 'Nombre',
+                        accessor: 'name'
+                      },
+                      {
+                        Header: 'Descripción',
+                        accessor: 'description'
+                      },
+                      {
+                        Header: 'Monto',
+                        accessor: 'amount',
+                        Cell: props1 => {
+                          return <Badge variant="danger" className="font-badge">{showPriceWithDecimals(props.configGeneral, props1.cell.row.original.amount)}$</Badge>
+                        }
+                      },
+                      {
+                        Header: 'Cuenta',
+                        accessor: props1 => [props1.account.account_name]
+                      },
+                      {
+                        Header: 'Centro de Costros',
+                        accessor: props1 => [props1.centerCoste.name]
+                      },
+                      {
+                        Header: 'Acciones',
+                        Cell: props1 => {
+                          const id = props1.cell.row.original.id
+                          return (
+                            <DropdownButton size="sm" id={'drop' + id} title="Seleccione" block="true">
+                              <Dropdown.Item onClick={() => seeDetails(props1.cell.row.original)}>Ver Detalle</Dropdown.Item>
+                              <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
+                              <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
+                            </DropdownButton>
+                          )
+                        }
+                      }
+                    ]} />
                   </Col>
                 </Row>
               </Col>
@@ -442,38 +442,38 @@ const FlowCashEarningPage = (props) => {
                 Detalles del Egreso
               </Modal.Title>
             </Modal.Header>
-              <Modal.Body>
-                <Row className="justify-content-center">
-                  <Col sm={8} md={8} lg={8} xs={8}>
-                    {
-                      Object.keys(detailExpensive).length > 0 ? (
-                        <ul className="list-group">
-                          <li className="list-group-item text-center"><b>Fecha de Ejecución:</b> { moment(detailExpensive.date_execution).format('DD-MM-YYYY') } </li>
-                          <li className="list-group-item text-center"><b>¿Es recurrente?:</b> { detailExpensive.is_recurrent ? 'Si' : 'No' } </li>
-                          {
-                            detailExpensive.document_1 ? (
-                              <li className="list-group-item text-center">
-                                <b>Descargar Archivo Adjunto1:</b>
-                                <Button size="sm" variant="link" onClick={() => downloadDocument(detailExpensive.document_1) }>Descargar <FaCloudDownloadAlt /> </Button>
-                              </li>
-                            ) : ''
-                          }
-
-                          {
-                            detailExpensive.document_2 ? (
-                              <li className="list-group-item text-center">
-                                <b>Descargar Archivo Adjunto2:</b>
-                                <Button size="sm" variant="link" onClick={() => downloadDocument(detailExpensive.document_2) }>Descargar <FaCloudDownloadAlt /> </Button>
+            <Modal.Body>
+              <Row className="justify-content-center">
+                <Col sm={8} md={8} lg={8} xs={8}>
+                  {
+                    Object.keys(detailExpensive).length > 0 ? (
+                      <ul className="list-group">
+                        <li className="list-group-item text-center"><b>Fecha de Ejecución:</b> {moment(detailExpensive.date_execution).format('DD-MM-YYYY')} </li>
+                        <li className="list-group-item text-center"><b>¿Es recurrente?:</b> {detailExpensive.is_recurrent ? 'Si' : 'No'} </li>
+                        {
+                          detailExpensive.document_1 ? (
+                            <li className="list-group-item text-center">
+                              <b>Descargar Archivo Adjunto1:</b>
+                              <Button size="sm" variant="link" onClick={() => downloadDocument(detailExpensive.document_1)}>Descargar <FaCloudDownloadAlt /> </Button>
                             </li>
-                            ) : ''
-                          }
+                          ) : ''
+                        }
 
-                        </ul>
-                      ) : ''
-                    }
-                  </Col>
-                </Row>
-              </Modal.Body>
+                        {
+                          detailExpensive.document_2 ? (
+                            <li className="list-group-item text-center">
+                              <b>Descargar Archivo Adjunto2:</b>
+                              <Button size="sm" variant="link" onClick={() => downloadDocument(detailExpensive.document_2)}>Descargar <FaCloudDownloadAlt /> </Button>
+                            </li>
+                          ) : ''
+                        }
+
+                      </ul>
+                    ) : ''
+                  }
+                </Col>
+              </Row>
+            </Modal.Body>
             <Modal.Footer>
               <Button size="sm" onClick={handleOnHideModal}>Cerrar</Button>
             </Modal.Footer>
@@ -495,8 +495,8 @@ FlowCashEarningPage.defaultProps = {
     type: 'text',
     required: true,
     name: 'name',
-    label : 'Nombre',
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    label: 'Nombre',
+    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -505,9 +505,9 @@ FlowCashEarningPage.defaultProps = {
     type: 'textarea',
     required: true,
     name: 'description',
-    label : 'Descripción',
+    label: 'Descripción',
     rows: '2',
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -516,9 +516,9 @@ FlowCashEarningPage.defaultProps = {
     type: 'number',
     required: true,
     name: 'amount',
-    label : 'Monto',
+    label: 'Monto',
     step: 'any',
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -527,8 +527,8 @@ FlowCashEarningPage.defaultProps = {
     type: 'select',
     required: true,
     name: 'id_flow_cash_account',
-    label : 'Cuenta',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    label: 'Cuenta',
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
     messageErrors: [
       'Requerido*'
     ],
@@ -537,8 +537,8 @@ FlowCashEarningPage.defaultProps = {
     type: 'select',
     required: true,
     name: 'id_flow_cash_center_cost',
-    label : 'Centro de Costo',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    label: 'Centro de Costo',
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
     messageErrors: [
       'Requerido*'
     ],
@@ -547,25 +547,25 @@ FlowCashEarningPage.defaultProps = {
     type: 'date',
     required: false,
     name: 'date_execution',
-    label : 'Fecha de Ejecución',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    label: 'Fecha de Ejecución',
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
     messageErrors: [
       'Requerido*'
     ],
   },
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   return {
-    id_branch_office : state.enterpriseSucursal.id_branch_office,
-    id_enterprise : state.enterpriseSucursal.id_enterprise,
-    configGeneral : state.configs.config,
+    id_branch_office: state.enterpriseSucursal.id_branch_office,
+    id_enterprise: state.enterpriseSucursal.id_enterprise,
+    configGeneral: state.configs.config,
   }
 }
 
 FlowCashEarningPage.propTypes = {
   id_branch_office: PropTypes.string.isRequired,
-  id_enterprise : PropTypes.string.isRequired,
+  id_enterprise: PropTypes.string.isRequired,
 }
 
-export default connect(mapStateToProps,{})(FlowCashEarningPage)
+export default connect(mapStateToProps, {})(FlowCashEarningPage)

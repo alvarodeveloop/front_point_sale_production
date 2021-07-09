@@ -24,8 +24,8 @@ import { confirmAlert } from "react-confirm-alert"; // Import
 import * as XLSX from "xlsx";
 import FileSaver from "file-saver";
 import * as moment from "moment-timezone";
-import "styles/components/modalComponents.css";
-import "styles/pages/productStyle.css";
+import "styles/components/modalComponents.scss";
+import "styles/pages/productStyle.scss";
 import { formatNumber, s2ab } from "utils/functions";
 import layoutHelpers from "shared/layouts/helpers";
 import LoadingComponent from "components/LoadingComponent";
@@ -288,9 +288,9 @@ const ProductPage = (props) => {
       .then((result) => {
         toast.success(
           "Registros importados con éxito : " +
-            result.data.positivo +
-            "\n registros no importados : " +
-            result.data.negativo
+          result.data.positivo +
+          "\n registros no importados : " +
+          result.data.negativo
         );
         fetchData(true);
       })
@@ -326,9 +326,9 @@ const ProductPage = (props) => {
       .then((result) => {
         toast.success(
           "Registros editados con éxito : " +
-            result.data.positivo +
-            "\n registros no editados : " +
-            result.data.negativo
+          result.data.positivo +
+          "\n registros no editados : " +
+          result.data.negativo
         );
         fetchData(true);
       })
@@ -686,7 +686,7 @@ const ProductPage = (props) => {
             </Col>
             <Col sm={6} md={6} lg={6}>
               {globalState.productDetail.gallery &&
-              globalState.productDetail.gallery.length > 0 ? (
+                globalState.productDetail.gallery.length > 0 ? (
                 <Row>
                   <Col sm={12} md={12} lg={12} xs={12}>
                     <h4 className="text-center title_principal">

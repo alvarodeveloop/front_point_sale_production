@@ -10,7 +10,7 @@ import {
 } from 'react-bootstrap'
 import { FaUserCircle, FaSave, FaSearch } from 'react-icons/fa';
 import { API_URL } from 'utils/constants'
-import 'styles/components/modalComponents.css';
+import 'styles/components/modalComponents.scss';
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import InputField from 'components/input/InputComponent'
