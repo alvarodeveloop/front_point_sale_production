@@ -7,8 +7,6 @@ import {
   Form,
   Row,
   Col,
-  DropdownButton,
-  Dropdown
 } from 'react-bootstrap'
 import { FaPlusCircle } from 'react-icons/fa'
 import InputField from 'components/input/InputComponent'
