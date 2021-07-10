@@ -98,7 +98,7 @@ const MainContainer = (props) => {
   };
 
   const tokenRefreshIntervalHandler = (config) => {
-    if (config && config.is_syncronized) {
+    if (config) {
       intervalTokenRefresh = window.setInterval(() => {
         axios
           .get(API_URL + "refreshTokenNuxo")
