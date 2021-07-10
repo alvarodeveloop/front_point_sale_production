@@ -1,0 +1,64 @@
+.toggleButtonMargin{
+    margin-left: -50px;
+    margin-right: 100px;
+}
+
+.buttonNavbar{
+    width: 170px;
+}
+
+.marginToggleButton{
+    margin-right: 100px;
+}
+
+.border_success {
+    border: 1px solid rgb(76, 138, 233);
+    box-shadow: 0px 0px 5px 5px rgb(76, 138, 233);
+    color: white;
+  }
+
+  .imageRotateHorizontal {
+    -moz-animation: spinHorizontal 13s infinite linear;
+    -o-animation: spinHorizontal 13s infinite linear;
+    -webkit-animation: spinHorizontal 13s infinite linear;
+    animation: spinHorizontal 13s infinite linear;
+  }
+
+  @keyframes spinHorizontal {
+    0% {
+      transform: rotateY(0deg);
+    }
+    100% {
+      transform: rotateY(360deg);
+    }
+  }
+
+@media (max-width: 764px) {
+    .toggleButtonMargin{
+        margin-left: -140px;
+        margin-right: -40px;
+    }
+
+    .floatinUserIcon{
+        position: absolute !important;
+        right: 40px !important;
+        top: 30px !important;
+    }
+    
+}
+
+@media (max-width: 574px) {
+    .toggleButtonMargin{
+        margin-left: -85px;
+    }   
+    .buttonNavbar{
+        width: 120px;
+    }
+
+    .floatinUserIcon{
+        position: absolute !important;
+        right: 40px !important;
+        top: 30px !important;
+    }
+
+}

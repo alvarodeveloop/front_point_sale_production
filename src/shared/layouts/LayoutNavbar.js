@@ -11,6 +11,8 @@ import {
   Button,
   Row,
   Col,
+  OverlayTrigger,
+  Tooltip
 } from "react-bootstrap";
 import {
   setEnterprises,
@@ -26,36 +28,16 @@ import { API_URL } from "utils/constants";
 import styled from "styled-components";
 import { setConfigStore, setConfig } from "actions/configs";
 import { setAuthorizationToken } from "utils/functions";
-import { FaUser } from "react-icons/fa";
+import { FaUser, FaSearch } from "react-icons/fa";
 import "styles/components/modalComponents.scss";
-
-const Styles = styled.div`
-  .border_success {
-    border: 1px solid rgb(76, 138, 233);
-    box-shadow: 0px 0px 5px 5px rgb(76, 138, 233);
-    color: white;
-  }
-
-  .imageRotateHorizontal {
-    -moz-animation: spinHorizontal 13s infinite linear;
-    -o-animation: spinHorizontal 13s infinite linear;
-    -webkit-animation: spinHorizontal 13s infinite linear;
-    animation: spinHorizontal 13s infinite linear;
-  }
-
-  @keyframes spinHorizontal {
-    0% {
-      transform: rotateY(0deg);
-    }
-    100% {
-      transform: rotateY(360deg);
-    }
-  }
-`;
+import 'styles/components/navBar.scss';
 
 const LayoutNavbar = (props) => {
   const [isRTL, setIsRTL] = useState(
     document.documentElement.getAttribute("dir") === "rtl"
+  );
+  const [isOpenModalSucursal, setIsOpenModalSucursal] = useState(
+    false
   );
   const [objectMessage, setObjectMessage] = useState({
     displayMessage: false,
@@ -83,6 +65,8 @@ const LayoutNavbar = (props) => {
   const handleSelectEnterpriseBranch = async (e, type) => {
     e.persist();
     let val = e.target.value ? e.target.value : false;
+    if (isOpenModalSucursal) setIsOpenModalSucursal(false);
+
     setObjectMessage({ ...objectMessage, displayMessage: true });
     try {
       if (type === "enterprise") {
@@ -151,7 +135,9 @@ const LayoutNavbar = (props) => {
     let videoSelected = props.videosTutorial.find(
       (v) => +v.id === +e.target.value
     );
+    if (isOpenModalSucursal) setIsOpenModalSucursal(false);
     displayModalHandler();
+
     setTimeout(() => {
       let videoTag = document.getElementById("containerIframe");
       let descriptionTag = document.getElementById("descriptionVideoTag");
@@ -173,12 +159,16 @@ const LayoutNavbar = (props) => {
     setDisplayModal(!displayModal);
   };
 
+  const openModalSucursalHandler = () => {
+    setIsOpenModalSucursal(!isOpenModalSucursal);
+  }
+
   return (
-    <Styles>
+    <>
       <Navbar
         bg={props.navbarBg}
         expand="md"
-        className={`layout-navbar align-items-lg-center container-p-x ${!objectMessage.borderSuccess ? "" : "border_success"
+        className={`layout-navbar align-items-center justify-content-between container-p-x ${!objectMessage.borderSuccess ? "" : "border_success"
           }`}
         style={{ height: "80px" }}
       >
@@ -194,7 +184,7 @@ const LayoutNavbar = (props) => {
 
         {/* Sidenav toggle */}
         {props.sidenavToggle && (
-          <Nav className="align-items-lg-center mr-auto mr-lg-4">
+          <Nav className="align-items-lg-center toggleButtonMargin">
             <Nav.Item
               as="a"
               className="nav-item nav-link px-0 ml-2 ml-lg-0"
@@ -320,14 +310,28 @@ const LayoutNavbar = (props) => {
             ""
           )}
         </Nav>
-        <Nav>
-          <Button variant="secondary"></Button>
+        <Nav className="align-items-center justify-content-center  d-lg-none d-block">
+          <OverlayTrigger
+            placement={"bottom"}
+            overlay={
+              <Tooltip id="tooltipConfigPrice">
+                hacer click para ver las empresas, sucursales y tutoriales disponibles
+              </Tooltip>
+            }
+          >
+            <Button variant="secondary" onClick={openModalSucursalHandler} className="buttonNavbar" size="sm">
+              <span className="d-block d-sm-none"><FaSearch /></span>
+              <span className="d-none d-sm-block d-md-none">Sucursales <FaSearch /></span>
+              <span className="d-none d-md-block">Ver sucursales y tutoriales</span>
+            </Button>
+          </OverlayTrigger>
         </Nav>
         <Nav>
           <Dropdown
             as={Nav.Item}
-            className="demo-navbar-user"
+            className="demo-navbar-user floatinUserIcon"
             alignRight={isRTL}
+            drop="down"
           >
             <Dropdown.Toggle as={Nav.Link}>
               <span className="d-inline-flex flex-lg-row-reverse align-items-center align-middle">
@@ -336,13 +340,13 @@ const LayoutNavbar = (props) => {
                   className="d-block ui-w-30 rounded-circle"
                   alt="User"
                 />
-                <span className="px-1 mr-lg-2 ml-2 ml-lg-0">
+                <span className="px-1 mr-lg-2 ml-2 ml-lg-0 d-none d-md-block">
                   {props.userConnect.email}
                 </span>
               </span>
             </Dropdown.Toggle>
 
-            <Dropdown.Menu>
+            <Dropdown.Menu style={{ position: "absolute" }}>
               <Dropdown.Item
                 hred="#"
                 onClick={() => props.history.replace("/profile")}
@@ -395,7 +399,108 @@ const LayoutNavbar = (props) => {
           </Button>
         </Modal.Footer>
       </Modal>
-    </Styles>
+      <Modal
+        show={isOpenModalSucursal}
+        onHide={openModalSucursalHandler}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton className="header_dark">
+          <Modal.Title id="contained-modal-title-vcenter">
+            Modal de sucursales y tutoriales
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            <Col>
+              <InputField
+                type="select"
+                label={
+                  <span style={{ color: "rgb(198, 69, 41)" }}>
+                    Empresas
+                  </span>
+                }
+                name="enterprise"
+                required={false}
+                value={props.enterpriseSucursal.id_enterprise}
+                messageErrors={[]}
+                cols="col-md-12 col-lg-12 col-sm-12"
+                handleChange={(e) =>
+                  handleSelectEnterpriseBranch(e, "enterprise")
+                }
+              >
+                {props.enterpriseSucursal.enterprises.map((v, i) => (
+                  <option key={i} value={v.id}>
+                    {v.bussines_name}
+                  </option>
+                ))}
+              </InputField>
+            </Col>
+            <Col>
+              <InputField
+                type="select"
+                label={
+                  <span style={{ color: "rgb(198, 69, 41)" }}>
+                    Sucursales
+                  </span>
+                }
+                name="branch_office"
+                required={false}
+                value={props.enterpriseSucursal.id_branch_office}
+                messageErrors={[]}
+                cols="col-md-12 col-lg-12 col-sm-12"
+                handleChange={(e) =>
+                  handleSelectEnterpriseBranch(e, "branch_office")
+                }
+              >
+                <option value={""}>--Seleccione--</option>
+                {props.enterpriseSucursal.branchOffices.map((v, i) => (
+                  <option key={i} value={v.id}>
+                    {v.name}
+                  </option>
+                ))}
+              </InputField>
+            </Col>
+          </Row>
+          {props.videosTutorial.length ? (
+
+            <Row>
+              <Col sm={8} md={8} xs={10}>
+                <InputField
+                  type="select"
+                  label={
+                    <span style={{ color: "rgb(198, 69, 41)" }}>Tutoriales</span>
+                  }
+                  name="tutoNavbar"
+                  required={false}
+                  messageErrors={[]}
+                  cols="col-12"
+                  handleChange={(e) => displayTutoModalHandler(e)}
+                >
+                  <option value="">--Seleccione--</option>
+                  {props.videosTutorial.map((v, i) => (
+                    <option key={i} value={v.id}>
+                      {v.name}
+                    </option>
+                  ))}
+                </InputField>
+              </Col>
+            </Row>
+          ) : ""}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="danger"
+            size="md"
+            onClick={openModalSucursalHandler}
+            type="button"
+          >
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 
