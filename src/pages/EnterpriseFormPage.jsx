@@ -155,7 +155,6 @@ const EnterpriseFormPage = (props) => {
     setGlobalState({ ...globalState, displayLoading: true });
     if (data.id) {
       let backup = data.plan_backup;
-
       axios
         .put(API_URL + "enterprise/" + data.id, data)
         .then(async (result) => {
@@ -294,29 +293,28 @@ const EnterpriseFormPage = (props) => {
         }
         )
         .then((result) => {
-          let sender = result.data.sender;
+          let receiver = result.data.receiver;
 
           setGlobalState((currentState) => {
             return Object.assign({}, currentState, {
               dataForm: {
                 ...currentState.dataForm,
                 rut: val,
-                bussines_name: sender.businessName,
-                email_enterprise: sender.email,
-                address: sender.addresses && sender.addresses.length ? sender.addresses[0].address.value : "",
-                addressArray: sender.addresses && sender.addresses.length ? sender.addresses : "",
-                comuna: sender.addresses && sender.addresses.length ? sender.addresses[0].commune : "",
-                city: sender.addresses && sender.addresses.length ? sender.addresses[0].city : "",
-                spin: sender.concept,
-                economic_activity: sender.economicActivity && sender.economicActivity.length ? sender.economicActivity[0].value : "",
-                economicActivityArray: sender.economicActivity && sender.economicActivity.length ? sender.economicActivity : "",
-                sale_type: sender.saleType && sender.saleType.length ? sender.saleType[0].value : "",
-                saleTypeArray: sender.saleType && sender.saleType.length ? sender.saleType : "",
-                phone: sender.phone,
-                name: currentState.name ? currentState.name : sender.businessName,
+                bussines_name: receiver.businessName,
+                address: receiver.addresses && receiver.addresses.length ? receiver.addresses[0].address.value : "",
+                addressArray: receiver.addresses && receiver.addresses.length ? receiver.addresses : "",
+                comuna: receiver.addresses && receiver.addresses.length ? receiver.addresses[0].commune : "",
+                city: receiver.addresses && receiver.addresses.length ? receiver.addresses[0].city : "",
+                //spin: receiver.concept,
+                /*economic_activity: receiver.economicActivity && receiver.economicActivity.length ? receiver.economicActivity[0].value : "",
+                economicActivityArray: receiver.economicActivity && receiver.economicActivity.length ? receiver.economicActivity : "",
+                sale_type: receiver.saleType && receiver.saleType.length ? receiver.saleType[0].value : "",
+                saleTypeArray: receiver.saleType && receiver.saleType.length ? receiver.saleType : "",
+                phone: receiver.phone,*/
+                name: currentState.name ? currentState.name : receiver.businessName,
               },
               displayLoading: false,
-              readonly: sender.addresses && sender.addresses.length ? true : false
+              //readonly: receiver.addresses && receiver.addresses.length ? true : false
             });
           });
         })
@@ -562,7 +560,7 @@ const EnterpriseFormPage = (props) => {
                         value={globalState.dataForm.phone}
                         handleChange={onChange}
                       />
-                      {globalState.dataForm.saleTypeArray.length ? (
+                      {/*globalState.dataForm.saleTypeArray.length ? (
                         <InputField
                           type="select"
                           label="Tipo de venta"
@@ -617,7 +615,7 @@ const EnterpriseFormPage = (props) => {
                           value={globalState.dataForm.economic_activity}
                           handleChange={onChange}
                         />
-                      )}
+                      )*/}
 
                     </Row>
                   </Col>
