@@ -24,6 +24,8 @@ const ConfigGeneralPage = (props) => {
     clave_login_sii: "", // clave para hacer login en el  sii
     clave_sii: "", // firma del sii
     logo: "",
+    username: "",
+    password_nuxo: ""
   });
   const [isOpenModal, setIsOpenModal] = useState(false);
 
@@ -48,6 +50,7 @@ const ConfigGeneralPage = (props) => {
             logo: result[0].data.logo,
             is_syncronized: result[0].data.is_syncronized,
             username: result[0].data.username,
+            password_nuxo: result[0].data.password_nuxo
           });
         }
         setDisplayLoading(false);
@@ -141,7 +144,7 @@ const ConfigGeneralPage = (props) => {
             </Col>
           </Row>
           <Row className="justify-content-center align-items-center">
-            <Col md={7} sm={7} lg={7} xs={7}>
+            <Col md={7} sm={10} lg={7} xs={12}>
               <ul>
                 {/*<li className="d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Simbolo de moneda: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">{config.simbolo_moneda}</Badge></li>
                 <li className="d-flex" style={{justifyContent: 'space-between'}}><b><span style={{color: "rgb(203, 44, 67)"}}>*  </span>Mostrar decimales en los precios: </b><Badge style={{backgroundColor: 'rgb(241, 194, 86)', color: "white"}} className="font-badge">{config.active_price_decimals}</Badge></li>
@@ -219,7 +222,8 @@ const ConfigGeneralPage = (props) => {
                 </li>
               </ul>
             </Col>
-            <Col sm={5} md={5} lg={5}>
+            <Col sm={10} md={5} lg={5}>
+
               {config.simbolo_moneda ? (
                 <Button
                   size="sm"

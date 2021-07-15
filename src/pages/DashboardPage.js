@@ -4,8 +4,8 @@ import Page from 'components/Page';
 import EnterpriseDashboardComponent from 'components/dashboards/EnterpriseDashboardComponent'
 import MasterDashboardComponent from 'components/dashboards/MasterDashboardComponent'
 
-import {connect} from 'react-redux'
-import {Row,Col,Button,Container} from 'react-bootstrap'
+import { connect } from 'react-redux'
+import { Row, Col, Button, Container } from 'react-bootstrap'
 
 const DashboardPage = props => {
 
@@ -19,7 +19,7 @@ const DashboardPage = props => {
       title="Dashboard"
       breadcrumbs={[{ name: 'Dashboard', active: true }]}
     >
-      {props.user.id_rol  > 1 ? (
+      {props.user.id_rol > 1 ? (
         <React.Fragment>
           {props.id_enterprise ? (
             <React.Fragment>
@@ -61,13 +61,13 @@ DashboardPage.propTypes = {
   id_enterprise: PropTypes.string,
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   return {
-    user : state.auth.user,
-    configGeneral : state.configs.config,
-    id_branch_office : state.enterpriseSucursal.id_branch_office,
-    id_enterprise : state.enterpriseSucursal.id_enterprise,
+    user: state.auth.user,
+    configGeneral: state.configs.config,
+    id_branch_office: state.enterpriseSucursal.id_branch_office,
+    id_enterprise: state.enterpriseSucursal.id_enterprise,
   }
 }
 
-export default connect(mapStateToProps,{})(DashboardPage);
+export default connect(mapStateToProps, {})(DashboardPage);

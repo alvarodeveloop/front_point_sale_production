@@ -237,7 +237,7 @@ const EnterpriseDashboardComponent = (props) => {
       ) : (
         <Row className="animate__animated animate__fadeInUp">
           <Col sm={12} md={12} lg={12}>
-            <Row>
+            <Row className="d-none d-md-flex">
               <Col>
                 <Accordion>
                   <Card>
@@ -329,7 +329,7 @@ const EnterpriseDashboardComponent = (props) => {
               </Col>
             </Row>
             <br />
-            <Row className="animate__animated animate__fadeInLeft">
+            <Row className="animate__animated animate__fadeInLeft justify-content-center d-none d-md-flex">
               <CardStatusComponent
                 value={dataDh.cardStadistics.total_cotizacion}
                 styleInline={"lnr lnr-book"}
@@ -362,15 +362,15 @@ const EnterpriseDashboardComponent = (props) => {
               />
             </Row>
             <br />
-            <Row>
-              <Col style={{ height: "200px" }}>
+            <Row className="mb-3 mb-sm-0">
+              <Col xs={12} md={6} lg={6} xl={6} sm={6} style={{ height: "200px" }}>
                 <Doughnut
                   data={data_donut_payments}
                   redraw={redraw}
                   options={optionsBar}
                 />
               </Col>
-              <Col>
+              <Col xs={12} md={6} lg={6} xl={6} sm={6} className="d-none d-sm-block">
                 <table className="table table-striped">
                   <thead>
                     <tr style={{ backgroundColor: "#ca3428", color: "white" }}>
@@ -405,8 +405,8 @@ const EnterpriseDashboardComponent = (props) => {
                 </table>
               </Col>
             </Row>
-            <Row className="animate__animated animate__fadeInRight">
-              <Col>
+            <Row className="animate__animated animate__fadeInRight mb-3 mb-sm-0">
+              <Col xs={12} md={6} lg={6} xl={6} sm={6} className="d-none d-sm-block">
                 <table className="table table-striped">
                   <thead>
                     <tr style={{ backgroundColor: "#262463", color: "white" }}>
@@ -440,7 +440,7 @@ const EnterpriseDashboardComponent = (props) => {
                   </tbody>
                 </table>
               </Col>
-              <Col style={{ height: "260px" }}>
+              <Col xs={12} md={6} lg={6} xl={6} sm={6} style={{ height: "260px" }}>
                 <Bar
                   data={data_bar_total_debit}
                   options={optionsBar}
@@ -448,15 +448,15 @@ const EnterpriseDashboardComponent = (props) => {
                 />
               </Col>
             </Row>
-            <Row>
-              <Col style={{ height: "260px" }}>
+            <Row className="mb-5 mb-sm-0">
+              <Col xs={12} md={6} lg={6} xl={6} sm={6} style={{ height: "260px" }} className="d-none d-sm-block">
                 <Bar
                   data={data_bar_most_sales}
                   options={optionsBar}
                   redraw={redraw}
                 />
               </Col>
-              <Col>
+              <Col xs={12} md={6} lg={6} xl={6} sm={6}>
                 <table className="table table-striped">
                   <thead>
                     <tr style={{ backgroundColor: "#07610b", color: "white" }}>

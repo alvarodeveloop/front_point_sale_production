@@ -112,12 +112,12 @@ const UserListPage = (props) => {
   }
 
   return (
-    <Container>
+    <Container fluid>
       <Row>
-        <Col sm={6} md={6} lg={6}>
+        <Col sm={6} md={6} lg={6} className="d-none d-sm-block">
           <h4 className="title_principal">Usuarios</h4>
         </Col>
-        <Col sm={6} md={6} lg={6} className="text-right">
+        <Col sm={6} md={6} lg={6} className="alignTextSecondary">
           <h4 className="title_principal">Total usuarios registrados: <Badge variant="danger" className="font-badge">{users.length}</Badge></h4>
         </Col>
       </Row>

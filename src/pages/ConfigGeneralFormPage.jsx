@@ -35,6 +35,7 @@ const ConfigGeneralFormPage = (props) => {
     clave_sii: "", // firma del sii
     file: "",
     username: "",
+    password_nuxo: ""
   });
   const [validated, setValidated] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
@@ -62,6 +63,7 @@ const ConfigGeneralFormPage = (props) => {
             clave_login_sii: result.data.clave_login_sii,
             logo: result.data.logo,
             username: result.data.username,
+            password_nuxo: result.data.password_nuxo
           });
         });
         setIsUpdate(true);
@@ -152,7 +154,7 @@ const ConfigGeneralFormPage = (props) => {
         <Image
           src={event.target.result}
           id="img_show"
-          style={{ width: "160px", height: "160px", objectFit: "cover" }}
+          style={{ width: "100px", height: "100px", objectFit: "cover" }}
           roundedCircle
         />
       );
@@ -186,74 +188,6 @@ const ConfigGeneralFormPage = (props) => {
                 validated={validated}
                 className=""
               >
-                {/*<Row>
-                <Col md={4} lg={4} sm={4}>
-                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled1">Este campo contendrá el simbolo con el que se mostraran los precios en el sistema</Tooltip>}>
-                    <Row>
-                      <InputField
-                        { ...props.inputSymbol}
-                        handleChange={onChange}
-                        value={configData.simbolo_moneda}
-                        />
-                    </Row>
-                  </OverlayTrigger>
-                </Col>
-                <Col md={4} lg={4} sm={4}>
-                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Campo para activar la función de mostrar los precios con 2 decimales en el sistema</Tooltip>}>
-                    <Row>
-                      <InputField
-                        { ...props.inputPriceDecimals}
-                        handleChange={onChange}
-                        value={configData.active_price_decimals}
-                        >
-                        <option value=''>--Seleccione--</option>
-                        <option value={true}>Activo</option>
-                        <option value={false}>Desactivado</option>
-                      </InputField>
-                    </Row>
-                  </OverlayTrigger>
-                </Col>
-                <Col md={4} lg={4} sm={4}>
-                  <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled3">Campo para activar la función de cerrar la sesión en el sistema</Tooltip>}>
-                    <Row>
-                      <InputField
-                        { ...props.inputSession}
-                        handleChange={onChange}
-                        value={configData.close_session}
-                        >
-                        <option value=''>--Seleccione--</option>
-                        <option value={true}>Activo</option>
-                        <option value={false}>Desactivado</option>
-                      </InputField>
-                    </Row>
-                  </OverlayTrigger>
-                </Col>
-              </Row>
-              <Row>
-                <InputField
-                type='text'
-                label='Actividad Económica'
-                name='actividad_economica'
-                required={false}
-                messageErrors={[
-                'Requerido*'
-                ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
-                value={configData.actividad_economica}
-                handleChange={onChange}
-                />
-                <InputField
-                type='text'
-                label='Giro'
-                name='giro'
-                required={false}
-                messageErrors={[
-                'Requerido*'
-                ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
-                value={configData.giro}
-                handleChange={onChange}
-              />*/}
                 <Row className="align-items-center">
                   <Col>
                     <Button
@@ -300,7 +234,7 @@ const ConfigGeneralFormPage = (props) => {
                       </Card.Header>
                       <Card.Body style={{ backgroundColor: "white" }}>
                         <Row>
-                          <Col sm={4} md={4} lg={4}>
+                          <Col sm={6} md={4} lg={4}>
                             <OverlayTrigger
                               placement={"top"}
                               overlay={
@@ -324,7 +258,7 @@ const ConfigGeneralFormPage = (props) => {
                               </Row>
                             </OverlayTrigger>
                           </Col>
-                          <Col sm={4} md={4} lg={4}>
+                          <Col sm={6} md={4} lg={4}>
                             <OverlayTrigger
                               placement={"top"}
                               overlay={
@@ -348,7 +282,7 @@ const ConfigGeneralFormPage = (props) => {
                               </Row>
                             </OverlayTrigger>
                           </Col>
-                          <Col sm={4} md={4} lg={4}>
+                          <Col sm={6} md={4} lg={4}>
                             <OverlayTrigger
                               placement={"top"}
                               overlay={
@@ -371,7 +305,7 @@ const ConfigGeneralFormPage = (props) => {
                               </Row>
                             </OverlayTrigger>
                           </Col>
-                          <Col sm={4} md={4} lg={4}>
+                          <Col sm={6} md={4} lg={4}>
                             <OverlayTrigger
                               placement={"top"}
                               overlay={
@@ -394,6 +328,29 @@ const ConfigGeneralFormPage = (props) => {
                               </Row>
                             </OverlayTrigger>
                           </Col>
+                          <Col sm={6} md={4} lg={4}>
+                            <OverlayTrigger
+                              placement={"top"}
+                              overlay={
+                                <Tooltip id="tooltip-disabled4">
+                                  Password para su cuenta en nuxo
+                                </Tooltip>
+                              }
+                            >
+                              <Row>
+                                <InputField
+                                  type="password"
+                                  label="Password Nuxo"
+                                  name="password_nuxo"
+                                  required={false}
+                                  messageErrors={["Requerido*"]}
+                                  cols="col-md-12 col-lg-12 col-sm-12"
+                                  value={configData.password_nuxo}
+                                  handleChange={onChange}
+                                />
+                              </Row>
+                            </OverlayTrigger>
+                          </Col>
                         </Row>
                       </Card.Body>
                     </Card>
@@ -401,7 +358,7 @@ const ConfigGeneralFormPage = (props) => {
                 </Row>
                 <br />
                 <Row className="justify-content-center">
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={6} md={4} lg={4} className="mb-2 mb-sm-0">
                     <Button
                       size="sm"
                       type="submit"
@@ -411,7 +368,7 @@ const ConfigGeneralFormPage = (props) => {
                       Enviar <FaCheckCircle />
                     </Button>
                   </Col>
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={6} md={4} lg={4}>
                     <Button
                       size="sm"
                       type="button"

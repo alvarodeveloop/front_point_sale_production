@@ -1,60 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { useTable, useSortBy, useFilters, usePagination} from 'react-table'
+import { useTable, useSortBy, useFilters, usePagination } from 'react-table'
 import matchSorter from 'match-sorter'
-import { Button } from 'react-bootstrap'
-
-const Styles = styled.div`
-  padding: 1rem;
-
-  .button-pagination{
-    margin-right: 10px;
-  }
-
-  .inputPage{
-    display: inline-block;
-    width: 150px;
-    height: 34px;
-    padding: 6px 12px;
-    font-size: 14px;
-    line-height: 1.42857143;
-    color: #555;
-    background-color: #fff;
-    background-image: none;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-
-  .inputPageFilter{
-    display: inline-block;
-    width: 80%;
-    height: 34px;
-    padding: 6px 12px;
-    font-size: 14px;
-    line-height: 1.42857143;
-    color: #555;
-    background-color: #fff;
-    background-image: none;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-
-  .pagination {
-    padding: 0.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .table_responsive_eddit{
-    overflow-x: auto;
-  }
-`
+import { Button, Row, Col } from 'react-bootstrap'
+import "styles/components/table.scss";
 
 function DefaultColumnFilter({
   column: { filterValue, preFilteredRows, setFilter },
@@ -94,8 +44,8 @@ function DataTable({ columns, data, menuTop, headerColor, headerFontColor, pageS
           const rowValue = row.values[id]
           return rowValue !== undefined
             ? String(rowValue)
-                .toLowerCase()
-                .startsWith(String(filterValue).toLowerCase())
+              .toLowerCase()
+              .startsWith(String(filterValue).toLowerCase())
             : true
         })
       },
@@ -132,7 +82,7 @@ function DataTable({ columns, data, menuTop, headerColor, headerFontColor, pageS
       data,
       defaultColumn, // Be sure to pass the defaultColumn option
       filterTypes,
-      initialState: { pageIndex: 0, pageSize : pageSizeHandler[0] },
+      initialState: { pageIndex: 0, pageSize: pageSizeHandler[0] },
     },
     useFilters,
     useSortBy,
@@ -145,16 +95,16 @@ function DataTable({ columns, data, menuTop, headerColor, headerFontColor, pageS
     <div className="table_responsive_eddit">
       {menuTop ? (
         <div className="pagination">
-          <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+          <Button size="sm" style={{ height: '40px' }} className="button-pagination" variant="secondary" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
             {'<<'}
           </Button>{' '}
-          <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => previousPage()} disabled={!canPreviousPage}>
+          <Button size="sm" style={{ height: '40px' }} className="button-pagination" variant="secondary" onClick={() => previousPage()} disabled={!canPreviousPage}>
             {'<'}
           </Button>{' '}
-          <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => nextPage()} disabled={!canNextPage}>
+          <Button size="sm" style={{ height: '40px' }} className="button-pagination" variant="secondary" onClick={() => nextPage()} disabled={!canNextPage}>
             {'>'}
           </Button>{' '}
-          <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+          <Button size="sm" style={{ height: '40px' }} className="button-pagination" variant="secondary" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
             {'>>'}
           </Button>{' '}
           <span>
@@ -174,7 +124,7 @@ function DataTable({ columns, data, menuTop, headerColor, headerFontColor, pageS
               }}
               className="inputPage"
               onChange={(e) => {
-                if(e.target.value > pageOptions.length){
+                if (e.target.value > pageOptions.length) {
                   e.target.value = 1
                 }
               }}
@@ -203,15 +153,15 @@ function DataTable({ columns, data, menuTop, headerColor, headerFontColor, pageS
               {headerGroup.headers.map(column => (
 
                 <th {...column.getHeaderProps(column.getSortByToggleProps())} style={{ backgroundColor: headerColor ? headerColor : "rgb(218, 236, 242)", color: headerFontColor ? headerFontColor : "black" }}>
-                    {column.render('Header')}
-                    <span>
-                      {column.isSorted
-                        ? column.isSortedDesc
-                          ? ' 🔽'
-                          : ' 🔼'
-                        : ''}
-                    </span>
-                    <div>{column.canFilter ? column.render('Filter') : null}</div>
+                  {column.render('Header')}
+                  <span>
+                    {column.isSorted
+                      ? column.isSortedDesc
+                        ? ' 🔽'
+                        : ' 🔼'
+                      : ''}
+                  </span>
+                  <div>{column.canFilter ? column.render('Filter') : null}</div>
                 </th>
               ))}
             </tr>
@@ -223,84 +173,92 @@ function DataTable({ columns, data, menuTop, headerColor, headerFontColor, pageS
               prepareRow(row) || (
                 <tr {...row.getRowProps()}>
                   {row.cells.map(cell => {
-                    return <td style={{position: "relative"}} {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                    return <td style={{ position: "relative" }} {...cell.getCellProps()}>{cell.render('Cell')}</td>
                   })}
                 </tr>
               )
           )}
         </tbody>
       </table>
-      <div className="pagination">
-        <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {'<<'}
-        </Button>{' '}
-        <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => previousPage()} disabled={!canPreviousPage}>
-          {'<'}
-        </Button>{' '}
-        <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => nextPage()} disabled={!canNextPage}>
-          {'>'}
-        </Button>{' '}
-        <Button size="sm" style={{height:'40px'}} className="button-pagination" variant="secondary" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {'>>'}
-        </Button>{' '}
-        <span>
-          Página{' '}
-          <strong>
-            {pageIndex + 1} de {pageOptions.length}
-          </strong>{' '}
-        </span>
-        <span className="ml-3">
-          | <span className="ml-2">Ir a la Página:{' '}</span>
-          <input
-            type="number"
-            defaultValue={pageIndex + 1}
+      <Row className="justify-content-center">
+        <Col lg={4} xl={4} md={12} className="text-center mb-2 mb-lg-0">
+
+          <Button size="sm" style={{ height: '40px' }} className="button-pagination" variant="secondary" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+            {'<<'}
+          </Button>
+          <Button size="sm" style={{ height: '40px' }} className="button-pagination" variant="secondary" onClick={() => previousPage()} disabled={!canPreviousPage}>
+            {'<'}
+          </Button>
+          <Button size="sm" style={{ height: '40px' }} className="button-pagination" variant="secondary" onClick={() => nextPage()} disabled={!canNextPage}>
+            {'>'}
+          </Button>
+          <Button size="sm" style={{ height: '40px' }} className="button-pagination" variant="secondary" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+            {'>>'}
+          </Button>
+          <br className="d-block d-xl-none" />
+          <span>
+            Página{' '}
+            <strong>
+              {pageIndex + 1} de {pageOptions.length}
+            </strong>{' '}
+          </span>
+        </Col>
+        <Col xl={4} lg={6} md={6} sm={6} xs={12} className="text-center mb-2 mb-lg-0">
+          <span className="ml-3">
+            <span className="ml-2 d-none d-xl-inline-block">Ir a la Página:{' '}</span>
+            <span className="ml-2 d-inline-block d-xl-none text-center">Página:{' '}</span>
+            <input
+              type="number"
+              defaultValue={pageIndex + 1}
+              onChange={e => {
+                const page = e.target.value ? Number(e.target.value) - 1 : 0
+                gotoPage(page)
+              }}
+              className="inputPage"
+              onChange={(e) => {
+                if (e.target.value > pageOptions.length) {
+                  e.target.value = 1
+                }
+              }}
+            />
+          </span>{' '}
+        </Col>
+        <Col lg={2} xl={2} md={6} sm={6} xs={12} className="text-center">
+          <span className="ml-2 d-inline-block d-lg-none">N página:{' '}</span>
+          <select
+            value={pageSize}
             onChange={e => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0
-              gotoPage(page)
+              setPageSize(Number(e.target.value))
             }}
             className="inputPage"
-            onChange={(e) => {
-              if(e.target.value > pageOptions.length){
-                e.target.value = 1
-              }
-            }}
-          />
-        </span>{' '}
-        <select
-          value={pageSize}
-          onChange={e => {
-            setPageSize(Number(e.target.value))
-          }}
-          className="inputPage"
-        >
-          {pageSizeHandler.map(pageSize => (
-            <option key={pageSize} value={pageSize}>
-              Mostrar {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
+          >
+            {pageSizeHandler.map(pageSize => (
+              <option key={pageSize} value={pageSize}>
+                Mostrar {pageSize}
+              </option>
+            ))}
+          </select>
+        </Col>
+      </Row>
     </div>
 
   )
 }
 
-const Table = ({data,columns,menuTop,headerColor,headerFontColor,pageSizeHandler}) => {
-  pageSizeHandler = pageSizeHandler ? pageSizeHandler : [10, 20, 30, 40, 50]; 
+const Table = ({ data, columns, menuTop, headerColor, headerFontColor, pageSizeHandler }) => {
+  pageSizeHandler = pageSizeHandler ? pageSizeHandler : [10, 20, 30, 40, 50];
   return (
-    <Styles>
-      <DataTable pageSizeHandler={pageSizeHandler} data={data} columns={columns} menuTop={menuTop} headerFontColor={headerFontColor} headerColor={headerColor}  />
-    </Styles>
+    <DataTable pageSizeHandler={pageSizeHandler} data={data} columns={columns} menuTop={menuTop} headerFontColor={headerFontColor} headerColor={headerColor} />
   )
 }
 
 Table.propTypes = {
   data: PropTypes.array.isRequired,
-  columns : PropTypes.array.isRequired,
+  columns: PropTypes.array.isRequired,
   menuTop: PropTypes.bool,
   headerColor: PropTypes.string,
   headerFontColor: PropTypes.string,
-  pageSizeHandler : PropTypes.array,
+  pageSizeHandler: PropTypes.array,
 }
 
 export default Table

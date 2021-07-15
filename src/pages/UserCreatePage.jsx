@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import {
   FaCheckCircle,
@@ -21,6 +21,8 @@ let count = 0;
 
 const UserCreatePage = (props) => {
   const [displayLoading, setDisplayLoading] = useState(false);
+  const [displayModuleSectionXs, setDisplayModuleSectionXs] = useState(false);
+
   const [userData, setUserData] = useState({
     name: "",
     email: "",
@@ -275,166 +277,381 @@ const UserCreatePage = (props) => {
         ));
     }
   };
+
+  const validateFieldsHandler = () => {
+    if (!displayModuleSectionXs) {
+      const form = document.getElementById("formUsers");
+      if (form.checkValidity() === false) {
+        setValidated(true);
+        return;
+      }
+    }
+    setDisplayModuleSectionXs(currentData => !displayModuleSectionXs);
+    setValidated(false);
+
+  }
+
+  const displayFieldsFormHandler = (sizeClassName, type) => {
+    return (
+      <>
+        {type === 1 ? (
+          <Col
+            sm={12}
+            md={typeDisplayModule > 1 ? 12 : 5}
+            lg={typeDisplayModule > 1 ? 12 : 5}
+            xs={12}
+            style={{ borderRight: "1px solid rgb(237, 237, 237)" }}
+            className={sizeClassName}
+          >
+            <h4 className="text-center title_principal">
+              Formulario de usuarios
+            </h4>
+            <br />
+            <Row>
+              <InputField
+                {...props.inputName}
+                handleChange={onChange}
+                value={userData.name}
+              />
+              <InputField
+                {...props.inputEmail}
+                handleChange={onChange}
+                value={userData.email}
+              />
+            </Row>
+            <Row>
+              <InputField
+                {...props.inputRut}
+                handleChange={onChange}
+                value={userData.rut}
+              />
+              <InputField
+                {...props.inputPassword}
+                required={isUpdate ? false : true}
+                handleChange={onChange}
+                value={userData.password}
+              />
+            </Row>
+            <Row>
+              <InputField
+                type="password"
+                label="Confirme Contraseña"
+                name="password_repeat"
+                required={isUpdate ? false : true}
+                messageErrors={[]}
+                cols="col-md-6 col-lg-6 col-sm-6"
+                value={userData.password_repeat}
+                handleChange={onChange}
+              />
+              <InputField
+                {...props.inputSelect}
+                cols={"col-md-6 col-sm-6 col-lg-6"}
+                handleChange={onChange}
+                value={userData.id_rol}
+              >
+                <option value="">--Seleccione--</option>
+                {displayRolesOption()}
+              </InputField>
+            </Row>
+            <Row className="justify-content-center">
+              {typeDisplayModule === 1 ? (
+                <Col sm={12} md={12} lg={12} xs={12} className="text-center">
+                  <Button size="sm" type="submit" variant="danger" block className="d-none d-md-block">
+                    Enviar <FaPlusCircle />
+                  </Button>
+                  <Button size="sm" type="button" onClick={validateFieldsHandler} variant="danger" block className="d-block d-md-none">
+                    Continuar
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={goToListUser}
+                    type="button"
+                    variant="secondary"
+                    block
+                  >
+                    Ir al Listado
+                  </Button>
+                </Col>
+              ) : (
+                <Col sm={6} md={6} lg={6} xs={12} className="text-center">
+                  <Button size="sm" type="submit" variant="danger" block>
+                    Enviar <FaPlusCircle />
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={goToListUser}
+                    type="button"
+                    variant="secondary"
+                    block
+                  >
+                    Ir al Listado
+                  </Button>
+                </Col>
+              )}
+            </Row>
+            <br />
+            {messageDisplay ? (
+              <p className="alert alert-info text-center">{messageDisplay}</p>
+            ) : (
+              ""
+            )}
+          </Col>
+
+        ) : (
+          <>
+            {!displayModuleSectionXs ? (
+
+              <Col
+                sm={12}
+                md={typeDisplayModule > 1 ? 12 : 5}
+                lg={typeDisplayModule > 1 ? 12 : 5}
+                xs={12}
+                style={{ borderRight: "1px solid rgb(237, 237, 237)" }}
+                className={sizeClassName}
+              >
+                <h4 className="text-center title_principal">
+                  Formulario de usuarios
+                </h4>
+                <br />
+                <Row>
+                  <InputField
+                    {...props.inputName}
+                    handleChange={onChange}
+                    value={userData.name}
+                  />
+                  <InputField
+                    {...props.inputEmail}
+                    handleChange={onChange}
+                    value={userData.email}
+                  />
+                </Row>
+                <Row>
+                  <InputField
+                    {...props.inputRut}
+                    handleChange={onChange}
+                    value={userData.rut}
+                  />
+                  <InputField
+                    {...props.inputPassword}
+                    required={isUpdate ? false : true}
+                    handleChange={onChange}
+                    value={userData.password}
+                  />
+                </Row>
+                <Row>
+                  <InputField
+                    type="password"
+                    label="Confirme Contraseña"
+                    name="password_repeat"
+                    required={isUpdate ? false : true}
+                    messageErrors={[]}
+                    cols="col-md-6 col-lg-6 col-sm-6"
+                    value={userData.password_repeat}
+                    handleChange={onChange}
+                  />
+                  <InputField
+                    {...props.inputSelect}
+                    cols={"col-md-6 col-sm-6 col-lg-6"}
+                    handleChange={onChange}
+                    value={userData.id_rol}
+                  >
+                    <option value="">--Seleccione--</option>
+                    {displayRolesOption()}
+                  </InputField>
+                </Row>
+                <Row className="justify-content-center">
+                  {typeDisplayModule === 1 ? (
+                    <Col sm={12} md={12} lg={12} xs={12} className="text-center">
+                      <Button size="sm" type="submit" variant="danger" block className="d-none d-md-block">
+                        Enviar <FaPlusCircle />
+                      </Button>
+                      <Button size="sm" type="button" onClick={validateFieldsHandler} variant="danger" block className="d-block d-md-none">
+                        Continuar
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={goToListUser}
+                        type="button"
+                        variant="secondary"
+                        block
+                      >
+                        Ir al Listado
+                      </Button>
+                    </Col>
+                  ) : (
+                    <Col sm={6} md={6} lg={6} xs={12} className="text-center">
+                      <Button size="sm" type="submit" variant="danger" block>
+                        Enviar <FaPlusCircle />
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={goToListUser}
+                        type="button"
+                        variant="secondary"
+                        block
+                      >
+                        Ir al Listado
+                      </Button>
+                    </Col>
+                  )}
+                </Row>
+                <br />
+                {messageDisplay ? (
+                  <p className="alert alert-info text-center">{messageDisplay}</p>
+                ) : (
+                  ""
+                )}
+              </Col>
+            ) : ""}
+          </>
+        )}
+      </>
+    )
+  };
+
   return (
-    <Container>
+    <Container fluid>
       {displayLoading ? (
         <LoadingComponent />
       ) : (
-        <Form onSubmit={onSubmit} noValidate validated={validated}>
+        <Form onSubmit={onSubmit} noValidate validated={validated} id="formUsers">
           <Row>
-            <Col
-              sm={typeDisplayModule > 1 ? 12 : 5}
-              md={typeDisplayModule > 1 ? 12 : 5}
-              lg={typeDisplayModule > 1 ? 12 : 5}
-              xs={12}
-              style={{ borderRight: "1px solid rgb(237, 237, 237)" }}
-            >
-              <h4 className="text-center title_principal">
-                Formulario de usuarios
-              </h4>
-              <br />
-              <Row>
-                <InputField
-                  {...props.inputName}
-                  handleChange={onChange}
-                  value={userData.name}
-                />
-                <InputField
-                  {...props.inputEmail}
-                  handleChange={onChange}
-                  value={userData.email}
-                />
-              </Row>
-              <Row>
-                <InputField
-                  {...props.inputRut}
-                  handleChange={onChange}
-                  value={userData.rut}
-                />
-                <InputField
-                  {...props.inputPassword}
-                  handleChange={onChange}
-                  value={userData.password}
-                />
-              </Row>
-              <Row>
-                <InputField
-                  type="password"
-                  label="Confirme Contraseña"
-                  name="password_repeat"
-                  required={false}
-                  messageErrors={[]}
-                  cols="col-md-6 col-lg-6 col-sm-6"
-                  value={userData.password_repeat}
-                  handleChange={onChange}
-                />
-                <InputField
-                  {...props.inputSelect}
-                  cols={"col-md-6 col-sm-6 col-lg-6"}
-                  handleChange={onChange}
-                  value={userData.id_rol}
-                >
-                  <option value="">--Seleccione--</option>
-                  {displayRolesOption()}
-                </InputField>
-              </Row>
-              <Row className="justify-content-center">
-                {typeDisplayModule === 1 ? (
-                  <Col sm={12} md={12} lg={12} xs={12} className="text-center">
-                    <Button size="sm" type="submit" variant="danger" block>
-                      Enviar <FaPlusCircle />
-                    </Button>
-                    o
-                    <Button
-                      size="sm"
-                      onClick={goToListUser}
-                      type="button"
-                      variant="info"
-                      block
-                    >
-                      Ir al Listado
-                    </Button>
-                  </Col>
-                ) : (
-                  <Col sm={6} md={6} lg={6} xs={12} className="text-center">
-                    <Button size="sm" type="submit" variant="danger" block>
-                      Enviar <FaPlusCircle />
-                    </Button>
-                    o
-                    <Button
-                      size="sm"
-                      onClick={goToListUser}
-                      type="button"
-                      variant="info"
-                      block
-                    >
-                      Ir al Listado
-                    </Button>
-                  </Col>
-                )}
-              </Row>
-              <br />
-              {messageDisplay ? (
-                <p className="alert alert-info text-center">{messageDisplay}</p>
-              ) : (
-                ""
-              )}
-            </Col>
+            {displayFieldsFormHandler("d-none d-md-block", 1)}
+            {displayFieldsFormHandler("d-block d-md-none", 2)}
             {typeDisplayModule == 1 ? (
-              <Col
-                sm={7}
-                md={7}
-                lg={7}
-                xs={12}
-                className="containerDivSeparated"
-                style={{ height: "450px" }}
-              >
-                <h4 className="text-center title_principal">Módulos</h4>
-                <Row>
-                  {modules.map((v, i) => (
-                    <Col sm={4} md={4} lg={4} xs={6} key={i}>
-                      <Form.Group>
-                        <Form.Check
-                          type="checkbox"
-                          custom
-                          id={v.name_item + v.id}
-                          label={v.name_item}
-                          value={v.id}
-                          checked={!!modulesUser.find((f) => f == v.id)}
-                          onChange={(e) => handleAccess(e, v.id)}
-                        />
-                      </Form.Group>
+              <>
+                <Col
+                  md={7}
+                  lg={7}
+                  className="containerDivSeparated d-none d-md-block"
+                  style={{ height: "auto" }}
+                >
+                  <h4 className="text-center title_principal">Módulos</h4>
+                  <Row>
+                    {modules.map((v, i) => (
+                      <Col sm={4} md={4} lg={4} xs={6} key={i}>
+                        <Form.Group>
+                          <Form.Check
+                            type="checkbox"
+                            custom
+                            id={v.name_item + v.id}
+                            label={v.name_item}
+                            value={v.id}
+                            checked={!!modulesUser.find((f) => f == v.id)}
+                            onChange={(e) => handleAccess(e, v.id)}
+                          />
+                        </Form.Group>
+                      </Col>
+                    ))}
+                  </Row>
+                  <Row className="fixedBottom">
+                    <Col sm={12} md={12} lg={12}>
+                      <p className="text-center">
+                        Hacer click en el botón enviar para guardar los cambios
+                      </p>
                     </Col>
-                  ))}
-                </Row>
-                <Row className="fixedBottom">
-                  <Col sm={12} md={12} lg={12}>
-                    <p className="text-center">
-                      Hacer click en el botón enviar para guardar los cambios
-                    </p>
+                    <Col sm={6} md={6} lg={6} xs={12}>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        block={true}
+                        onClick={addAllModules}
+                      >
+                        Seleccionar Todos <FaCheckCircle />
+                      </Button>
+                    </Col>
+                    <Col sm={6} md={6} lg={6} xs={12}>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+
+                        block={true}
+                        onClick={removeAllModules}
+                      >
+                        Deseleccionar Todos <FaTrashAlt />
+                      </Button>
+                    </Col>
+                  </Row>
+                </Col>
+                {displayModuleSectionXs ? (
+                  <Col
+                    sm={12}
+                    xs={12}
+                    className="containerDivSeparated d-block d-md-none"
+                    style={{ height: "auto" }}
+                  >
+                    <h4 className="text-center title_principal">Módulos</h4>
+                    <Row className="text-center">
+                      {modules.map((v, i) => (
+                        <Col sm={4} md={4} lg={4} xs={5} key={i}>
+                          <Form.Group>
+                            <Form.Check
+                              type="checkbox"
+                              custom
+                              id={v.name_item + v.id}
+                              label={v.name_item}
+                              value={v.id}
+                              checked={!!modulesUser.find((f) => f == v.id)}
+                              onChange={(e) => handleAccess(e, v.id)}
+                            />
+                          </Form.Group>
+                        </Col>
+                      ))}
+                    </Row>
+                    <Row className="fixedBottom">
+                      <Col sm={12} md={12} lg={12}>
+                        <p className="text-center d-none d-md-block">
+                          Hacer click en el botón enviar para guardar los cambios
+                        </p>
+                      </Col>
+                      <Col sm={6} md={6} lg={6} xs={6}>
+                        <Row>
+                          <Col xs={12} sm={12} className="mb-2">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              block={true}
+                              onClick={addAllModules}
+                            >
+                              Seleccionar Todos <FaCheckCircle />
+                            </Button>
+                          </Col>
+                          <Col xs={12} sm={12}>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              block={true}
+                              onClick={removeAllModules}
+                            >
+                              Deseleccionar Todos <FaTrashAlt />
+                            </Button>
+                          </Col>
+                        </Row>
+                      </Col>
+                      <Col sm={6} md={6} lg={6} xs={6}>
+                        <Row>
+                          <Col xs={12} sm={12} className="mb-2">
+                            <Button size="sm" type="submit" variant="danger" block className="">
+                              Enviar <FaPlusCircle />
+                            </Button>
+                          </Col>
+                          <Col xs={12} sm={12}>
+                            <Button
+                              size="sm"
+                              onClick={() => setDisplayModuleSectionXs(false)}
+                              type="button"
+                              variant="secondary"
+                              block
+                            >
+                              Atrás
+                            </Button>
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
                   </Col>
-                  <Col sm={6} md={6} lg={6} xs={12}>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      block={true}
-                      onClick={addAllModules}
-                    >
-                      Seleccionar Todos <FaCheckCircle />
-                    </Button>
-                  </Col>
-                  <Col sm={6} md={6} lg={6} xs={12}>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      block={true}
-                      onClick={removeAllModules}
-                    >
-                      Deseleccionar Todos <FaTrashAlt />
-                    </Button>
-                  </Col>
-                </Row>
-              </Col>
+                ) : ""}
+              </>
             ) : (
               ""
             )}
@@ -451,7 +668,7 @@ UserCreatePage.defaultProps = {
     required: true,
     name: "name",
     label: "Nombre Completo",
-    messageErrors: ["Requerido*"],
+    messageErrors: ["Requerido"],
     cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
   inputEmail: {
@@ -459,7 +676,7 @@ UserCreatePage.defaultProps = {
     required: true,
     name: "email",
     label: "Email",
-    messageErrors: ["Requerido*, ", "Formato tipo Email*"],
+    messageErrors: ["Requerido, ", "Formato tipo Email*"],
     cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
   inputRut: {
@@ -472,10 +689,9 @@ UserCreatePage.defaultProps = {
   },
   inputPassword: {
     type: "password",
-    required: false,
     name: "password",
     label: "Contraseña",
-    messageErrors: ["Requerido*"],
+    messageErrors: ["Requerido"],
     cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
   },
   inputSelect: {

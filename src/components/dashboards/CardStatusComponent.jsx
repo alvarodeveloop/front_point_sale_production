@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Col,Card} from 'react-bootstrap'
+import { Col, Card } from 'react-bootstrap'
 
 const CardStatusComponent = (props) => {
   return (
@@ -8,7 +8,7 @@ const CardStatusComponent = (props) => {
       <Card>
         <Card.Body>
           <div className="d-flex align-items-center">
-            <div className={props.styleInline+" display-4 "+"text-"+props.colorFont}></div>
+            <div className={props.styleInline + " display-4 " + "text-" + props.colorFont}></div>
             <div className="ml-3">
               <div className="text-muted small">{props.title}</div>
               <div className="text-large">{props.value}</div>
@@ -21,11 +21,11 @@ const CardStatusComponent = (props) => {
 }
 
 CardStatusComponent.propTypes = {
-  styleInline : PropTypes.string.isRequired,
-  colorFont : PropTypes.string,
+  styleInline: PropTypes.string.isRequired,
+  colorFont: PropTypes.string,
   title: PropTypes.string.isRequired,
   value: PropTypes.number.isRequired,
-  config : PropTypes.object,
+  config: PropTypes.object,
 }
 
 export default CardStatusComponent

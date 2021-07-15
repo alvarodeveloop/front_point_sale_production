@@ -208,7 +208,7 @@ const ConfigStoreFormPage = (props) => {
                   name="city"
                   required={false}
                   messageErrors={["Requerido*"]}
-                  cols="col-md-4 col-lg-4 col-sm-4"
+                  cols="col-md-4 col-lg-4 col-sm-6"
                   value={dataStore.city}
                   handleChange={onChange}
                 />
@@ -218,7 +218,7 @@ const ConfigStoreFormPage = (props) => {
                   name="comuna"
                   required={false}
                   messageErrors={["Requerido*"]}
-                  cols="col-md-4 col-lg-4 col-sm-4"
+                  cols="col-md-4 col-lg-4 col-sm-6"
                   value={dataStore.comuna}
                   handleChange={onChange}
                 />
@@ -267,12 +267,12 @@ const ConfigStoreFormPage = (props) => {
                 </Row>
               </OverlayTrigger>
               <Row className="justify-content-center">
-                <Col sm={4} md={4} lg={4} xs={4} className="">
+                <Col sm={6} md={4} lg={4} xs={6} className="">
                   <Button size="sm" type="submit" variant="danger" block={true}>
                     Guardar <FaPlusCircle />
                   </Button>
                 </Col>
-                <Col sm={4} md={4} lg={4} xs={4} className="">
+                <Col sm={6} md={4} lg={4} xs={6} className="">
                   <Button
                     size="sm"
                     type="button"
@@ -358,7 +358,7 @@ ConfigStoreFormPage.defaultProps = {
     name: "country",
     label: "País",
     messageErrors: ["Requerido*"],
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
   },
   inputPhone: {
     type: "number",
