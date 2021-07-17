@@ -8,15 +8,15 @@ import {
   Badge
 } from 'react-bootstrap'
 
-const EnterpriseCardComponent = ({enterprise,...props}) => {
+const EnterpriseCardComponent = ({ enterprise, ...props }) => {
   return (
     <React.Fragment>
-      <h4 style={{color: 'rgb(180, 55, 33)', textTransform: 'uppercase', fontSize: "12px"}}>{enterprise.bussines_name}</h4>
-      <Image src={require('../assets/img/logo/AIDY_01.jpg')} style={{width: '200px'}}/>
-      <br/>
+      <h4 style={{ color: 'rgb(180, 55, 33)', textTransform: 'uppercase', fontSize: "12px" }}>{enterprise.bussines_name}</h4>
+      <Image src={require('../assets/img/logo/AIDY_01.jpg')} style={{ width: '80%' }} />
+      <br />
       <span className="letras_negras">Estado :</span> {enterprise.is_open ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
-      <br/><br/>
-      <DropdownButton size="sm" id={'drop'+enterprise.id} title="Acciones" style={{width: "100%"}}>
+      <br /><br />
+      <DropdownButton size="sm" id={'drop' + enterprise.id} title="Acciones" style={{ width: "%" }}>
         <Dropdown.Item onClick={() => props.modifyRegister(enterprise)}>Modificar</Dropdown.Item>
         <Dropdown.Item onClick={() => props.displayDetails(enterprise)}>Ver detalles</Dropdown.Item>
         <Dropdown.Item onClick={() => props.deleteRegister(enterprise.id)}>Eliminar</Dropdown.Item>

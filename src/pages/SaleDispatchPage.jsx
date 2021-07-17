@@ -379,12 +379,6 @@ const SaleDispatchPage = (props) => {
   return (
     <Container fluid>
       <Row>
-        <Col sm={6} md={6} lg={6}></Col>
-        <Col sm={6} md={6} lg={6}>
-          <h5>Totales por Status de Entrega</h5>
-        </Col>
-      </Row>
-      <Row>
         <Col sm={4} md={4} lg={4}>
           <h4 className="title_principal">Tabla de Despachos</h4>
         </Col>

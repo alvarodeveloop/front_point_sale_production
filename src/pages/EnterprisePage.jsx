@@ -111,7 +111,18 @@ const EnterprisePage = (props) => {
         </Container>
       ) : (
         <Container fluid={true}>
-          <Row className="">
+          <Row className="d-flex d-md-none justify-content-center">
+            <Col sm={3} md={6} lg={6} xs={6} className="text-left">
+              <h4 className="title_principal">Total Empresas</h4>
+            </Col>
+            <Col sm={1} md={6} lg={6} xs={5} className="text-right">
+              <Badge variant="danger">{enterprises.length}</Badge>
+            </Col>
+            <Col xs={10} sm={5}>
+              <Button size="sm" variant="success" block={true} type="button" onClick={goToForm}>Crear Empresa <FaPlusCircle /></Button>
+            </Col>
+          </Row>
+          <Row className="d-none d-md-flex">
             <Col sm={6} md={6} lg={6}>
               <h4 className="title_principal">Empresas Registradas</h4>
               <Button size="sm" variant="success" block={true} type="button" onClick={goToForm}>Crear Empresa <FaPlusCircle /></Button>
@@ -126,7 +137,7 @@ const EnterprisePage = (props) => {
             <Col sm={12} md={12} lg={12}>
               <Row className="justify-content-center">
                 {enterprises.map((v, i) => (
-                  <Col sm={4} md={4} lg={4} key={i} className="text-center mb-4">
+                  <Col sm={4} md={4} lg={4} xs={8} key={i} className="text-center mb-4">
                     <EnterpriseCardComponent
                       enterprise={v}
                       modifyRegister={modifyRegister}
@@ -153,7 +164,7 @@ const EnterprisePage = (props) => {
             </Modal.Header>
             <Modal.Body>
               <Row className=" justify-content-center">
-                <Col sm={5} md={5} lg={5} style={{ textAligment: "justify" }}>
+                <Col sm={5} md={5} lg={5} xs={10} style={{ textAligment: "justify" }}>
                   <h4 className="title_principal">Datos de la Empresa</h4>
                   <ul>
                     <li className="str"><b>Rut</b>: {Object.keys(enterpriseDetail).length > 0 ? enterpriseDetail.rut : ''}</li>
@@ -164,7 +175,7 @@ const EnterprisePage = (props) => {
                     <li className="str"><b>Dirección</b>: {Object.keys(enterpriseDetail).length > 0 ? enterpriseDetail.address : ''}</li>
                   </ul>
                 </Col>
-                <Col sm={4} md={4} lg={4}>
+                <Col sm={6} md={4} lg={4} xs={10}>
                   <h4 className="title_principal">Plan de la Empresa</h4>
                   <Row className="snip1404">
                     <Col sm={12} md={12} lg={12}>

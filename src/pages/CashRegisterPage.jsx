@@ -211,7 +211,7 @@ const CashRegisterPage = (props) => {
           <hr />
           <Row className="justify-content-center">
             {dataCashRegister.map((v, i) => (
-              <Col sm={3} lg={3} md={3} className="text-center mb-4" key={i}>
+              <Col sm={6} lg={3} md={4} xs={10} className="text-center mb-4" key={i}>
                 <h5 style={{ color: 'darkred' }}>CAJA N° {v.nro_caja}</h5>
                 <Image src={require('../assets/img/caja_registradora.jpg')} style={{ width: '70%' }} /><br />
                 Estado : {v.status ? (<Badge variant="success" className="font_badge">Abierta</Badge>) : (<Badge variant="danger" className="font_badge">Cerrada</Badge>)}
@@ -288,11 +288,11 @@ const CashRegisterPage = (props) => {
                 </Row>
                 <hr />
                 <Row className="justify-content-center">
-                  <Col sm={4} md={4} lg={4}>
-                    <Button block={true} variant="primary" size="sm" type="submit">Guardar</Button>
+                  <Col sm={4} md={4} lg={4} xs={6}>
+                    <Button block={true} variant="danger" size="sm" type="submit">Guardar</Button>
                   </Col>
-                  <Col sm={4} md={4} lg={4}>
-                    <Button block={true} variant="danger" size="sm" onClick={handleOpenModalAdd} type="button">Cerrar</Button>
+                  <Col sm={4} md={4} lg={4} xs={6}>
+                    <Button block={true} variant="secondary" size="sm" onClick={handleOpenModalAdd} type="button">Cerrar</Button>
                   </Col>
                 </Row>
               </Modal.Body>

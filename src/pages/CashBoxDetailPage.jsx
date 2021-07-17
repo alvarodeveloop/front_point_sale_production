@@ -273,7 +273,7 @@ function CashBoxDetailPage(props) {
         <LoadingComponent />
       ) : (
         <Row className="">
-          <Col sm={5} md={3} lg={3} xl={3} xs={12}>
+          <Col sm={12} md={3} lg={3} xl={3} xs={12}>
             <Row>
               <Col>
                 <Button block={true} size="sm" type="button" onClick={goBack} variant="secondary">Atras <FaOutdent /></Button>
@@ -303,33 +303,32 @@ function CashBoxDetailPage(props) {
                       </Badge>
                     </p>
                   ) : (
-                    <Button size="sm" variant="secondary" type="button" onClick={modalInitialAmountsHandler}>Ver saldos iniciales en el rango de fecha seleccionado</Button>
+                    <Button size="sm" variant="secondary" type="button" onClick={modalInitialAmountsHandler}>Ver saldos iniciales <span className="d-inlin-block d-md-none d-xl-inline-block">en el rango de fecha seleccionado</span></Button>
                   )}
                 </Col>
               </Row>
             ) : ""}
             <hr />
-            <Row>
+            <Row className="d-none d-md-flex">
               <Col style={{ height: "200px" }}>
                 <Doughnut data={dataDonuts} redraw={objectStates.redraw} options={optionsBar} />
               </Col>
             </Row>
-            <br /><br />
-            <Row>
+            <Row className="mt-md-4 mt-sm-2">
               <Col>
                 <p className="text-danger text-center">*Por defecto se muestran los datos del día actual</p>
               </Col>
             </Row>
           </Col>
-          <Col sm={7} md={9} lg={9} xl={9} xs={12} style={{ borderLeft: "1px solid lightgray" }}>
-            <Row>
-              <Col>
+          <Col sm={12} md={9} lg={9} xl={9} xs={12} style={{ borderLeft: "1px solid lightgray" }}>
+            <Row className="justify-content-center text-center">
+              <Col xs={6}>
                 <h5>Efectivo : <Badge variant="danger" className="font-badge">{props.configGeneral ? props.configGeneral.simbolo_moneda : ""}{objectStates.sumType.length && objectStates.sumType[0] ? showPriceWithDecimals(props.configGeneral, objectStates.sumType[0].total) : 0}</Badge> </h5>
               </Col>
-              <Col>
+              <Col xs={6}>
                 <h5>Tarjeta de Debito : <Badge variant="danger" className="font-badge">{props.configGeneral ? props.configGeneral.simbolo_moneda : ""}{objectStates.sumType.length && objectStates.sumType[1] ? showPriceWithDecimals(props.configGeneral, objectStates.sumType[1].total) : 0}</Badge> </h5>
               </Col>
-              <Col>
+              <Col xs={6}>
                 <h5>Tarjeta de Crédito : <Badge variant="danger" className="font-badge">{props.configGeneral ? props.configGeneral.simbolo_moneda : ""}{objectStates.sumType.length && objectStates.sumType[2] ? showPriceWithDecimals(props.configGeneral, objectStates.sumType[2].total) : 0}</Badge></h5>
               </Col>
             </Row>
@@ -357,9 +356,8 @@ function CashBoxDetailPage(props) {
                   handleChange={() => { }}
                 />
               </Col>
-              <Col>
-                <br />
-                <Button type="button" size="sm" variant="secondary" onClick={searchByFilter} block={true}>Buscar ventas <FaSearch /></Button>
+              <Col style={{ alignSelf: "center" }}>
+                <Button type="button" size="sm" variant="secondary" onClick={searchByFilter} block={true}><span className="d-none d-sm-inline-block">Buscar ventas</span> <FaSearch /></Button>
               </Col>
             </Row>
             <Row>

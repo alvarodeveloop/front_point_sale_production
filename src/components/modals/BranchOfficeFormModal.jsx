@@ -424,7 +424,7 @@ const BranchOfficeFormModal = (props) => {
                 </Col>
               </Row>
               {!props.branchOfficeForm.id ? (
-                <Row>
+                <Row className="d-none d-md-flex">
                   <Col sm={12} md={12} lg={12}>
                     <Accordion>
                       <Card>
@@ -602,7 +602,7 @@ const BranchOfficeFormModal = (props) => {
                 <Col sm={4} md={4} lg={4}>
                   <Button
                     block={true}
-                    variant="primary"
+                    variant="danger"
                     size="sm"
                     type="submit"
                   >
@@ -613,7 +613,7 @@ const BranchOfficeFormModal = (props) => {
                   <Col sm={4} md={4} lg={4}>
                     <Button
                       block={true}
-                      variant="danger"
+                      variant="secondary"
                       size="sm"
                       onClick={props.handleOpenModalAdd}
                       type="button"

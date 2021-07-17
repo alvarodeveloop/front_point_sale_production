@@ -25,3 +25,13 @@ li.str:before {
 .rutInputSearch:focus {
   border-bottom: 2px solid #284fa9 !important;
 }
+
+.alignEnterprisePlanTitle{
+  text-align: right;
+}
+
+@media (max-width : 776px) {
+  .alignEnterprisePlanTitle{
+    text-align: left;
+  }
+}

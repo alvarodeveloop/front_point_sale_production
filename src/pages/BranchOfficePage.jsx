@@ -10,25 +10,20 @@ import {
   Button,
   DropdownButton,
   Dropdown,
-  Form,
-  Modal,
   Image,
   Badge,
 } from "react-bootstrap";
 import { toast } from "react-toastify";
-import InputField from "components/input/InputComponent";
 import { API_URL } from "utils/constants";
-import Table from "components/Table";
-import { confirmAlert } from "react-confirm-alert"; // Import
 
 import {
   setBranchOffices,
   setIdBranchOffice,
 } from "actions/enterpriseSucursal";
 import { setConfigStore } from "actions/configs";
-import { formatRut } from "utils/functions";
 import BranchOfficeFormModal from "components/modals/BranchOfficeFormModal";
 import LoadingComponent from "components/LoadingComponent";
+import 'styles/pages/branchOfficePage.scss';
 
 const BranchOfficePage = (props) => {
   const [globalState, setGlobalState] = useState({
@@ -82,12 +77,12 @@ const BranchOfficePage = (props) => {
             if (result[0].data.length === 1) {
               let branch = await axios.get(
                 API_URL +
-                  "enterprises_branch_office/" +
-                  null +
-                  "/" +
-                  result[0].data[0].id +
-                  "/" +
-                  1
+                "enterprises_branch_office/" +
+                null +
+                "/" +
+                result[0].data[0].id +
+                "/" +
+                1
               );
               sessionStorage.setItem("id_branch_office", result[0].data[0].id);
               sessionStorage.setItem(
@@ -125,15 +120,15 @@ const BranchOfficePage = (props) => {
         },
         userForm: values.user.length
           ? {
-              email: values.user[0].email,
-              password: "",
-              password_repeat: "",
-              rut: values.user[0].rut,
-              name: values.user[0].name,
-              phone: values.user[0].phone,
-              id: values.user[0].id,
-              id_rol: values.user[0].id_rol,
-            }
+            email: values.user[0].email,
+            password: "",
+            password_repeat: "",
+            rut: values.user[0].rut,
+            name: values.user[0].name,
+            phone: values.user[0].phone,
+            id: values.user[0].id,
+            id_rol: values.user[0].id_rol,
+          }
           : currentState.userForm,
         titleModal: "Modificar Sucursal " + values.name,
         requiredInput: false,
@@ -175,12 +170,13 @@ const BranchOfficePage = (props) => {
           <hr />
           <Row className="justify-content-center">
             {globalState.branchOffice.map((v, i) => (
-              <Col sm={3} lg={3} md={3} className="text-center" key={i}>
+              <Col sm={6} lg={4} xl={3} md={4} xs={10} className="text-center" key={i}>
                 <h5 style={{ color: "rgb(180, 55, 33)" }}>{v.name}</h5>
                 <Image
                   src={require("../assets/img/sucursal.png")}
-                  style={{ width: "100%" }}
+                  className="widthImage"
                 />
+                <br />
                 Estado :{" "}
                 {v.is_open ? (
                   <Badge variant="success" className="font_badge">
@@ -191,10 +187,8 @@ const BranchOfficePage = (props) => {
                     Cerrada
                   </Badge>
                 )}
-                <br />
-                <br />
                 <DropdownButton
-                  size="md"
+                  size="sm"
                   id={"fila" + i}
                   title="Acciones"
                   style={{ width: "100%" }}
@@ -203,7 +197,7 @@ const BranchOfficePage = (props) => {
                   <Dropdown.Item onClick={() => updateRegister(v)}>
                     Modificar
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => {}}>Eliminar</Dropdown.Item>
+                  <Dropdown.Item onClick={() => { }}>Eliminar</Dropdown.Item>
                 </DropdownButton>
               </Col>
             ))}

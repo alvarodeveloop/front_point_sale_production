@@ -251,12 +251,12 @@ const EnterpriseFormPage = (props) => {
         ...globalState.dataForm,
         [e.target.name]:
           e.target.name === "rut" ? formatRut(e.target.value) : e.target.value,
-        comuna: e.target.name === "address" && globalState.dataForm.addressArray
+        comuna: e.target.name === "address" && globalState.dataForm.addressArray.length
           ? e.target.value
             ? globalState.dataForm.addressArray.find(v => v.address.value === e.target.value).commune
             : ""
           : e.target.name === "comuna" ? e.target.value : globalState.dataForm.comuna,
-        city: e.target.name === "address" && globalState.dataForm.addressArray
+        city: e.target.name === "address" && globalState.dataForm.addressArray.length
           ? e.target.value
             ? globalState.dataForm.addressArray.find(v => v.address.value === e.target.value).city
             : ""
@@ -407,11 +407,11 @@ const EnterpriseFormPage = (props) => {
             id="formEnterprise"
           >
             <Row>
-              <Col sm={6} md={6} lg={6}>
+              <Col sm={6} md={6} lg={6} className="d-none d-md-block">
                 <h4 className="title_principal">Formulario de Empresas</h4>
               </Col>
               <Col sm={6} md={6} lg={6}>
-                <h4 className="title_principal text-right">
+                <h4 className="title_principal alignEnterprisePlanTitle">
                   Plan de la empresa:{" "}
                   <Badge variant="danger" className="font-badge">
                     {Object.keys(globalState.dataForm.plan).length > 0
@@ -427,7 +427,7 @@ const EnterpriseFormPage = (props) => {
                 <Row>
                   <Col sm={12} lg={12} md={12}>
                     <Row>
-                      <Col sm={4} md={4} lg={4}>
+                      <Col sm={6} md={4} lg={4}>
                         <Form.Label className="fontBold">Rut</Form.Label>
                         <Form.Group className={"divContainerFlex"}>
                           <Form.Control
@@ -473,7 +473,7 @@ const EnterpriseFormPage = (props) => {
                         name="bussines_name"
                         required={true}
                         messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
+                        cols="col-md-4 col-lg-4 col-sm-6"
                         value={globalState.dataForm.bussines_name}
                         handleChange={onChange}
                       />
@@ -483,7 +483,7 @@ const EnterpriseFormPage = (props) => {
                         name="name"
                         required={true}
                         messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
+                        cols="col-md-4 col-lg-4 col-sm-6"
                         value={globalState.dataForm.name}
                         handleChange={onChange}
                       />
@@ -496,7 +496,7 @@ const EnterpriseFormPage = (props) => {
                           name="address"
                           required={true}
                           messageErrors={["Requerido*"]}
-                          cols="col-md-4 col-lg-4 col-sm-4"
+                          cols="col-md-4 col-lg-4 col-sm-6"
                           value={globalState.dataForm.address}
                           handleChange={onChange}
                         >
@@ -511,7 +511,7 @@ const EnterpriseFormPage = (props) => {
                           name="address"
                           required={true}
                           messageErrors={["Requerido*"]}
-                          cols="col-md-4 col-lg-4 col-sm-4"
+                          cols="col-md-4 col-lg-4 col-sm-6"
                           value={globalState.dataForm.address}
                           handleChange={onChange}
                         />
@@ -523,7 +523,7 @@ const EnterpriseFormPage = (props) => {
                         required={true}
                         readonly={globalState.readonly}
                         messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
+                        cols="col-md-4 col-lg-4 col-sm-6"
                         value={globalState.dataForm.city}
                         handleChange={onChange}
                       />
@@ -534,7 +534,7 @@ const EnterpriseFormPage = (props) => {
                         required={true}
                         readonly={globalState.readonly}
                         messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
+                        cols="col-md-4 col-lg-4 col-sm-6"
                         value={globalState.dataForm.comuna}
                         handleChange={onChange}
                       />
@@ -546,7 +546,7 @@ const EnterpriseFormPage = (props) => {
                         name="email_enterprise"
                         required={true}
                         messageErrors={["Requerido, ", "Formato tipo email"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
+                        cols="col-md-4 col-lg-4 col-sm-6"
                         value={globalState.dataForm.email_enterprise}
                         handleChange={onChange}
                       />
@@ -556,7 +556,7 @@ const EnterpriseFormPage = (props) => {
                         name="phone"
                         required={true}
                         messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
+                        cols="col-md-4 col-lg-4 col-sm-6"
                         value={globalState.dataForm.phone}
                         handleChange={onChange}
                       />
@@ -567,7 +567,7 @@ const EnterpriseFormPage = (props) => {
                           name="sale_type"
                           required={true}
                           messageErrors={["Requerido*"]}
-                          cols="col-md-4 col-lg-4 col-sm-4"
+                          cols="col-md-4 col-lg-4 col-sm-6"
                           value={globalState.dataForm.sale_type}
                           handleChange={onChange}
                         >
@@ -582,7 +582,7 @@ const EnterpriseFormPage = (props) => {
                           name="sale_type"
                           required={true}
                           messageErrors={["Requerido*"]}
-                          cols="col-md-4 col-lg-4 col-sm-4"
+                          cols="col-md-4 col-lg-4 col-sm-6"
                           value={globalState.dataForm.sale_type}
                           handleChange={onChange}
                         />
@@ -596,7 +596,7 @@ const EnterpriseFormPage = (props) => {
                           name="economic_activity"
                           required={true}
                           messageErrors={["Requerido*"]}
-                          cols="col-md-4 col-lg-4 col-sm-4"
+                          cols="col-md-4 col-lg-4 col-sm-6"
                           value={globalState.dataForm.economic_activity}
                           handleChange={onChange}
                         >
@@ -611,7 +611,7 @@ const EnterpriseFormPage = (props) => {
                           name="economic_activity"
                           required={true}
                           messageErrors={["Requerido*"]}
-                          cols="col-md-4 col-lg-4 col-sm-4"
+                          cols="col-md-4 col-lg-4 col-sm-6"
                           value={globalState.dataForm.economic_activity}
                           handleChange={onChange}
                         />
@@ -621,7 +621,7 @@ const EnterpriseFormPage = (props) => {
                   </Col>
                 </Row>
                 <Row className="justify-content-center">
-                  <Col sm={4} md={4} lg={4}>
+                  <Col xs={6} sm={6} md={4} lg={4}>
                     <Button
                       variant="secondary"
                       size="sm"
@@ -632,7 +632,7 @@ const EnterpriseFormPage = (props) => {
                       Volver a la tabla
                     </Button>
                   </Col>
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={6} xs={6} md={4} lg={4}>
                     <Button
                       variant="primary"
                       size="sm"
@@ -651,7 +651,7 @@ const EnterpriseFormPage = (props) => {
                   <Col sm={12} md={12} lg={12}>
                     <Row className="snip1404 justify-content-center">
                       {globalState.planes.map((v, i) => (
-                        <Col sm={4} md={4} lg={4} key={i}>
+                        <Col sm={6} md={4} lg={6} xs={8} key={i}>
                           <TablePlansComponent
                             plan={v}
                             handleSelect={handleSelectPlan}
@@ -663,7 +663,7 @@ const EnterpriseFormPage = (props) => {
                 </Row>
                 <br />
                 <Row className="justify-content-center">
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={6} md={4} lg={4} xs={8} xs={6}>
                     <Button
                       variant="secondary"
                       block={true}
@@ -674,7 +674,7 @@ const EnterpriseFormPage = (props) => {
                       Volver
                     </Button>
                   </Col>
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={6} md={4} lg={4} xs={6}>
                     <Button
                       variant="danger"
                       block={true}
