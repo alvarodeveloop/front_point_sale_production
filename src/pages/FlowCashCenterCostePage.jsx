@@ -27,7 +27,7 @@ let columns_center = []
 
 const FlowCashCenterCostePage = (props) => {
   const [centerForm, setCenterForm] = useState({
-    name : ''
+    name: ''
   })
   const [showForm, setShowForm] = useState(false)
   const [validated, setValidated] = useState(false)
@@ -37,41 +37,41 @@ const FlowCashCenterCostePage = (props) => {
   const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
-    if(displayLoading){
+    if (displayLoading) {
       setDisplayLoading(false)
     }
-  },[props.centerCostes])
+  }, [props.centerCostes])
 
   useMemo(() => {
     columns_center = [
 
-          {
-            Header: 'Nombre',
-            accessor: 'name'
-          },
-          {
-            Header: 'Ingresos',
-            accessor: props1 => [props1.earnings.length]
-          },
-          {
-            Header: 'Egresos',
-            accessor: props1 => [props1.expensives.length]
-          },
-          {
-            Header: 'Acciones',
-            Cell: props1 => {
-              const id = props1.cell.row.original.id
-              return (
-                <DropdownButton size="sm" id={'drop'+id} title="Seleccione"  block="true">
-                  <Dropdown.Item onClick={() => seeAllInformation(props1.cell.row.original)}>Ver Ingresos y Egresos</Dropdown.Item>
-                  <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
-                  <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
-                </DropdownButton>
-              )
-            }
-          }
-        ]
-  },[])
+      {
+        Header: 'Nombre',
+        accessor: 'name'
+      },
+      {
+        Header: 'Ingresos',
+        accessor: props1 => [props1.earnings.length]
+      },
+      {
+        Header: 'Egresos',
+        accessor: props1 => [props1.expensives.length]
+      },
+      {
+        Header: 'Acciones',
+        Cell: props1 => {
+          const id = props1.cell.row.original.id
+          return (
+            <DropdownButton size="sm" id={'drop' + id} title="Seleccione" block="true">
+              <Dropdown.Item onClick={() => seeAllInformation(props1.cell.row.original)}>Ver Ingresos y Egresos</Dropdown.Item>
+              <Dropdown.Item onClick={() => modifyRegister(props1.cell.row.original)}>Modificar</Dropdown.Item>
+              <Dropdown.Item onClick={() => deleteRegister(id)}>Eliminar</Dropdown.Item>
+            </DropdownButton>
+          )
+        }
+      }
+    ]
+  }, [])
 
   const cleanForm = () => {
     setCenterForm({
@@ -81,7 +81,7 @@ const FlowCashCenterCostePage = (props) => {
 
   const confirmDeleteRegister = id => {
     setDisplayLoading(true)
-    axios.delete(API_URL+'flow_cash_center_coste/'+id).then(result => {
+    axios.delete(API_URL + 'flow_cash_center_coste/' + id).then(result => {
       toast.success('Registro Eliminado')
       props.fetchData()
       setDisplayLoading(false)
@@ -132,10 +132,10 @@ const FlowCashCenterCostePage = (props) => {
       setValidated(true);
       return
     }
-    const objectPost = Object.assign({},centerForm)
+    const objectPost = Object.assign({}, centerForm)
     setDisplayLoading(true)
-    if(objectPost.id){
-      axios.put(API_URL+'flow_cash_center_coste/'+objectPost.id,objectPost).then(result => {
+    if (objectPost.id) {
+      axios.put(API_URL + 'flow_cash_center_coste/' + objectPost.id, objectPost).then(result => {
         toast.success('Cuenta Modificada')
         cleanForm()
         displayForm()
@@ -145,8 +145,8 @@ const FlowCashCenterCostePage = (props) => {
         setDisplayLoading(false)
         props.tokenExpired(err)
       })
-    }else{
-      axios.post(API_URL+'flow_cash_center_coste',objectPost).then(result => {
+    } else {
+      axios.post(API_URL + 'flow_cash_center_coste', objectPost).then(result => {
         toast.success('Cuenta Agregada')
         cleanForm()
         displayForm()
@@ -162,14 +162,14 @@ const FlowCashCenterCostePage = (props) => {
   const modifyRegister = data => {
     setCenterForm({
       name: data.name,
-      id : data.id
+      id: data.id
     })
 
     displayForm()
   }
 
   const onChange = e => {
-    setCenterForm({...centerForm, [e.target.name] : e.target.value })
+    setCenterForm({ ...centerForm, [e.target.name]: e.target.value })
   }
 
   const seeAllInformation = data => {
@@ -184,23 +184,23 @@ const FlowCashCenterCostePage = (props) => {
         <LoadingComponent />
       ) : (
         <Container>
-          <br/><br/>
+          <br /><br />
           {showForm ? (
             <Form onSubmit={handleSubmit} noValidate validated={validated}>
               <Row className="justify-content-center">
-                  <InputField
-                    {...props.inputName}
-                    value={centerForm.name}
-                    handleChange={onChange}
-                  />
+                <InputField
+                  {...props.inputName}
+                  value={centerForm.name}
+                  handleChange={onChange}
+                />
               </Row>
               <Row>
                 <Col sm={6} md={6} lg={6} xs={12}>
-                  <br/>
+                  <br />
                   <Button size="sm" type="submit" variant="danger" block={true}>Guardar Centro de Costo</Button>
                 </Col>
                 <Col sm={6} md={6} lg={6} xs={12}>
-                  <br/>
+                  <br />
                   <Button size="sm" type="button" variant="secondary" block={true} onClick={displayForm}>Desplegar Datos</Button>
                 </Col>
               </Row>
@@ -209,10 +209,13 @@ const FlowCashCenterCostePage = (props) => {
             <Row>
               <Col sm={12} md={12} lg={12}>
                 <Row>
-                  <Col sm={6} md={6} lg={6} xs={12}>
+                  <Col sm={6} md={6} lg={6} xs={12} className="alignTitleCounter d-block d-md-none">
+                    <h5>Total Centros: <Badge variant="danger" className="font_badge">{props.centerCostes.length}</Badge></h5>
+                  </Col>
+                  <Col sm={12} md={6} lg={6} xs={12}>
                     <Button size="sm" variant="secondary" block={true} onClick={displayForm}>Agregar Centro de Costo <FaPlusCircle /></Button>
                   </Col>
-                  <Col sm={6} md={6} lg={6} xs={12} className="text-right">
+                  <Col sm={6} md={6} lg={6} xs={12} className="text-right d-none d-md-block">
                     <h5>Total Centros: <Badge variant="danger" className="font_badge">{props.centerCostes.length}</Badge></h5>
                   </Col>
                 </Row>
@@ -232,7 +235,7 @@ const FlowCashCenterCostePage = (props) => {
             aria-labelledby="contained-modal-title-vcenter"
             centered
           >
-            <Modal.Header closeButton style={{backgroundColor: 'black', color: 'white'}}>
+            <Modal.Header closeButton style={{ backgroundColor: 'black', color: 'white' }}>
               <Modal.Title id="contained-modal-title-vcenter">
                 Ingresos y Egresos
               </Modal.Title>
@@ -259,7 +262,7 @@ const FlowCashCenterCostePage = (props) => {
 }
 
 FlowCashCenterCostePage.propTypes = {
-  fetchData : PropTypes.func.isRequired,
+  fetchData: PropTypes.func.isRequired,
   centerCostes: PropTypes.array.isRequired
 }
 
@@ -268,8 +271,8 @@ FlowCashCenterCostePage.defaultProps = {
     type: 'text',
     required: true,
     name: 'name',
-    label : 'Nombre del Centro de Costo',
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    label: 'Nombre del Centro de Costo',
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
     messageErrors: [
       'Requerido*'
     ],

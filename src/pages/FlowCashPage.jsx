@@ -14,20 +14,21 @@ import FlowCashAccountPage from 'pages/FlowCashAccountPage'
 import FlowCashCenterCostePage from 'pages/FlowCashCenterCostePage'
 import FlowCashEarningPage from 'pages/FlowCashEarningPage'
 import FlowCashExpensivePage from 'pages/FlowCashExpensivePage'
+import 'styles/pages/flowCash.scss';
 
 const FlowCashPage = (props) => {
 
-  const [centerCostes , setCenterCostes] = useState([])
-  const [accounts , setAccounts] = useState([])
+  const [centerCostes, setCenterCostes] = useState([])
+  const [accounts, setAccounts] = useState([])
 
   useEffect(() => {
     fetchData()
-  },[props.id_branch_office])
+  }, [props.id_branch_office])
 
   const fetchData = () => {
     let promises = [
-      axios.get(API_URL+'flow_cash_account'),
-      axios.get(API_URL+'flow_cash_center_coste'),
+      axios.get(API_URL + 'flow_cash_account'),
+      axios.get(API_URL + 'flow_cash_center_coste'),
     ]
 
     Promise.all(promises).then(result => {
@@ -44,12 +45,12 @@ const FlowCashPage = (props) => {
       <Row className="containerDiv">
         <Col sm={12} md={12} lg={12} xs={12}>
           <h4 className="title_principal">Flujo de Caja - Caja</h4>
-          <hr/>
+          <hr />
         </Col>
         <Col sm={12} md={12} lg={12} xs={12}>
           <Tabs defaultActiveKey="center_coste" id="uncontrolled-tab-example">
             <Tab eventKey="center_coste" title="Centro de Costos">
-              <FlowCashCenterCostePage  centerCostes={centerCostes} fetchData={fetchData}/>
+              <FlowCashCenterCostePage centerCostes={centerCostes} fetchData={fetchData} />
             </Tab>
             <Tab eventKey="accounts" title="Cuentas">
               <FlowCashAccountPage accounts={accounts} fetchData={fetchData} />
@@ -67,16 +68,16 @@ const FlowCashPage = (props) => {
   )
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   return {
-    id_branch_office : state.enterpriseSucursal.id_branch_office,
-    id_enterprise : state.enterpriseSucursal.id_enterprise,
+    id_branch_office: state.enterpriseSucursal.id_branch_office,
+    id_enterprise: state.enterpriseSucursal.id_enterprise,
   }
 }
 
-FlowCashPage.propTypes ={
+FlowCashPage.propTypes = {
   id_branch_office: PropTypes.string.isRequired,
-  id_enterprise : PropTypes.string.isRequired,
+  id_enterprise: PropTypes.string.isRequired,
 }
 
-export default connect(mapStateToProps,{})(FlowCashPage)
+export default connect(mapStateToProps, {})(FlowCashPage)

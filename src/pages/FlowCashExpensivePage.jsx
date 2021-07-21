@@ -332,9 +332,9 @@ const FlowCashExpensivePage = (props) => {
                             </Col>
                           </Row>
                           <Row>
-                            <Col sm={4} md={4} lg={4}>
+                            <Col sm={6} md={4} lg={4}>
                               <br />
-                              <Button size="sm" variant="info" block={true} onClick={() => handleAdjunto('adjunt1')}>Adjunto1</Button>
+                              <Button size="sm" variant="primary" block={true} onClick={() => handleAdjunto('adjunt1')}>Adjunto1</Button>
                               <input type="file" id="adjunt1" onChange={handleChangeFile} style={{ display: 'none' }} />
                               {
                                 expensiveForm.document_1 && expensiveForm.id ? (
@@ -342,9 +342,9 @@ const FlowCashExpensivePage = (props) => {
                                 ) : ''
                               }
                             </Col>
-                            <Col sm={4} md={4} lg={4}>
+                            <Col sm={6} md={4} lg={4}>
                               <br />
-                              <Button size="sm" variant="info" block={true} onClick={() => handleAdjunto('adjunt2')}>Adjunto2</Button>
+                              <Button size="sm" variant="primary" block={true} onClick={() => handleAdjunto('adjunt2')}>Adjunto2</Button>
                               <input type="file" id="adjunt2" onChange={handleChangeFile} style={{ display: 'none' }} />
                               {
                                 expensiveForm.document_1 && expensiveForm.id ? (
@@ -360,13 +360,13 @@ const FlowCashExpensivePage = (props) => {
                 </Col>
               </Row>
               <Row className="justify-content-center">
-                <Col sm={4} md={4} lg={4} xs={12}>
+                <Col sm={6} md={4} lg={4} xs={12}>
                   <br />
-                  <Button size="sm" type="submit" variant="primary" block={true}>Guardar Egreso</Button>
+                  <Button size="sm" type="submit" variant="danger" block={true}>Guardar Egreso</Button>
                 </Col>
-                <Col sm={4} md={4} lg={4} xs={12}>
+                <Col sm={6} md={4} lg={4} xs={12}>
                   <br />
-                  <Button size="sm" type="button" variant="info" block={true} onClick={displayForm}>Volver a la Tabla</Button>
+                  <Button size="sm" type="button" variant="secondary" block={true} onClick={displayForm}>Volver a la Tabla</Button>
                 </Col>
               </Row>
             </Form>
@@ -374,10 +374,13 @@ const FlowCashExpensivePage = (props) => {
             <Row>
               <Col sm={12} md={12} lg={12}>
                 <Row className="">
+                  <Col sm={6} md={6} lg={6} xs={12} className="alignTitleCounter d-block d-md-none">
+                    <h5>Total Egresos: <Badge variant="danger" className="font_badge">{expensives.length}</Badge></h5>
+                  </Col>
                   <Col sm={6} md={6} lg={6} xs={12}>
                     <Button size="sm" variant="secondary" block={true} onClick={displayForm}>Agregar Egreso <FaPlusCircle /></Button>
                   </Col>
-                  <Col sm={6} md={6} lg={6} xs={12} className="text-right">
+                  <Col sm={6} md={6} lg={6} xs={12} className="text-right d-none d-md-block">
                     <h5>Total Egresos: <Badge variant="danger" className="font_badge">{expensives.length}</Badge></h5>
                   </Col>
                 </Row>
@@ -493,7 +496,7 @@ FlowCashExpensivePage.defaultProps = {
     required: true,
     name: 'name',
     label: 'Nombre',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -503,8 +506,8 @@ FlowCashExpensivePage.defaultProps = {
     required: true,
     name: 'description',
     label: 'Descripción',
-    rows: '2',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    rows: '1',
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -515,7 +518,7 @@ FlowCashExpensivePage.defaultProps = {
     name: 'amount',
     label: 'Monto',
     step: 'any',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],

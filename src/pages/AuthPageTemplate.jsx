@@ -414,12 +414,12 @@ const AuthPageTemplate = (props) => {
                 className="animate__animated animate__zoomIn"
               >
                 <Row className="separated_top justify-content-center">
-                  <Col sm={6} md={6} lg={6}>
+                  <Col sm={12} xs={12} md={6} lg={6}>
                     <h3 className="title_principal text-center">
                       Escoja la Sucursal con la que trabajara
                     </h3>
                   </Col>
-                  <Col sm={3} md={3} lg={3}>
+                  <Col sm={4} md={3} xs={6} lg={3}>
                     <Button
                       variant="danger"
                       block={true}
@@ -432,9 +432,9 @@ const AuthPageTemplate = (props) => {
                 </Row>
                 <br />
                 <br />
-                <Row className="justify-content-center align-items-center alto_sucursal">
+                <Row className="justify-content-center align-items-center alto_sucursal" style={{ marginLeft: "0px", marginRight: "0px" }}>
                   {branchOffices.map((v, i) => (
-                    <Col sm={3} lg={3} md={3} className="text-center" key={i}>
+                    <Col sm={6} xs={10} lg={3} md={4} className="text-center mb-4 mb-sm-2 mb-md-0" key={i}>
                       <h4
                         style={{
                           color: "rgb(180, 55, 33)",
@@ -445,10 +445,10 @@ const AuthPageTemplate = (props) => {
                       </h4>
                       <Image
                         src={require("../assets/img/sucursal.png")}
-                        style={{ width: "100%" }}
+                        style={{ width: "80%" }}
                       />
-                      <span className="letras_negras">Estado :</span>{" "}
-                      {v.is_open ? (
+                      <br />
+                      <span className="letras_negras">Estado : {v.is_open ? (
                         <Badge variant="success" className="font_badge">
                           Abierta
                         </Badge>
@@ -456,7 +456,7 @@ const AuthPageTemplate = (props) => {
                         <Badge variant="danger" className="font_badge">
                           Cerrada
                         </Badge>
-                      )}
+                      )}</span>{" "}
                       <br />
                       <br />
                       <Button
@@ -489,12 +489,12 @@ const AuthPageTemplate = (props) => {
                 className="animate__animated animate__zoomIn"
               >
                 <Row className="separated_top justify-content-center">
-                  <Col sm={6} md={6} lg={6}>
+                  <Col sm={12} md={12} lg={6} xs={12}>
                     <h3 className="title_principal text-center">
                       Escoja la Empresa con la que trabajara
                     </h3>
                   </Col>
-                  <Col sm={3} md={3} lg={3}>
+                  <Col sm={6} md={4} lg={3} xs={6}>
                     <Button
                       variant="danger"
                       block={true}
@@ -507,9 +507,9 @@ const AuthPageTemplate = (props) => {
                 </Row>
                 <br />
                 <br />
-                <Row className="justify-content-center align-items-center alto_sucursal">
+                <Row className="justify-content-center align-items-center alto_sucursal" style={{ marginLeft: "0px", marginRight: "0px" }}>
                   {enterprises.map((v, i) => (
-                    <Col sm={3} lg={3} md={3} className="text-center" key={i}>
+                    <Col sm={6} lg={3} md={4} xs={10} className="text-center mb-4 mb-sm-2 mb-lg-0" key={i}>
                       <h4
                         style={{
                           color: "rgb(180, 55, 33)",
@@ -521,6 +521,7 @@ const AuthPageTemplate = (props) => {
                       <Image
                         src={require("../assets/img/enterprises.jpg")}
                         style={{ width: "100%" }}
+                        className="mb-2 mb-lg-0"
                       />
                       <span className="letras_negras">Estado :</span>{" "}
                       {v.is_open ? (

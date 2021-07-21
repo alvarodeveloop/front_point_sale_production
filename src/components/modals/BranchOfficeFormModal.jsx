@@ -599,7 +599,7 @@ const BranchOfficeFormModal = (props) => {
               )}
               <hr />
               <Row className="justify-content-center">
-                <Col sm={4} md={4} lg={4}>
+                <Col sm={4} md={4} lg={4} xs={6}>
                   <Button
                     block={true}
                     variant="danger"
@@ -610,7 +610,7 @@ const BranchOfficeFormModal = (props) => {
                   </Button>
                 </Col>
                 {props.isBranchOffice ? (
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={4} md={4} lg={4} xs={6}>
                     <Button
                       block={true}
                       variant="secondary"

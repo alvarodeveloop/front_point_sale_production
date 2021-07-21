@@ -170,7 +170,7 @@ const BranchOfficePage = (props) => {
           <hr />
           <Row className="justify-content-center">
             {globalState.branchOffice.map((v, i) => (
-              <Col sm={6} lg={4} xl={3} md={4} xs={10} className="text-center" key={i}>
+              <Col sm={6} lg={4} xl={3} md={4} xs={10} className="text-center mb-4 mb-sm-2 mb-md-0" key={i}>
                 <h5 style={{ color: "rgb(180, 55, 33)" }}>{v.name}</h5>
                 <Image
                   src={require("../assets/img/sucursal.png")}
@@ -191,7 +191,7 @@ const BranchOfficePage = (props) => {
                   size="sm"
                   id={"fila" + i}
                   title="Acciones"
-                  style={{ width: "100%" }}
+                  style={{ width: "100%", marginTop: "15px" }}
                   variant="primary"
                 >
                   <Dropdown.Item onClick={() => updateRegister(v)}>

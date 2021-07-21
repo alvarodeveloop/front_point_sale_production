@@ -318,13 +318,13 @@ const FlowCashEarningPage = (props) => {
                             <Col sm={6} md={6} lg={6}>
                               <label for="">Es recurrente?</label>
                               <Row>
-                                <Col sm={6} md={6} lg={6}>
+                                <Col sm={6} md={6} lg={6} xs={6}>
                                   <label>
                                     <input type="checkbox" onChange={onChange} name="is_recurrent" value={false} checked={earningForm.is_recurrent ? false : true} />
                                     &nbsp;&nbsp;No
                                   </label>
                                 </Col>
-                                <Col sm={6} md={6} lg={6}>
+                                <Col sm={6} md={6} lg={6} xs={6}>
                                   <label>
                                     <input type="checkbox" onChange={onChange} name="is_recurrent" value={true} checked={earningForm.is_recurrent ? true : false} />
                                     &nbsp;&nbsp;Si
@@ -333,10 +333,10 @@ const FlowCashEarningPage = (props) => {
                               </Row>
                             </Col>
                           </Row>
-                          <Row>
-                            <Col sm={4} md={4} lg={4}>
+                          <Row className="justify-content-center">
+                            <Col sm={6} md={6} lg={4} xs={6}>
                               <br />
-                              <Button size="sm" variant="info" block={true} onClick={() => handleAdjunto('adjunt1')}>Adjunto1</Button>
+                              <Button size="sm" variant="primary" block={true} onClick={() => handleAdjunto('adjunt1')}>Adjunto1</Button>
                               <input type="file" id="adjunt1" onChange={handleChangeFile} style={{ display: 'none' }} />
                               {
                                 earningForm.document_1 && earningForm.id ? (
@@ -344,9 +344,9 @@ const FlowCashEarningPage = (props) => {
                                 ) : ''
                               }
                             </Col>
-                            <Col sm={4} md={4} lg={4}>
+                            <Col sm={6} md={6} lg={4} xs={6}>
                               <br />
-                              <Button size="sm" variant="info" block={true} onClick={() => handleAdjunto('adjunt2')}>Adjunto2</Button>
+                              <Button size="sm" variant="primary" block={true} onClick={() => handleAdjunto('adjunt2')}>Adjunto2</Button>
                               <input type="file" id="adjunt2" onChange={handleChangeFile} style={{ display: 'none' }} />
                               {
                                 earningForm.document_1 && earningForm.id ? (
@@ -362,13 +362,13 @@ const FlowCashEarningPage = (props) => {
                 </Col>
               </Row>
               <Row className="justify-content-center">
-                <Col sm={4} md={4} lg={4} xs={12}>
+                <Col sm={6} md={4} lg={4} xs={12}>
                   <br />
-                  <Button size="sm" type="submit" variant="primary" block={true}>Guardar Ingreso</Button>
+                  <Button size="sm" type="submit" variant="danger" block={true}>Guardar Ingreso</Button>
                 </Col>
-                <Col sm={4} md={4} lg={4} xs={12}>
+                <Col sm={6} md={4} lg={4} xs={12}>
                   <br />
-                  <Button size="sm" type="button" variant="info" block={true} onClick={displayForm}>Volver a la Tabla</Button>
+                  <Button size="sm" type="button" variant="secondary" block={true} onClick={displayForm}>Volver a la Tabla</Button>
                 </Col>
               </Row>
             </Form>
@@ -376,10 +376,13 @@ const FlowCashEarningPage = (props) => {
             <Row>
               <Col sm={12} md={12} lg={12}>
                 <Row className="">
+                  <Col sm={6} md={6} lg={6} xs={12} className="alignTitleCounter d-block d-md-none">
+                    <h5>Total Ingresos: <Badge variant="danger" className="font_badge">{earnings.length}</Badge></h5>
+                  </Col>
                   <Col sm={6} md={6} lg={6} xs={12}>
                     <Button size="sm" variant="secondary" block={true} onClick={displayForm}>Agregar Ingresos <FaPlusCircle /></Button>
                   </Col>
-                  <Col sm={6} md={6} lg={6} xs={12} className="text-right">
+                  <Col sm={6} md={6} lg={6} xs={12} className="text-right d-none d-md-block">
                     <h5>Total Ingresos: <Badge variant="danger" className="font_badge">{earnings.length}</Badge></h5>
                   </Col>
                 </Row>
@@ -496,7 +499,7 @@ FlowCashEarningPage.defaultProps = {
     required: true,
     name: 'name',
     label: 'Nombre',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -506,8 +509,8 @@ FlowCashEarningPage.defaultProps = {
     required: true,
     name: 'description',
     label: 'Descripción',
-    rows: '2',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    rows: '1',
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -518,7 +521,7 @@ FlowCashEarningPage.defaultProps = {
     name: 'amount',
     label: 'Monto',
     step: 'any',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],

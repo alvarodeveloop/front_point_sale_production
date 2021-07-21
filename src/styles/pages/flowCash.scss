@@ -1,0 +1,9 @@
+.alignTitleCounter{
+    text-align: right;
+}
+
+@media (max-width : 776px) {
+    .alignTitleCounter{
+        text-align: left;
+    }
+}
