@@ -11,6 +11,7 @@ import { confirmAlert } from 'react-confirm-alert'; // Import
 import { connect } from 'react-redux'
 import { showPriceWithDecimals, formatNumber } from 'utils/functions'
 import 'styles/components/modalComponents.scss'
+import "styles/pages/ListProductPage.scss"
 
 let listColumns = [];
 let productArrayCopy = []; // array para limpiar la data cuando haga post y los productos vuelvan a ser los productos originales
@@ -317,10 +318,12 @@ const ListProductPage = (props) => {
           <Col>
             <Row>
               <Col className="text-center">
-                <h4 className="title_principal">Lista de Productos</h4>
+                <h4 className="title_principal d-none d-md-block">Lista de Productos</h4>
+                <h5 className="title_principal d-block d-md-none">Lista de Productos</h5>
               </Col>
               <Col className="text-center">
-                <h4 className="title_principal">Total Listas <Badge variant="danger" className="font-badge">{listData.length}</Badge></h4>
+                <h4 className="title_principal d-none d-md-block">Total Listas <Badge variant="danger" className="font-badge">{listData.length}</Badge></h4>
+                <h5 className="title_principal d-block d-md-none">Total Listas <Badge variant="danger" className="font-badge">{listData.length}</Badge></h5>
               </Col>
             </Row>
             <Row>
@@ -338,9 +341,9 @@ const ListProductPage = (props) => {
                       messageErrors={[
                         'Requerido*'
                       ]}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-6 col-md-4 col-sm-4 col-lg-4"
                     />
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={4} md={4} lg={4} xs={6}>
                       <Row>
                         <Col className="text-center">
                           <Form.Label>Status</Form.Label>
@@ -364,7 +367,7 @@ const ListProductPage = (props) => {
                       <Button variant="danger" block={true} size="sm" type="submit">{dataForm.id ? "Modificar Lista" : "Crear Lista"} <FaSave /></Button>
                     </Col>
                     {dataForm.id ? (
-                      <Col sm={4} md={4} lg={4}>
+                      <Col sm={4} md={4} lg={4} className="mt-2 mt-sm-0">
                         <Button variant="secondary" block={true} size="sm" type="button" onClick={cancelEdition}>Cancelar Edición</Button>
                       </Col>
                     ) : ""}
@@ -394,13 +397,13 @@ const ListProductPage = (props) => {
         </Modal.Header>
         <Modal.Body>
           <Row className="justify-content-center">
-            <Col sm={4} md={4} lg={4} xl={4}>
+            <Col sm={4} md={4} lg={4} xl={4} xs={6} className="mb-2 mb-sm-0">
               <Button block={true} variant="primary" size="sm" onClick={() => selectAllProductsHandler(true)}>Seleccionar todos</Button>
             </Col>
-            <Col sm={4} md={4} lg={4} xl={4}>
+            <Col sm={4} md={4} lg={4} xl={4} xs={6} className="mb-2 mb-sm-0">
               <Button block={true} variant="secondary" size="sm" onClick={() => selectAllProductsHandler(false)}>Deseleccionar todos</Button>
             </Col>
-            <Col sm={4} md={4} lg={4} xl={4}>
+            <Col sm={4} md={4} lg={4} xl={4} xs={12} className="mb-2 mb-sm-0">
               <Button variant="danger" size="sm" block={true} type="button" onClick={confirmSubmitHandler}>Guardar</Button>
             </Col>
           </Row>
@@ -412,7 +415,7 @@ const ListProductPage = (props) => {
           <br />
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="danger" size="md" onClick={onHideModalHandler}>Cerrar</Button>
+          <Button variant="secondary" size="md" onClick={onHideModalHandler}>Cerrar</Button>
         </Modal.Footer>
       </Modal>
     </Container>

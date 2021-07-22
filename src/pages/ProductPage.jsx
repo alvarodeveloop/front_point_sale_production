@@ -536,9 +536,14 @@ const ProductPage = (props) => {
             <Row>
               <Col sm={8} md={8} lg={8}>
                 <br />
-                <h4 className="title_principal">Tabla Productos</h4>
+                <h5 className="title_principal d-none d-md-block">Tabla de productos
+                </h5>
+                <h5 className="title_principal d-block d-md-none">Total Productos:{" "}
+                  <Badge variant="danger" className="title-badge">
+                    {globalState.product.length}
+                  </Badge></h5>
               </Col>
-              <Col sm={4} md={4} lg={4}>
+              <Col sm={4} md={4} lg={4} xs={12} className="d-block d-sm-none d-md-block">
                 <br />
                 <Button
                   variant="success"
@@ -549,8 +554,8 @@ const ProductPage = (props) => {
                   Operaciones Excel <FaFileExcel />
                 </Button>
               </Col>
-              <Col sm={12} md={12} lg={12} xs={12} className="containerDiv">
-                <hr />
+              <Col sm={12} md={12} lg={12} xs={12} className="containerDiv mt-2 mt-md-0">
+                <hr className="d-none d-md-block" />
                 <Row>
                   <Col sm={6} md={6} lg={6} xs={12}>
                     <Button
@@ -562,13 +567,23 @@ const ProductPage = (props) => {
                       Crear Producto <FaPlusCircle />
                     </Button>
                   </Col>
-                  <Col sm={6} md={6} lg={6} xs={12} className="text-right">
+                  <Col sm={6} md={6} lg={6} xs={12} className="text-right d-none d-md-block">
                     <h5>
                       Total Productos:{" "}
                       <Badge variant="danger" className="title_badge">
                         {globalState.product.length}
                       </Badge>
                     </h5>
+                  </Col>
+                  <Col sm={6} md={6} lg={6} xs={12} className="d-none d-sm-block d-md-none ">
+                    <Button
+                      variant="success"
+                      block={true}
+                      size="sm"
+                      onClick={displayExcelSectionHandler}
+                    >
+                      Operaciones Excel <FaFileExcel />
+                    </Button>
                   </Col>
                 </Row>
                 <Row>

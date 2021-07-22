@@ -243,14 +243,17 @@ const ProviderPage = (props) => {
       ) : (
         <Container>
           <Row>
-            <Col sm={12} md={12} lg={12}>
+            <Col sm={12} md={12} lg={12} className="d-none d-md-block">
               <h4 className="title_principal">Proveedores</h4>
               <hr />
             </Col>
-            <Col sm={3} md={3} lg={3} className="">
+            <Col sm={12} md={6} lg={6} xs={12} className="text-left d-block d-md-none">
+              <h5 className="title_principal">Total Proveedores: <Badge variant="danger" className="font_badge">{provider.length}</Badge></h5>
+            </Col>
+            <Col sm={6} md={3} lg={3} className="mb-2 mb-sm-0">
               <Button size="sm" title="Crear Proveedor" onClick={goToForm} variant="success" block={true}>Crear Proveedor <FaPlusCircle /></Button>
             </Col>
-            <Col sm={3} md={3} lg={3} className="">
+            <Col sm={6} md={3} lg={3} className="">
               <DropdownButton size="sm" id={'dropExcel'} title={(<span>Operaciones Excel <FaFileExcel /></span>)} variant="success" block="true">
                 <Dropdown.Item onClick={donwloandExcel}>Descargar plantilla excel</Dropdown.Item>
                 <Dropdown.Item onClick={exportDataExcel}>Exportar data</Dropdown.Item>
@@ -260,7 +263,7 @@ const ProviderPage = (props) => {
               <input type="file" style={{ display: "none" }} id="input-file-create" onChange={uploadCreateExcel} />
               <input type="file" style={{ display: "none" }} id="input-file-update" onChange={uploadEditExcel} />
             </Col>
-            <Col sm={6} md={6} lg={6} xs={12} className="text-right">
+            <Col sm={6} md={6} lg={6} xs={12} className="text-right d-none d-md-block">
               <h5 className="title_principal">Total Proveedores: <Badge variant="danger" className="font_badge">{provider.length}</Badge></h5>
             </Col>
           </Row>

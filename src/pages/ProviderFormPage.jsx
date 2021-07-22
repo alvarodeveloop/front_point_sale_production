@@ -1,7 +1,7 @@
-import React, { useMemo, useState,useEffect } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
-import { FaTruck,FaPlusCircle } from "react-icons/fa";
+import { FaTruck, FaPlusCircle } from "react-icons/fa";
 import InputField from 'components/input/InputComponent'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
@@ -19,7 +19,7 @@ import LoadingComponent from 'components/LoadingComponent'
 
 const ProviderFormPage = (props) => {
 
-  const [dataProvider,setDataProvider] = useState({
+  const [dataProvider, setDataProvider] = useState({
     name_fantasy: '',
     rut_provider: '',
     id_country: '',
@@ -33,7 +33,7 @@ const ProviderFormPage = (props) => {
   })
 
   const [paises, setPaises] = useState([])
-  const [isCreated,setIsCreated] = useState(false)
+  const [isCreated, setIsCreated] = useState(false)
   const [validate, setValidate] = useState(false)
   const [isUpdate, setIsUpdate] = useState(false)
   const [displayLoading, setDisplayLoading] = useState(true)
@@ -41,38 +41,38 @@ const ProviderFormPage = (props) => {
   useEffect(() => {
     validateConfig()
     fetchData()
-  },[])
+  }, [])
 
   useEffect(() => {
 
-    setDataProvider({...dataProvider,id_country : props.configStore && Object.keys(props.configStore).length > 0 ? props.configStore.country : ''})
-  },[props.id_branch_office])
+    setDataProvider({ ...dataProvider, id_country: props.configStore && Object.keys(props.configStore).length > 0 ? props.configStore.country : '' })
+  }, [props.id_branch_office])
 
   const onChange = async e => {
-    if(e.target.name === "type_id"){
-      setDataProvider({...dataProvider, [e.target.name] : e.target.value, rut_provider: ''})
-    }else if(e.target.name === "rut_provider"){
-      setDataProvider({...dataProvider, [e.target.name] : dataProvider.type_id == 1 ? formatRut(e.target.value) : e.target.value})
-    }else{
-      setDataProvider({...dataProvider, [e.target.name] : e.target.value})
+    if (e.target.name === "type_id") {
+      setDataProvider({ ...dataProvider, [e.target.name]: e.target.value, rut_provider: '' })
+    } else if (e.target.name === "rut_provider") {
+      setDataProvider({ ...dataProvider, [e.target.name]: dataProvider.type_id == 1 ? formatRut(e.target.value) : e.target.value })
+    } else {
+      setDataProvider({ ...dataProvider, [e.target.name]: e.target.value })
     }
   }
 
   const fetchData = () => {
     let promise = [
-      axios.get(API_URL+'country')
+      axios.get(API_URL + 'country')
     ]
 
-    if(props.match.params.id){
+    if (props.match.params.id) {
       promise.push(
-        axios.get(API_URL+'provider/'+atob(props.match.params.id))
+        axios.get(API_URL + 'provider/' + atob(props.match.params.id))
       )
     }
 
     Promise.all(promise).then(result => {
 
       setPaises(result[0].data)
-      if(result.length > 1){
+      if (result.length > 1) {
         setDataProvider({
           name_fantasy: result[1].data.name_fantasy,
           rut_provider: result[1].data.rut_provider,
@@ -104,22 +104,22 @@ const ProviderFormPage = (props) => {
       return
     }
 
-    let data = Object.assign({},dataProvider)
+    let data = Object.assign({}, dataProvider)
     setDisplayLoading(true)
-    if(isUpdate){
-      axios.put(API_URL+'provider/'+atob(props.match.params.id),data).then(result => {
+    if (isUpdate) {
+      axios.put(API_URL + 'provider/' + atob(props.match.params.id), data).then(result => {
         toast.success('Configuración Modificada')
 
         setTimeout(() => {
           props.history.push('/provider/list')
-        },1500)
+        }, 1500)
         setDisplayLoading(false)
       }).catch(err => {
         setDisplayLoading(false)
         props.tokenExpired(err)
       })
-    }else{
-      axios.post(API_URL+'provider',data).then(result => {
+    } else {
+      axios.post(API_URL + 'provider', data).then(result => {
         toast.success('Proveedor Creado')
 
         cleanForm()
@@ -172,7 +172,7 @@ const ProviderFormPage = (props) => {
               <Row className="justify-content-center align-items-center">
                 <Col sm={12} md={12} lg={12} xs={12} className="containerDivSeparated">
                   <h4 className="title_principal">Formulario de Proveedores</h4>
-                  <br/>
+                  <br />
                   <Row>
                     <InputField
                       {...props.inputSocialRazon}
@@ -189,15 +189,15 @@ const ProviderFormPage = (props) => {
                       <option value={2}>Identificación Fiscal</option>
                     </InputField>
                     {dataProvider.type_id && dataProvider.type_id == 1 ? (
-                        <InputField
-                          onChange={onChange} value={dataProvider.rut_provider} {...props.inputRut} handleChange={onChange}
-                        />
+                      <InputField
+                        onChange={onChange} value={dataProvider.rut_provider} {...props.inputRut} handleChange={onChange}
+                      />
                     ) : dataProvider.type_id && dataProvider.type_id == 2 ? (
-                        <InputField
-                          {...props.inputId}
-                          handleChange={onChange}
-                          value={dataProvider.rut_provider}
-                        />
+                      <InputField
+                        {...props.inputId}
+                        handleChange={onChange}
+                        value={dataProvider.rut_provider}
+                      />
                     ) : ''}
                     <InputField
                       {...props.inputNameFantasy}
@@ -212,7 +212,7 @@ const ProviderFormPage = (props) => {
                       value={dataProvider.id_country}
                     >
                       <option value=''>--Seleccione--</option>
-                      {paises.map((v,i) => (
+                      {paises.map((v, i) => (
                         <option value={v.id} key={i}>{v.nombre}</option>
                       ))}
                     </InputField>
@@ -246,16 +246,16 @@ const ProviderFormPage = (props) => {
                   </Row>
                 </Col>
               </Row>
-              <br/>
+              <br />
               <Row className="justify-content-center">
-                <Col sm={4} md={4} lg={4} xs={6}>
+                <Col sm={6} md={4} lg={4} xs={6}>
                   {isCreated ? (
                     <Button size="sm" type="button" onClick={registerAnotherOne} variant="primary" block={true}>Crear otro <FaPlusCircle /></Button>
                   ) : (
                     <Button size="sm" type="submit" variant="danger" block={true}>Guardar <FaPlusCircle /></Button>
                   )}
                 </Col>
-                <Col sm={4} md={4} lg={4} xs={6}>
+                <Col sm={6} md={4} lg={4} xs={6}>
                   <Button size="sm" type="button" onClick={goToProvider} variant="secondary" block={true}>Volver a los Proveedores</Button>
                 </Col>
               </Row>
@@ -268,13 +268,13 @@ const ProviderFormPage = (props) => {
 }
 
 
-ProviderFormPage.defaultProps ={
+ProviderFormPage.defaultProps = {
   inputNameFantasy: {
     type: 'text',
     required: false,
     name: 'name_fantasy',
-    label : 'Nombre Fantasia',
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6",
+    label: 'Nombre Fantasia',
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6",
     messageErrors: [
       'Requerido*'
     ],
@@ -284,106 +284,106 @@ ProviderFormPage.defaultProps ={
     required: true,
     name: 'rut_provider',
     placeholder: 'Introduzca su información',
-    label : 'Rut',
+    label: 'Rut',
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6"
   },
   inputCountry: {
     type: 'select',
     required: false,
     name: 'id_country',
-    label : 'País',
+    label: 'País',
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6"
   },
   inputComuna: {
     type: 'text',
     required: false,
     name: 'comuna',
-    label : 'Comuna',
+    label: 'Comuna',
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6"
   },
   inputCity: {
     type: 'text',
     required: false,
     name: 'city',
-    label : 'Ciudad',
+    label: 'Ciudad',
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6"
   },
   inputSpin: {
     type: 'textarea',
     required: false,
     name: 'spin',
-    label : 'Giro',
+    label: 'Giro',
     rows: 1,
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6"
   },
   inputPhone: {
     type: 'number',
     required: false,
     name: 'phone',
-    label : 'Teléfono',
+    label: 'Teléfono',
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6"
   },
   inputSocialRazon: {
     type: 'text',
     required: true,
     name: 'social_razon',
-    label : 'Razón Social',
+    label: 'Razón Social',
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6"
   },
   inputAddress: {
     type: 'textarea',
     required: false,
     name: 'address',
-    label : 'Dirección',
+    label: 'Dirección',
     rows: 1,
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6"
   },
   inputTypeId: {
     type: 'select',
     required: true,
     name: 'type_id',
-    label : 'Tipo de Id',
+    label: 'Tipo de Id',
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6"
   },
   inputId: {
     type: 'number',
     required: true,
     name: 'rut_provider',
-    label : 'Identificación Fiscal',
+    label: 'Identificación Fiscal',
     placeholder: 'Ingrese su información personal',
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-4 col-md-4 col-lg-4 col-xs-6"
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6"
   },
-  maskInput : {
+  maskInput: {
     formatChars: {
       '*': '[A-Za-z0-9]'
     },
@@ -392,11 +392,11 @@ ProviderFormPage.defaultProps ={
 }
 
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   return {
     configStore: state.configs.configStore,
     id_branch_office: state.enterpriseSucursal.id_branch_office
   }
 }
 
-export default connect(mapStateToProps,{})(ProviderFormPage)
+export default connect(mapStateToProps, {})(ProviderFormPage)

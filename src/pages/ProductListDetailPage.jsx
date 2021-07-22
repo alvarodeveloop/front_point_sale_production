@@ -357,7 +357,7 @@ export const ProductListDetailPage = (props) => {
                         value={dataForm.id_product}
                         handleChange={onChangeHandler}
                         required={true}
-                        cols="col-md-4 col-sm-4 col-lg-4 col-xl-4"
+                        cols="col-6 col-md-4 col-sm-4 col-lg-4 col-xl-4"
                         messageErrors={["Requerido"]}
                       >
                         <option value="">--Seleccione--</option>
@@ -375,7 +375,7 @@ export const ProductListDetailPage = (props) => {
                         value={dataForm.price}
                         required={true}
                         handleChange={onChangeHandler}
-                        cols="col-md-4 col-sm-4 col-lg-4 col-xl-4"
+                        cols="col-6 col-md-4 col-sm-4 col-lg-4 col-xl-4"
                         messageErrors={["Requerido"]}
                       />
                     </Row>
@@ -387,7 +387,7 @@ export const ProductListDetailPage = (props) => {
                     </Row>
                     <br />
                     <Row className="justify-content-center">
-                      <Col sm={4} md={4} lg={4}>
+                      <Col xs={6} sm={4} md={4} lg={4}>
                         <Button
                           variant="secondary"
                           type="button"
@@ -398,7 +398,7 @@ export const ProductListDetailPage = (props) => {
                           Volver
                         </Button>
                       </Col>
-                      <Col sm={4} md={4} lg={4}>
+                      <Col xs={6} sm={4} md={4} lg={4}>
                         <Button
                           variant="danger"
                           type="submit"
@@ -408,7 +408,7 @@ export const ProductListDetailPage = (props) => {
                           Agregar
                         </Button>
                       </Col>
-                      <Col sm={4} md={4} lg={4}>
+                      <Col xs={6} sm={4} md={4} lg={4} className="mt-2 mt-md-0">
                         <Button
                           variant="secondary"
                           type="button"
@@ -419,9 +419,20 @@ export const ProductListDetailPage = (props) => {
                           Confirmar
                         </Button>
                       </Col>
+                      <Col xs={6} sm={4} md={4} lg={4} className="mt-2 mt-md-0">
+                        <Button
+                          variant="secondary"
+                          type="button"
+                          block={true}
+                          size="sm"
+                          onClick={displayExcelSectionHandler}
+                        >
+                          Agregar por excel <FaFileExcel />
+                        </Button>
+                      </Col>
                     </Row>
                     <br />
-                    <Row>
+                    <Row className="d-none d-md-flex">
                       <Col sm={4} md={4} lg={4}>
                         <Button
                           variant="secondary"

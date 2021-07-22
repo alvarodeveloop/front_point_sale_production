@@ -1,0 +1,9 @@
+.aligmentProductQuantityTitle{
+    text-align: right;
+}
+
+@media (max-width : 776px) {
+    .aligmentProductQuantityTitle{
+        text-align: left;
+    }
+}

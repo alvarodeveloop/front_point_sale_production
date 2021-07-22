@@ -339,7 +339,7 @@ const FormProductSale = (props) => {
 
       setImgComponent(
         <Image src={event.target.result}
-          id="img_show" style={{ width: '80%' }} roundedCircle />
+          id="img_show" style={{ width: '150px', height: "150px" }} roundedCircle />
       )
 
       setImgProduct(file)
@@ -366,7 +366,7 @@ const FormProductSale = (props) => {
             className="d-block"
             src={img64}
             alt="First slide"
-            style={{ height: "300px", width: "100%" }}
+            style={{ height: "auto", width: "100%" }}
           />
           <Carousel.Caption>
             <Row className="justify-content-center">
@@ -480,7 +480,7 @@ const FormProductSale = (props) => {
                 messageErrors={[
                   'Requerido*'
                 ]}
-                cols="col-md-4 col-lg-4 col-sm-4"
+                cols="col-md-4 col-lg-4 col-sm-6"
                 value={dataProduct.quantity}
                 handleChange={onChange}
               />
@@ -492,7 +492,7 @@ const FormProductSale = (props) => {
                 messageErrors={[
                   'Requerido*'
                 ]}
-                cols="col-md-4 col-lg-4 col-sm-4"
+                cols="col-md-4 col-lg-4 col-sm-6"
                 value={dataProduct.detail}
                 handleChange={onChange}
               />
@@ -505,13 +505,24 @@ const FormProductSale = (props) => {
                 messageErrors={[
                   'Requerido*'
                 ]}
-                cols="col-md-4 col-lg-4 col-sm-4"
+                cols="col-md-4 col-lg-4 col-sm-6"
                 value={dataProduct.cost}
                 handleChange={onChange}
               />
+              <Form.Group className="col-sm-6 d-none d-sm-block d-md-none">
+                <Form.Label className="fontBold">Proveedores</Form.Label>
+                <Select
+                  value={dataProduct.id_provider}
+                  onChange={onChangeSelectProvider}
+                  isMulti={true}
+                  options={providers.map((v, i) => {
+                    return { value: v.id, label: v.social_razon }
+                  })}
+                />
+              </Form.Group>
             </Row>
-            <Row>
-              <Form.Group className={'col-md-4 col-sm-4 col-lg-4'}>
+            <Row className="d-flex d-sm-none d-md-flex">
+              <Form.Group className={'col-md-4 col-sm-6 col-lg-4'}>
                 <Form.Label className="fontBold">Proveedores</Form.Label>
                 <Select
                   value={dataProduct.id_provider}
@@ -527,7 +538,7 @@ const FormProductSale = (props) => {
               <Col sm={4} md={4} lg={4}>
                 <Button size="sm" type="button" onClick={onSubmit} disabled={isSubmit} variant="danger" block={true}>{textButton} <FaPlusCircle /> </Button>
               </Col>
-              <Col sm={4} md={4} lg={4}>
+              <Col sm={4} md={4} lg={4} className="mt-2 mt-sm-0">
                 <Button size="sm" type="button" onClick={showInventariSection} variant="secondary" block={true}>Atrás</Button>
               </Col>
             </Row>
@@ -536,14 +547,14 @@ const FormProductSale = (props) => {
           <Row className="">
             <Col sm={12} md={12} lg={12} xs={12} className="">
               <Row className="justify-content-center align-items-center">
-                <Col sm={4} md={4} lg={4} xs={12}>
+                <Col sm={6} md={4} lg={4} xs={12}>
                   <br />
                   <Button size="sm" onClick={pickLogo} variant="success" block="true" size="sm">
                     Escoger Imagen Producto <FaImage />
                   </Button>
                   <input type="file" id="file_product" style={{ display: 'none' }} onChange={readImgProduct} />
                 </Col>
-                <Col sm={4} md={4} lg={4} xs={12} className="text-center">
+                <Col sm={6} md={4} lg={4} xs={12} className="text-center mt-3 mt-md-0">
                   {imgComponent}
                 </Col>
               </Row>
@@ -560,7 +571,7 @@ const FormProductSale = (props) => {
                   handleChange={onChange}
                   value={dataProduct.price}
                 />
-                <Form.Group className={props.isInventary ? 'col-md-4 col-sm-4 col-lg-4' : 'col-md-3 col-sm-3 col-lg-3'}>
+                <Form.Group className={props.isInventary ? 'col-md-4 col-sm-6 col-lg-4' : 'col-md-3 col-sm-6 col-lg-3'}>
                   <Form.Label className="fontBold">Categorías</Form.Label>
                   <Select
                     value={dataProduct.id_category}
@@ -571,8 +582,14 @@ const FormProductSale = (props) => {
                     })}
                   />
                 </Form.Group>
+                <InputField
+                  {...props.inputDescription}
+                  handleChange={onChange}
+                  value={dataProduct.description}
+                  className="d-none d-sm-block d-md-none"
+                />
               </Row>
-              <Row>
+              <Row className="d-flex d-sm-none d-md-flext">
                 <InputField
                   {...props.inputDescription}
                   handleChange={onChange}
@@ -633,7 +650,7 @@ const FormProductSale = (props) => {
                               messageErrors={[
                                 "requerido"
                               ]}
-                              cols="col-md-4 col-sm-4 col-xl-4 col-lg-4"
+                              cols="col-md-4 col-sm-6 col-xl-4 col-lg-4"
                               value={dataProduct.id_product_detail}
                               handleChange={onChange}
                             >
@@ -652,7 +669,7 @@ const FormProductSale = (props) => {
                           messageErrors={[
                             ''
                           ]}
-                          cols='col-md-4 col-lg-4 col-sm-4'
+                          cols='col-md-4 col-lg-4 col-sm-6'
                           value={dataProduct.minimun_stock}
                           handleChange={onChange}
                         />
@@ -684,7 +701,7 @@ const FormProductSale = (props) => {
                         <Button variant="danger" size="sm" onClick={onSubmit} block={true}>Guardar <FaPlusCircle /></Button>
                       </Col>
                     )}
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={4} md={4} lg={4} className="mt-2 mt-sm-0">
                       <Button variant={props.isInventary ? "secondary" : "danger"} size="sm" onClick={showInventariSection} block={true}>Datos de Inventario</Button>
                     </Col>
                   </Row>
@@ -721,7 +738,7 @@ FormProductSale.defaultProps = {
     required: true,
     name: 'name_product',
     label: 'Nombre',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -732,7 +749,7 @@ FormProductSale.defaultProps = {
     readonly: true,
     name: 'code_ean',
     label: 'Codigo EAN',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -742,7 +759,7 @@ FormProductSale.defaultProps = {
     required: true,
     name: 'is_neto',
     label: 'Es Neto',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -752,7 +769,7 @@ FormProductSale.defaultProps = {
     required: false,
     name: 'description',
     label: 'Descripción (opcional)',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -762,7 +779,7 @@ FormProductSale.defaultProps = {
     required: true,
     name: 'is_auto_sale',
     label: 'Auto Venta',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -772,7 +789,7 @@ FormProductSale.defaultProps = {
     required: true,
     name: 'method_sale',
     label: 'Método de Venta',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -782,7 +799,7 @@ FormProductSale.defaultProps = {
     required: true,
     name: 'price',
     label: 'Precio',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     step: 'any',
     messageErrors: [
       'Requerido*'
@@ -793,7 +810,7 @@ FormProductSale.defaultProps = {
     required: true,
     name: 'sticker_color',
     label: 'color de la Etiqueta',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -804,7 +821,7 @@ FormProductSale.defaultProps = {
     required: false,
     name: 'id_category',
     label: 'Categoria',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     messageErrors: [
       'Requerido*'
     ],
@@ -815,7 +832,7 @@ FormProductSale.defaultProps = {
     name: 'pack',
     label: 'Pack',
     placeholder: 'Ingrese la cantidad de venta',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-4",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-4",
     step: 'any',
     messageErrors: [
       'Requerido*'

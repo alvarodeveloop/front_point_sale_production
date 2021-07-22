@@ -22,21 +22,21 @@ import LoadingComponent from 'components/LoadingComponent'
 
 const CategoryPage = (props) => {
 
-  const [validate,setValidate] = useState(false)
-  const [isUpdate,setIsUpdate] = useState(false)
-  const [category,setCategory] = useState([])
-  const [dataCategory,setDataCategory] = useState({
+  const [validate, setValidate] = useState(false)
+  const [isUpdate, setIsUpdate] = useState(false)
+  const [category, setCategory] = useState([])
+  const [dataCategory, setDataCategory] = useState({
     name_category: '',
   })
   const [displayLoading, setDisplayLoading] = useState(true)
 
   useEffect(() => {
     fetchData()
-  },[props.id_branch_office])
+  }, [props.id_branch_office])
 
   useMemo(() => {
 
-    if(categoryColumns.length > 1){
+    if (categoryColumns.length > 1) {
       categoryColumns.pop()
     }
 
@@ -44,19 +44,19 @@ const CategoryPage = (props) => {
       Header: 'Acciones',
       Cell: props1 => {
         const original = props1.cell.row.original;
-          if(original.name_category === "Más Vendidos"){
-            return (<span></span>)
-          }else{
-            return (
-              <DropdownButton size="sm" id={'drop'+original.id} title="Seleccione"  block="true">
-                <Dropdown.Item onClick={() => modifyRegister(original)}>Modificar</Dropdown.Item>
-                <Dropdown.Item onClick={() => deleteRegister(original.id)}>Eliminar</Dropdown.Item>
-              </DropdownButton>
-            );
-          } 
+        if (original.name_category === "Más Vendidos") {
+          return (<span></span>)
+        } else {
+          return (
+            <DropdownButton size="sm" id={'drop' + original.id} title="Seleccione" block="true">
+              <Dropdown.Item onClick={() => modifyRegister(original)}>Modificar</Dropdown.Item>
+              <Dropdown.Item onClick={() => deleteRegister(original.id)}>Eliminar</Dropdown.Item>
+            </DropdownButton>
+          );
+        }
       }
     })
-  },[])
+  }, [])
 
   const deleteRegister = id => {
     confirmAlert({
@@ -82,7 +82,7 @@ const CategoryPage = (props) => {
 
   const confirmDeleteRegister = id => {
     setDisplayLoading(true)
-    axios.delete(API_URL+'category/'+id).then(result => {
+    axios.delete(API_URL + 'category/' + id).then(result => {
       toast.success('Registro eliminado con éxito')
       fetchData()
     }).catch(err => {
@@ -92,7 +92,7 @@ const CategoryPage = (props) => {
 
   const modifyRegister = data => {
 
-    const objectModify = Object.assign({},dataCategory,{
+    const objectModify = Object.assign({}, dataCategory, {
       name_category: data.name_category,
       id: data.id
     })
@@ -102,7 +102,7 @@ const CategoryPage = (props) => {
   }
 
   const fetchData = () => {
-    axios.get(API_URL+'category').then(result => {
+    axios.get(API_URL + 'category').then(result => {
       setCategory(result.data)
       setDisplayLoading(false)
     }).catch(err => {
@@ -113,7 +113,7 @@ const CategoryPage = (props) => {
 
   // ========== SECCION FORMULARIO =========================
   const onChange = async e => {
-    await setDataCategory({...dataCategory, [e.target.name] : e.target.value})
+    await setDataCategory({ ...dataCategory, [e.target.name]: e.target.value })
   }
 
   const onSubmit = e => {
@@ -126,10 +126,10 @@ const CategoryPage = (props) => {
       return
     }
 
-    let data = Object.assign({},dataCategory)
+    let data = Object.assign({}, dataCategory)
     setDisplayLoading(true)
-    if(isUpdate){
-      axios.put(API_URL+'category/'+data.id,data).then(result => {
+    if (isUpdate) {
+      axios.put(API_URL + 'category/' + data.id, data).then(result => {
         toast.success('Categoria Modificada')
         cleanForm()
         fetchData()
@@ -137,8 +137,8 @@ const CategoryPage = (props) => {
         setDisplayLoading(false)
         props.tokenExpired(err)
       })
-    }else{
-      axios.post(API_URL+'category',data).then(result => {
+    } else {
+      axios.post(API_URL + 'category', data).then(result => {
         toast.success('Categoria Creada')
         fetchData()
         cleanForm()
@@ -171,9 +171,9 @@ const CategoryPage = (props) => {
         <Container>
           <Row className="justify-content-center">
             <Col sm={12} md={12} lg={12} xs={12} className="containerDivSeparated">
-              <br/>
+              <br />
               <h4 className="text-center title_principal">Formulario De Categorias</h4>
-              <br/>
+              <br />
               <Form onSubmit={onSubmit} noValidate validated={validate}>
                 <Row className="justify-content-center">
                   <InputField
@@ -184,13 +184,13 @@ const CategoryPage = (props) => {
                 </Row>
                 <Row className="justify-content-center">
                   <Col sm={6} md={6} lg={6} xs={6}>
-                    <Button size="sm" type="submit" variant="primary" block="true">Guardar <FaPlusCircle /></Button>
+                    <Button size="sm" type="submit" variant="danger" block="true">Guardar <FaPlusCircle /></Button>
                   </Col>
                 </Row>
                 {isUpdate ? (
                   <Row className="justify-content-center">
                     <Col sm={6} md={6} lg={6} xs={6}>
-                      <br/>
+                      <br />
                       <Button size="sm" type="button" onClick={cancelUpdate} variant="secondary" block="true">Cancelar Modificación</Button>
                     </Col>
                   </Row>
@@ -215,24 +215,24 @@ CategoryPage.defaultProps = {
     type: 'text',
     required: true,
     name: 'name_category',
-    label : 'Nombre Categoria',
+    label: 'Nombre Categoria',
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6"
   }
 }
 
-function mapStateToProps(state){
+function mapStateToProps(state) {
   return {
-    id_branch_office : state.enterpriseSucursal.id_branch_office,
-    id_enterprise : state.enterpriseSucursal.id_enterprise,
+    id_branch_office: state.enterpriseSucursal.id_branch_office,
+    id_enterprise: state.enterpriseSucursal.id_enterprise,
   }
 }
 
-CategoryPage.propTypes ={
+CategoryPage.propTypes = {
   id_branch_office: PropTypes.string.isRequired,
-  id_enterprise : PropTypes.string.isRequired,
+  id_enterprise: PropTypes.string.isRequired,
 }
 
-export default connect(mapStateToProps,{})(CategoryPage)
+export default connect(mapStateToProps, {})(CategoryPage)
