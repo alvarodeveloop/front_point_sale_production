@@ -11,6 +11,7 @@ import "styles/pages/config_general.scss";
 import { confirmAlert } from "react-confirm-alert"; // Import
 import LoadingComponent from "components/LoadingComponent";
 import ModalConfirmDataDeleteConfigGeneral from "components/ModalConfirmDataDeleteConfigGeneral";
+import { setConfig } from "actions/configs";
 
 const ConfigGeneralPage = (props) => {
   const [displayLoading, setDisplayLoading] = useState(true);
@@ -120,6 +121,7 @@ const ConfigGeneralPage = (props) => {
         setConfig((currentData) =>
           Object.assign({}, currentData, { is_syncronized: true })
         );
+        props.setConfigRedux({ ...props.configGeneral, is_syncronized: true });
         let configLocal = JSON.parse(sessionStorage.getItem("configGeneral"));
         configLocal.is_syncronized = true;
         sessionStorage.setItem("configGeneral", JSON.stringify(configLocal));
@@ -306,12 +308,20 @@ function mapStateToProps(state) {
   return {
     id_branch_office: state.enterpriseSucursal.id_branch_office,
     id_enterprise: state.enterpriseSucursal.id_enterprise,
+    configGeneral: state.configs.config
   };
+}
+
+function mapDispatchToProps() {
+  return {
+    setConfigRedux: setConfig
+  }
 }
 
 ConfigGeneralPage.propTypes = {
   id_branch_office: PropTypes.string.isRequired,
   id_enterprise: PropTypes.string.isRequired,
+  setConfigRedux: PropTypes.func
 };
 
-export default connect(mapStateToProps, {})(ConfigGeneralPage);
+export default connect(mapStateToProps, mapDispatchToProps())(ConfigGeneralPage);
