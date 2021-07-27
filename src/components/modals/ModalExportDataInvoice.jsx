@@ -355,7 +355,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="text"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.ref}
                       name="ref"
@@ -365,7 +365,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="text"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.rut}
                       name="rut"
@@ -375,7 +375,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="text"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.bussinesName}
                       name="bussinesName"
@@ -391,7 +391,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="select"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.type}
                       name="type"
@@ -425,7 +425,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="date"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.emisionDate}
                       name="emisionDate"
@@ -435,7 +435,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="date"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.expiredDate}
                       name="expiredDate"
@@ -456,7 +456,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="text"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.ref}
                       name="ref"
@@ -466,7 +466,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="text"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.ref_cotizacion}
                       name="ref_cotizacion"
@@ -477,7 +477,7 @@ function ModalExportDataInvoice(props) {
                       <InputField
                         type="text"
                         required={false}
-                        cols="col-md-4 col-sm-4 col-lg-4"
+                        cols="col-md-4 col-sm-6 col-lg-4"
                         handleChange={onChangeHandler}
                         value={globalState.formData.ref_sale}
                         name="ref_sale"
@@ -490,7 +490,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="text"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.rut}
                       name="rut"
@@ -500,7 +500,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="text"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.bussinesName}
                       name="bussinesName"
@@ -516,7 +516,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="date"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.emisionDate}
                       name="emisionDate"
@@ -526,7 +526,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="date"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.expiredDate}
                       name="expiredDate"
@@ -536,7 +536,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="select"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.status}
                       name="status"
@@ -564,7 +564,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="text"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.ref}
                       name="ref"
@@ -574,7 +574,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="text"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.ref_cotizacion}
                       name="ref_cotizacion"
@@ -584,7 +584,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="text"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.rut}
                       name="rut"
@@ -594,7 +594,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="text"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.bussinesName}
                       name="bussinesName"
@@ -610,7 +610,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="date"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.emisionDate}
                       name="emisionDate"
@@ -620,7 +620,7 @@ function ModalExportDataInvoice(props) {
                     <InputField
                       type="select"
                       required={false}
-                      cols="col-md-4 col-sm-4 col-lg-4"
+                      cols="col-md-4 col-sm-6 col-lg-4"
                       handleChange={onChangeHandler}
                       value={globalState.formData.status}
                       name="status"

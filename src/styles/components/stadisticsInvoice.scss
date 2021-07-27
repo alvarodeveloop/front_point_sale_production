@@ -1,0 +1,19 @@
+.donutChartHeight{
+    height: 150px;
+}
+
+.donutChart2{
+    height: 170px;
+}
+
+@media (max-width: 990px) {
+    .donutChartHeight{
+        height: 170px;
+        margin-bottom: 20px;
+    }
+    
+    .donutChart2{
+        height: 210px;
+    }
+}
+

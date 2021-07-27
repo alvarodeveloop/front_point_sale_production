@@ -582,15 +582,15 @@ const BillSearchPage = (props) => {
       ) : (
         <Container fluid>
           <Row>
-            <Col sm={6} md={6} lg={6} className="text-center">
+            <Col sm={6} md={6} lg={6} className="text-center d-none d-md-block">
               <h4 className="title_principal">Tabla de Boletas</h4>
             </Col>
-            <Col sm={6} md={6} lg={6} className="text-center title_principal">
-              <h4>Total Boletas Realizadas</h4>
+            <Col xs={12} sm={12} md={6} lg={6} className="text-center title_principal">
+              <h4>Total Boletas Realizadas <Badge variant="danger" className="font-badge d-inline-block d-md-none">{globalState.billData.length}</Badge></h4>
             </Col>
           </Row>
           <Row>
-            <Col sm={3} md={3} lg={3} className="text-center">
+            <Col sm={6} md={3} lg={3} xs={6} className="text-center">
               <Button
                 block={true}
                 variant="success"
@@ -600,7 +600,7 @@ const BillSearchPage = (props) => {
                 Nueva Boleta <FaPlusCircle />
               </Button>
             </Col>
-            <Col sm={3} md={3} lg={3} className="text-center">
+            <Col sm={6} md={3} lg={3} xs={6} className="text-center">
               <Button
                 block={true}
                 variant="success"
@@ -610,7 +610,7 @@ const BillSearchPage = (props) => {
                 Exportar data <FaFileExcel />
               </Button>
             </Col>
-            <Col sm={6} md={6} lg={6} className="text-center ">
+            <Col sm={6} md={6} lg={6} className="text-center d-none d-md-block">
               <Badge variant="danger">{globalState.billData.length}</Badge>
             </Col>
           </Row>

@@ -31,52 +31,52 @@ const ModalInvoiceActions = (props) => {
               <hr />
               {props.isInvoice ? (
                 <Row className="justify-content-center">
-                  <Col sm={3} md={3} lg={3}>
+                  <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
                   </Col>
-                  <Col sm={3} md={3} lg={3}>
+                  <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToBond(props.cotization)} block={true}>Pagos <FaFilePdf /></Button>
                   </Col>
-                  <Col sm={3} md={3} lg={3}>
+                  <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printInvoice(props.cotization)} block={true}>Ver factura pdf <FaFilePdf /></Button>
                   </Col>
-                  <Col sm={3} md={3} lg={3}>
+                  <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.noteCredit(props.cotization)} block={true}>Nota de crédito o Debito <FaFilePdf /></Button>
                   </Col>
                 </Row>
               ) : props.isGuide ? (
                 <Row className="justify-content-center">
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={4} md={4} lg={4} className="mb-2 mb-lg-0">
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
                   </Col>
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={4} md={4} lg={4} className="mb-2 mb-lg-0">
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToInvoice(props.cotization.id)} block={true}>Facturar <FaFileInvoice /></Button>
                   </Col>
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={4} md={4} lg={4} className="mb-2 mb-lg-0">
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printInvoice(props.cotization)} block={true}>Ver factura pdf <FaFilePdf /></Button>
                   </Col>
                 </Row>
               ) : (
                 <>
-                  <Row className="justify-content-between">
-                    <Col sm={3} md={3} lg={3}>
+                  <Row className="justify-content-around">
+                    <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                       <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
                     </Col>
                     {!props.cotization.is_invoiced ? (
-                      <Col sm={3} md={3} lg={3}>
+                      <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                         <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToBond(props.cotization)} block={true}>Pagos <FaFilePdf /></Button>
                       </Col>
                     ) : ""}
-                    <Col sm={3} md={3} lg={3}>
+                    <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                       <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printInvoice(props.cotization)} block={true}>Ver factura pdf <FaFilePdf /></Button>
                     </Col>
                     {props.cotization.type == 2 ? (
-                      <Col sm={3} md={3} lg={3}>
+                      <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                         <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printInvoice(props.cotization, 3)} block={true}>Generar nueva factura pdf <FaFilePdf /></Button>
                       </Col>
                     ) : ''}
                     {props.cotization.type === 2 && !props.cotization.ref_sale_note ? (
-                      <Col sm={3} md={3} lg={3}>
+                      <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                         {!props.cotization.is_invoiced ? <br /> : ""}
                         <Button size="sm" variant="secondary" type="button" onClick={(e) => props.invoiceBySaleNote(props.cotization, 3)} block={true}>Facturar <FaFilePdf /></Button>
                       </Col>
@@ -91,7 +91,7 @@ const ModalInvoiceActions = (props) => {
                   <h5 className="title_principal">Anular Documento</h5>
                   <hr />
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.anulateInvoice(props.cotization)} block={true}>Anular Documento <FaBan /></Button>
                 </Col>
               </Row>
@@ -101,10 +101,10 @@ const ModalInvoiceActions = (props) => {
               <h5 className="title_principal">Acciones generales</h5>
               <hr />
               <Row className="justify-content-center">
-                <Col sm={3} md={3} lg={3}>
+                <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printInvoice(props.cotization)} block={true}>Ver factura pdf <FaFilePdf /></Button>
                 </Col>
               </Row>

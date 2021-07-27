@@ -586,7 +586,30 @@ const InvoiceSearchPage = props => {
   return (
 
     <Container fluid>
-      <Row>
+      <React.Fragment className="">
+        <Row className="d-flex d-md-none mb-2">
+          <Col>
+            <h4 className="text-center title_principal">Facturas <Badge variant="danger" className="font-badge">{globalState.invoiceData.length}</Badge></h4>
+          </Col>
+          <Col>
+            <h4 className="text-center title_principal">Notas C. <Badge variant="danger" className="font-badge">{globalState.invoiceNotes.length}</Badge></h4>
+          </Col>
+        </Row>
+        <Row className="d-flex d-md-none mb-2">
+          <Col>
+            <Button block={true} variant="success" onClick={goToForm} size="sm">Nueva Factura <FaPlusCircle /></Button>
+          </Col>
+          <Col>
+            <Button block={true} variant="success" onClick={openModalExcelHandler} size="sm">Exportar Data <FaFileExcel /></Button>
+          </Col>
+        </Row>
+        <Row className="d-flex d-md-none">
+          <Col>
+            <Button block={true} variant="secondary" onClick={get_invoice_emitet} size="sm">Importar Facturas <FaPlusCircle /></Button>
+          </Col>
+        </Row>
+      </React.Fragment>
+      <Row className="d-none d-md-flex">
         <Col sm={4} md={4} lg={4} className="text-center">
           <h4 className="title_principal">Tabla de Facturas</h4>
           <Row>
