@@ -32,16 +32,16 @@ const ModalActionCotization = (props) => {
               <h5 className="title_principal">Acciones generales</h5>
               <hr />
               <Row className="justify-content-center">
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.updateCotizacion(props.cotization.id)} block={true}>Modificar {word} <FaEdit /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printCotizacion(props.cotization.id)} block={true}>Imprimir <FaFilePdf /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printCotizacionNew(props.cotization.id)} block={true}>Imprimir nuevo pdf <FaFilePdf /></Button>
                 </Col>
               </Row>
@@ -49,10 +49,10 @@ const ModalActionCotization = (props) => {
               <h5 className="title_principal">Status de la {word}</h5>
               <hr />
               <Row className="justify-content-center">
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.changeStatus(props.cotization.id, 2)} block={true}>Aprobar {word} <FaSync /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.anulateCotization(props.cotization.id, props.cotization.status)} block={true}>Anular {word} <FaBan /></Button>
                 </Col>
               </Row>
@@ -62,16 +62,16 @@ const ModalActionCotization = (props) => {
               <h5 className="title_principal">Acciones generales</h5>
               <hr />
               <Row className="justify-content-center">
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.updateCotizacion(props.cotization.id)} block={true}>Modificar {word} <FaEdit /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printCotizacion(props.cotization.id)} block={true}>Imprimir <FaFilePdf /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printCotizacionNew(props.cotization.id)} block={true}>Imprimir nuevo pdf <FaFilePdf /></Button>
                 </Col>
               </Row>
@@ -80,22 +80,22 @@ const ModalActionCotization = (props) => {
               <hr />
               {props.cotization.is_order ? (
                 <Row>
-                  <Col sm={3} md={3} lg={3}>
+                  <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToPayments(props.cotization.id)} block={true}>Gestionar Pagos<FaFileInvoice /></Button>
                   </Col>
                 </Row>
               ) : (
                 <Row className="justify-content-center">
-                  <Col sm={3} md={3} lg={3}>
+                  <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToFacturation(props.cotization.id)} block={true}>Facturar <FaFileInvoice /></Button>
                   </Col>
-                  <Col sm={3} md={3} lg={3}>
+                  <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToNoteSale(props.cotization.id)} block={true}>Nota de venta <FaFileInvoice /></Button>
                   </Col>
-                  <Col sm={3} md={3} lg={3}>
+                  <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToBillOfSale(props.cotization.id)} block={true}>Boleta <FaFileInvoice /></Button>
                   </Col>
-                  <Col sm={3} md={3} lg={3}>
+                  <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToGuideDispatch(props.cotization.id)} block={true}>Guía de Despacho <FaFileInvoice /></Button>
                   </Col>
                 </Row>
@@ -104,10 +104,10 @@ const ModalActionCotization = (props) => {
               <h5 className="title_principal">Status de la {word}</h5>
               <hr />
               <Row className="justify-content-center">
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.changeStatus(props.cotization.id, 1)} block={true}>Pasar a Pendiente <FaSync /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.anulateCotization(props.cotization.id, props.cotization.status)} block={true}>Anular {word} <FaBan /></Button>
                 </Col>
               </Row>
@@ -115,23 +115,23 @@ const ModalActionCotization = (props) => {
           ) : props.cotization.status >= 3 && props.cotization.status < 7 ? (
             <React.Fragment>
               <Row>
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printCotizacion(props.cotization.id)} block={true}>Imprimir <FaFilePdf /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printCotizacionNew(props.cotization.id)} block={true}>Imprimir nuevo pdf <FaFilePdf /></Button>
                 </Col>
-                <Col sm={3} md={3} lg={3}>
+                <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                   <Button size="sm" variant="secondary" type="button" onClick={(e) => props.goToPayments(props.cotization.id)} block={true}>Gestionar Pagos<FaFileInvoice /></Button>
                 </Col>
               </Row>
             </React.Fragment>
           ) : (
             <Row className="justify-content-center">
-              <Col sm={3} md={3} lg={3}>
+              <Col className="mb-2 mb-lg-0" sm={6} md={4} lg={3}>
                 <Button size="sm" variant="secondary" type="button" onClick={(e) => props.seeDetailCotization(props.cotization)} block={true}>Ver Detalle <FaEye /></Button>
               </Col>
             </Row>

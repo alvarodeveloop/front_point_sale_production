@@ -741,7 +741,6 @@ function ContainerFormInvoice(props) {
     if (showSections < section && type) {
       for (let index = showSections; index < section; index++) {
         let result = validateSectionHandler(index);
-        console.log(result[0], "aqui me2mnorrrrs");
         if (!result[0]) {
           if (index === 4) {
             let arraySections = result[1].split(":");
@@ -1525,6 +1524,7 @@ function ContainerFormInvoice(props) {
                     cotizationData={cotizationData}
                     gastosDetail={gastosDetail}
                     bondsPayments={detailBonds}
+                    typeBond={typeBond}
                     isType={props.type}
                   />
                   {arrayCotizacion.includes(props.type) ? (

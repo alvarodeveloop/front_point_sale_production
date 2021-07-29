@@ -122,7 +122,7 @@ const StadisticsInvoiceComponent = (props) => {
         labels: [],
         datasets: [
           {
-            label: 'Monto acumulado de pagos hechos por mes',
+            label: props.isGuide ? "Monto acumulado de guias facturadas por mes" : 'Monto acumulado de pagos hechos por mes',
             backgroundColor: 'rgb(15, 13, 74)',
             borderColor: 'rgb(27, 13, 74)',
             borderWidth: 1,
@@ -178,13 +178,14 @@ const StadisticsInvoiceComponent = (props) => {
       data_donut_ss_status.datasets[0].backgroundColor.push(ARRAY_COLORS[i])
       data_donut_ss_status.datasets[0].hoverBackgroundColor.push(ARRAY_COLORS[i])
     });
-
-    props.statusCotization.statusesBonds.forEach((v, i) => {
-      data_donut_status_bonds.labels.push(v.status)
-      data_donut_status_bonds.datasets[0].data.push(parseFloat(v.total))
-      data_donut_status_bonds.datasets[0].backgroundColor.push(ARRAY_COLORS[i])
-      data_donut_status_bonds.datasets[0].hoverBackgroundColor.push(ARRAY_COLORS[i])
-    });
+    if (!props.isGuide) {
+      props.statusCotization.statusesBonds.forEach((v, i) => {
+        data_donut_status_bonds.labels.push(v.status)
+        data_donut_status_bonds.datasets[0].data.push(parseFloat(v.total))
+        data_donut_status_bonds.datasets[0].backgroundColor.push(ARRAY_COLORS[i])
+        data_donut_status_bonds.datasets[0].hoverBackgroundColor.push(ARRAY_COLORS[i])
+      });
+    }
 
     props.statusCotization.bondsByMonth.forEach((v, i) => {
       data_bar_failure_tipology.labels.push(v.mes)
@@ -307,40 +308,43 @@ const StadisticsInvoiceComponent = (props) => {
                     </table>
                   </Col>
                 </Row>
-                <Row>
-                  <Col sm={6} md={6} lg={6} className="mb-2 mb-sm-0">
-                    <table className="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th className="text-center" colSpan="2" style={{ backgroundColor: "rgb(21, 26, 88)", color: "white" }}>Monto pagado por estados</th>
-                        </tr>
-                        <tr>
-                          <th className="text-center" style={{ backgroundColor: "rgb(133, 124, 124)", color: "white" }}>Estado</th>
-                          <th className="text-center" style={{ backgroundColor: "rgb(133, 124, 124)", color: "white" }}>Total</th>
-                        </tr>
-                      </thead>
-                      <tbody className="text-center">
-                        {Object.keys(props.statusCotization).length > 0 ? (
-                          <React.Fragment>
-                            {props.statusCotization.statusesBonds.map((v, i) => (
-                              <tr key={i}>
-                                <td>{v.status}</td>
-                                <td>{props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral, v.total)}</td>
-                              </tr>
-                            ))}
-                          </React.Fragment>
-                        ) : (
+                {!props.isGuide ? (
+
+                  <Row>
+                    <Col sm={6} md={6} lg={6} className="mb-2 mb-sm-0">
+                      <table className="table table-bordered">
+                        <thead>
                           <tr>
-                            <td colSpan="3" className="text-center">Sin registros...</td>
+                            <th className="text-center" colSpan="2" style={{ backgroundColor: "rgb(21, 26, 88)", color: "white" }}>Monto pagado por estados</th>
                           </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </Col>
-                  <Col sm={6} md={6} lg={6} className="donutChartHeight">
-                    <Doughnut data={data_donut_status_bonds} redraw={props.redraw} options={optionsBar} />
-                  </Col>
-                </Row>
+                          <tr>
+                            <th className="text-center" style={{ backgroundColor: "rgb(133, 124, 124)", color: "white" }}>Estado</th>
+                            <th className="text-center" style={{ backgroundColor: "rgb(133, 124, 124)", color: "white" }}>Total</th>
+                          </tr>
+                        </thead>
+                        <tbody className="text-center">
+                          {Object.keys(props.statusCotization).length > 0 ? (
+                            <React.Fragment>
+                              {props.statusCotization.statusesBonds.map((v, i) => (
+                                <tr key={i}>
+                                  <td>{v.status}</td>
+                                  <td>{props.configGeneral.simbolo_moneda}{showPriceWithDecimals(props.configGeneral, v.total)}</td>
+                                </tr>
+                              ))}
+                            </React.Fragment>
+                          ) : (
+                            <tr>
+                              <td colSpan="3" className="text-center">Sin registros...</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </Col>
+                    <Col sm={6} md={6} lg={6} className="donutChartHeight">
+                      <Doughnut data={data_donut_status_bonds} redraw={props.redraw} options={optionsBar} />
+                    </Col>
+                  </Row>
+                ) : ""}
                 <Row>
                   <Col sm={12} md={12} lg={12} style={{ height: "200px" }}>
                     <Bar
@@ -356,7 +360,7 @@ const StadisticsInvoiceComponent = (props) => {
                     <table className="table table-bordered">
                       <thead>
                         <tr>
-                          <th className="text-center" colSpan="2" style={{ backgroundColor: "rgb(147, 52, 12)", color: "white" }}>Total {props.dataForm.type == 1 ? "facturas" : props.dataForm.type == 2 ? "notas de ventas" : "boletas"} realizadas</th>
+                          <th className="text-center" colSpan="2" style={{ backgroundColor: "rgb(147, 52, 12)", color: "white" }}>Total {props.dataForm.type == 1 ? "facturas" : props.dataForm.type == 2 ? "notas de ventas" : props.dataForm.type === 3 ? "boletas" : "guias"} realizadas</th>
                         </tr>
                         <tr>
                           <th className="text-center" style={{ backgroundColor: "rgb(133, 124, 124)", color: "white" }}>Estado</th>
@@ -408,6 +412,7 @@ StadisticsInvoiceComponent.propTypes = {
   handleDisplayFilter: PropTypes.func.isRequired,
   handleStadistics: PropTypes.func.isRequired,
   displayFilter: PropTypes.any.isRequired,
+  isGuide: PropTypes.bool,
 }
 
 export default StadisticsInvoiceComponent

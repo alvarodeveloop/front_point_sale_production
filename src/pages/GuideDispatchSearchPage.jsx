@@ -34,7 +34,7 @@ const GuideDispatchSearchPage = (props) => {
     dataForm: {
       date_desde: "",
       date_hasta: "",
-      type: 1,
+      type: 4,
     },
     invoiceAction: "",
     isOpenModalAction: "",
@@ -147,7 +147,7 @@ const GuideDispatchSearchPage = (props) => {
           } else if (props1.status == 3) {
             return (
               <Badge variant="secondary" className="font-badge">
-                Pagada
+                Facturada
               </Badge>
             );
           } else {
@@ -411,7 +411,7 @@ const GuideDispatchSearchPage = (props) => {
     let objectPost = Object.assign({}, globalState.dataForm);
     let promises = [
       axios.get(API_URL + "guide"),
-      axios.post(API_URL + "invoice_stadistics", objectPost),
+      axios.post(API_URL + "guide_stadistics", objectPost),
     ];
     Promise.all(promises)
       .then((result) => {
@@ -562,6 +562,7 @@ const GuideDispatchSearchPage = (props) => {
             handleStadistics={handleStadistics}
             displayFilter={globalState.displayFilter}
             configGeneral={props.configGeneral}
+            isGuide={true}
           />
           <Row>
             <Col sm={12} md={12} lg={12} xs={12}>
