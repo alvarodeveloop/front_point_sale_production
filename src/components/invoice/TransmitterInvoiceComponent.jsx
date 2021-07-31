@@ -35,7 +35,7 @@ const TransmitterInvoiceComponent = (props) => {
                     messageErrors={[
                       'Requerido*'
                     ]}
-                    cols='col-md-4 col-lg-4 col-sm-4'
+                    cols='col-md-4 col-lg-4 col-sm-6'
                     value={props.cotizationData.business_name_transmitter}
                     handleChange={props.onChange}
                   />
@@ -47,7 +47,7 @@ const TransmitterInvoiceComponent = (props) => {
                     messageErrors={[
                       'Requerido*'
                     ]}
-                    cols='col-md-4 col-lg-4 col-sm-4'
+                    cols='col-md-4 col-lg-4 col-sm-6'
                     value={props.cotizationData.rut_transmitter}
                     handleChange={props.onChange}
                   />
@@ -60,7 +60,7 @@ const TransmitterInvoiceComponent = (props) => {
                       messageErrors={[
                         'Requerido*'
                       ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
+                      cols='col-md-4 col-lg-4 col-sm-6'
                       value={props.cotizationData.address_transmitter}
                       handleChange={props.onChange}
                     >
@@ -78,7 +78,7 @@ const TransmitterInvoiceComponent = (props) => {
                       messageErrors={[
                         'Requerido*'
                       ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
+                      cols='col-md-4 col-lg-4 col-sm-6'
                       value={props.cotizationData.address_transmitter}
                       handleChange={props.onChange}
                     />
@@ -93,7 +93,7 @@ const TransmitterInvoiceComponent = (props) => {
                     messageErrors={[
                       'Requerido*'
                     ]}
-                    cols='col-md-4 col-lg-4 col-sm-4'
+                    cols='col-md-4 col-lg-4 col-sm-6'
                     value={props.cotizationData.city_transmitter}
                     handleChange={props.onChange}
                   />
@@ -106,7 +106,7 @@ const TransmitterInvoiceComponent = (props) => {
                       messageErrors={[
                         'Requerido*'
                       ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
+                      cols='col-md-4 col-lg-4 col-sm-6'
                       value={props.cotizationData.comuna_transmitter}
                       handleChange={props.onChange}
                     />
@@ -119,7 +119,7 @@ const TransmitterInvoiceComponent = (props) => {
                       messageErrors={[
                         'Requerido*'
                       ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
+                      cols='col-md-4 col-lg-4 col-sm-6'
                       value={props.cotizationData.spin_transmitter}
                       handleChange={props.onChange}
                     />
@@ -132,10 +132,24 @@ const TransmitterInvoiceComponent = (props) => {
                     messageErrors={[
                       'Requerido*', 'Formato tipo email*'
                     ]}
-                    cols='col-md-4 col-lg-4 col-sm-4'
+                    cols='col-md-4 col-lg-4 col-sm-6'
                     value={props.cotizationData.email_transmitter}
                     handleChange={props.onChange}
                   />
+                  {!arrayBoleta.includes(props.isType) ? (
+                    <InputField
+                      type='text'
+                      label='Fono'
+                      name='phone_transmitter'
+                      required={false}
+                      messageErrors={[
+                        'Requerido*'
+                      ]}
+                      cols='col-md-4 col-lg-4 col-sm-6 d-none d-sm-block d-md-none'
+                      value={props.cotizationData.phone_transmitter}
+                      handleChange={props.onChange}
+                    />
+                  ) : ""}
                 </Row>
                 {arrayBoleta.includes(props.isType) ? (
                   <>
@@ -149,7 +163,7 @@ const TransmitterInvoiceComponent = (props) => {
                           messageErrors={[
                             'Requerido*'
                           ]}
-                          cols='col-md-4 col-lg-4 col-sm-4'
+                          cols='col-md-4 col-lg-4 col-sm-6'
                           value={props.cotizationData.actividad_economica_transmitter}
                           handleChange={props.onChange}
                         >
@@ -168,7 +182,7 @@ const TransmitterInvoiceComponent = (props) => {
                           messageErrors={[
                             'Requerido*'
                           ]}
-                          cols='col-md-4 col-lg-4 col-sm-4'
+                          cols='col-md-4 col-lg-4 col-sm-6'
                           value={props.cotizationData.actividad_economica_transmitter}
                           handleChange={props.onChange}
                         />
@@ -177,7 +191,7 @@ const TransmitterInvoiceComponent = (props) => {
                     )}
                   </>
                 ) : (
-                  <Row>
+                  <Row className="d-flex d-sm-none d-md-flex">
                     <InputField
                       type='text'
                       label='Fono'
@@ -186,7 +200,7 @@ const TransmitterInvoiceComponent = (props) => {
                       messageErrors={[
                         'Requerido*'
                       ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
+                      cols='col-md-4 col-lg-4 col-sm-6'
                       value={props.cotizationData.phone_transmitter}
                       handleChange={props.onChange}
                     />
@@ -206,7 +220,7 @@ const TransmitterInvoiceComponent = (props) => {
                 messageErrors={[
                   'Requerido*'
                 ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
+                cols='col-md-4 col-lg-4 col-sm-6'
                 value={props.cotizationData.business_name_transmitter}
                 handleChange={props.onChange}
               />
@@ -218,7 +232,7 @@ const TransmitterInvoiceComponent = (props) => {
                 messageErrors={[
                   'Requerido*'
                 ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
+                cols='col-md-4 col-lg-4 col-sm-6'
                 value={props.cotizationData.rut_transmitter}
                 handleChange={props.onChange}
               />
@@ -231,7 +245,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.address_transmitter}
                   handleChange={props.onChange}
                 >
@@ -249,7 +263,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.address_transmitter}
                   handleChange={props.onChange}
                 />
@@ -264,7 +278,7 @@ const TransmitterInvoiceComponent = (props) => {
                 messageErrors={[
                   'Requerido*'
                 ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
+                cols='col-md-4 col-lg-4 col-sm-6'
                 value={props.cotizationData.city_transmitter}
                 handleChange={props.onChange}
               />
@@ -276,7 +290,7 @@ const TransmitterInvoiceComponent = (props) => {
                 messageErrors={[
                   'Requerido*'
                 ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
+                cols='col-md-4 col-lg-4 col-sm-6'
                 value={props.cotizationData.comuna_transmitter}
                 handleChange={props.onChange}
               />
@@ -289,7 +303,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.actividad_economica_transmitter}
                   handleChange={props.onChange}
                 >
@@ -307,7 +321,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.actividad_economica_transmitter}
                   handleChange={props.onChange}
                 />
@@ -323,7 +337,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.type_sale_transmitter}
                   handleChange={props.onChange}
                 >
@@ -341,7 +355,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.type_sale_transmitter}
                   handleChange={props.onChange}
                 />
@@ -354,7 +368,7 @@ const TransmitterInvoiceComponent = (props) => {
                 messageErrors={[
                   'Requerido*'
                 ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
+                cols='col-md-4 col-lg-4 col-sm-6'
                 value={props.cotizationData.spin_transmitter}
                 handleChange={props.onChange}
               />
@@ -372,7 +386,7 @@ const TransmitterInvoiceComponent = (props) => {
                 messageErrors={[
                   'Requerido*'
                 ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
+                cols='col-md-4 col-lg-4 col-sm-6'
                 value={props.cotizationData.business_name_transmitter}
                 handleChange={props.onChange}
               />
@@ -384,7 +398,7 @@ const TransmitterInvoiceComponent = (props) => {
                 messageErrors={[
                   'Requerido*'
                 ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
+                cols='col-md-4 col-lg-4 col-sm-6'
                 value={props.cotizationData.rut_transmitter}
                 handleChange={props.onChange}
               />
@@ -397,7 +411,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.address_transmitter}
                   handleChange={props.onChange}
                 >
@@ -414,7 +428,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.address_transmitter}
                   handleChange={props.onChange}
                 />
@@ -429,7 +443,7 @@ const TransmitterInvoiceComponent = (props) => {
                 messageErrors={[
                   'Requerido*'
                 ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
+                cols='col-md-4 col-lg-4 col-sm-6'
                 value={props.cotizationData.city_transmitter}
                 handleChange={props.onChange}
               />
@@ -441,7 +455,7 @@ const TransmitterInvoiceComponent = (props) => {
                 messageErrors={[
                   'Requerido*'
                 ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
+                cols='col-md-4 col-lg-4 col-sm-6'
                 value={props.cotizationData.comuna_transmitter}
                 handleChange={props.onChange}
               />
@@ -454,7 +468,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.actividad_economica_transmitter}
                   handleChange={props.onChange}
                 >
@@ -472,7 +486,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.actividad_economica_transmitter}
                   handleChange={props.onChange}
                 />
@@ -488,7 +502,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.type_sale_transmitter}
                   handleChange={props.onChange}
                 >
@@ -506,7 +520,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.type_sale_transmitter}
                   handleChange={props.onChange}
                 />
@@ -520,7 +534,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.type_transfer_trasmitter}
                   handleChange={props.onChange}
                 >
@@ -538,7 +552,7 @@ const TransmitterInvoiceComponent = (props) => {
                   messageErrors={[
                     'Requerido*'
                   ]}
-                  cols='col-md-4 col-lg-4 col-sm-4'
+                  cols='col-md-4 col-lg-4 col-sm-6'
                   value={props.cotizationData.type_transfer_trasmitter}
                   handleChange={props.onChange}
                 />
@@ -551,7 +565,7 @@ const TransmitterInvoiceComponent = (props) => {
                 messageErrors={[
                   'Requerido*'
                 ]}
-                cols='col-md-4 col-lg-4 col-sm-4'
+                cols='col-md-4 col-lg-4 col-sm-6'
                 value={props.cotizationData.spin_transmitter}
                 handleChange={props.onChange}
               />

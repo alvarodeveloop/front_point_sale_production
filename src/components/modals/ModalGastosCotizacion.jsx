@@ -22,16 +22,16 @@ const ModalGastosCotizacion = (props) => {
     description: '',
     amount: '',
   })
-  const [validateForm,setValidateForm] = useState(false)
+  const [validateForm, setValidateForm] = useState(false)
   const inputElement = useRef()
 
   useEffect(() => {
-    if(props.isShow){
+    if (props.isShow) {
       setTimeout(() => {
         inputElement.current.focus()
-      },300)
+      }, 300)
     }
-  },[props.isShow])
+  }, [props.isShow])
 
   const handleHide = () => {
     setGastoNew({
@@ -44,9 +44,9 @@ const ModalGastosCotizacion = (props) => {
 
   const handleSubmit = () => {
 
-    let gastoSubmit = Object.assign({},gastoNew)
+    let gastoSubmit = Object.assign({}, gastoNew)
 
-    if(gastoSubmit.description === "" || gastoSubmit.amount === ""){
+    if (gastoSubmit.description === "" || gastoSubmit.amount === "") {
       toast.error('Todos los campos son requeridos')
       return false
     }
@@ -62,7 +62,7 @@ const ModalGastosCotizacion = (props) => {
   }
 
   const onChange = e => {
-    setGastoNew({...gastoNew, [e.target.name] : e.target.value })
+    setGastoNew({ ...gastoNew, [e.target.name]: e.target.value })
   }
 
 
@@ -75,24 +75,24 @@ const ModalGastosCotizacion = (props) => {
       centered
       backdrop='static'
     >
-      <Modal.Header closeButton style={{ backgroundColor: 'black', color: 'white'}}>
+      <Modal.Header closeButton style={{ backgroundColor: 'black', color: 'white' }}>
         <Modal.Title id="contained-modal-title-vcenter">
-           Gastos de la Cotización
+          Gastos de la Cotización
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit} noValidate validated={validateForm}>
           <Row>
-            <InputFieldRef 
+            <InputFieldRef
               {...props.inputDescription}
               value={gastoNew.description}
               handleChange={onChange}
-              cols="col-6 col-xs-12"
+              cols="col-6"
               messageErrors={[
                 "Requerido"
               ]}
               ref={inputElement}
-              label="Descripción"  
+              label="Descripción"
             />
             <InputField
               {...props.inputAmount}
@@ -100,7 +100,7 @@ const ModalGastosCotizacion = (props) => {
               handleChange={onChange}
             />
           </Row>
-          <br/>
+          <br />
           <Row className="justify-content-center">
             <Col sm={12} md={12} lg={12}>
               <Button size="sm" type="button" variant="primary" block={true} onClick={handleSubmit}>
@@ -134,11 +134,11 @@ ModalGastosCotizacion.defaultProps = {
     type: 'number',
     required: true,
     name: 'amount',
-    label : 'Monto',
+    label: 'Monto',
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-6 col-md-6 col-lg-6 col-xs-6"
+    cols: "col-sm-6 col-md-6 col-lg-6 col-6"
   }
 }
 

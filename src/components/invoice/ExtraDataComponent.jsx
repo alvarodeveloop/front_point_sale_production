@@ -21,7 +21,7 @@ function ExtraDataComponent(props) {
               messageErrors={[
                 'Requerido*'
               ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
+              cols='col-md-4 col-lg-4 col-sm-6'
               value={props.cotizationData.date_issue_invoice}
               handleChange={props.onChange}
             />
@@ -33,7 +33,7 @@ function ExtraDataComponent(props) {
               messageErrors={[
                 'Requerido*'
               ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
+              cols='col-md-4 col-lg-4 col-sm-6'
               value={props.cotizationData.days_expiration}
               handleChange={props.onChange}
             />
@@ -45,7 +45,7 @@ function ExtraDataComponent(props) {
               messageErrors={[
                 'Requerido*'
               ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
+              cols='col-md-4 col-lg-4 col-sm-6'
               value={props.cotizationData.way_of_payment}
               handleChange={props.onChange}
             >
@@ -54,12 +54,47 @@ function ExtraDataComponent(props) {
               <option value={"Crédito"}>Crédito</option>
               <option value={"Sin Costo"}>Sin Costo</option>
             </InputField>
+            <Col sm={6} className="d-none d-sm-block d-md-none">
+              <Row>
+                <Col sm={12} md={12} lg={12} className="text-center">
+                  <b>Tipo de Documento</b>
+                </Col>
+                <Col sm={6} md={2} lg={2} xs={6}>
+                  <Form.Group>
+                    <Form.Check
+                      name="type_invoicing"
+                      type={'radio'}
+                      id={`radio-5`}
+                      label={`Afecta`}
+                      value={true}
+                      checked={props.cotizationData.type_invoicing === true}
+                      required={true}
+                      onChange={props.onChange}
+                    />
+                  </Form.Group>
+                </Col>
+                <Col sm={6} md={2} lg={2} xs={6} className="text-right">
+                  <Form.Group>
+                    <Form.Check
+                      name="type_invoicing"
+                      type={'radio'}
+                      id={`radio-6`}
+                      label={`Excenta`}
+                      value={false}
+                      required={true}
+                      checked={props.cotizationData.type_invoicing === false}
+                      onChange={props.onChange}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+            </Col>
           </Row>
-          <Row className="justify-content-center">
+          <Row className="justify-content-center d-flex d-sm-none d-md-flex">
             <Col sm={12} md={12} lg={12} className="text-center">
               <b>Tipo de Documento</b>
             </Col>
-            <Col sm={2} md={2} lg={2}>
+            <Col sm={2} md={2} lg={2} xs={6}>
               <Form.Group>
                 <Form.Check
                   name="type_invoicing"
@@ -73,7 +108,7 @@ function ExtraDataComponent(props) {
                 />
               </Form.Group>
             </Col>
-            <Col sm={2} md={2} lg={2} className="text-right">
+            <Col sm={2} md={2} lg={2} xs={6} className="text-right">
               <Form.Group>
                 <Form.Check
                   name="type_invoicing"
@@ -99,7 +134,7 @@ function ExtraDataComponent(props) {
             messageErrors={[
               'Requerido*'
             ]}
-            cols='col-md-4 col-lg-4 col-sm-4 col-xs-12'
+            cols='col-md-4 col-lg-4 col-sm-6 col-xs-12'
             value={props.cotizationData.date_issue}
             handleChange={props.onChange}
           />
@@ -111,18 +146,18 @@ function ExtraDataComponent(props) {
             messageErrors={[
               'Requerido*'
             ]}
-            cols='col-md-4 col-lg-4 col-sm-4 col-xs-12'
+            cols='col-md-4 col-lg-4 col-sm-6 col-xs-12'
             value={props.cotizationData.date_expiration}
             handleChange={props.onChange}
           />
-          <Col sm={4} md={4} lg={4}>
+          <Col sm={6} md={4} lg={4}>
             <Row>
               <Col sm={12} md={12} lg={12} className="text-center">
                 <b>Tipo Venta</b>
               </Col>
             </Row>
             <Row>
-              <Col sm={6} md={6} lg={6}>
+              <Col sm={6} md={6} lg={6} xs={6}>
                 <Form.Group>
                   <Form.Check
                     name="type_effect"
@@ -136,7 +171,7 @@ function ExtraDataComponent(props) {
                   />
                 </Form.Group>
               </Col>
-              <Col sm={6} md={6} lg={6} className="text-right">
+              <Col sm={6} md={6} lg={6} xs={6} className="text-right">
                 <Form.Group>
                   <Form.Check
                     name="type_effect"
@@ -168,7 +203,7 @@ function ExtraDataComponent(props) {
               messageErrors={[
                 'Requerido*'
               ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
+              cols='col-md-4 col-lg-4 col-sm-6'
               value={props.cotizationData.date_issue_invoice}
               handleChange={props.onChange}
             />
@@ -180,7 +215,7 @@ function ExtraDataComponent(props) {
               messageErrors={[
                 'Requerido*'
               ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
+              cols='col-md-4 col-lg-4 col-sm-6'
               value={props.cotizationData.days_expiration}
               handleChange={props.onChange}
             />
@@ -192,7 +227,7 @@ function ExtraDataComponent(props) {
               messageErrors={[
                 'Requerido*'
               ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
+              cols='col-md-4 col-lg-4 col-sm-6'
               value={props.cotizationData.way_of_payment}
               handleChange={props.onChange}
             >
@@ -211,7 +246,7 @@ function ExtraDataComponent(props) {
               messageErrors={[
 
               ]}
-              cols='col-md-4 col-lg-4 col-sm-4'
+              cols='col-md-4 col-lg-4 col-sm-6'
               value={props.cotizationData.discount_global}
               handleChange={props.onChange}
             />
@@ -222,7 +257,7 @@ function ExtraDataComponent(props) {
                 </Col>
               </Row>
               <Row>
-                <Col sm={6} md={6} lg={6}>
+                <Col sm={6} md={6} lg={6} xs={6}>
                   <Form.Group>
                     <Form.Check
                       name="type_invoicing"
@@ -236,7 +271,7 @@ function ExtraDataComponent(props) {
                     />
                   </Form.Group>
                 </Col>
-                <Col sm={6} md={6} lg={6} className="text-right">
+                <Col sm={6} md={6} lg={6} xs={6} className="text-right">
                   <Form.Group>
                     <Form.Check
                       name="type_invoicing"
@@ -264,14 +299,14 @@ function ExtraDataComponent(props) {
             messageErrors={[
               'Requerido*'
             ]}
-            cols='col-md-4 col-lg-4 col-sm-4 col-xs-12'
+            cols='col-md-4 col-lg-4 col-sm-6 col-xs-12'
             value={props.cotizationData.date_issue}
             handleChange={props.onChange}
           />
           <Col sm={6} md={6} lg={6} className="text-center">
             <b>Tipo de Boleta</b>
             <Row>
-              <Col sm={6} md={6} lg={6}>
+              <Col sm={6} md={6} lg={6} xs={6}>
                 <Form.Group>
                   <Form.Check
                     name="type_invoicing"
@@ -285,7 +320,7 @@ function ExtraDataComponent(props) {
                   />
                 </Form.Group>
               </Col>
-              <Col sm={6} md={6} lg={6} className="text-right">
+              <Col sm={6} md={6} lg={6} xs={6} className="alignTypeDocument">
                 <Form.Group>
                   <Form.Check
                     name="type_invoicing"
@@ -312,7 +347,7 @@ function ExtraDataComponent(props) {
             messageErrors={[
               'Requerido*'
             ]}
-            cols='col-md-4 col-lg-4 col-sm-4 col-xs-12'
+            cols='col-md-4 col-lg-4 col-sm-6 col-xs-12'
             value={props.cotizationData.date_issue_invoice}
             handleChange={props.onChange}
           />

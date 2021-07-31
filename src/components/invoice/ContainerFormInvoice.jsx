@@ -53,44 +53,7 @@ import TableBondsBillComponent from "components/invoice/TableBondsBillComponent"
 import "styles/pages/formInvoice.scss";
 
 const Styles = styled.div`
-  .divContainerFlex {
-    display: flex;
-    flex-direction: row;
-  }
-
-  .inputFlex {
-    flex-grow: 2;
-    border: none;
-  }
-
-  .inputFlex:focus {
-    outline: none;
-  }
-
-  .tr_cabecera {
-    background-color: rgb(218, 236, 242);
-  }
-
-  .button_product > button {
-    height: 55px;
-    border-radius: 100%;
-    box-shadow: 3px 3px rgb(219, 222, 215);
-    width: 55px;
-    padding: 5px;
-  }
-
-  .button_product_base {
-    height: 55px;
-    border-radius: 100%;
-    box-shadow: 3px 3px rgb(219, 222, 215);
-    width: 55px;
-    padding: 5px;
-  }
-
-  .div_overflow {
-    max-height: 400px;
-    overflow-y: auto;
-  }
+  
 `;
 
 let count = 0;
@@ -188,7 +151,7 @@ function ContainerFormInvoice(props) {
           "Debe hacer su configuración de tienda o seleccionar una sucursal para usar este módulo"
         );
         setTimeout(function () {
-          props.history.replace("/config_store");
+          props.history.replace("/config/config_store");
         }, 3000);
       } else if (!props.configGeneral) {
         toast.error(
@@ -343,7 +306,7 @@ function ContainerFormInvoice(props) {
                 discount_global: result[indexArray].data.discount_global,
                 way_of_payment: result[indexArray].data.way_of_payment
                   ? result[indexArray].data.way_of_payment
-                  : 1,
+                  : "Crédito",
 
                 rut_client: result[indexArray].data.rut_client,
                 business_name_client:
@@ -832,7 +795,8 @@ function ContainerFormInvoice(props) {
         if (
           !cotizationData.date_issue_invoice ||
           !cotizationData.days_expiration ||
-          !cotizationData.way_of_payment
+          !cotizationData.way_of_payment ||
+          !cotizationData.type_invoicing
         ) {
           return [
             false,
@@ -840,17 +804,6 @@ function ContainerFormInvoice(props) {
               ? "Todos los campos de esta sección son requeridos"
               : "Todos los campos de esta sección son requeridos menos el descuento global",
           ];
-        } else {
-          if (
-            arraySaleNote.includes(props.type) &&
-            !cotizationData.type_invoicing
-          ) {
-            return [
-              false,
-              "Todos los campos de esta sección son requeridos menos el descuento global",
-            ];
-          }
-          return [true];
         }
       } else if (arrayBoleta.includes(props.type)) {
         if (
@@ -882,8 +835,7 @@ function ContainerFormInvoice(props) {
             !cotizationData.address_client ||
             !cotizationData.city_client ||
             !cotizationData.comuna_client ||
-            !cotizationData.spin_client ||
-            !cotizationData.name_contact
+            !cotizationData.spin_client
           ) {
             return [
               false,
@@ -900,8 +852,7 @@ function ContainerFormInvoice(props) {
             !cotizationData.address_client ||
             !cotizationData.city_client ||
             !cotizationData.comuna_client ||
-            !cotizationData.spin_client ||
-            !cotizationData.name_contact
+            !cotizationData.spin_client
           ) {
             return [
               false,
@@ -1019,7 +970,7 @@ function ContainerFormInvoice(props) {
     return (
       <React.Fragment>
         <Row className="justify-content-between align-items-center">
-          <Col sm={6} md={6} lg={6}>
+          <Col sm={12} md={7} lg={8}>
             <Row>
               <Col>
                 <h4 className="title_principal">Formulario De {word1} </h4>
@@ -1096,10 +1047,11 @@ function ContainerFormInvoice(props) {
                   >
                     <div
                       onClick={() => displayShowSectionsHandler(4, true)}
-                      className={
-                        showSections === 4
-                          ? "indicatorsCircleActive"
-                          : "indicatorsCircle"
+                      className={`${showSections === 4
+                        ? "indicatorsCircleActive"
+                        : "indicatorsCircle"}
+                        d-none d-lg-block`
+
                       }
                     >
                       Emisor y Receptor
@@ -1111,6 +1063,27 @@ function ContainerFormInvoice(props) {
             <Row style={{ marginTop: "10px" }}>
               <Col sm={12} md={12} lg={12}>
                 <div style={{ display: "flex", width: "100%" }}>
+                  <OverlayTrigger
+                    placement={"bottom"}
+                    overlay={
+                      <Tooltip id="tooltipConfigClienteEmisor">
+                        Gestione los datos del emisor de la {word2} y el
+                        receptor.
+                      </Tooltip>
+                    }
+                  >
+                    <div
+                      onClick={() => displayShowSectionsHandler(4, true)}
+                      className={`${showSections === 4
+                        ? "indicatorsCircleActive"
+                        : "indicatorsCircle"}
+                        d-flex d-lg-none`
+
+                      }
+                    >
+                      Emisor y Receptor
+                    </div>
+                  </OverlayTrigger>
                   {!arrayCotizacion.includes(props.type) ? (
                     <OverlayTrigger
                       placement={"bottom"}
@@ -1153,7 +1126,7 @@ function ContainerFormInvoice(props) {
                             : "indicatorsCircle"
                         }
                       >
-                        Pagos de la boleta
+                        Pagos <span className="d-none d-md-inline">de la boleta</span>
                       </div>
                     </OverlayTrigger>
                   ) : arrayGuide.includes(props.type) ? (
@@ -1196,7 +1169,7 @@ function ContainerFormInvoice(props) {
                           : "indicatorsCircle"
                       }
                     >
-                      Resumen y Totales
+                      <span className="d-none d-sm-inline">Resumen y</span> Totales
                     </div>
                   </OverlayTrigger>
                 </div>
@@ -1205,39 +1178,52 @@ function ContainerFormInvoice(props) {
           </Col>
           {arrayCotizacion.includes(props.type) ||
             arraySaleNote.includes(props.type) ? (
-            <Col sm={4} md={4} lg={4}>
-              <InputField
-                type="text"
-                label={
-                  <h5 style={{ color: "rgb(153, 31, 31)" }}>Ref.{word1}</h5>
-                }
-                name="id_cotizacion"
-                required={true}
-                messageErrors={[]}
-                cols="col-md-12 col-lg-12 col-sm-12"
-                readonly={true}
-                value={cotizationData.ref}
-                handleChange={() => { }}
-              />
-              <Row className="justify-content-center">
-                <Col sm={6} md={6} lg={6}>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    block={true}
-                    onClick={goToDashboard}
-                  >
-                    Volver a la tabla
-                  </Button>
-                </Col>
-              </Row>
-            </Col>
+            <>
+              <Col sm={6} md={5} lg={4} className="mt-2 mt-md-0">
+                <InputField
+                  type="text"
+                  label={
+                    <h5 style={{ color: "rgb(153, 31, 31)" }}>Ref.{word1}</h5>
+                  }
+                  name="id_cotizacion"
+                  required={true}
+                  messageErrors={[]}
+                  cols="col-md-12 col-lg-12 col-sm-12"
+                  readonly={true}
+                  value={cotizationData.ref}
+                  handleChange={() => { }}
+                />
+                <Row className="justify-content-center d-flex d-sm-none d-md-flex">
+                  <Col sm={6} md={10} lg={10} xs={10}>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      block={true}
+                      onClick={goToDashboard}
+                    >
+                      Volver a la tabla
+                    </Button>
+                  </Col>
+                </Row>
+              </Col>
+              <Col sm={6} className="d-none d-sm-block d-md-none mt-4">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  block={true}
+                  onClick={goToDashboard}
+                >
+                  Volver a la tabla
+                </Button>
+              </Col>
+            </>
+
           ) : (
-            <Col sm={4} md={4} lg={4}>
+            <Col sm={12} md={4} lg={4} className="mt-2 mt-md-0 text-center">
               <Button
                 variant="secondary"
                 size="sm"
-                block={true}
+                className="buttonGoBack"
                 onClick={goToDashboard}
               >
                 Volver a la tabla
@@ -1284,19 +1270,8 @@ function ContainerFormInvoice(props) {
                   />
                   <br />
                   <Row className="justify-content-center">
-                    <Col sm={4} lg={4} md={4}>
-                      <Button
-                        variant="secondary"
-                        block={true}
-                        size="sm"
-                        onClick={() => displayShowSectionsHandler(2, true)}
-                        type="button"
-                      >
-                        Siguiente
-                      </Button>
-                    </Col>
                     {arrayCotizacion.includes(props.type) ? (
-                      <Col sm={4} lg={4} md={4}>
+                      <Col sm={4} lg={4} md={4} xs={6}>
                         <Button
                           type="button"
                           size="sm"
@@ -1311,7 +1286,7 @@ function ContainerFormInvoice(props) {
                       </Col>
                     ) : arraySaleNote.includes(props.type) &&
                       detailProducts.length ? (
-                      <Col sm={4} lg={4} md={4}>
+                      <Col sm={4} lg={4} md={4} xs={6}>
                         <Button
                           variant="danger"
                           size="sm"
@@ -1325,6 +1300,18 @@ function ContainerFormInvoice(props) {
                     ) : (
                       ""
                     )}
+                    <Col sm={4} lg={4} md={4} xs={6}>
+                      <Button
+                        variant="secondary"
+                        block={true}
+                        size="sm"
+                        onClick={() => displayShowSectionsHandler(2, true)}
+                        type="button"
+                      >
+                        Siguiente
+                      </Button>
+                    </Col>
+
                   </Row>
                 </>
               ) : showSections === 2 ? (
@@ -1346,7 +1333,7 @@ function ContainerFormInvoice(props) {
                   />
                   <br />
                   <Row className="justify-content-center">
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={6} md={4} lg={4} xs={6}>
                       <Button
                         variant="secondary"
                         block={true}
@@ -1357,7 +1344,7 @@ function ContainerFormInvoice(props) {
                         Atrás
                       </Button>
                     </Col>
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={6} md={4} lg={4} xs={6}>
                       <Button
                         variant="secondary"
                         block={true}
@@ -1399,7 +1386,7 @@ function ContainerFormInvoice(props) {
                       </Col>
                     </Row>
                   </Col>
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={6} md={4} lg={4} xs={6}>
                     <br />
                     <Button
                       variant="secondary"
@@ -1411,7 +1398,7 @@ function ContainerFormInvoice(props) {
                       Atrás
                     </Button>
                   </Col>
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={6} md={4} lg={4} xs={6}>
                     <br />
                     <Button
                       variant="secondary"
@@ -1439,7 +1426,7 @@ function ContainerFormInvoice(props) {
                     isNotAccordeon={true}
                   />
                   <Row className="justify-content-center">
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={6} xs={6} md={4} lg={4}>
                       <br />
                       <Button
                         variant="secondary"
@@ -1451,7 +1438,7 @@ function ContainerFormInvoice(props) {
                         Atrás
                       </Button>
                     </Col>
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={6} xs={6} md={4} lg={4}>
                       <br />
                       <Button
                         variant="secondary"
@@ -1489,7 +1476,7 @@ function ContainerFormInvoice(props) {
                     isNotAccordeon={true}
                   />
                   <Row className="justify-content-center">
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={6} md={4} lg={4} xs={6}>
                       <br />
                       <Button
                         variant="secondary"
@@ -1501,7 +1488,7 @@ function ContainerFormInvoice(props) {
                         Atrás
                       </Button>
                     </Col>
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={6} md={4} lg={4} xs={6}>
                       <br />
                       <Button
                         variant="secondary"
@@ -1529,7 +1516,20 @@ function ContainerFormInvoice(props) {
                   />
                   {arrayCotizacion.includes(props.type) ? (
                     <Row className="justify-content-center">
-                      <Col sm={3} md={3} lg={3}>
+                      <Col sm={6} md={3} lg={3} xs={6} className="d-block d-md-none mb-2 mb-md-0">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="primary"
+                          disabled={disableButtons}
+                          block={true}
+                          onClick={() => submitData(2)}
+                        >
+                          {disableButtons ? "Guardando..." : "Guardar " + word2}{" "}
+                          <FaPlusCircle />
+                        </Button>
+                      </Col>
+                      <Col sm={6} md={3} lg={3} xs={6} className="d-none d-md-block">
                         <DropdownButton
                           size="sm"
                           id={"drop"}
@@ -1546,7 +1546,7 @@ function ContainerFormInvoice(props) {
                           {/*<Dropdown.Item onClick={ copyLinkOfCotizacion } >Copiar Link</Dropdown.Item>*/}
                         </DropdownButton>
                       </Col>
-                      <Col sm={3} md={3} lg={3}>
+                      <Col sm={6} md={3} lg={3} xs={6} className="mb-2 mb-md-0">
                         <Button
                           type="button"
                           size="sm"
@@ -1561,7 +1561,24 @@ function ContainerFormInvoice(props) {
                           <FaMailBulk />
                         </Button>
                       </Col>
-                      <Col sm={3} md={3} lg={3}>
+                      <Col sm={6} md={3} lg={3} xs={6} className="d-block d-md-none">
+                        <DropdownButton
+                          size="sm"
+                          id={"drop"}
+                          title={disableButtons ? "Guardando" : "Compartir"}
+                          className="dropdown_block"
+                          disabled={disableButtons}
+                          variant="secondary"
+                        >
+                          <Dropdown.Item
+                            onClick={() => setOpenModalClientMail(true)}
+                          >
+                            Enviar por Mail
+                          </Dropdown.Item>
+                          {/*<Dropdown.Item onClick={ copyLinkOfCotizacion } >Copiar Link</Dropdown.Item>*/}
+                        </DropdownButton>
+                      </Col>
+                      <Col sm={6} md={3} lg={3} xs={6} className="d-none d-md-block">
                         <Button
                           type="button"
                           size="sm"
@@ -1574,7 +1591,7 @@ function ContainerFormInvoice(props) {
                           <FaPlusCircle />
                         </Button>
                       </Col>
-                      <Col sm={3} md={3} lg={3}>
+                      <Col sm={6} md={3} lg={3} xs={6}>
                         <Button
                           type="button"
                           size="sm"
@@ -1589,7 +1606,7 @@ function ContainerFormInvoice(props) {
                     </Row>
                   ) : (
                     <Row className="justify-content-center">
-                      <Col sm={3} md={3} lg={3}>
+                      <Col sm={6} md={4} lg={3} xs={6}>
                         <Button
                           variant="secondary"
                           size="sm"
@@ -1602,7 +1619,7 @@ function ContainerFormInvoice(props) {
                           Atras
                         </Button>
                       </Col>
-                      <Col sm={3} md={3} lg={3}>
+                      <Col sm={6} md={4} lg={3} xs={6}>
                         <Button
                           variant="danger"
                           size="sm"

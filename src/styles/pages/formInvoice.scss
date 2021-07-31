@@ -8,3 +8,102 @@
 .rutInputSearch:focus {
   border-bottom: 2px solid #284fa9 !important;
 }
+
+.divContainerFlex {
+  display: flex;
+  flex-direction: row;
+}
+
+.inputFlex {
+  flex-grow: 2;
+  border: none;
+}
+
+.inputFlex:focus {
+  outline: none;
+}
+
+.tr_cabecera {
+  background-color: rgb(218, 236, 242);
+}
+
+.button_product > button {
+  height: 55px;
+  border-radius: 100%;
+  box-shadow: 3px 3px rgb(219, 222, 215);
+  width: 55px;
+  padding: 5px;
+}
+
+.button_product_base {
+  height: 55px;
+  border-radius: 100%;
+  box-shadow: 3px 3px rgb(219, 222, 215);
+  width: 55px;
+  padding: 5px;
+}
+
+.div_overflow {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.indicatorsCircle {
+  border-radius: 500px;
+  background-color: #f4f4f4;
+  color: dark;
+  text-align: center;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  margin-left: 10px;
+}
+
+.indicatorsCircle:hover {
+  background-color: #2286f1;
+  color: white;
+}
+
+.indicatorsCircleActive {
+  border-radius: 500px;
+  background-color: #2286f1;
+  color: white;
+  text-align: center;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  margin-left: 10px;
+  
+}
+
+.buttonGoBack{
+  width: 100%;
+}
+
+.alignTypeDocument{
+  text-align: right;
+}
+
+@media (max-width: 776px) {
+  .createClientButton{
+    margin-top: -25px;
+  }
+
+  .buttonGoBack{
+    width: 80%;
+  }
+  
+  .alignTypeDocument{
+    text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .createClientButton{
+    margin-top: 0px;
+  }
+}

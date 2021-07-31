@@ -48,7 +48,7 @@ const TableTotalComponent = (props) => {
     <>
 
       <Row>
-        <Col sm={12} md={12} lg={12}>
+        <Col sm={12} md={12} lg={12} className="table-responsive">
           <h4 className="title_principal text-center">Datos del Registrador</h4>
           <br />
           <table className="table table-striped table-bordered">
@@ -74,7 +74,7 @@ const TableTotalComponent = (props) => {
             </tbody>
           </table>
         </Col>
-        <Col sm={12} md={12} lg={12}>
+        <Col sm={12} md={12} lg={12} className="table-responsive">
           <br />
           <h4 className="title_principal text-center">Datos del Cliente</h4>
           <br />
@@ -140,7 +140,7 @@ const TableTotalComponent = (props) => {
             </tbody>
           </table>
         </Col>
-        <Col sm={12} md={12} lg={12} className="">
+        <Col sm={12} md={12} lg={12} className="table-responsive">
           <br />
           <h4 className="title_principal text-center">Gastos de la Factura</h4>
           <br />
@@ -166,7 +166,7 @@ const TableTotalComponent = (props) => {
           </table>
         </Col>
         {props.bondsPayments.length ? (
-          <Col sm={12} md={12} lg={12} className="">
+          <Col sm={12} md={12} lg={12} className="table-responsive">
             <br />
             <h4 className="title_principal text-center">Pagos de la boleta</h4>
             <br />
@@ -199,7 +199,7 @@ const TableTotalComponent = (props) => {
             <h5>Mostrar solo los Totales: <Badge variant="primary" className="font-badge">{props.cotizationData.total_with_iva ? 'No' : "Si"}</Badge></h5>
           ) : ''}
         </Col>
-        <Col sm={12} md={12} lg={12}>
+        <Col sm={12} md={12} lg={12} className="table-responsive">
           <br />
           <h4 className="text-center title_principal">Resumen y Totales</h4>
           <br />

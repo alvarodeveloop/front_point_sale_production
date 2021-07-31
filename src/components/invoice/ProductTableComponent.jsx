@@ -22,7 +22,7 @@ import LoadingComponent from "components/LoadingComponent";
 const ProductTableComponent = (props) => {
   const [isShowModalProduct, setIsShowModalProduct] = useState(false);
   const [displayLoading, setDisplayLoading] = useState(false);
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   const addNewProductIrregular = (type) => {
     props.setDetailProducts([
@@ -112,9 +112,8 @@ const ProductTableComponent = (props) => {
               </h4>
             </Col>
           </Row>
-          <br />
-          <Row>
-            <Col sm={4} md={4} lg={4}>
+          <Row className="justify-content-center">
+            <Col sm={6} md={4} lg={4}>
               <Row>
                 <Col sm={12} md={12} lg={12} className="text-center">
                   <OverlayTrigger
@@ -131,7 +130,7 @@ const ProductTableComponent = (props) => {
                 </Col>
               </Row>
               <Row className="justify-content-center">
-                <Col sm={5} md={5} lg={5} className="text-center">
+                <Col sm={5} md={5} lg={5} xs={6} className="text-center">
                   <Form.Group>
                     <Form.Check
                       name="total_with_iva"
@@ -144,7 +143,7 @@ const ProductTableComponent = (props) => {
                     />
                   </Form.Group>
                 </Col>
-                <Col sm={5} md={5} lg={5}>
+                <Col sm={5} md={5} lg={5} xs={6}>
                   <Form.Group>
                     <Form.Check
                       name="total_with_iva"
@@ -159,7 +158,7 @@ const ProductTableComponent = (props) => {
                 </Col>
               </Row>
             </Col>
-            <Col sm={4} md={4} lg={4}>
+            <Col sm={6} md={4} lg={4} xs={6}>
               <Row>
                 <InputField
                   type="select"
@@ -179,13 +178,13 @@ const ProductTableComponent = (props) => {
                 </InputField>
               </Row>
             </Col>
-            <Col sm={4} md={4} lg={4}>
-              <Form.Label>Agregar producto a la {props.word2}</Form.Label>
+            <Col sm={6} md={4} lg={4} xs={6} className="mt-4 mt-sm-0 mb-0 mb-sm-4 mb-md-0">
+              <Form.Label className="d-none d-md-block">Agregar producto a la {props.word2}</Form.Label>
               <DropdownButton
                 size="sm"
                 variant="danger"
                 id={"dropdown_product"}
-                title={<FaPlusCircle />}
+                title={(<><span className="d-none d-sm-inline d-md-none">Agregar Producto</span> <FaPlusCircle /></>)}
                 className=""
               >
                 <Dropdown.Item onClick={() => setIsShowModalProduct(true)}>
@@ -227,7 +226,7 @@ const ProductTableComponent = (props) => {
         onHide={handleHideModalProduct}
         products={props.products}
         handleSelectProduct={handleSelectProduct}
-        handleSelectProductNotRegistered={() => {}}
+        handleSelectProductNotRegistered={() => { }}
         {...props}
       />
     </>

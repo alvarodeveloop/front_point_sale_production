@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {showPriceWithDecimals} from 'utils/functions'
+import { showPriceWithDecimals } from 'utils/functions'
 import {
   Row,
   Col,
@@ -14,8 +14,8 @@ import Tooltip from 'react-bootstrap/Tooltip';
 const GastosComponent = (props) => {
 
   const removeGastoDetail = data => {
-    props.setGastosDetail(gastos =>{
-     return gastos.filter(v => v.description !== data.description)
+    props.setGastosDetail(gastos => {
+      return gastos.filter(v => v.description !== data.description)
     })
   }
 
@@ -27,7 +27,7 @@ const GastosComponent = (props) => {
         </Col>
       </Row>
       <Row className="justify-content-center">
-        <Col sm={1} md={1} lg={1}>
+        <Col sm={1} md={1} lg={1} xs={1}>
           <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Agregar Gastos a la {props.word2}</Tooltip>}>
             <Button className="button_product_base" size="sm" variant="danger" block={true} onClick={() => props.setIsShowModalGastos(true)}><FaPlusCircle /></Button>
           </OverlayTrigger>
@@ -36,36 +36,36 @@ const GastosComponent = (props) => {
       <Row style={{ overflowY: "auto", paddingLeft: "20px", paddingRight: "20px", maxHeight: "300px" }}>
         <Col sm={12} md={12} lg={12}>
           <Table data={props.gastosDetail} columns={[
-              {
-                Header: 'Descripción',
-                accessor: 'description'
-              },
-              {
-                Header: 'Monto',
-                accessor: 'amount',
-                Cell: props1 => {
-                  return showPriceWithDecimals(props.configGeneral,props1.cell.row.original.amount)
-                }
-              },
-              {
-                Header: 'Acciones',
-                Cell: props1 => {
-                  const id = props1.cell.row.original.id
-                  return(
-                    <Button size="sm" size="sm" variant="primary" block={true} onClick={() => removeGastoDetail(props1.cell.row.original) }>Remover</Button>
-                  )
-                }
+            {
+              Header: 'Descripción',
+              accessor: 'description'
+            },
+            {
+              Header: 'Monto',
+              accessor: 'amount',
+              Cell: props1 => {
+                return showPriceWithDecimals(props.configGeneral, props1.cell.row.original.amount)
               }
-            ]} 
+            },
+            {
+              Header: 'Acciones',
+              Cell: props1 => {
+                const id = props1.cell.row.original.id
+                return (
+                  <Button size="sm" size="sm" variant="primary" block={true} onClick={() => removeGastoDetail(props1.cell.row.original)}>Remover</Button>
+                )
+              }
+            }
+          ]}
           />
         </Col>
       </Row>
       <Row className="justify-content-center">
-        <Col sm={4} md={4} lg={4}>
-          <Button variant="secondary" block={true} size="sm" onClick={() => props.changeSection(1,false)} type="button">Atrás</Button>
+        <Col sm={6} md={4} lg={4} xs={6}>
+          <Button variant="secondary" block={true} size="sm" onClick={() => props.changeSection(1, false)} type="button">Atrás</Button>
         </Col>
-        <Col sm={4} md={4} lg={4}>
-          <Button variant="secondary" block={true} size="sm" onClick={() => props.changeSection(3,true)} type="button">Siguiente</Button>
+        <Col sm={6} md={4} lg={4} xs={6}>
+          <Button variant="secondary" block={true} size="sm" onClick={() => props.changeSection(3, true)} type="button">Siguiente</Button>
         </Col>
       </Row>
     </>
@@ -73,9 +73,9 @@ const GastosComponent = (props) => {
 }
 
 GastosComponent.propTypes = {
-  gastosDetail : PropTypes.array.isRequired,
+  gastosDetail: PropTypes.array.isRequired,
   setGastosDetail: PropTypes.func.isRequired,
-  configGeneral : PropTypes.object.isRequired,
+  configGeneral: PropTypes.object.isRequired,
   setIsShowModalGastos: PropTypes.func.isRequired,
   changeSection: PropTypes.func,
   isCotizacion: PropTypes.bool,

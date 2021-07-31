@@ -243,7 +243,7 @@ const ClientInvoiceComponet = (props) => {
               arrayGuide.includes(props.isType) ? (
               <Card.Body>
                 <Row>
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={6} md={4} lg={4}>
                     <Row>
                       <Col sm={12} md={12} lg={12}>
                         <h5 className="title_principal">Api a utilizar</h5>
@@ -277,7 +277,7 @@ const ClientInvoiceComponet = (props) => {
                     </Row>
                   </Col>
                   {props.cotizationData.type_api ? (
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={6} md={4} lg={4}>
                       <Form.Label className="fontBold">Rut</Form.Label>
                       <Form.Group className={"divContainerFlex"}>
                         <Form.Control
@@ -302,7 +302,7 @@ const ClientInvoiceComponet = (props) => {
                       </Form.Group>
                     </Col>
                   ) : (
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={6} md={4} lg={4}>
                       <label>Rut</label>
                       <AutoCompleteClientComponent
                         items={props.clients}
@@ -329,7 +329,7 @@ const ClientInvoiceComponet = (props) => {
                       )}
                     </Col>
                   )}
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={6} md={4} lg={4} className="mb-3 mb-md-0 createClientButton">
                     <br />
                     <Button
                       size="sm"
@@ -350,7 +350,7 @@ const ClientInvoiceComponet = (props) => {
                     readonly={readonlyRut}
                     required={false}
                     messageErrors={["Requerido*"]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.rut_client}
                     handleChange={onChange}
                   />
@@ -360,7 +360,7 @@ const ClientInvoiceComponet = (props) => {
                     name="business_name_client"
                     required={false}
                     messageErrors={["Requerido*"]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.business_name_client}
                     handleChange={onChange}
                   />
@@ -373,7 +373,7 @@ const ClientInvoiceComponet = (props) => {
                         arrayGuide.includes(props.isType) ? true : false
                       }
                       messageErrors={["Requerido*"]}
-                      cols="col-md-4 col-lg-4 col-sm-4"
+                      cols="col-md-4 col-lg-4 col-sm-6"
                       value={props.cotizationData.address_client}
                       handleChange={onChange}
                     >
@@ -393,7 +393,7 @@ const ClientInvoiceComponet = (props) => {
                         arrayGuide.includes(props.isType) ? true : false
                       }
                       messageErrors={["Requerido*"]}
-                      cols="col-md-4 col-lg-4 col-sm-4"
+                      cols="col-md-4 col-lg-4 col-sm-6"
                       value={props.cotizationData.address_client}
                       handleChange={onChange}
                     />
@@ -406,7 +406,7 @@ const ClientInvoiceComponet = (props) => {
                     name="city_client"
                     required={arrayGuide.includes(props.isType) ? true : false}
                     messageErrors={["Requerido*"]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.city_client}
                     handleChange={onChange}
                   />
@@ -416,7 +416,7 @@ const ClientInvoiceComponet = (props) => {
                     name="comuna_client"
                     required={arrayGuide.includes(props.isType) ? true : false}
                     messageErrors={["Requerido*"]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.comuna_client}
                     handleChange={onChange}
                   />
@@ -429,7 +429,7 @@ const ClientInvoiceComponet = (props) => {
                           name="spin_client"
                           required={true}
                           messageErrors={["Requerido*"]}
-                          cols="col-md-4 col-lg-4 col-sm-4"
+                          cols="col-md-4 col-lg-4 col-sm-6"
                           value={props.cotizationData.spin_client}
                           handleChange={onChange}
                         >
@@ -447,7 +447,7 @@ const ClientInvoiceComponet = (props) => {
                           name="spin_client"
                           required={true}
                           messageErrors={["Requerido*"]}
-                          cols="col-md-4 col-lg-4 col-sm-4"
+                          cols="col-md-4 col-lg-4 col-sm-6"
                           value={props.cotizationData.spin_client}
                           handleChange={onChange}
                         />
@@ -459,7 +459,7 @@ const ClientInvoiceComponet = (props) => {
                           name="type_buy_client"
                           required={true}
                           messageErrors={["Requerido*"]}
-                          cols="col-md-4 col-lg-4 col-sm-4"
+                          cols="col-md-4 col-lg-4 col-sm-6"
                           value={props.cotizationData.type_buy_client}
                           handleChange={onChange}
                         >
@@ -479,7 +479,7 @@ const ClientInvoiceComponet = (props) => {
                           name="type_buy_client"
                           required={true}
                           messageErrors={["Requerido*"]}
-                          cols="col-md-4 col-lg-4 col-sm-4"
+                          cols="col-md-4 col-lg-4 col-sm-6"
                           value={props.cotizationData.type_buy_client}
                           handleChange={onChange}
                         />
@@ -491,7 +491,7 @@ const ClientInvoiceComponet = (props) => {
                   !arrayGuide.includes(props.type) ? (
                   <React.Fragment>
                     <br />
-                    <Row>
+                    <Row className="mb-3 mb-sm-0">
                       <Col sm={8} md={8} lg={8}>
                         <h4 className="title_principal">
                           Contactos Asignados al Receptor
@@ -516,7 +516,7 @@ const ClientInvoiceComponet = (props) => {
                         name="name_contact"
                         required={false}
                         messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
+                        cols="col-md-4 col-lg-4 col-sm-6"
                         value={props.cotizationData.name_contact}
                         handleChange={onChange}
                       />
@@ -526,7 +526,7 @@ const ClientInvoiceComponet = (props) => {
                         name="phone_contact"
                         required={false}
                         messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
+                        cols="col-md-4 col-lg-4 col-sm-6"
                         value={props.cotizationData.phone_contact}
                         handleChange={onChange}
                       />
@@ -536,7 +536,7 @@ const ClientInvoiceComponet = (props) => {
                         name="email_contact"
                         required={false}
                         messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
+                        cols="col-md-4 col-lg-4 col-sm-6"
                         value={props.cotizationData.email_contact}
                         handleChange={onChange}
                       />
@@ -565,7 +565,7 @@ const ClientInvoiceComponet = (props) => {
                         name="name_seller"
                         required={false}
                         messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
+                        cols="col-md-4 col-lg-4 col-sm-6"
                         value={props.cotizationData.name_seller}
                         handleChange={onChange}
                       />
@@ -575,7 +575,7 @@ const ClientInvoiceComponet = (props) => {
                         name="phone_seller"
                         required={false}
                         messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
+                        cols="col-md-4 col-lg-4 col-sm-6"
                         value={props.cotizationData.phone_seller}
                         handleChange={onChange}
                       />
@@ -585,7 +585,7 @@ const ClientInvoiceComponet = (props) => {
                         name="email_seller"
                         required={false}
                         messageErrors={["Requerido*"]}
-                        cols="col-md-4 col-lg-4 col-sm-4"
+                        cols="col-md-4 col-lg-4 col-sm-6"
                         value={props.cotizationData.email_seller}
                         handleChange={onChange}
                       />
@@ -598,7 +598,7 @@ const ClientInvoiceComponet = (props) => {
             ) : arrayInvoiceMerge.includes(props.isType) ? (
               <Card.Body>
                 <Row>
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={6} md={4} lg={4}>
                     <Row>
                       <Col sm={12} md={12} lg={12}>
                         <h5 className="title_principal">Api a utilizar</h5>
@@ -632,7 +632,7 @@ const ClientInvoiceComponet = (props) => {
                     </Row>
                   </Col>
                   {props.cotizationData.type_api ? (
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={6} md={4} lg={4}>
                       <Form.Label className="fontBold">Rut</Form.Label>
                       <Form.Group className={"divContainerFlex"}>
                         <Form.Control
@@ -658,7 +658,7 @@ const ClientInvoiceComponet = (props) => {
                       </Form.Group>
                     </Col>
                   ) : (
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={6} md={4} lg={4}>
                       <label>Rut</label>
                       <AutoCompleteClientComponent
                         items={props.clients}
@@ -685,7 +685,7 @@ const ClientInvoiceComponet = (props) => {
                       )}
                     </Col>
                   )}
-                  <Col sm={4} md={4} lg={4}>
+                  <Col sm={6} md={4} lg={4} className="mb-3 mb-md-0 createClientButton">
                     <br />
                     <Button
                       size="sm"
@@ -708,7 +708,7 @@ const ClientInvoiceComponet = (props) => {
                       arraySaleNote.includes(props.isType) ? false : true
                     }
                     messageErrors={["Requerido*"]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.rut_client}
                     handleChange={onChange}
                   />
@@ -720,7 +720,7 @@ const ClientInvoiceComponet = (props) => {
                       arraySaleNote.includes(props.isType) ? false : true
                     }
                     messageErrors={["Requerido*"]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.business_name_client}
                     handleChange={onChange}
                   />
@@ -736,7 +736,7 @@ const ClientInvoiceComponet = (props) => {
                           : false
                       }
                       messageErrors={["Requerido*"]}
-                      cols="col-md-4 col-lg-4 col-sm-4"
+                      cols="col-md-4 col-lg-4 col-sm-6"
                       value={props.cotizationData.address_client}
                       handleChange={onChange}
                     >
@@ -758,7 +758,7 @@ const ClientInvoiceComponet = (props) => {
                           : false
                       }
                       messageErrors={["Requerido*"]}
-                      cols="col-md-4 col-lg-4 col-sm-4"
+                      cols="col-md-4 col-lg-4 col-sm-6"
                       value={props.cotizationData.address_client}
                       handleChange={onChange}
                     />
@@ -776,7 +776,7 @@ const ClientInvoiceComponet = (props) => {
                         : false
                     }
                     messageErrors={[]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.city_client}
                     handleChange={onChange}
                   />
@@ -791,7 +791,7 @@ const ClientInvoiceComponet = (props) => {
                         : false
                     }
                     messageErrors={["Requerido*"]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.comuna_client}
                     handleChange={onChange}
                   />
@@ -802,7 +802,7 @@ const ClientInvoiceComponet = (props) => {
                       name="spin_client"
                       required={true}
                       messageErrors={["Requerido*"]}
-                      cols="col-md-4 col-lg-4 col-sm-4"
+                      cols="col-md-4 col-lg-4 col-sm-6"
                       value={props.cotizationData.spin_client}
                       handleChange={onChange}
                     >
@@ -825,7 +825,7 @@ const ClientInvoiceComponet = (props) => {
                           : false
                       }
                       messageErrors={["Requerido*"]}
-                      cols="col-md-4 col-lg-4 col-sm-4"
+                      cols="col-md-4 col-lg-4 col-sm-6"
                       value={props.cotizationData.spin_client}
                       handleChange={onChange}
                     />
@@ -847,7 +847,7 @@ const ClientInvoiceComponet = (props) => {
                           : true
                       }
                       messageErrors={["Requerido*"]}
-                      cols="col-md-4 col-lg-4 col-sm-4"
+                      cols="col-md-4 col-lg-4 col-sm-6"
                       value={props.cotizationData.type_buy_client}
                       handleChange={onChange}
                     >
@@ -875,7 +875,7 @@ const ClientInvoiceComponet = (props) => {
                           : true
                       }
                       messageErrors={["Requerido*"]}
-                      cols="col-md-4 col-lg-4 col-sm-4"
+                      cols="col-md-4 col-lg-4 col-sm-6"
                       value={props.cotizationData.type_buy_client}
                       handleChange={onChange}
                     />
@@ -909,7 +909,7 @@ const ClientInvoiceComponet = (props) => {
                       arraySaleNote.includes(props.isType) ? false : true
                     }
                     messageErrors={["Requerido*"]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.name_contact}
                     handleChange={onChange}
                   />
@@ -919,7 +919,7 @@ const ClientInvoiceComponet = (props) => {
                     name="phone_contact"
                     required={false}
                     messageErrors={["Requerido*"]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.phone_contact}
                     handleChange={onChange}
                   />
@@ -929,7 +929,7 @@ const ClientInvoiceComponet = (props) => {
                     name="email_contact"
                     required={false}
                     messageErrors={["Requerido*, ", "Formato Email*"]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.email_contact}
                     handleChange={onChange}
                   />
@@ -958,7 +958,7 @@ const ClientInvoiceComponet = (props) => {
                     name="name_seller"
                     required={false}
                     messageErrors={["Requerido*"]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.name_seller}
                     handleChange={onChange}
                   />
@@ -968,7 +968,7 @@ const ClientInvoiceComponet = (props) => {
                     name="phone_seller"
                     required={false}
                     messageErrors={["Requerido*"]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.phone_seller}
                     handleChange={onChange}
                   />
@@ -978,7 +978,7 @@ const ClientInvoiceComponet = (props) => {
                     name="email_seller"
                     required={false}
                     messageErrors={["Requerido*"]}
-                    cols="col-md-4 col-lg-4 col-sm-4"
+                    cols="col-md-4 col-lg-4 col-sm-6"
                     value={props.cotizationData.email_seller}
                     handleChange={onChange}
                   />

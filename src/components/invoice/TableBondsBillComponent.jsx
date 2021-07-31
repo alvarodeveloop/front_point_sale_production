@@ -159,7 +159,7 @@ const TableBondsBillComponent = (props) => {
         </Col>
       </Row>
       <Row className="justify-content-center">
-        <Col sm={4} md={4} lg={4}>
+        <Col sm={6} xs={6} md={4} lg={4}>
           <Button
             size="sm"
             block={true}
@@ -170,7 +170,7 @@ const TableBondsBillComponent = (props) => {
             Atrás
           </Button>
         </Col>
-        <Col sm={4} md={4} lg={4}>
+        <Col sm={6} xs={6} md={4} lg={4}>
           <Button
             size="sm"
             block={true}
