@@ -4,12 +4,20 @@ import {
   Modal,
   Button,
   Row,
-  Col
 } from 'react-bootstrap'
 import 'styles/components/modalComponents.scss'
-import QuaggaScanner from 'components/QuaggaScanner'
+import EanInputScanner from '../EanInputScanner';
 
 const ScanEanModal = (props) => {
+
+  const onChangeEanInputHandler = e => {
+    if (e.keyCode === 13) {
+      let value = e.target.value;
+      if (value) {
+        props.catchCode(value);
+      }
+    }
+  }
 
   return (
     <Modal
@@ -23,9 +31,13 @@ const ScanEanModal = (props) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div style={{ width: '100%', paddingLeft: '25%' }}>
-          <QuaggaScanner catchCode={props.catchCode} />
-        </div>
+        <Row>
+          <EanInputScanner
+            readonly={true}
+            onChangeEanInputHandler={onChangeEanInputHandler}
+            displaySectionHandler={false}
+          />
+        </Row>
       </Modal.Body>
       <Modal.Footer>
         <Button size="sm" onClick={props.onHide}>Cerrar</Button>

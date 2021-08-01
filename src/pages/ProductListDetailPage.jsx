@@ -419,7 +419,7 @@ export const ProductListDetailPage = (props) => {
                           Confirmar
                         </Button>
                       </Col>
-                      <Col xs={6} sm={4} md={4} lg={4} className="mt-2 mt-md-0">
+                      <Col xs={6} sm={4} md={4} lg={4} className="mt-2 mt-md-0 d-block d-md-none">
                         <Button
                           variant="secondary"
                           type="button"

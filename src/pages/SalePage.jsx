@@ -10,7 +10,7 @@ import {
   Dropdown,
   Modal
 } from 'react-bootstrap'
-import { FaList, FaRegImages, FaPlusCircle, FaTrash, FaTrashAlt, FaShoppingCart } from 'react-icons/fa'
+import { FaList, FaRegImages, FaPlusCircle, FaTrashAlt, FaShoppingCart } from 'react-icons/fa'
 import SquareProductComponent from 'components/SquareProductComponent'
 import { toast } from 'react-toastify'
 import { API_URL } from 'utils/constants'
@@ -28,6 +28,7 @@ import { MdPersonAdd } from 'react-icons/md';
 import { AiOutlineQrcode, AiFillTag, AiOutlineBarcode } from "react-icons/ai";
 //import QuaggaScanner from 'components/QuaggaScanner'
 import LoadingComponent from 'components/LoadingComponent';
+import EanInputScanner from "components/EanInputScanner";
 
 let count = 0;
 let countEan = 0;
@@ -398,14 +399,14 @@ const SalePage = (props) => {
             </Col>
           </Row>
           <br />
-          <Row>
-            <Col sm={3} md={3} lg={3} xs={3} >
+          <Row className="justify-content-center">
+            {/*<Col sm={3} md={3} lg={3} xs={3} >
               <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled">Buscar Producto por Qr</Tooltip>}>
                 <Button size="sm" size="sm" variant="secondary" block="true" onClick={() => handleOpenModals('qr')} >
                   <AiOutlineQrcode size='1.3em' />
                 </Button>
               </OverlayTrigger>
-            </Col>
+              </Col>*/}
             <Col sm={3} md={3} lg={3} xs={3}>
               <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled">Buscar Producto por EAN</Tooltip>}>
                 <Button size="sm" size="sm" variant="secondary" block="true" onClick={displayEanSectionHandler}>
@@ -522,31 +523,12 @@ const SalePage = (props) => {
               )}
             </Col>
           ) : (
-            <Col sm={8} md={8} lg={8} style={{ border: '1px solid white', borderRadius: '15px', boxShadow: '10px 5px 5px lightgray' }}>
-              <div style={{ height: "100%", width: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <Row className="justify-content-center">
-                  { /* <QuaggaScanner catchCode={catchBarCodeEan}/> */}
-                  <InputField
-                    type="text"
-                    name="eanCatchInput"
-                    readonly={false}
-                    handleKeyUp={onChangeEanInputHandler}
-                    cols="col-md-7 col-sm-7 col-lg-7 col-xs-12 col-xl-7"
-                    messageErrors={[]}
-                  />
-                </Row>
-                <Row>
-                  <Col>
-                    <p className="text-danger text-center">Escanee el código Ean de su producto con la pistola</p>
-                  </Col>
-                </Row>
-                <Row className="justify-content-center">
-                  <Col sm={6} md={6} lg={6}>
-                    <Button variant="link" className="text-danger" block={true} type="button" size="sm" onClick={displayEanSectionHandler}>Mostrar Productos</Button>
-                  </Col>
-                </Row>
-              </div>
-            </Col>
+            <EanInputScanner
+              readonly={false}
+              onChangeEanInputHandler={onChangeEanInputHandler}
+              displayEanSectionHandler={displayEanSectionHandler}
+              displaySectionHandler={true}
+            />
           )
         }
       </Row>

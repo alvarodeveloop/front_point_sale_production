@@ -603,11 +603,11 @@ const InvoiceSearchPage = props => {
             <Button block={true} variant="success" onClick={openModalExcelHandler} size="sm">Exportar Data <FaFileExcel /></Button>
           </Col>
         </Row>
-        <Row className="d-flex d-md-none">
+        {/*<Row className="d-flex d-md-none">
           <Col>
             <Button block={true} variant="secondary" onClick={get_invoice_emitet} size="sm">Importar Facturas <FaPlusCircle /></Button>
           </Col>
-        </Row>
+  </Row>*/}
       </React.Fragment>
       <Row className="d-none d-md-flex">
         <Col sm={4} md={4} lg={4} className="text-center">
@@ -620,8 +620,9 @@ const InvoiceSearchPage = props => {
               <Button block={true} variant="success" onClick={openModalExcelHandler} size="sm">Exportar Data <FaFileExcel /></Button>
             </Col>
           </Row>
-          <br />
+          {/*<br />
           <Button block={true} variant="secondary" onClick={get_invoice_emitet} size="sm">Importar Facturas <FaPlusCircle /></Button>
+          */}
         </Col>
         <Col sm={4} md={4} lg={4} className="text-center title_principal">
           <h4>Total Facturas Realizadas</h4>

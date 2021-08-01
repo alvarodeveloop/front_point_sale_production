@@ -436,6 +436,7 @@ const FormProductSale = (props) => {
   }
 
   const catchCodeHandle = data => {
+    setDataProduct({ ...dataProduct, code_ean: data ? data : dataProduct.code_ean });
     setIsOpenScan(false)
   }
 

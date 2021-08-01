@@ -40,9 +40,9 @@ const ModalInvoiceActions = (props) => {
                   <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.printInvoice(props.cotization)} block={true}>Ver factura pdf <FaFilePdf /></Button>
                   </Col>
-                  <Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
+                  {/*<Col sm={6} md={4} lg={3} className="mb-2 mb-lg-0">
                     <Button size="sm" variant="secondary" type="button" onClick={(e) => props.noteCredit(props.cotization)} block={true}>Nota de crédito o Debito <FaFilePdf /></Button>
-                  </Col>
+              </Col>*/}
                 </Row>
               ) : props.isGuide ? (
                 <Row className="justify-content-center">
