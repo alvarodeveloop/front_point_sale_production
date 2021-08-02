@@ -173,7 +173,7 @@ const BranchOfficePage = (props) => {
               <Col sm={6} lg={4} xl={3} md={4} xs={10} className="text-center mb-4 mb-sm-2 mb-md-0" key={i}>
                 <h5 style={{ color: "rgb(180, 55, 33)" }}>{v.name}</h5>
                 <Image
-                  src={require("../assets/img/sucursal.png")}
+                  src={require("../assets/img/branchImg.jpg")}
                   className="widthImage"
                 />
                 <br />

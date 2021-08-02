@@ -444,7 +444,7 @@ const AuthPageTemplate = (props) => {
                         {v.name}
                       </h4>
                       <Image
-                        src={require("../assets/img/sucursal.png")}
+                        src={require("../assets/img/branchImg.jpg")}
                         style={{ width: "80%" }}
                       />
                       <br />

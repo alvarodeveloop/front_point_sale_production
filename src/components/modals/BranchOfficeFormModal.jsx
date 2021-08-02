@@ -379,8 +379,8 @@ const BranchOfficeFormModal = (props) => {
           {props.titleModal}
           &nbsp;&nbsp;
           <Image
-            src={require("../../assets/img/sucursal.png")}
-            style={{ width: "50px" }}
+            src={require("../../assets/img/branchImg.jpg")}
+            style={{ width: "100px" }}
           />
         </Modal.Title>
       </Modal.Header>
