@@ -61,8 +61,8 @@ const ModalDescriptionSaleProduct = (props) => {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button size="sm" variant="secondary" type="submit">Guardar</Button>
-          <Button size="sm" onClick={handleOnHide}>Cerrar</Button>
+          <Button size="md" variant="danger" type="submit">Guardar</Button>
+          <Button size="md" variant="secondary" onClick={handleOnHide}>Cerrar</Button>
         </Modal.Footer>
       </Form>
     </Modal>
@@ -74,17 +74,17 @@ ModalDescriptionSaleProduct.propTypes = {
   onHide: PropTypes.func.isRequired
 }
 
-ModalDescriptionSaleProduct.defaultProps ={
+ModalDescriptionSaleProduct.defaultProps = {
   inputDescription: {
     type: 'textarea',
     required: true,
     name: 'description',
-    label : 'Descripción de Venta',
+    label: 'Descripción de Venta',
     rows: 4,
     messageErrors: [
       'Requerido*'
     ],
-    cols:"col-sm-9 col-md-9 col-lg-9 col-xs-9"
+    cols: "col-sm-9 col-md-9 col-lg-9 col-xs-9"
   },
 }
 

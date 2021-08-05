@@ -300,11 +300,11 @@ const SaleThirdPartPage = (props) => {
 
   return (
     <Container fluid='true'>
-      <Row style={{ borderRadius: '15px', boxShadow: '10px 5px 5px lightgray' }}>
-        <Col sm={4} md={4} lg={4} xs={4}>
+      <Row className="justify-content-around justify-content-md-start" style={{ borderRadius: '15px', boxShadow: '10px 5px 5px lightgray' }}>
+        <Col sm={4} md={4} lg={4} xs={6}>
           <Button size="sm" size="sm" onClick={() => props.handleChangeView(2)}>Volver a la Sección 2</Button>
         </Col>
-        <Col sm={4} md={4} lg={4} xs={4}>
+        <Col sm={4} md={4} lg={4} xs={6}>
           <h3 className="text-center font-title">Pago del Carrito N° {props.sale.idCartSelected + 1}</h3>
         </Col>
       </Row>
@@ -313,21 +313,19 @@ const SaleThirdPartPage = (props) => {
         <LoadingComponent />
       ) : (
         <Row className="justify-content-center">
-          <Col sm={4} md={4} lg={4} style={{ borderRadius: '15px', boxShadow: '5px 5px 5px lightgray' }}>
+          <Col sm={4} md={4} lg={4} xs={5} style={{ borderRadius: '15px', boxShadow: '5px 5px 5px lightgray' }}>
             <h4 className="text-center">Métodos de Pago</h4>
             <br />
-            <Row>
-              <Col sm={6} md={6} lg={6} xs={6}>
+            <Row className="mb-2 mb-md-4 justify-content-center">
+              <Col sm={10} md={6} lg={6} xs={10} className="mb-2 mb-md-0">
                 <Button size="sm" onClick={() => setTypePayment(1)} variant={payment.type === 1 ? 'secondary' : 'dark'} block="true">Efectivo</Button>
               </Col>
-              <Col sm={6} md={6} lg={6} xs={6}>
+              <Col sm={10} md={6} lg={6} xs={10}>
                 <Button size="sm" onClick={() => setTypePayment(2)} variant={payment.type === 2 ? 'secondary' : 'dark'} block="true">Tarjeta Debito</Button>
               </Col>
             </Row>
-            <br></br>
-            <br></br>
-            <Row>
-              <Col sm={6} md={6} lg={6} xs={6}>
+            <Row className="justify-content-center">
+              <Col sm={10} md={6} lg={6} xs={10}>
                 <Button size="sm" onClick={() => setTypePayment(3)} variant={payment.type === 3 ? 'secondary' : 'dark'} block="true">Tarjeta Crédito</Button>
               </Col>
               {/*<Col sm={6} md={6} lg={6} xs={6}>
@@ -347,7 +345,7 @@ const SaleThirdPartPage = (props) => {
             <br></br>
             <hr />
             <Row>
-              <Col sm={6} md={6} lg={6}>
+              <Col sm={12} md={6} lg={6}>
                 <Form.Group>
                   <Form.Check type="checkbox"
                     custom
@@ -360,7 +358,7 @@ const SaleThirdPartPage = (props) => {
               </Col>
             </Row>
             <Row>
-              <Col sm={6} md={6} lg={6}>
+              <Col sm={12} md={6} lg={6}>
                 <Form.Group>
                   <Form.Check type="radio"
                     custom
@@ -372,7 +370,7 @@ const SaleThirdPartPage = (props) => {
                     onChange={onChange} />
                 </Form.Group>
               </Col>
-              <Col sm={6} md={6} lg={6}>
+              <Col sm={12} md={6} lg={6}>
                 <Form.Group>
                   <Form.Check type="radio"
                     custom
@@ -392,15 +390,15 @@ const SaleThirdPartPage = (props) => {
           <Col sm={7} md={7} lg={7} xs={7} style={{ borderRadius: '15px', boxShadow: '10px 5px 5px lightgray' }}>
             <br />
             <Row>
-              <Col sm={4} md={4} lg={4} xs={12} className="text-center">
+              <Col sm={6} md={4} lg={4} xs={6} className="text-center">
                 <h4>Sub Total:</h4>
                 <Badge variant="primary" style={{ fontSize: '18px' }}>{props.config.simbolo_moneda}{showPriceWithDecimals(props.config, props.sale.rooms[props.sale.idCartSelected].totales.neto)} </Badge>
               </Col>
-              <Col sm={4} md={4} lg={4} xs={12} className="text-center">
+              <Col sm={6} md={4} lg={4} xs={6} className="text-center">
                 <h4>Tax:</h4>
                 <Badge variant="primary" style={{ fontSize: '18px' }}>{props.config.simbolo_moneda}{showPriceWithDecimals(props.config, props.sale.rooms[props.sale.idCartSelected].totales.tax)}</Badge>
               </Col>
-              <Col sm={4} md={4} lg={4} xs={12} className="text-center">
+              <Col sm={6} md={4} lg={4} xs={6} className="text-center mt-2 mt-md-0">
                 <h4>Total:</h4>
                 <Badge variant="primary" style={{ fontSize: '18px' }}>{props.config.simbolo_moneda}{showPriceWithDecimals(props.config, props.sale.rooms[props.sale.idCartSelected].totales.total)}</Badge>
               </Col>
@@ -422,13 +420,13 @@ const SaleThirdPartPage = (props) => {
               />
             </Row>
             <Row className="justify-content-center">
-              <Col sm={6} md={6} lg={6} xs={12}>
+              <Col sm={10} md={6} lg={6} xs={12}>
                 <Button size="sm" block="true" variant="primary" type="button" onClick={() => handleFinishPayment(2)} >Guardar Pedido</Button>
               </Col>
             </Row>
             <br />
             <Row className="justify-content-center">
-              <Col sm={6} md={6} lg={6} xs={12}>
+              <Col sm={10} md={6} lg={6} xs={12} className="text-center">
                 <DropdownButton size="sm" id={'cart_button_quantity'} title="Opciones del Carrito" block="true" variant="primary" className="dropdown_block" drop={'up'}>
                   <Dropdown.Item onClick={() => props.handleChangeView(2)}>Volver a la Sección 2</Dropdown.Item>
                   {props.sale.rooms.map((v, i) => (
@@ -467,13 +465,13 @@ const SaleThirdPartPage = (props) => {
               <Row style={{ borderRadius: '15px', boxShadow: '10px 5px 5px lightgray', paddingTop: '20px', paddingBottom: '20px' }}>
                 <Col sm={12} md={12} lg={12}>
                   <Row>
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={4} md={4} lg={4} xs={6}>
                       <Button variant="dark" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(1)}>Usar Datos del Cliente <FaUser /></Button>
                     </Col>
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={4} md={4} lg={4} xs={6}>
                       <Button variant="dark" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(2)}>Usar datos del cliente pero con otra dirección <FaUser /></Button>
                     </Col>
-                    <Col sm={4} md={4} lg={4}>
+                    <Col sm={4} md={4} lg={4} xs={6} className="mt-2 mt-md-0">
                       <Button variant="dark" block={true} type="button" size="sm" onClick={() => handleAddressDispatch(3)}>Ingresar Datos <FaPencilAlt /></Button>
                     </Col>
                   </Row>
@@ -539,10 +537,10 @@ const SaleThirdPartPage = (props) => {
               </Row>
               <br />
               <Row className="justify-content-center">
-                <Col sm={4} md={4} lg={4}>
+                <Col sm={4} md={4} lg={4} xs={6}>
                   <Button variant="danger" size="sm" type="submit" block={true}>Enviar para Guardar</Button>
                 </Col>
-                <Col sm={4} md={4} lg={4}>
+                <Col sm={4} md={4} lg={4} xs={6}>
                   <Button variant="secondary" size="sm" onClick={handleOnHideModalDispatch} block={true} type="button">Cerrar</Button>
                 </Col>
               </Row>
@@ -570,7 +568,7 @@ SaleThirdPartPage.defaultProps = {
     name: 'payment',
     label: '',
     placeholder: 'Cantidad Recibida',
-    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    cols: "col-sm-10 col-md-6 col-lg-6 col-6",
     step: 'any',
     messageErrors: [
       'Requerido*'
@@ -582,7 +580,7 @@ SaleThirdPartPage.defaultProps = {
     name: 'turned',
     label: '',
     placeholder: 'Vuelto',
-    cols: "col-sm-6 col-md-6 col-lg-6 col-xs-6",
+    cols: "col-sm-10 col-md-6 col-lg-6 col-6",
     readonly: true,
     messageErrors: [
       'Requerido*'

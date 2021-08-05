@@ -136,7 +136,7 @@ const SaleSecondPartPage = (props) => {
           )
           break;
         default:
-          return 0
+          return <div style={{ widh: "100%" }} className="text-center">$0</div>
       }
 
     } else if (type === "recharge") {
@@ -155,7 +155,7 @@ const SaleSecondPartPage = (props) => {
           )
           break;
         default:
-          return 0
+          return <div style={{ widh: "100%" }} className="text-center">$0</div>
       }
     }
   }
@@ -164,36 +164,34 @@ const SaleSecondPartPage = (props) => {
 
     <Container fluid='true'>
       <React.Fragment>
-        <Row style={{ borderRadius: '15px', boxShadow: '10px 5px 5px lightgray' }}>
-          <Col sm={4} md={4} lg={4} xs={4}>
+        <Row className="justify-content-around justify-content-sm-start" style={{ borderRadius: '15px', boxShadow: '10px 5px 5px lightgray' }}>
+          <Col sm={4} md={4} lg={4} xs={5}>
             <Button size="sm" size="sm" onClick={() => props.handleChangeView(1)}>Volver a la Sección 1</Button>
           </Col>
-          <Col sm={4} md={4} lg={4} xs={4}>
+          <Col sm={4} md={4} lg={4} xs={5}>
             <h3 className="text-center font-title">Carrito N° {props.sale.idCartSelected + 1}</h3>
           </Col>
         </Row>
         <br />
         <Row>
-          <Col sm={4} md={4} lg={4} xs={4} style={{ borderRadius: '15px', boxShadow: '5px 5px 5px lightgray' }}>
+          <Col sm={4} md={4} lg={4} xs={5} style={{ borderRadius: '15px', boxShadow: '5px 5px 5px lightgray' }}>
             {props.showIndexCart()}
             <hr />
             <Row>
               <Col sm={12} md={12} lg={12}>
-                <h4 className="font-title">Neto: {props.config.simbolo_moneda}{showPriceWithDecimals(props.config, props.sale.rooms[props.sale.idCartSelected].totales.neto)}</h4>
+                <h4 className="font-title">Neto: {props.config.simbolo_moneda}{showPriceWithDecimals(props.config, 1500000)}</h4>
                 <h4 className="font-title">Tax: {props.config.simbolo_moneda}{showPriceWithDecimals(props.config, props.sale.rooms[props.sale.idCartSelected].totales.tax)}</h4>
                 <h4 className="font-title">Total: {props.config.simbolo_moneda}{showPriceWithDecimals(props.config, props.sale.rooms[props.sale.idCartSelected].totales.total)}</h4>
               </Col>
             </Row>
             <hr />
             <Row>
-              <Col sm={6} md={6} lg={6}>
-                <Button size="sm" variant="secondary" type="button" block="true" onClick={() => setOpenModalDiscountTotal(true)}>+&nbsp;Descuento del&nbsp;<FaShoppingCart /></Button>
-                <br />
+              <Col sm={12} md={6} lg={6} xs={12} className="mb-2 mb-md-0">
+                <Button className="mb-2 mb-sm-0" class size="sm" variant="secondary" type="button" block="true" onClick={() => setOpenModalDiscountTotal(true)}>+&nbsp;Descuento del&nbsp;<FaShoppingCart /></Button>
                 {showDiscountTotal('discount')}
               </Col>
-              <Col sm={6} md={6} lg={6}>
-                <Button size="sm" size="sm" variant="secondary" type="button" block="true" onClick={() => setOpenModalRechargeTotal(true)}>+&nbsp;Recargo del&nbsp;<FaShoppingCart /></Button>
-                <br />
+              <Col sm={12} md={6} lg={6}>
+                <Button className="mb-2 mb-sm-0" size="sm" size="sm" variant="secondary" type="button" block="true" onClick={() => setOpenModalRechargeTotal(true)}>+&nbsp;Recargo del&nbsp;<FaShoppingCart /></Button>
                 {showDiscountTotal('recharge')}
               </Col>
             </Row>
@@ -215,7 +213,7 @@ const SaleSecondPartPage = (props) => {
               </Col>
             </Row>
           </Col>
-          <Col sm={8} md={8} lg={8} xs={8} style={{ borderRadius: '15px', boxShadow: '10px 5px 5px lightgray' }}>
+          <Col sm={8} md={8} lg={8} xs={7} style={{ borderRadius: '15px', boxShadow: '10px 5px 5px lightgray' }}>
             <Row>
               <Col sm={12} md={12} lg={12}>
                 <h3 className="font-title text-center">Productos</h3>

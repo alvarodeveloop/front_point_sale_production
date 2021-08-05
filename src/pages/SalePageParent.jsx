@@ -174,12 +174,12 @@ const SalePageParent = (props) => {
   const showIndexCart = () => {
     return (
       <Row>
-        <Col sm={6} md={6} lg={6} xs={6}>
+        <Col sm={6} md={6} lg={6} xs={12}>
           <br />
           Carrito: {props.sale.idCartSelected + 1}
         </Col>
-        <Col sm={6} md={6} lg={6} xs={6}>
-          <br />
+        <Col sm={6} md={6} lg={6} xs={12} className="">
+          <br className="mt-2 mt-sm-0" />
           Productos: {calculateTotalProducts()}
         </Col>
       </Row>
@@ -190,10 +190,10 @@ const SalePageParent = (props) => {
     return (
       <React.Fragment>
         <Row className="">
-          <Col sm={6} md={6} lg={6} xs={6}>
+          <Col sm={6} md={6} lg={6} xs={12}>
             Productos: {calculateTotalProducts()}
           </Col>
-          <Col sm={6} md={6} lg={6} xs={6}>
+          <Col sm={6} md={6} lg={6} xs={12} className="mt-2 mt-sm-0">
             Total:{" "}
             {showPriceWithDecimals(
               props.configGeneral,
@@ -203,7 +203,7 @@ const SalePageParent = (props) => {
         </Row>
         <br />
         <Row>
-          <Col sm={6} md={6} lg={6} xs={6}>
+          <Col sm={6} md={6} lg={6} xs={12}>
             Carrito: {props.sale.idCartSelected + 1}
           </Col>
         </Row>

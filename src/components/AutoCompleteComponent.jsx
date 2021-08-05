@@ -15,7 +15,7 @@ const AutoCompleteComponent = (props) => {
     <div style={{ width: '100%', position: 'relative', zIndex: '1000' }}>
       <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled">{props.titleTooltip ? props.titleTooltip : ''}</Tooltip>}>
         <div className="input-search">
-          <FaSearch />
+          <FaSearch className="d-none d-md-inline" />
           <Autocomplete
             getItemValue={(item) => item[props.keyName]}
             items={props.items}

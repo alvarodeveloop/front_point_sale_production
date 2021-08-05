@@ -144,7 +144,7 @@ const ModalRechargeProduct = (props) => {
             </Col>
           </Row>
           {props.product ? (
-            <Row>
+            <Row className="mt-2 mt-md-0">
               <Col sm={6} md={6} lg={6}>
                 <Form.Control
                   type={'number'}
@@ -161,7 +161,7 @@ const ModalRechargeProduct = (props) => {
               </Col>
             </Row>
           ) : (
-            <Row>
+            <Row className="mt-2 mt-md-0">
               <Col sm={6} md={6} lg={6}>
                 <Form.Control
                   type={'number'}
@@ -180,8 +180,8 @@ const ModalRechargeProduct = (props) => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button size="md" variant="secondary" type="submit">Enviar</Button>
-          <Button size="md" onClick={handleOnHide}>Cerrar</Button>
+          <Button size="md" variant="danger" type="submit">Enviar</Button>
+          <Button size="md" variant="secondary" onClick={handleOnHide}>Cerrar</Button>
         </Modal.Footer>
       </Form>
     </Modal>

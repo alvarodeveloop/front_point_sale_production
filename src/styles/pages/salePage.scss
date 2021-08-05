@@ -42,3 +42,11 @@
   border-radius: 15px;
   box-shadow:'10px 5px 5px lightgray';
 }
+
+@media (max-width : 776px) {
+  
+  .listClient{
+    padding-inline-start: 0px;
+
+  }
+}

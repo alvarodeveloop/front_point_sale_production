@@ -336,9 +336,9 @@ const SalePage = (props) => {
   return (
     <Container fluid='true'>
       <Row>
-        <Col sm={4} md={4} lg={4} xs={4} style={{ borderRadius: '15px', boxShadow: '10px 5px 5px lightgray', padding: '20px' }}>
+        <Col sm={4} md={4} lg={4} xs={5} style={{ borderRadius: '15px', boxShadow: '10px 5px 5px lightgray', padding: '20px' }}>
           <Row className="justify-content-center">
-            <Col sm={8} md={8} lg={8}>
+            <Col sm={12} md={8} lg={8}>
               <AutoCompleteClientComponent
                 items={clients}
                 returnValue={handleSelectClient}
@@ -346,7 +346,7 @@ const SalePage = (props) => {
                 resetValue={resetValueClient}
               />
             </Col>
-            <Col sm={2} md={2} lg={2} xs={2}>
+            <Col sm={12} md={2} lg={2} xs={12} className="text-center">
               <a href="javascript:void(0)" onClick={() => handleOpenModals('client')}>
                 <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled2">Agregar Cliente</Tooltip>}>
                   <MdPersonAdd size="2.5em" />
@@ -354,23 +354,23 @@ const SalePage = (props) => {
               </a>
             </Col>
           </Row>
-          <br />
+          <br className="d-none d-sm-block" />
           <Row>
             <Col sm={12} md={12} lg={12}>
               <br />
-              <ul className="">
+              <ul className="listClient">
                 {props.sale.rooms[props.sale.idCartSelected].client && Object.keys(props.sale.rooms[props.sale.idCartSelected].client).length > 0 ? (
                   <React.Fragment>
                     <p className="text-center">
-                      <b>Nombre:&nbsp;</b>{props.sale.rooms[props.sale.idCartSelected].client.name_client}
+                      <b>Nombre:&nbsp;</b><br className="d-block d-sm-none" />{props.sale.rooms[props.sale.idCartSelected].client.name_client}
                       <br />
                       {props.sale.rooms[props.sale.idCartSelected].client.data_document && props.sale.rooms[props.sale.idCartSelected].client.dv ? (
                         <>
-                          <b>N°:</b>&nbsp;{props.sale.rooms[props.sale.idCartSelected].client.data_document + "-" + props.sale.rooms[props.sale.idCartSelected].client.dv}
+                          <b>N°:</b>&nbsp;<br className="d-block d-sm-none" />{props.sale.rooms[props.sale.idCartSelected].client.data_document + "-" + props.sale.rooms[props.sale.idCartSelected].client.dv}
                         </>
                       ) : props.sale.rooms[props.sale.idCartSelected].client.data_document ? (
                         <>
-                          <b>N°:</b>&nbsp;{props.sale.rooms[props.sale.idCartSelected].client.data_document}
+                          <b>N°:</b>&nbsp;<br className="d-block d-sm-none" />{props.sale.rooms[props.sale.idCartSelected].client.data_document}
                         </>
                       ) : ""}
                       &nbsp;&nbsp;&nbsp;
@@ -386,9 +386,9 @@ const SalePage = (props) => {
               </ul>
             </Col>
           </Row>
-          <hr />
+          <hr className="d-none d-md-block" />
           <Row className="justify-content-center">
-            <Col sm={10} md={10} lg={10}>
+            <Col sm={12} md={10} lg={10}>
               <AutoCompleteComponent
                 items={productsAll}
                 keyName='name_product'
@@ -407,21 +407,21 @@ const SalePage = (props) => {
                 </Button>
               </OverlayTrigger>
               </Col>*/}
-            <Col sm={3} md={3} lg={3} xs={3}>
+            <Col sm={6} md={4} lg={3} xs={6}>
               <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled">Buscar Producto por EAN</Tooltip>}>
                 <Button size="sm" size="sm" variant="secondary" block="true" onClick={displayEanSectionHandler}>
                   <AiOutlineBarcode size='1.3em' />
                 </Button>
               </OverlayTrigger>
             </Col>
-            <Col sm={3} md={3} lg={3} xs={3}>
+            <Col sm={6} md={4} lg={3} xs={6}>
               <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled">Vender Producto no Registrado</Tooltip>}>
                 <Button size="sm" size="sm" variant="secondary" block="true" onClick={() => handleOpenModals('not_registered')}>
                   <AiFillTag size='1.3em' />
                 </Button>
               </OverlayTrigger>
             </Col>
-            <Col sm={3} md={3} lg={3} xs={3}>
+            <Col sm={6} md={4} lg={3} xs={6} className="mt-2 mt-md-0">
               {showList ? (
                 <React.Fragment>
                   <OverlayTrigger placement={'button'} overlay={<Tooltip id="tooltip-disabled">Mostar por Tableros</Tooltip>}>
@@ -468,10 +468,10 @@ const SalePage = (props) => {
         </Col>
         {
           !isEanScaner ? (
-            <Col sm={8} md={8} lg={8} xs={8} style={{ border: '1px solid white', borderRadius: '15px', boxShadow: '10px 5px 5px lightgray' }}>
+            <Col sm={8} md={8} lg={8} xs={7} style={{ border: '1px solid white', borderRadius: '15px', boxShadow: '10px 5px 5px lightgray' }}>
               <Row className="justify-content-center" style={{ paddingLeft: "10px", paddingRight: "10px" }}>
-                <Col sm={6} md={6} lg={6} xs={6}>
-                  <label className="form-control-label">Seleccione por Categoria</label>
+                <Col sm={6} md={6} lg={6} xs={12}>
+                  <label className="form-control-label"><span className="d-inline d-sm-none d-md-inline">Seleccione por</span> Categoria</label>
                   <select className="form-control" onChange={handleChangeCategoryProduct} defaultValue="mas_vendidos" id="select_category">
                     <option value='todos'>Todos</option>
                     {categorys.map((v, i) => (
@@ -479,7 +479,7 @@ const SalePage = (props) => {
                     ))}
                   </select>
                 </Col>
-                <Col sm={6} md={6} lg={6} xs={6}>
+                <Col sm={6} md={6} lg={6} xs={12} className="mt-2 mt-sm-0">
                   <label className="form-control-label">Lista de Productos</label>
                   <select className="form-control" onChange={listProductHandler} id="select_list_product">
                     <option value='0'>-- Default --</option>
@@ -489,8 +489,8 @@ const SalePage = (props) => {
                   </select>
                 </Col>
               </Row>
-              <Row>
-                <Col sm={12} md={12} lg={12} xs={12} onClick={() => handleOpenModals('product')}>
+              <Row className="justify-content-center">
+                <Col sm={12} md={12} lg={12} xs={10} onClick={() => handleOpenModals('product')}>
                   <br />
                   <OverlayTrigger placement={'bottom'} overlay={<Tooltip id="tooltip-disabled">Nuevo Producto</Tooltip>}>
                     <Button size="sm" block={true} size="sm" variant="success">Agregar Producto &nbsp;&nbsp;<FaPlusCircle /></Button>
@@ -506,9 +506,9 @@ const SalePage = (props) => {
                     {showList ? (
                       <TableProductComponent data={products} addToCart={handleAddToCart} configStore={props.configStore} config={props.config} />
                     ) : (
-                      <Row style={{ overflowY: 'auto' }}>
+                      <Row className="justify-content-center" style={{ overflowY: 'auto' }}>
                         {products.map((v, i) => (
-                          <Col sm={3} md={3} lg={3} xs={3} key={i} onClick={() => handleAddToCart(v)} className="separatedBlockProducts">
+                          <Col sm={7} md={4} lg={4} xs={10} key={i} onClick={() => handleAddToCart(v)} className="separatedBlockProducts">
                             <SquareProductComponent
                               product={v}
                               config={props.config}

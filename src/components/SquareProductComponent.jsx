@@ -45,13 +45,13 @@ const SquareProductComponent = (props) => {
         ) : ''}
         <Row>
           <Col className="text-center">
-            Precio neto:
+            neto:
           </Col>
           <Col className="text-center">
-            Precio iva:
+            iva:
           </Col>
         </Row>
-        <Row className="align-items-center">
+        <Row className="align-items-center text-center">
           <Col>
             {props.config ? props.config.simbolo_moneda : '$'} {calculateIvaAndNeto(props.product.price, props.configStore.tax, false)}
           </Col>

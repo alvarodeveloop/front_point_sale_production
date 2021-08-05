@@ -113,7 +113,7 @@ const MainContainer = (props) => {
           .catch((err) => {
             console.log(err, "error actualizando el token");
           });
-      }, 1000 * 60 * 30);
+      }, (1000 * 60) * 30);
     }
   };
 

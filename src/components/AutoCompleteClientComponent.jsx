@@ -21,7 +21,7 @@ const AutoCompleteClientComponent = (props) => {
     <div style={{ width: '100%', position: 'relative', zIndex: '1000' }}>
       <OverlayTrigger placement={'top'} overlay={<Tooltip id="tooltip-disabled3">Buscar Cliente</Tooltip>}>
         <div className="input-search">
-          <FaSearch />
+          <FaSearch className="d-none d-sm-inline" />
           <Autocomplete
             getItemValue={(item) => {
               let string = item.name_client;
