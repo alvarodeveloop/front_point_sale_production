@@ -266,7 +266,7 @@ const FormClientModal = (props) => {
           <Modal.Body>
             <Row>
               <Col sm={12} md={12} lg={12} xs={12}>
-                <Row>
+                <Row className="mb-4 mb-md-0">
                   <InputField
                     {...props.inputTypeDocument}
                     handleChange={handleOnChange}
@@ -283,8 +283,7 @@ const FormClientModal = (props) => {
                     value={globalState.client.data_document}
                   />
                   {globalState.client.type_document === "Rut" ? (
-                    <Col sm={4} md={4} lg={4}>
-                      <br />
+                    <Col sm={6} md={4} lg={4} className="mt-2 mt-md-0">
                       <Button block={true} variant="secondary" type="button" size="sm" onClick={searchClient}>Buscar cliente <FaSearch /></Button>
                     </Col>
                   ) : ""}
@@ -298,7 +297,7 @@ const FormClientModal = (props) => {
                   <InputField
                     type="text"
                     required={false}
-                    cols="col-md-4 col-sm-4 col-lg-4 col-xs-6"
+                    cols="col-md-4 col-sm-6 col-lg-4 col-xs-6"
                     handleChange={handleOnChange}
                     value={globalState.client.bussines_name}
                     name="bussines_name"
@@ -327,7 +326,7 @@ const FormClientModal = (props) => {
                       name="address"
                       required={false}
                       messageErrors={["Requerido*"]}
-                      cols="col-md-4 col-lg-4 col-sm-4"
+                      cols="col-md-4 col-lg-4 col-sm-6"
                       value={globalState.client.address}
                       handleChange={handleOnChange}
                     >
@@ -355,7 +354,7 @@ const FormClientModal = (props) => {
                     messageErrors={[
                       'Requerido*'
                     ]}
-                    cols='col-md-4 col-lg-4 col-sm-4'
+                    cols='col-md-4 col-lg-4 col-sm-6'
                     value={globalState.client.city}
                     handleChange={handleOnChange}
                   />
@@ -369,7 +368,7 @@ const FormClientModal = (props) => {
                     messageErrors={[
                       'Requerido*'
                     ]}
-                    cols='col-md-4 col-lg-4 col-sm-4'
+                    cols='col-md-4 col-lg-4 col-sm-6'
                     value={globalState.client.comuna}
                     handleChange={handleOnChange}
                   />
@@ -383,7 +382,7 @@ const FormClientModal = (props) => {
                       messageErrors={[
                         'Requerido*'
                       ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
+                      cols='col-md-4 col-lg-4 col-sm-6'
                       value={globalState.client.spin}
                       handleChange={handleOnChange}
                     >
@@ -402,7 +401,7 @@ const FormClientModal = (props) => {
                       messageErrors={[
                         'Requerido*'
                       ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
+                      cols='col-md-4 col-lg-4 col-sm-6'
                       value={globalState.client.spin}
                       handleChange={handleOnChange}
                     />
@@ -425,7 +424,7 @@ const FormClientModal = (props) => {
                       messageErrors={[
                         'Requerido*'
                       ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
+                      cols='col-md-4 col-lg-4 col-sm-6'
                       value={globalState.client.purchase_type}
                       handleChange={handleOnChange}
                     >
@@ -444,7 +443,7 @@ const FormClientModal = (props) => {
                       messageErrors={[
                         'Requerido*'
                       ]}
-                      cols='col-md-4 col-lg-4 col-sm-4'
+                      cols='col-md-4 col-lg-4 col-sm-6'
                       value={globalState.client.purchase_type}
                       handleChange={handleOnChange}
                     />
@@ -475,7 +474,7 @@ FormClientModal.defaultProps = {
     required: true,
     name: 'name_client',
     label: 'Nombre Cliente',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-6",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6",
     messageErrors: [
       'Requerido*'
     ],
@@ -485,7 +484,7 @@ FormClientModal.defaultProps = {
     required: false,
     name: 'email',
     label: 'Email',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-6",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6",
     messageErrors: [
       'Requerido*, ', 'Formato Tipo Email*'
     ],
@@ -495,7 +494,7 @@ FormClientModal.defaultProps = {
     required: false,
     name: 'phone',
     label: 'Teléfono',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-6",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6",
     messageErrors: [],
   },
   inputAddress: {
@@ -503,7 +502,7 @@ FormClientModal.defaultProps = {
     required: false,
     name: 'address',
     label: 'Dirección',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-6",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6",
 
     messageErrors: [],
   },
@@ -512,7 +511,7 @@ FormClientModal.defaultProps = {
     required: false,
     name: 'type_document',
     label: 'Tipo de Documento',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-6",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6",
     messageErrors: [
       'Requerido*'
     ],
@@ -522,7 +521,7 @@ FormClientModal.defaultProps = {
     required: false,
     name: 'data_document',
     label: 'Información Identidad',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-6",
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6",
     placeholder: 'Introduzca su rut, id o su n° de pasaporte',
     messageErrors: [
       'Requerido*'
@@ -533,8 +532,8 @@ FormClientModal.defaultProps = {
     required: false,
     name: 'observation',
     label: 'Observación',
-    cols: "col-sm-4 col-md-4 col-lg-4 col-xs-6",
-    rows: 2,
+    cols: "col-sm-6 col-md-4 col-lg-4 col-xs-6",
+    rows: 1,
     messageErrors: [],
   },
 

@@ -298,19 +298,19 @@ const ClientPage = (props) => {
       ) : (
         <Container fluid={true}>
           <Row className="">
-            <Col sm={6} md={6} lg={6}>
+            <Col sm={6} md={6} lg={6} className="d-none d-md-block">
               <h4 className="title_principal">Tabla de Clientes</h4>
             </Col>
-            <Col sm={6} md={6} lg={6} className="text-center">
-              <h4 className="title_principal">Total Clientes</h4>
-              <Badge variant="danger">{clients.length}</Badge>
+            <Col sm={12} md={6} lg={6} className="text-center">
+              <h4 className="title_principal">Total Clientes <Badge variant="danger" className="d-inline d-md-none font-badge">{clients.length}</Badge></h4>
+              <Badge variant="danger" className="d-none d-md-inline">{clients.length}</Badge>
             </Col>
           </Row>
           <Row>
-            <Col sm={3} md={3} lg={3}>
+            <Col sm={6} md={3} lg={3} xs={6}>
               <Button variant="success" block={true} size="sm" onClick={handleModalHide} type="button">Crear Cliente <FaPlusCircle /></Button>
             </Col>
-            <Col sm={3} md={3} lg={3}>
+            <Col sm={6} md={3} lg={3} xs={6}>
               <DropdownButton size="sm" id={'drop_excel'} variant="success" title={(<span>Acciones de Excel <FaFileExcel /></span>)} drop="down" style={{ width: "100%" }}>
                 <Dropdown.Item onClick={downloadExcelUploadTemplate}>Descargar plantilla para importar</Dropdown.Item>
                 <Dropdown.Item onClick={importClientsHandlder}>Importar Clientes</Dropdown.Item>
